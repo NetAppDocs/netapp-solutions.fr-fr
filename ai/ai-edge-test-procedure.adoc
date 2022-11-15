@@ -1,0 +1,65 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-edge-test-procedure.html 
+keywords: procedure, operating system, ubuntu, nvidia, docker, criteo, brats 
+summary: Cette section décrit les procédures de test utilisées pour valider cette solution. 
+---
+= Procédure de test
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-edge-test-configuration.html["Précédent : test de la configuration."]
+
+Nous avons utilisé la procédure de test suivante pour cette validation.
+
+
+
+== Installation du système d'exploitation et de l'inférence d'IA
+
+Pour la baie AFF C190, nous avons utilisé Ubuntu 18.04 avec les pilotes NVIDIA et docker avec la prise en charge des GPU NVIDIA et MLPerf https://github.com/mlperf/inference_results_v0.7/tree/master/closed/Lenovo["code"^] Disponible dans le cadre de la soumission Lenovo à MLPerf Inférence v0.7.
+
+Pour l'EF280, nous avons utilisé Ubuntu 20.04 avec les pilotes NVIDIA et docker avec prise en charge des GPU NVIDIA et MLPerf https://github.com/mlcommons/inference_results_v1.1/tree/main/closed/Lenovo["code"^] Disponible dans le cadre de la soumission Lenovo à MLPerf Inférence v1.1.
+
+Pour configurer l'inférence d'IA, procédez comme suit :
+
+. Téléchargez les datasets qui nécessitent un enregistrement, le jeu de validation ImageNet 2012, le jeu de données Criteo Terabyte et brats 2019 Training Set, puis décompressez les fichiers.
+. Créez un répertoire de travail d'au moins 1 To et définissez une variable d'environnement `MLPERF_SCRATCH_PATH` se référant au répertoire.
++
+Vous devez partager ce répertoire sur le stockage partagé pour le cas d'utilisation du stockage réseau ou sur le disque local lors des tests avec des données locales.
+
+. Exécuter la marque `prebuild` commande, qui crée et lance le conteneur docker pour les tâches d'inférence requises.
++
+
+NOTE: Les commandes suivantes sont toutes exécutées depuis le conteneur Docker en cours d'exécution :
+
++
+** Télécharger les modèles d'IA pré-entraînés pour les tâches d'inférence MLPerf : `make download_model`
+** Téléchargez des datasets supplémentaires qui peuvent être téléchargés librement : `make download_data`
+** Prétraiter les données : marque `preprocess_data`
+** Exécuter : `make build`.
+** Création de moteurs d'inférence optimisés pour les GPU dans les serveurs de calcul : `make generate_engines`
+** Pour exécuter des workloads Inférence, exécutez les éléments suivants (une commande) :
+
+
+
+
+....
+make run_harness RUN_ARGS="--benchmarks=<BENCHMARKS> --scenarios=<SCENARIOS>"
+....
+
+
+== L'inférence d'IA s'exécute
+
+Trois types de passages ont été exécutés :
+
+* Inférence d'IA à un seul serveur avec le stockage local
+* Inférence d'IA à un serveur unique avec le stockage réseau
+* Inférence d'IA à plusieurs serveurs à l'aide d'un stockage réseau
+
+
+link:ai-edge-test-results.html["Suivant : résultats du test."]

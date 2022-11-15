@@ -1,0 +1,52 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-sent-design-considerations.html 
+keywords: network, compute, design, storage, riva, best practices, 
+summary: Cette section décrit les différents composants de cette solution à prendre en compte lors de sa conception. 
+---
+= Considérations relatives à la conception
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-sent-architecture.html["Précédent : architecture."]
+
+
+
+== Conception du réseau et des ressources de calcul
+
+En fonction des restrictions liées à la sécurité des données, toutes les données doivent rester dans l'infrastructure du client ou dans un environnement sécurisé.
+
+image:ai-sent-image9.png["Erreur : image graphique manquante"]
+
+
+
+== Conception du stockage
+
+Le kit NetApp DataOps sert de service principal pour la gestion des systèmes de stockage. Le kit DataOps est une bibliothèque Python qui facilite le clonage quasi instantané d'un volume de données ou d'un espace de travail JupyterLab par exemple, des développeurs, des data Scientists, et des ingénieurs DevOps, Et le snapshots quasi-instantané d'un volume de données ou d'un espace de travail JupyterLab à des fins de traçabilité ou de base. Cette bibliothèque Python peut fonctionner comme un utilitaire de ligne de commande ou une bibliothèque de fonctions pouvant être importées dans n'importe quel programme Python ou ordinateur portable Jupyter.
+
+
+
+== Meilleures pratiques RIVA
+
+NVIDIA présente plusieurs avantages généraux https://docs.nvidia.com/deeplearning/riva/user-guide/docs/best-practices.html["de meilleures pratiques sur les données"^] Pour utiliser RIVA :
+
+* *Utilisez des formats audio sans perte si possible.* l'utilisation de codecs avec perte tels que MP3 peut réduire la qualité.
+* *Augmenter les données de formation.* l'ajout de bruit de fond aux données de formation audio peut d'abord diminuer la précision tout en augmentant la robustesse.
+* *Limiter la taille du vocabulaire en cas d'utilisation de texte gratté.* de nombreuses sources en ligne contiennent des fautes de frappe ou des pronoms auxiliaires et des mots peu communs. La suppression de ces éléments peut améliorer le modèle de langue.
+* *Utilisez un taux d'échantillonnage minimum de 16 kHz si possible.* toutefois, essayez de ne pas rééchantillonner, car cela diminue la qualité audio.
+
+
+Outre ces meilleures pratiques, il est nécessaire que les clients privilégient la collecte d'un dataset d'échantillon représentatif, avec des étiquettes précises pour chaque étape du pipeline. En d'autres termes, le dataset exemple doit refléter de manière proportionnelle les caractéristiques spécifiées présentées dans un dataset cible. De la même façon, les annotations du dataset ont la responsabilité d'équilibrer la précision et la vitesse d'étiquetage, de sorte que la qualité et la quantité des données soient optimisées. Par exemple, cette solution de centre de support nécessite des fichiers audio, du texte étiqueté et des étiquettes de sentiment. La nature séquentielle de cette solution signifie que les erreurs du début du pipeline sont propagées jusqu'à la fin Si les fichiers audio sont de mauvaise qualité, les transcriptions de texte et les libellés de sentiment seront aussi.
+
+Cette propagation d'erreur s'applique également aux modèles entraînés sur ces données. Si les prévisions de sentiment sont exactes à 100 % mais que le modèle de parole à texte fonctionne mal, alors le pipeline final est limité par les transcriptions audio à texte initiales. Il est essentiel que les développeurs considèrent les performances de chaque modèle individuellement et comme un composant d'un pipeline plus vaste. Dans ce cas particulier, l'objectif final est de développer un pipeline capable de prédire avec précision le sentiment. Par conséquent, la mesure globale sur laquelle évaluer le pipeline est la précision des sentiments, que la transcription de la parole vers le texte affecte directement.
+
+image:ai-sent-image10.png["Erreur : image graphique manquante"]
+
+Le kit NetApp DataOps complète le pipeline de contrôle de la qualité des données grâce à la technologie de clonage quasi-instantané. Chaque fichier étiqueté doit être évalué et comparé aux fichiers étiquetés existants. La distribution de ces contrôles de qualité sur différents systèmes de stockage des données permet de réaliser ces vérifications rapidement et efficacement.
+
+link:ai-sent-deploying-support-center-sentiment-analysis.html["Suivant : déploiement de l'analyse des sentiments du centre de support."]

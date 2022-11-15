@@ -1,0 +1,76 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-edge-test-configuration.html 
+keywords: test, configuration, network infrastructure, storage provisioning, SE350 server 
+summary: 'Cette section décrit les configurations testées, l"infrastructure réseau, le serveur SE350 et les détails du provisionnement de stockage.' 
+---
+= Configuration du test
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-edge-test-plan.html["Précédent : plan de test."]
+
+La figure suivante présente la configuration de test. Nous avons utilisé le système de stockage NetApp AFF C190 et deux serveurs Lenovo ThinkSystem SE350 (chacun avec un accélérateur NVIDIA T4). Ces composants sont connectés via un commutateur réseau 10GbE. Le stockage réseau contient des datasets de validation/test et des modèles pré-entraînés. Les serveurs fournissent des fonctionnalités de calcul, et le stockage est accessible via le protocole NFS.
+
+Cette section décrit les configurations testées, l'infrastructure réseau, le serveur SE350 et les détails du provisionnement de stockage. Le tableau suivant répertorie les composants de base de l'architecture de la solution.
+
+|===
+| Composants de la solution | Détails 
+
+
+| Serveurs Lenovo ThinkSystem  a| 
+* 2 serveurs SE350 chacun avec une carte graphique NVIDIA T4
+
+
+
+
+|   a| 
+* Chaque serveur contient un processeur Intel Xeon D-2123IT avec quatre cœurs physiques fonctionnant à 2,20 GHz et 128 Go de RAM
+
+
+
+
+| Système de stockage NetApp AFF d'entrée de gamme (paire HA)  a| 
+* Le logiciel NetApp ONTAP 9
+* SSD 24x 960 Go
+* Protocole NFS
+* Un groupe d'interface par contrôleur, avec quatre adresses IP logiques pour les points de montage
+
+
+|===
+image:ai-edge-image10.png["Erreur : image graphique manquante"]
+
+Le tableau suivant répertorie la configuration du stockage : AFF C190 avec 24 emplacements de disque 2RU.
+
+|===
+| Contrôleur | Agrégat | Volume FlexGroup | Agrégez-les | Volumétrique | Point de montage du système d'exploitation 
+
+
+| Contrôleur 1 | Agr1 | /Netapplenovo_ai_fg | 8,42 Tio | 15 TO | /netapp_lenovo_fg 
+
+
+| Contrôleur 2 | Agr2 |  | 8,42 Tio |  |  
+|===
+Le dossier /netappLenovo_ai_fg contient les ensembles de données utilisés pour la validation du modèle.
+
+La figure ci-dessous présente la configuration de test. Nous avons utilisé le système de stockage NetApp EF280 et deux serveurs Lenovo ThinkSystem SE350 (chacun avec un accélérateur NVIDIA T4). Ces composants sont connectés via un commutateur réseau 10GbE. Le stockage réseau contient des datasets de validation/test et des modèles pré-entraînés. Les serveurs fournissent des fonctionnalités de calcul, et le stockage est accessible via le protocole NFS.
+
+Le tableau ci-dessous répertorie la configuration de stockage de la baie EF280.
+
+|===
+| Contrôleur | Groupe de volumes | Volumétrie | Volumétrique | DDPsize | Méthode de connexion 
+
+
+| Contrôleur 1 | DDP1 | Volume 1 | 8,42 Tio | 16 TO | SE350-1 vers LUN iSCSI 0 
+
+
+| Contrôleur 2 |  | Volume 2 | 8,42 Tio |  | SE350-2 vers la LUN iSCSI 1 
+|===
+image:ai-edge-image11.png["Erreur : image graphique manquante"]
+
+link:ai-edge-test-procedure.html["Suivant : procédure de test."]

@@ -1,0 +1,28 @@
+---
+sidebar: sidebar 
+permalink: containers/tanzu_with_netapp/vtwn_overview_tkg.html 
+keywords: VMware Tanzu, Tanzu, Tanzu Kubernetes Grid, DevOps, Netapp, Astra Trident, Astra Control, Astra 
+summary:  
+---
+= Présentation de VMware Tanzu Kubernetes Grid (TKG)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+VMware Tanzu Kubernetes Grid, également appelé TKG, vous permet de déployer des clusters Kubernetes tanzu dans des environnements de cloud hybride ou de cloud public. TKG est installé en tant que cluster de gestion, qui est un cluster Kubernetes lui-même, qui déploie et exploite les clusters Kubernetes Tanzu. Ces clusters Kubernetes tanzu sont des clusters Kubernetes de type workload sur lesquels la charge de travail réelle est déployée.
+
+Tanzu Kubernetes Grid repose sur quelques projets de la communauté en amont prometteurs et fournit une plateforme Kubernetes développée, commercialisée et prise en charge par VMware. En plus de sa distribution Kubernetes, Tanzu Kubernetes Grid fournit des add-ons supplémentaires qui sont des services essentiels pour la production, tels que le registre, l'équilibrage de la charge, l'authentification, etc. VMware TKG avec cluster de gestion est largement utilisé dans les environnements vSphere 6.7 et, bien qu'il soit pris en charge, il ne constitue pas un déploiement recommandé pour les environnements vSphere 7 car TKGS possède des capacités d'intégration natives avec vSphere 7.
+
+image::vtwn_image02.png[VMware Tanzu Kubernetes Grid avec cluster de gestion]
+
+Pour plus d'informations sur Tanzu Kubernetes Grid, reportez-vous à la documentation link:https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.5/vmware-tanzu-kubernetes-grid-15/GUID-release-notes.html["ici"^].
+
+Selon que le Tanzu Kubernetes Grid est installé sur site sur un cluster vSphere ou dans des environnements cloud, préparez et déployez Tanzu Kubernetes Grid en suivant le guide d'installation link:https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.5/vmware-tanzu-kubernetes-grid-15/GUID-mgmt-clusters-prepare-deployment.html["ici"^].
+
+Après avoir installé le cluster de gestion pour Tanzu Kubernetes Grid, déployez les clusters utilisateur ou les clusters de workloads selon les besoins en suivant la documentation link:https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.5/vmware-tanzu-kubernetes-grid-15/GUID-tanzu-k8s-clusters-index.html["ici"^]. Le cluster de gestion VMware TKG requiert qu'une clé SSH soit fournie pour l'installation et le fonctionnement des clusters Kubernetes de Tanzanie. Cette clé peut être utilisée pour se connecter aux nœuds du cluster à l'aide de `capv` utilisateur.
+
+link:vtwn_overview_netapp.html["Ensuite, présentation des systèmes de stockage NetApp."]

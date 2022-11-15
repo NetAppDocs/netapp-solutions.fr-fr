@@ -1,0 +1,61 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_vm_from_snapshot.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
+---
+= Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
+:allow-uri-read: 
+
+
+
+
+== Créer un serveur virtuel à partir d'un Snapshot
+
+Avec Astra Trident et Red Hat OpenShift, les utilisateurs peuvent créer un snapshot du volume persistant avec les classes de stockage provisionnées par celui-ci. Avec cette fonctionnalité, les utilisateurs peuvent effectuer une copie instantanée d'un volume et l'utiliser pour créer un nouveau volume ou restaurer le même volume à un état précédent. Cela permet d'activer ou de prendre en charge de nombreux cas d'utilisation, de la restauration aux clones en passant par la restauration des données.
+
+Pour les opérations Snapshot dans OpenShift, les ressources VolumeSnapshotClass, VolumeSnapshot et VolumeContent doivent être définies.
+
+* Un VolumeSnapshotContent est le snapshot réellement pris à partir d'un volume du cluster. Il s'agit d'une ressource à l'échelle du cluster, semblable au volume persistant pour le stockage.
+* Un VolumeSnapshot est une demande de création du snapshot d'un volume. Il est similaire à une demande de volume persistant.
+* VolumeSnapshotClass permet à l'administrateur de spécifier différents attributs d'un VolumeSnapshot. Il vous permet d'avoir différents attributs pour les différents snapshots pris à partir du même volume.
+
+
+image::redhat_openshift_image60.jpg[Machine virtuelle de l'architecture Snapshot]
+
+Pour créer le snapshot d'une machine virtuelle, effectuez la procédure suivante :
+
+. Créez une classe VolumeSnapshotClass qui peut ensuite être utilisée pour créer un Snapshot VolumeCas. Accédez à Storage > VolumeSnapshotclasses et cliquez sur Create VolumeSnapshotClass.
+. Entrez le nom de la classe d'instantanés, entrez csi.trident.netapp.io pour le pilote, puis cliquez sur Créer.
++
+image::redhat_openshift_image61.JPG[Créer une classe de snapshot]
+
+. Identifiez le volume de volume persistant connecté à la machine virtuelle source, puis créez un Snapshot de cette demande de volume persistant. Accédez à `Storage > VolumeSnapshots` Puis cliquez sur Créer des copies Snapshot VolumeCas.
+. Sélectionnez la demande de volume persistant pour laquelle vous souhaitez créer l'instantané, entrez le nom de l'instantané ou acceptez la valeur par défaut, puis sélectionnez la classe VolumeSnapshotClass appropriée. Cliquez ensuite sur Créer.
++
+image::redhat_openshift_image62.JPG[Créer un Snapshot]
+
+. La création du snapshot de la demande de volume persistant est alors possible.
+
+
+
+
+== Créer une nouvelle machine virtuelle à partir du snapshot
+
+. Tout d'abord, restaurez la copie Snapshot dans un nouveau volume persistant. Accédez à stockage > Volumesnapshots, cliquez sur les points de suspension situés à côté du Snapshot que vous souhaitez restaurer, puis cliquez sur Restaurer en tant que nouveau volume de volume persistant.
+. Entrez les détails du nouveau PVC et cliquez sur Restaurer. Cela crée un nouveau PVC.
++
+image::redhat_openshift_image63.JPG[Restaurez un Snapshot sur un nouveau volume de stockage persistant]
+
+. Ensuite, créez une nouvelle machine virtuelle à partir de ce volume persistant. Accédez à charges de travail > virtualisation > machines virtuelles, puis cliquez sur Créer > avec YAML.
+. Dans la section spec > template > spec > volumes, spécifiez le nouveau PVC créé à partir de Snapshot au lieu du disque conteneur. Fournir tous les autres détails relatifs à la nouvelle machine virtuelle selon vos besoins.
++
+[source, cli]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-snapshot-restore
+----
+. Cliquez sur Créer pour créer la nouvelle machine virtuelle.
+. Une fois la machine virtuelle créée, accédez-y et vérifiez que la nouvelle machine virtuelle possède le même état que celle de la machine virtuelle dont le volume de demande de volume persistant a été utilisé pour créer le Snapshot au moment de la création du Snapshot.
+

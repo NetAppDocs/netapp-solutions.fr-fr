@@ -1,0 +1,71 @@
+---
+sidebar: sidebar 
+permalink: ai/aks-anf_load_criteo_click_logs_day_15_in_pandas_and_train_a_scikit-learn_random_forest_model.html 
+keywords: criteo, click log, pandas, scikit-learn, random, forest, model, dataframes, 
+summary: 'Cette page décrit comment nous avons utilisé Pandas et DASK DataFrames pour charger les données de journaux de clic du dataset Criteo Terabyte. Le cas d"utilisation est pertinent dans la publicité numérique pour les échanges publicitaires afin de créer les profils des utilisateurs en prédisant si les annonces seront cliqué ou si l"échange n"utilise pas un modèle précis dans un pipeline automatisé.' 
+---
+= Charger Criteo Click Logs Day 15 dans Pandas et former un modèle de forêt aléatoire de scikit
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aks-anf_libraries_for_data_processing_and_model_training.html["Précédent : bibliothèques pour le traitement des données et l'entraînement des modèles."]
+
+Cette section décrit comment nous avons utilisé Pandas et DASK DataFrames pour charger les données de journaux de clic du dataset Criteo Terabyte. Le cas d'utilisation est pertinent dans la publicité numérique pour les échanges publicitaires afin de créer les profils des utilisateurs en prédisant si les annonces seront cliqué ou si l'échange n'utilise pas un modèle précis dans un pipeline automatisé.
+
+Nous avons chargé les données du jour 15 à partir du jeu de données Click Logs, soit un total de 45 Go. Exécution de la cellule suivante dans le bloc-notes Jupyter `CTR-PandasRF-collated.ipynb` Crée un Pandas DataFrame contenant les 50 premiers millions de lignes et génère un modèle aléatoire d'apprentissage de forêt de scikit.
+
+....
+%%time
+import pandas as pd
+import numpy as np
+header = ['col'+str(i) for i in range (1,41)] #note that according to criteo, the first column in the dataset is Click Through (CT). Consist of 40 columns
+first_row_taken = 50_000_000 # use this in pd.read_csv() if your compute resource is limited.
+# total number of rows in day15 is 20B
+# take 50M rows
+"""
+Read data & display the following metrics:
+1. Total number of rows per day
+2. df loading time in the cluster
+3. Train a random forest model
+"""
+df = pd.read_csv(file, nrows=first_row_taken, delimiter='\t', names=header)
+# take numerical columns
+df_sliced = df.iloc[:, 0:14]
+# split data into training and Y
+Y = df_sliced.pop('col1') # first column is binary (click or not)
+# change df_sliced data types & fillna
+df_sliced = df_sliced.astype(np.float32).fillna(0)
+from sklearn.ensemble import RandomForestClassifier
+# Random Forest building parameters
+# n_streams = 8 # optimization
+max_depth = 10
+n_bins = 16
+n_trees = 10
+rf_model = RandomForestClassifier(max_depth=max_depth, n_estimators=n_trees)
+rf_model.fit(df_sliced, Y)
+....
+Pour effectuer une prédiction à l'aide d'un modèle de forêt aléatoire entraîné, exécutez le paragraphe suivant dans ce bloc-notes. Nous avons effectué le dernier million de lignes à partir du jour 15 comme jeu de tests pour éviter toute duplication. La cellule calcule également la précision de la prévision, définie comme le pourcentage d'occurrences que le modèle prédit avec précision si un utilisateur clique ou non sur une annonce. Pour passer en revue tous les composants inconnus de cet ordinateur portable, reportez-vous au https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html["documentation officielle d'apprentissage du kit de science"^].
+
+....
+# testing data, last 1M rows in day15
+test_file = '/data/day_15_test'
+with open(test_file) as g:
+    print(g.readline())
+
+# dataFrame processing for test data
+test_df = pd.read_csv(test_file, delimiter='\t', names=header)
+test_df_sliced = test_df.iloc[:, 0:14]
+test_Y = test_df_sliced.pop('col1')
+test_df_sliced = test_df_sliced.astype(np.float32).fillna(0)
+# prediction & calculating error
+pred_df = rf_model.predict(test_df_sliced)
+from sklearn import metrics
+# Model Accuracy
+print("Accuracy:",metrics.accuracy_score(test_Y, pred_df))
+....
+link:aks-anf_load_day_15_in_dask_and_train_a_dask_cuml_random_forest_model.html["Suivant: Charger jour 15 à DASK et former un modèle de forêt aléatoire de DASk cuML."]

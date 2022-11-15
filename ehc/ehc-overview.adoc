@@ -1,0 +1,153 @@
+---
+sidebar: sidebar 
+permalink: ehc/ehc-overview.html 
+keywords: NetApp Solutions, hybrid, multicloud, multi cloud, enterprise hybrid cloud, hyperscalers, vmware 
+summary:  
+---
+= Présentation du multicloud hybride NetApp avec VMware
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+La plupart des départements IT adoptent une approche axée sur le cloud hybride. Ces entreprises sont en phase de transformation. Les clients évaluent leur environnement IT actuel, puis migrent leurs charges de travail vers le cloud à partir de l'évaluation et de l'exercice de découverte.
+
+Les clients qui migrent vers le cloud peuvent inclure l'élasticité et les pics d'utilisation, la sortie du data Center, la consolidation du data Center, des scénarios de fin de vie, des fusions, des acquisitions, etc. La raison de cette migration peut varier en fonction de chaque entreprise et de leurs priorités business. Lors de la migration vers le cloud hybride, il est primordial de choisir le bon stockage dans le cloud pour bénéficier de la puissance du déploiement et de l'élasticité du cloud.
+
+
+
+== Options clouds VMware dans le cloud public
+
+
+
+=== Solution Azure VMware
+
+image::avs-logo.png[avs,60,60]
+
+Azure VMware solution est un service de cloud hybride qui permet d'assurer un fonctionnement optimal des SDDC VMware dans le cloud public Microsoft Azure. Azure VMware solution est une solution première entièrement gérée et prise en charge par Microsoft, vérifiée par VMware exploitant l'infrastructure Azure. Cela signifie qu'lors du déploiement de la solution Azure VMware, les clients bénéficient de VMware ESXi pour la virtualisation du calcul, de VSAN pour le stockage hyper-convergé, Enfin, NSX pour la mise en réseau et la sécurité, tout en exploitant la présence mondiale de Microsoft Azure, d'installations de data Center de premier plan et à proximité de notre riche écosystème de services et de solutions Azure natifs.
+
+
+
+=== VMware Cloud sur AWS
+
+image::vmc-logo.png[vmc,60,60]
+
+VMware Cloud sur AWS permet au logiciel SDDC de VMware d'entreprise d'accéder au cloud AWS grâce à un accès optimisé aux services AWS natifs. Optimisée par VMware Cloud Foundation, VMware Cloud sur AWS intègre les produits de virtualisation du réseau, du stockage et de calcul de VMware (VMware vSphere, VMware VSAN et VMware NSX), ainsi que la solution de gestion de VMware vCenter Server, optimisée pour s'exécuter sur une infrastructure AWS dédiée, flexible et sans système d'exploitation.
+
+
+
+=== Moteur VMware Google Cloud
+
+image::gcve-logo.png[gcve,60,60]
+
+Google Cloud VMware Engine est une offre d'infrastructure en tant que service (IaaS) basée sur l'infrastructure évolutive haute performance de Google Cloud et sur la pile VMware Cloud Foundation : VMware vSphere, vCenter, VSAN et NSX-T. Ce service permet une migration rapide vers le cloud, et ceci de migrer ou d'étendre les charges de travail VMware existantes d'un environnement sur site à Google Cloud Platform sans le coût, les efforts ou le risque de modifier l'architecture des applications ou d'exploiter de nouveau les opérations. Il s'agit d'un service vendu et pris en charge par Google, en étroite collaboration avec VMware.
+
+
+NOTE: Un cloud privé SDDC et la colocation NetApp Cloud volumes offrent les meilleures performances avec une latence réseau minimale.
+
+
+
+== Le saviez-vous ?
+
+Quel que soit le cloud utilisé lorsqu'un SDDC VMware est déployé, le cluster initial inclut les produits suivants :
+
+* Hôtes VMware ESXi pour la virtualisation du calcul avec une appliance vCenter Server à gérer
+* Stockage hyper-convergé VMware VSAN incluant les ressources de stockage physique de chaque hôte ESXi
+* VMware NSX pour la mise en réseau virtuelle et la sécurité avec un cluster NSX Manager à des fins de gestion
+
+
+
+
+== Configuration de stockage sous-jacente
+
+Pour les clients qui prévoient d'héberger des charges de travail exigeantes en stockage et de faire évoluer horizontalement sur n'importe quelle solution VMware hébergée dans le cloud, l'infrastructure hyperconvergée par défaut impose que l'extension soit sur les ressources de calcul et de stockage.
+
+En s'intégrant avec NetApp Cloud volumes, comme Azure NetApp Files, Amazon FSX pour NetApp ONTAP, Cloud Volumes ONTAP (disponible dans les trois principaux hyperscalers) et Cloud Volumes Service pour Google Cloud, les clients peuvent désormais faire évoluer leur stockage séparément Il suffit d'ajouter des nœuds de calcul au cluster SDDC selon les besoins.
+
+
+
+=== Remarques :
+
+* VMware ne recommande pas de configurations de cluster non équilibrées. L'extension du stockage entraîne donc un ajout d'hôtes, ce qui implique un coût total de possession plus élevé.
+* Un seul environnement VSAN est possible. Par conséquent, tout le trafic de stockage sera directement en concurrence avec les workloads de production.
+* Il n'est pas possible de fournir plusieurs tiers de performance pour répondre aux exigences des applications, aux performances et aux coûts.
+* Il est très facile d'atteindre les limites de capacité de stockage de VSAN basées sur le cluster hôtes. Utilisez NetApp Cloud volumes pour faire évoluer le stockage soit pour héberger des datasets actifs, soit pour hiérarchiser les données inactives dans un stockage persistant.
+
+
+Azure NetApp Files, Amazon FSX pour NetApp ONTAP, Cloud Volumes ONTAP (disponible dans les trois principaux hyperscalers) et Cloud Volumes Service pour Google Cloud peuvent être associés à des VM invités. Cette architecture de stockage hybride est composée d'un datastore VSAN qui contient le système d'exploitation invité et les données binaires des applications. Les données d'application sont reliées à la machine virtuelle via un initiateur iSCSI basé sur l'invité ou des montages NFS/SMB qui communiquent directement avec Amazon FSX pour NetApp ONTAP, Cloud Volume ONTAP, Azure NetApp Files et Cloud Volumes Service pour Google Cloud respectivement. Cette configuration vous permet de relever facilement les défis en matière de capacité de stockage. Comme avec VSAN, l'espace libre disponible dépend de l'espace Slack et des règles de stockage utilisées.
+
+Considérons un cluster SDDC à trois nœuds sous VMware Cloud sur AWS :
+
+* La capacité brute totale d'un SDDC à trois nœuds = 31 To (environ 10 To pour chaque nœud).
+* L'espace Slack à conserver avant d'ajouter des hôtes supplémentaires = 25 % = (.25 x 31,1 To) = 7,7 To.
+* La capacité brute utilisable après la perte d'espace Slack = 23.4 To
+* L'espace disponible effectif dépend de la stratégie de stockage appliquée.
++
+Par exemple :
+
++
+** RAID 0 = espace libre effectif = 23,4 To (capacité brute utilisable/1)
+** RAID 1 = espace libre effectif = 11,7 To (capacité brute utilisable/2)
+** RAID 5 = espace libre effectif = 17,5 To (capacité brute utilisable/1.33)
+
+
+
+
+Ainsi, l'utilisation de NetApp Cloud volumes en tant que stockage connecté à l'invité permettrait d'étendre le stockage et d'optimiser le TCO tout en répondant aux exigences de performances et de protection des données.
+
+
+NOTE: Le stockage invité était la seule option disponible au moment de l'écriture de ce document. Une documentation supplémentaire sera disponible lors de la prise en charge des datastores NFS link:https://docs.netapp.com/us-en/netapp-solutions/ehc/index.html["ici"].
+
+
+
+=== Points à retenir
+
+* Dans les modèles de stockage hybride, placez des workloads de Tier 1 ou hautement prioritaires sur le datastore VSAN pour répondre aux exigences de latence spécifiques, car ils font partie de l'hôte lui-même et à proximité. Utilisation de mécanismes In-Guest pour les machines virtuelles de charges de travail pour lesquelles les latences transactionnelles sont acceptables
+* Utilisez la technologie NetApp SnapMirror® pour répliquer les données des workloads depuis le système ONTAP sur site vers Cloud Volumes ONTAP ou Amazon FSX pour NetApp ONTAP afin de faciliter la migration à l'aide de mécanismes de niveau bloc. Cela ne s'applique pas aux services Azure NetApp Files et Cloud volumes. Pour la migration des données vers Azure NetApp Files ou Cloud volumes Services, utilisez NetApp XCP, Cloud Sync, rysnc ou robocopy, selon le protocole de fichiers utilisé.
+* Les tests montrent une latence supplémentaire de 2 à 4 ms lors de l'accès au stockage à partir des data centers SDDC respectifs. Tenez compte de cette latence supplémentaire dans les exigences des applications lors du mappage du stockage.
+* Pour le montage du stockage connecté à l'invité pendant le basculement test et le basculement réel, assurez-vous que les initiateurs iSCSI sont reconfigurés, que le DNS est mis à jour pour les partages SMB et que les points de montage NFS sont mis à jour dans fstab.
+* Assurez-vous que les paramètres du registre d'expiration des disques (MPIO), de pare-feu et de chemins d'accès E/S multiples (Multipath I/O) intégré à l'invité sont correctement configurés à l'intérieur de la machine virtuelle.
+
+
+
+NOTE: Ceci s'applique uniquement au stockage connecté à l'invité.
+
+
+
+== Avantages du stockage cloud NetApp
+
+Le stockage cloud NetApp offre plusieurs avantages :
+
+* Améliore la densité de calcul à stockage en faisant évoluer le stockage indépendamment de la puissance de calcul.
+* Permet de réduire le nombre d'hôtes, ce qui réduit le coût total de possession global.
+* La défaillance du nœud de calcul n'a aucune incidence sur les performances du stockage.
+* La réorganisation des volumes et la fonctionnalité de niveau de service dynamique d'Azure NetApp Files permettent d'optimiser les coûts par le dimensionnement des charges de travail prévisibles, tout en empêchant le surprovisionnement.
+* L'efficacité du stockage, le Tiering cloud et les fonctionnalités de modification du type d'instance de Cloud Volumes ONTAP offrent des moyens optimaux d'ajouter et de faire évoluer le stockage.
+* Les capacités de surprovisionnement ne sont ajoutées qu'en cas de besoin.
+* Des copies et des clones efficaces Snapshot vous permettent de créer rapidement des copies sans affecter les performances.
+* Aide à contrer les attaques par ransomware grâce à la restauration rapide à partir de copies Snapshot.
+* Assure une reprise après incident régionale et un niveau de bloc de sauvegarde intégré efficaces par transfert de blocs entre les régions pour un meilleur RPO et RTO.
+
+
+
+
+== Hypothèses
+
+* La technologie SnapMirror ou d'autres mécanismes pertinents de migration des données sont activés. De nombreuses options de connectivité sont disponibles, sur site comme dans tout cloud hyperscale. Utilisez le parcours approprié et collaborez avec les équipes de mise en réseau concernées.
+* Le stockage invité était la seule option disponible au moment de l'écriture de ce document. Une documentation supplémentaire sera disponible lors de la prise en charge des datastores NFS link:https://docs.netapp.com/us-en/netapp-solutions/ehc/index.html["ici"].
+
+
+
+NOTE: Faites appel aux architectes de solutions NetApp et aux architectes de cloud hyperscale pour planifier et dimensionner le stockage et le nombre d'hôtes requis. NetApp recommande d'identifier les exigences en matière de performances de stockage avant d'utiliser le dimensionnement Cloud Volumes ONTAP pour finaliser le type d'instance de stockage ou le niveau de service approprié avec le débit adéquat.
+
+
+
+== Architecture détaillée
+
+Sur un plan général, cette architecture (illustrée dans la figure ci-dessous) explique comment bénéficier d'une connectivité multicloud hybride et de la portabilité des applications entre plusieurs fournisseurs de cloud utilisant NetApp Cloud Volumes ONTAP, Cloud Volumes Service pour Google Cloud et Azure NetApp Files comme option de stockage invité supplémentaire.
+
+image:ehc-architecture.png["Architecture du cloud hybride d'entreprise"]

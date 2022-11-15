@@ -1,0 +1,79 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_openshift_BM.html 
+keywords: OpenShift, bare metal, IPI 
+summary:  
+---
+= OpenShift sur bare Metal
+:allow-uri-read: 
+
+
+OpenShift sur bare Metal permet un déploiement automatisé de OpenShift Container Platform sur des serveurs génériques.
+
+OpenShift sur bare Metal est similaire aux déploiements virtuels d'OpenShift. Ce système facilite le déploiement, accélère le provisionnement et permet l'évolutivité des clusters OpenShift, tout en supportant des workloads virtualisés pour les applications qui ne sont pas prêtes pour les conteneurs. En déployant sur un serveur bare Metal, vous n'avez pas à gérer l'environnement d'hyperviseur hôte sans frais supplémentaires, en plus de l'environnement OpenShift. En le déployant directement sur des serveurs bare Metal, vous pouvez également réduire les limitations de la surcharge physique liées au partage des ressources entre l'hôte et l'environnement OpenShift.
+
+
+
+== OpenShift sur bare Metal offre les fonctionnalités suivantes :
+
+* *Déploiement IPI ou programme d'installation assisté.* avec un cluster OpenShift déployé par IPI (installer Provisionable Infrastructure) sur des serveurs bare Metal, les clients peuvent déployer un environnement OpenShift hautement polyvalent et facilement évolutif, directement sur des serveurs génériques, sans avoir à gérer une couche d'hyperviseur.
+* *Conception de cluster compacte.* pour minimiser les besoins matériels, OpenShift sur bare Metal permet aux utilisateurs de déployer des clusters de seulement 3 nœuds, en permettant aux nœuds de plan de contrôle OpenShift d'agir également comme nœuds workers et conteneurs hôtes.
+* *Virtualisation OpenShift.* OpenShift peut exécuter des machines virtuelles dans des conteneurs à l'aide d'OpenShift Virtualization. Cette virtualisation native de conteneur exécute l'hyperviseur KVM dans un conteneur, et connecte les volumes persistants pour le stockage des machines virtuelles.
+* *Infrastructure optimisée pour l'IA/ML*.* déployez des applications comme Kubeflow pour les applications de machine learning en intégrant des nœuds workers basés sur les processeurs graphiques à votre environnement OpenShift et en tirant parti d'OpenShift Advanced Scheduling.
+
+
+
+
+== Conception du réseau
+
+La solution Red Hat OpenShift sur NetApp utilise deux switchs de données pour assurer la connectivité des données primaires à 25 Gbit/s. Il utilise également deux commutateurs de gestion qui fournissent une connectivité à 1 Gbit/s pour la gestion intrabande des nœuds de stockage et la gestion hors bande pour la fonctionnalité IPMI.
+
+Pour le déploiement d'IPI sans système d'exploitation OpenShift, vous devez créer un nœud de provisionnement, une machine Red Hat Enterprise Linux 8 qui doit disposer d'interfaces réseau connectées à des réseaux distincts.
+
+* *Provisioning Network.* ce réseau est utilisé pour démarrer les nœuds bare-Metal et installer les images et les paquets nécessaires pour déployer le cluster OpenShift.
+* *Réseau bare-Metal.* ce réseau est utilisé pour la communication publique du cluster après son déploiement.
+
+
+Dans le cadre de la configuration du nœud de provisionnement, le client crée des interfaces de pont qui permettent au trafic de s'acheminer correctement sur le nœud lui-même et sur la machine virtuelle de démarrage provisionnée pour le déploiement. Une fois le cluster déployé, l'API et les adresses VIP d'entrée sont migrées du nœud bootstrap vers le cluster récemment déployé.
+
+Les images suivantes illustrent l'environnement au cours du déploiement IPI et une fois le déploiement terminé.
+
+image:redhat_openshift_image36.png["Erreur : image graphique manquante"]
+
+image:redhat_openshift_image37.png["Erreur : image graphique manquante"]
+
+
+
+=== Exigences VLAN
+
+La solution Red Hat OpenShift avec NetApp est conçue pour séparer de façon logique le trafic réseau à différents fins, à l'aide de réseaux locaux virtuels (VLAN).
+
+|===
+
+
+| VLAN | Objectif | ID VLAN 
+
+
+| Réseau de gestion hors bande | Gestion pour les nœuds bare Metal et IPMI | 16 
+
+
+| Réseau sans système d'exploitation | Un seul cluster est disponible pour les services OpenShift | 181 
+
+
+| Réseau de provisionnement | Réseau pour l'amorçage PXE et l'installation de nœuds bare Metal via IPI | 3485 
+|===
+
+NOTE: Bien que chacun de ces réseaux soit virtuellement séparé par des VLAN, chaque port physique doit être configuré en mode d'accès avec le VLAN principal affecté, car il n'existe aucun moyen de transmettre une balise VLAN au cours d'une séquence de démarrage PXE.
+
+
+
+=== Ressources de prise en charge de l'infrastructure réseau
+
+L'infrastructure suivante doit être en place avant le déploiement de la plateforme de conteneurs OpenShift :
+
+* Au moins un serveur DNS qui fournit une résolution complète du nom d'hôte accessible à partir du réseau de gestion intrabande et du réseau de VM.
+* Au moins un serveur NTP accessible depuis le réseau de gestion intrabande et le réseau de VM.
+* (Facultatif) connectivité Internet sortante pour le réseau de gestion intrabande et le réseau VM.
+
+
+link:rh-os-n_overview_netapp.html["Ensuite, présentation du stockage NetApp."]

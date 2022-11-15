@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_vm_live_migration.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
+---
+= Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
+:allow-uri-read: 
+
+
+
+
+== Migration en direct des machines virtuelles
+
+Live migration est un processus de migration d'une instance de VM d'un nœud vers un autre dans un cluster OpenShift sans aucun temps d'indisponibilité. Pour que la migration en direct puisse fonctionner dans un cluster OpenShift, les VM doivent être liés aux demandes de volume virtuel avec le mode d'accès ReadWriteMany partagé. Le système back-end Astra Trident configuré avec un SVM sur un cluster NetApp ONTAP activé pour le protocole NFS prend en charge l'accès partagé ReadWriteMany pour les demandes de volume persistant. Par conséquent, les machines virtuelles avec des demandes de volume persistant demandées par les classes de stockage provisionnées par Trident à partir d'un SVM compatible NFS peuvent être migrées sans temps d'indisponibilité.
+
+image::redhat_openshift_image55.jpg[Architecture de VM Live migration]
+
+Pour créer une VM liée à des demandes de volume virtuel avec un accès ReadWriteMany partagé :
+
+. Accédez à charges de travail > virtualisation > ordinateurs virtuels, puis cliquez sur Créer > avec l'assistant.
+. Sélectionnez le système d'exploitation souhaité et cliquez sur Suivant. Supposons que l'OS sélectionné dispose déjà d'une source d'amorçage configurée avec celle-ci.
+. Dans le volet révision et création, sélectionnez le projet dans lequel vous souhaitez créer la machine virtuelle et indiquez les détails de la machine virtuelle. Assurez-vous que la source de démarrage est sélectionnée pour être Clone et boot à partir du CD-ROM avec le PVC approprié affecté au système d'exploitation sélectionné.
+. Cliquez sur Personnaliser l'ordinateur virtuel, puis sur stockage.
+. Cliquez sur les points de suspension en regard de rootdisk et assurez-vous que le storageclass provisionné à l'aide de Trident est sélectionné. Développez Avancé et sélectionnez accès partagé (RWX) pour le mode d'accès. Cliquez ensuite sur Enregistrer.
++
+image::redhat_openshift_image56.JPG[Rendre le disque RWX accessible]
+
+. Cliquez sur vérifier et confirmer, puis sur Créer une machine virtuelle.
+
+
+Pour migrer manuellement un VM vers un autre nœud du cluster OpenShift, procédez comme suit.
+
+. Accédez aux charges de travail > virtualisation > machines virtuelles.
+. Pour la VM à migrer, cliquez sur les points de suspension, puis sur migrer la machine virtuelle.
+. Cliquez sur migrer lorsque le message s'affiche pour confirmer.
+
+
+
+NOTE: Une instance de machine virtuelle d'un cluster OpenShift migre automatiquement vers un autre nœud lorsque le nœud d'origine est placé en mode maintenance si la stratégie d'éviction est définie sur LiveMigrate.
+
+link:rh-os-n_use_case_openshift_virtualization_workflow_clone_vm.html["Suivant : workflows : clonage de VM."]

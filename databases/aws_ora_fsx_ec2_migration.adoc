@@ -1,0 +1,73 @@
+---
+sidebar: sidebar 
+permalink: databases/aws_ora_fsx_ec2_migration.html 
+summary: 'Cette section fournit des informations sur les facteurs à prendre en compte lors de la migration de la base de données Oracle sur site vers l"instance AWS EC2 et le stockage FSX.' 
+keywords: HA, DR, database, Oracle, RDS, AWS, SnapCenter 
+---
+= Migration de base de données sur site vers un cloud public
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+link:aws_ora_fsx_ec2_mgmt.html["Précédent : gestion de la base de données."]
+
+La migration de bases de données constitue un défi de taille. La migration d'une base de données Oracle sur site vers le cloud ne fait pas exception.
+
+Les sections suivantes présentent des facteurs clés à prendre en compte lors de la migration des bases de données Oracle vers le cloud public AWS avec la plateforme de stockage FSX et de calcul EC2 AWS.
+
+
+
+== Le stockage ONTAP est disponible sur site
+
+Si la base de données Oracle sur site est hébergée sur une baie de stockage ONTAP, il est plus facile de configurer la réplication pour la migration de la base de données à l'aide de l'outil d'interface utilisateur NetApp SnapCenter.
+
+. Créez une instance EC2 de calcul cible correspondant à l'instance sur site.
+. Provisionner des volumes de base de données de taille équivalente à partir de la console FSX.
+. Montez les volumes de base de données FSX sur l'instance EC2.
+. Configurer la réplication SnapMirror entre les volumes de base de données sur site et les volumes de base de données FSX cible. La synchronisation initiale peut prendre un certain temps pour déplacer les données source principales, mais les mises à jour incrémentielles suivantes sont bien plus rapides.
+. Au moment du basculement, arrêtez l'application principale pour arrêter toutes les transactions. Depuis SnapCenter, exécutez une sauvegarde de journal pour vider les transactions restantes vers la cible.
+. Brisez les volumes en miroir, exécutez la restauration Oracle sur la cible et créez la base de données pour le service.
+. Pointez les applications vers la base de données Oracle dans le cloud.
+
+
+
+
+== Le stockage ONTAP n'est pas disponible sur site
+
+Si la base de données Oracle sur site est hébergée sur un système de stockage tiers autre que ONTAP, la migration de base de données est basée sur la restauration d'une copie de sauvegarde de base de données Oracle. Vous devez lire le journal d'archivage pour le mettre à jour avant de basculer.
+
+AWS S3 peut être utilisé comme emplacement de stockage intermédiaire pour le déplacement et la migration des bases de données. Reportez-vous aux étapes de haut niveau suivantes pour cette méthode :
+
+. Provisionnement d'une nouvelle instance EC2 de correspondance comparable à celle de l'instance sur site
+. Provisionnez des volumes de base de données égaux à partir du stockage FSX et montez les volumes sur l'instance EC2.
+. Créer une copie de sauvegarde Oracle au niveau du disque.
+. Déplacez la copie de sauvegarde vers le stockage AWS S3.
+. Recréez le fichier de contrôle Oracle, restaurez et restaurez la base de données en extrayant les données et le journal d'archivage à partir du stockage S3.
+. Synchronisez la base de données Oracle cible avec la base de données source sur site.
+. Lors du basculement, arrêtez l'application et la base de données Oracle source. Copiez les derniers journaux d'archivage et appliquez-les à la base de données Oracle cible pour la mettre à jour.
+. Démarrez la base de données cible pour l'accès des utilisateurs.
+. Redirection de l'application vers la base de données cible pour terminer le basculement.
+
+
+
+
+== Consolidez les bases de données Oracle dans AWS avec l'architecture de colocation CDB/PDB Oracle
+
+. Créez votre CDB dans le cloud public AWS.
+. Si la base de données sur site est également déployée dans la colocation CDB/PDB, débranchez le PDB à migrer.
+. Transférez les métadonnées ainsi que les fichiers de données Oracle soulignés vers l'instance CDB cible.
+. Valider la compatibilité avec les procédures de validation Oracle
+. Si la validation de la compatibilité réussit, branchez le boîtier de distribution électrique débranché dans le conteneur CDB cible.
+. Mettre à jour le dictionnaire de données si nécessaire.
+. Sauvegardez et ouvrez le PDB migré pour y accéder.
+
+
+
+NOTE: Le débranchement et le plug-in du boîtier de distribution électrique nécessitent un temps d'indisponibilité des applications à prendre en compte lors de la planification de la migration.
+
+Là encore, l'équipe d'automatisation NetApp propose un kit de migration qui facilite la migration des bases de données Oracle sur site vers le cloud AWS. Consultez le site GitHub public de NetApp pour connaître les derniers outils de migration de bases de données.

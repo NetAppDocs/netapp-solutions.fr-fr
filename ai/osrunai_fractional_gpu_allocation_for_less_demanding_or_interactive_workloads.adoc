@@ -1,0 +1,26 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_fractional_gpu_allocation_for_less_demanding_or_interactive_workloads.html 
+keywords:  
+summary:  
+---
+= Allocation fractionnelle de GPU pour des charges de travail moins exigeantes ou interactives
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Lorsque les chercheurs et développeurs travaillent sur leurs modèles, que ce soit au stade de développement, de réglage des hyperparamètres ou de débogage, ces charges de travail nécessitent généralement moins de ressources de calcul. Il est donc plus efficace de provisionner des GPU et de la mémoire fractionnaires afin que les mêmes GPU puissent être alloués simultanément à d'autres charges de travail. La solution d'orchestration Run:ai propose un système de partage GPU fractionnaire pour les workloads conteneurisés sur Kubernetes. Le système prend en charge les charges de travail exécutant des programmes CUDA et est particulièrement adapté aux tâches d'IA légères telles que l'inférence et la création de modèles. Le système GPU fractionnel permet aux équipes d'ingénierie d'IA et de data science d'exécuter plusieurs charges de travail simultanément sur un seul GPU. Les entreprises peuvent ainsi exécuter davantage de charges de travail, comme la vision informatique, la reconnaissance vocale et le traitement du langage naturel sur le même matériel, ce qui réduit les coûts.
+
+Run :le système GPU fractionnel de l'IA crée efficacement des GPU logiques virtualisés avec leur propre mémoire et espace de calcul que les conteneurs peuvent utiliser et accéder comme s'il s'agissait de processeurs autonomes. Ce qui permet d'exécuter plusieurs charges de travail côte à côte dans des conteneurs sur le même GPU sans interférer entre les deux. La solution est transparente, simple et portable. Elle ne nécessite aucune modification des conteneurs eux-mêmes.
+
+Une upecase type peut voir deux à huit tâches s'exécutant sur le même GPU, ce qui signifie que vous pouvez faire huit fois le travail avec le même matériel.
+
+Pour le travail `frac05` appartenant au projet `team-d` La figure suivante montre que le nombre de GPU alloués était de 0.50. Ceci est vérifié par le `nvidia-smi` La commande, qui montre que la mémoire GPU disponible pour le conteneur était de 16 255 Mo : la moitié de 32 Go par GPU V100 dans le nœud DGX-1.
+
+image:osrunai_image7.png["Erreur : image graphique manquante"]
+
+link:osrunai_achieving_high_cluster_utilization_with_over-uota_gpu_allocation.html["Suivant : une utilisation élevée des clusters avec une allocation GPU sur-quota"]

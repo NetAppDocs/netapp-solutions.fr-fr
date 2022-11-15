@@ -1,0 +1,412 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-protopia-test-procedure.html 
+keywords: prerequisites, scenario, jupyter lab, batch inference, kubernetes, NVIDIA Triton Inference Server 
+summary: Cette section décrit les tâches nécessaires pour terminer la validation. 
+---
+= Procédure de test
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-protopia-test-configuration.html["Précédent : test de la configuration."]
+
+Cette section décrit les tâches nécessaires pour terminer la validation.
+
+
+
+== Prérequis
+
+Pour exécuter les tâches décrites dans cette section, vous devez avoir accès à un hôte Linux ou MacOS avec les outils suivants installés et configurés :
+
+* Kubectl (configuré pour l'accès à un cluster Kubernetes existant)
++
+** Des instructions d'installation et de configuration sont disponibles https://kubernetes.io/docs/tasks/tools/["ici"^].
+
+
+* Kit NetApp DataOps pour Kubernetes
++
+** Des instructions d'installation sont disponibles https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s["ici"^].
+
+
+
+
+
+
+== Scénario 1 : inférence à la demande dans JupyterLab
+
+. Créez un namespace Kubernetes pour les workloads d'inférence d'IA/DE ML.
++
+....
+$ kubectl create namespace inference
+namespace/inference created
+....
+. NetApp DataOps Toolkit permet de provisionner un volume persistant pour le stockage des données sur lesquelles vous souhaitez procéder à l'inférence.
++
+....
+$ netapp_dataops_k8s_cli.py create volume --namespace=inference --pvc-name=inference-data --size=50Gi
+Creating PersistentVolumeClaim (PVC) 'inference-data' in namespace 'inference'.
+PersistentVolumeClaim (PVC) 'inference-data' created. Waiting for Kubernetes to bind volume to PVC.
+Volume successfully created and bound to PersistentVolumeClaim (PVC) 'inference-data' in namespace 'inference'.
+....
+. Utilisez le kit NetApp DataOps pour créer un nouvel espace de travail JupyterLab. Montez le volume persistant créé à l'étape précédente en utilisant le `--mount- pvc` option. Allouez des GPU NVIDIA à l'espace de travail si nécessaire à l'aide de `-- nvidia-gpu` option.
++
+Dans l'exemple suivant, le volume persistant `inference-data` Est monté sur le conteneur de l'espace de travail JupyterLab à `/home/jovyan/data`. Lors de l'utilisation d'images de conteneur Jupyter officiel de projet, `/home/jovyan` Est présenté comme le répertoire de niveau supérieur dans l'interface Web de JupyterLab.
+
++
+....
+$ netapp_dataops_k8s_cli.py create jupyterlab --namespace=inference --workspace-name=live-inference --size=50Gi --nvidia-gpu=2 --mount-pvc=inference-data:/home/jovyan/data
+Set workspace password (this password will be required in order to access the workspace):
+Re-enter password:
+Creating persistent volume for workspace...
+Creating PersistentVolumeClaim (PVC) 'ntap-dsutil-jupyterlab-live-inference' in namespace 'inference'.
+PersistentVolumeClaim (PVC) 'ntap-dsutil-jupyterlab-live-inference' created. Waiting for Kubernetes to bind volume to PVC.
+Volume successfully created and bound to PersistentVolumeClaim (PVC) 'ntap-dsutil-jupyterlab-live-inference' in namespace 'inference'.
+Creating Service 'ntap-dsutil-jupyterlab-live-inference' in namespace 'inference'.
+Service successfully created.
+Attaching Additional PVC: 'inference-data' at mount_path: '/home/jovyan/data'.
+Creating Deployment 'ntap-dsutil-jupyterlab-live-inference' in namespace 'inference'.
+Deployment 'ntap-dsutil-jupyterlab-live-inference' created.
+Waiting for Deployment 'ntap-dsutil-jupyterlab-live-inference' to reach Ready state.
+Deployment successfully created.
+Workspace successfully created.
+To access workspace, navigate to http://192.168.0.152:32721
+....
+. Accédez à l'espace de travail JupyterLab à l'aide de l'URL spécifiée dans la sortie du `create jupyterlab` commande. Le répertoire de données représente le volume persistant monté dans l'espace de travail.
++
+image:ai-protopia-image3.png["Erreur : image graphique manquante"]
+
+. Ouvrez le `data` directory et télécharge les fichiers sur lesquels l'inférence doit être effectuée. Lorsque les fichiers sont chargés dans le répertoire de données, ils sont automatiquement stockés sur le volume persistant monté sur l'espace de travail. Pour télécharger des fichiers, cliquez sur l'icône Télécharger des fichiers, comme illustré dans l'image suivante.
++
+image:ai-protopia-image4.png["Erreur : image graphique manquante"]
+
+. Retournez au répertoire de premier niveau et créez un nouveau bloc-notes.
++
+image:ai-protopia-image5.png["Erreur : image graphique manquante"]
+
+. Ajoutez le code d'inférence à l'ordinateur portable. L'exemple suivant montre le code d'inférence pour un cas d'utilisation de détection d'image.
++
+image:ai-protopia-image6.png["Erreur : image graphique manquante"]
+
++
+image:ai-protopia-image7.png["Erreur : image graphique manquante"]
+
+. Ajoutez Protopia obfuscation à votre code d'inférence. Protopia travaille directement avec les clients pour fournir une documentation spécifique à l'utilisation et n'est pas dans le cadre du présent rapport technique. L'exemple suivant montre le code d'inférence pour un cas d'utilisation de détection d'image avec Protopia obfuscation ajouté.
++
+image:ai-protopia-image8.png["Erreur : image graphique manquante"]
+
++
+image:ai-protopia-image9.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Scénario 2 – inférence par lots sur Kubernetes
+
+. Créez un namespace Kubernetes pour les workloads d'inférence d'IA/DE ML.
++
+....
+$ kubectl create namespace inference
+namespace/inference created
+....
+. NetApp DataOps Toolkit permet de provisionner un volume persistant pour le stockage des données sur lesquelles vous souhaitez procéder à l'inférence.
++
+....
+$ netapp_dataops_k8s_cli.py create volume --namespace=inference --pvc-name=inference-data --size=50Gi
+Creating PersistentVolumeClaim (PVC) 'inference-data' in namespace 'inference'.
+PersistentVolumeClaim (PVC) 'inference-data' created. Waiting for Kubernetes to bind volume to PVC.
+Volume successfully created and bound to PersistentVolumeClaim (PVC) 'inference-data' in namespace 'inference'.
+....
+. Remplissez le nouveau volume persistant avec les données sur lesquelles vous souhaitez procéder à l'inférence.
++
+Il existe plusieurs méthodes pour charger des données sur un volume persistant. Si vos données sont actuellement stockées dans une plateforme de stockage objet compatible S3, comme NetApp StorageGRID ou Amazon S3, vous pouvez utiliser https://github.com/NetApp/netapp-dataops-toolkit/blob/main/netapp_dataops_k8s/docs/data_movement.md["Fonctionnalités du kit de données NetApp Data Mover S3"^]. Une autre méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section « 1 – On-demand inferencing in JupyterLab. »
+
+. Créez une tâche Kubernetes pour la tâche d'inférence des lots. L'exemple suivant montre une tâche d'inférence par lot pour un cas d'utilisation de détection d'image. Ce travail effectue l'inférence sur chaque image d'un ensemble d'images et écrit les metrics de précision d'inférence sur le mode stdout.
++
+....
+$ vi inference-job-raw.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: netapp-inference-raw
+  namespace: inference
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: inference-data
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      containers:
+      - name: inference
+        image: netapp-protopia-inference:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python3", "run-accuracy-measurement.py", "--dataset", "/data/netapp-face-detection/FDDB"]
+        resources:
+          limits:
+            nvidia.com/gpu: 2
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /dev/shm
+          name: dshm
+      restartPolicy: Never
+$ kubectl create -f inference-job-raw.yaml
+job.batch/netapp-inference-raw created
+....
+. Vérifiez que la tâche d'inférence a été correctement terminée.
++
+....
+$ kubectl -n inference logs netapp-inference-raw-255sp
+100%|██████████| 89/89 [00:52<00:00,  1.68it/s]
+Reading Predictions : 100%|██████████| 10/10 [00:01<00:00,  6.23it/s]
+Predicting ... : 100%|██████████| 10/10 [00:16<00:00,  1.64s/it]
+==================== Results ====================
+FDDB-fold-1 Val AP: 0.9491256561145955
+FDDB-fold-2 Val AP: 0.9205024466101926
+FDDB-fold-3 Val AP: 0.9253013871078468
+FDDB-fold-4 Val AP: 0.9399781485863011
+FDDB-fold-5 Val AP: 0.9504280149478732
+FDDB-fold-6 Val AP: 0.9416473519339292
+FDDB-fold-7 Val AP: 0.9241631566241117
+FDDB-fold-8 Val AP: 0.9072663297546659
+FDDB-fold-9 Val AP: 0.9339648715035469
+FDDB-fold-10 Val AP: 0.9447707905560152
+FDDB Dataset Average AP: 0.9337148153739079
+=================================================
+mAP: 0.9337148153739079
+....
+. Ajoutez Protopia obfuscation à votre travail d'inférence. Vous trouverez des instructions spécifiques à chaque cas pour ajouter des objets de Protopia directement à partir de Protopia, qui ne sont pas dans le cadre de ce rapport technique. L'exemple suivant montre un travail d'inférence par lot pour un cas d'utilisation de détection de face avec l'obfuscation Protopia ajouté à l'aide d'une valeur ALPHA de 0.8. Cette tâche applique l'obfuscation de Protopia avant d'effectuer l'inférence pour chaque image d'un ensemble d'images, puis écrit les metrics de précision de l'inférence dans le système.
++
+Nous avons répété cette étape pour les valeurs ALPHA 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 0.9 et 0.95. Les résultats sont présentés dans la link:ai-protopia-inferencing-accuracy-comparison.html["« Comparaison de la précision de l'inférence »."]
+
++
+....
+$ vi inference-job-protopia-0.8.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: netapp-inference-protopia-0.8
+  namespace: inference
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: inference-data
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      containers:
+      - name: inference
+        image: netapp-protopia-inference:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ALPHA
+          value: "0.8"
+        command: ["python3", "run-accuracy-measurement.py", "--dataset", "/data/netapp-face-detection/FDDB", "--alpha", "$(ALPHA)", "--noisy"]
+        resources:
+          limits:
+            nvidia.com/gpu: 2
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /dev/shm
+          name: dshm
+      restartPolicy: Never
+$ kubectl create -f inference-job-protopia-0.8.yaml
+job.batch/netapp-inference-protopia-0.8 created
+....
+. Vérifiez que la tâche d'inférence a été correctement terminée.
++
+....
+$ kubectl -n inference logs netapp-inference-protopia-0.8-b4dkz
+100%|██████████| 89/89 [01:05<00:00,  1.37it/s]
+Reading Predictions : 100%|██████████| 10/10 [00:02<00:00,  3.67it/s]
+Predicting ... : 100%|██████████| 10/10 [00:22<00:00,  2.24s/it]
+==================== Results ====================
+FDDB-fold-1 Val AP: 0.8953066115834589
+FDDB-fold-2 Val AP: 0.8819580264029936
+FDDB-fold-3 Val AP: 0.8781107458462862
+FDDB-fold-4 Val AP: 0.9085731346308461
+FDDB-fold-5 Val AP: 0.9166445508275378
+FDDB-fold-6 Val AP: 0.9101178994188819
+FDDB-fold-7 Val AP: 0.8383443678423771
+FDDB-fold-8 Val AP: 0.8476311547659464
+FDDB-fold-9 Val AP: 0.8739624502111121
+FDDB-fold-10 Val AP: 0.8905468076424851
+FDDB Dataset Average AP: 0.8841195749171925
+=================================================
+mAP: 0.8841195749171925
+....
+
+
+
+
+== Scénario 3 – NVIDIA Triton Inférence Server
+
+. Créez un namespace Kubernetes pour les workloads d'inférence d'IA/DE ML.
++
+....
+$ kubectl create namespace inference
+namespace/inference created
+....
+. Utilisez le kit NetApp DataOps Toolkit pour provisionner un volume persistant à utiliser comme référentiel de modèles pour le serveur NVIDIA Triton Inférence.
++
+....
+$ netapp_dataops_k8s_cli.py create volume --namespace=inference --pvc-name=triton-model-repo --size=100Gi
+Creating PersistentVolumeClaim (PVC) 'triton-model-repo' in namespace 'inference'.
+PersistentVolumeClaim (PVC) 'triton-model-repo' created. Waiting for Kubernetes to bind volume to PVC.
+Volume successfully created and bound to PersistentVolumeClaim (PVC) 'triton-model-repo' in namespace 'inference'.
+....
+. Stockez votre modèle sur le nouveau volume persistant dans un https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md["format"^] C'est reconnu par le serveur NVIDIA Triton Inférence Server.
++
+Il existe plusieurs méthodes pour charger des données sur un volume persistant. Une méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section « 1 – On-demand inferencing in JupyterLab. ”
+
+. Utilisez le kit NetApp DataOps pour déployer une nouvelle instance NVIDIA Triton Inférence Server.
++
+....
+$ netapp_dataops_k8s_cli.py create triton-server --namespace=inference --server-name=netapp-inference --model-repo-pvc-name=triton-model-repo
+Creating Service 'ntap-dsutil-triton-netapp-inference' in namespace 'inference'.
+Service successfully created.
+Creating Deployment 'ntap-dsutil-triton-netapp-inference' in namespace 'inference'.
+Deployment 'ntap-dsutil-triton-netapp-inference' created.
+Waiting for Deployment 'ntap-dsutil-triton-netapp-inference' to reach Ready state.
+Deployment successfully created.
+Server successfully created.
+Server endpoints:
+http: 192.168.0.152: 31208
+grpc: 192.168.0.152: 32736
+metrics: 192.168.0.152: 30009/metrics
+....
+. Utilisez un SDK client Triton pour effectuer une tâche d'inférence. L'extrait de code Python suivant utilise le SDK client Triton Python pour effectuer une tâche d'inférence pour un cas d'utilisation de détection de visage. Cet exemple appelle l'API Triton et transmet une image pour l'inférence. Le serveur Triton Inférence reçoit ensuite la requête, appelle le modèle et renvoie la sortie d'inférence dans le cadre des résultats de l'API.
++
+....
+# get current frame
+frame = input_image
+# preprocess input
+preprocessed_input = preprocess_input(frame)
+preprocessed_input = torch.Tensor(preprocessed_input).to(device)
+# run forward pass
+clean_activation = clean_model_head(preprocessed_input)  # runs the first few layers
+######################################################################################
+#          pass clean image to Triton Inference Server API for inferencing           #
+######################################################################################
+triton_client = httpclient.InferenceServerClient(url="192.168.0.152:31208", verbose=False)
+model_name = "face_detection_base"
+inputs = []
+outputs = []
+inputs.append(httpclient.InferInput("INPUT__0", [1, 128, 32, 32], "FP32"))
+inputs[0].set_data_from_numpy(clean_activation.detach().cpu().numpy(), binary_data=False)
+outputs.append(httpclient.InferRequestedOutput("OUTPUT__0", binary_data=False))
+outputs.append(httpclient.InferRequestedOutput("OUTPUT__1", binary_data=False))
+results = triton_client.infer(
+    model_name,
+    inputs,
+    outputs=outputs,
+    #query_params=query_params,
+    headers=None,
+    request_compression_algorithm=None,
+    response_compression_algorithm=None)
+#print(results.get_response())
+statistics = triton_client.get_inference_statistics(model_name=model_name, headers=None)
+print(statistics)
+if len(statistics["model_stats"]) != 1:
+    print("FAILED: Inference Statistics")
+    sys.exit(1)
+
+loc_numpy = results.as_numpy("OUTPUT__0")
+pred_numpy = results.as_numpy("OUTPUT__1")
+######################################################################################
+# postprocess output
+clean_pred = (loc_numpy, pred_numpy)
+clean_outputs = postprocess_outputs(
+    clean_pred, [[input_image_width, input_image_height]], priors, THRESHOLD
+)
+# draw rectangles
+clean_frame = copy.deepcopy(frame)  # needs to be deep copy
+for (x1, y1, x2, y2, s) in clean_outputs[0]:
+    x1, y1 = int(x1), int(y1)
+    x2, y2 = int(x2), int(y2)
+    cv2.rectangle(clean_frame, (x1, y1), (x2, y2), (0, 0, 255), 4)
+....
+. Ajoutez Protopia obfuscation à votre code d'inférence. Vous trouverez des instructions propres à chaque cas pour ajouter des obfuscations Protopia directement à partir de Protopia ; cependant, ce processus n'est pas dans le cadre de ce rapport technique. L'exemple suivant montre le même code Python que celui indiqué à l'étape 5 précédente, mais avec l'obfuscation Protopia ajouté.
++
+Notez que l'obfuscation Protopia est appliquée à l'image avant de la transmettre à l'API Triton. Ainsi, l'image non obfusquée ne quitte jamais la machine locale. Seule l'image masquée est transmise sur le réseau. Ce flux de production s'applique aux cas où les données sont collectées dans une zone de confiance, mais doivent ensuite être transférées en dehors de cette zone de confiance pour l'inférence. Sans l'obfuscation Protopia, il n'est pas possible d'implémenter ce type de flux de travail sans que des données sensibles quittent la zone de confiance.
+
++
+....
+# get current frame
+frame = input_image
+# preprocess input
+preprocessed_input = preprocess_input(frame)
+preprocessed_input = torch.Tensor(preprocessed_input).to(device)
+# run forward pass
+not_noisy_activation = noisy_model_head(preprocessed_input)  # runs the first few layers
+##################################################################
+#          obfuscate image locally prior to inferencing          #
+#          SINGLE ADITIONAL LINE FOR PRIVATE INFERENCE           #
+##################################################################
+noisy_activation = noisy_model_noise(not_noisy_activation)
+##################################################################
+###########################################################################################
+#          pass obfuscated image to Triton Inference Server API for inferencing           #
+###########################################################################################
+triton_client = httpclient.InferenceServerClient(url="192.168.0.152:31208", verbose=False)
+model_name = "face_detection_noisy"
+inputs = []
+outputs = []
+inputs.append(httpclient.InferInput("INPUT__0", [1, 128, 32, 32], "FP32"))
+inputs[0].set_data_from_numpy(noisy_activation.detach().cpu().numpy(), binary_data=False)
+outputs.append(httpclient.InferRequestedOutput("OUTPUT__0", binary_data=False))
+outputs.append(httpclient.InferRequestedOutput("OUTPUT__1", binary_data=False))
+results = triton_client.infer(
+    model_name,
+    inputs,
+    outputs=outputs,
+    #query_params=query_params,
+    headers=None,
+    request_compression_algorithm=None,
+    response_compression_algorithm=None)
+#print(results.get_response())
+statistics = triton_client.get_inference_statistics(model_name=model_name, headers=None)
+print(statistics)
+if len(statistics["model_stats"]) != 1:
+    print("FAILED: Inference Statistics")
+    sys.exit(1)
+
+loc_numpy = results.as_numpy("OUTPUT__0")
+pred_numpy = results.as_numpy("OUTPUT__1")
+###########################################################################################
+
+# postprocess output
+noisy_pred = (loc_numpy, pred_numpy)
+noisy_outputs = postprocess_outputs(
+    noisy_pred, [[input_image_width, input_image_height]], priors, THRESHOLD * 0.5
+)
+# get reconstruction of the noisy activation
+noisy_reconstruction = decoder_function(noisy_activation)
+noisy_reconstruction = noisy_reconstruction.detach().cpu().numpy()[0]
+noisy_reconstruction = unpreprocess_output(
+    noisy_reconstruction, (input_image_width, input_image_height), True
+).astype(np.uint8)
+# draw rectangles
+for (x1, y1, x2, y2, s) in noisy_outputs[0]:
+    x1, y1 = int(x1), int(y1)
+    x2, y2 = int(x2), int(y2)
+    cv2.rectangle(noisy_reconstruction, (x1, y1), (x2, y2), (0, 0, 255), 4)
+....
+
+
+link:ai-protopia-inferencing-accuracy-comparison.html["Ensuite, comparaison de la précision d'inférence."]

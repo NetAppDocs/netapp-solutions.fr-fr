@@ -1,0 +1,101 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/kafka-sc-confluent-performance-validation.html 
+keywords: setup, verification results, Object store, correctness test, Tiering functionality, Tier fetch benchmark, Produce-consume, workload generator, Retention 
+summary: Cette page décrit la validation des performances de confluent dans les paramètres de cette solution. 
+---
+= Validation des performances confluentes
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:kafka-sc-technology-overview.html["Précédent : présentation de la technologie."]
+
+Nous avons effectué la vérification avec une plateforme confluent pour le stockage hiérarchisé sur NetApp ONTAP. Les équipes NetApp et confluent ont collaboré sur cette vérification et ont exécuté les cas de test requis pour l'équipe informatique.
+
+
+
+== Configuration confluent
+
+Pour cette configuration, nous avons utilisé trois zoopers, cinq courtiers et cinq serveurs de test avec 256 Go de RAM et 16 processeurs. Pour le stockage NetApp, nous avons utilisé ONTAP avec une paire haute disponibilité AFF A900. Le stockage et les courtiers étaient connectés via des connexions 100 GbE.
+
+La figure suivante montre la topologie réseau de la configuration utilisée pour la vérification du stockage à plusieurs niveaux.
+
+image:kafka-sc-image7.png["Ce graphique présente la topologie réseau de la configuration utilisée pour la vérification du stockage à plusieurs niveaux."]
+
+Les serveurs d'outils agissent comme des clients d'application qui envoient ou reçoivent des événements vers ou depuis des nœuds de confluent.
+
+
+
+== Configuration du stockage multi-niveaux fluide
+
+Nous avons utilisé les paramètres de test suivants :
+
+....
+confluent.tier.fetcher.num.threads=80
+confluent.tier.archiver.num.threads=80
+confluent.tier.enable=true
+confluent.tier.feature=true
+confluent.tier.backend=S3
+confluent.tier.s3.bucket=kafkabucket1-1
+confluent.tier.s3.region=us-east-1
+confluent.tier.s3.cred.file.path=/data/kafka/.ssh/credentials
+confluent.tier.s3.aws.endpoint.override=http://wle-mendocino-07-08/
+confluent.tier.s3.force.path.style.access=true
+bootstrap.server=192.168.150.172:9092,192.168.150.120:9092,192.168.150.164:9092,192.168.150.198:9092,192.168.150.109:9092,192.168.150.165:9092,192.168.150.119:9092,192.168.150.133:9092debug=truejmx.port=7203
+num.partitions=80num.records=200000000#object PUT size - 512MB and fetch 100MB - netappsegment.bytes=536870912max.partition.fetch.bytes=1048576000#GET size is max.partition.fetch.bytes/num.partitionslength.key.value=2048trogdor.agent.nodes=node0,node1,node2,node3,node4trogdor.coordinator.hostname.port=192.168.150.155:8889num.producers=20num.head.consumers=20
+num.tail.consumers=1test.binary.task.max.heap.size=32Gtest.binary.task.timeout.sec=3600producer.timeout.sec=3600consumer.timeout.sec=3600
+....
+À des fins de vérification, nous avons utilisé ONTAP avec le protocole HTTP, mais HTTPS était également utilisé. La clé d'accès et la clé secrète sont stockées dans le nom de fichier fourni dans le `confluent.tier.s3.cred.file.path` paramètre.
+
+
+
+== Contrôleur de stockage NetApp – ONTAP
+
+Nous avons configuré une configuration de paires haute disponibilité uniques dans ONTAP à des fins de vérification.
+
+image:kafka-sc-image8.png["Ce graphique illustre la configuration de l'environnement en tant qu'une seule paire haute disponibilité à des fins de vérification."]
+
+
+
+== Résultats de la vérification
+
+Nous avons complété les cinq tests suivants pour la vérification. Les deux premiers étaient les tests de fonctionnalité et les trois autres étaient les tests de performance.
+
+
+
+=== Test d'exactitude du magasin d'objets
+
+Ce test effectue les opérations de base comme obtenir, placer et supprimer dans le magasin d'objets utilisé pour le stockage hiérarchisé à l'aide d'appels d'API.
+
+
+
+=== Test d'exactitude des fonctionnalités de hiérarchisation
+
+Ce test vérifie la fonctionnalité de bout en bout du stockage objet. Il crée un sujet, produit un flux d'événements vers le sujet nouvellement créé, attend que les courtiers archivent les segments vers le stockage objet, utilisent le flux d'événements et valide les correspondances des flux consommés avec le flux produit. Nous avons effectué ce test avec et sans injection de défaut dans le magasin d'objets. Nous avons simulé une panne des nœuds en arrêtant le service Service Manager dans l'un des nœuds de ONTAP et en validant que la fonctionnalité de bout en bout fonctionne avec le stockage objet.
+
+
+
+=== Banc d'essai de récupération de Tier
+
+Ce test a validé les performances de lecture du stockage d'objets hiérarchisés et vérifié les demandes de lecture de plage en charge lourde à partir des segments générés par le banc d'essai. Dans ce banc d'essai, confluent a développé des clients personnalisés pour traiter les demandes d'extraction de niveau.
+
+
+
+=== Générateur de charges de travail consommant le produit
+
+Ce test génère indirectement un workload d'écriture sur le magasin d'objets via l'archivage de segments. Le workload de lecture (segments lus) a été généré à partir du stockage objet lorsque les groupes de consommateurs ont extrait les segments. Cette charge de travail a été générée par un script TOCC. Ce test a vérifié les performances de lecture et d'écriture sur le stockage objet dans les threads parallèles. Nous avons testé avec et sans injection de panne dans le magasin d'objets, comme nous l'avons fait pour le test d'exactitude de la fonctionnalité de Tiering.
+
+
+
+=== Générateur de charges de travail de rétention
+
+Ce test a permis de vérifier les performances de suppression d'un stockage objet sous une charge de travail de conservation des rubriques élevée. La charge de travail de rétention a été générée à l'aide d'un script TOCC qui produit de nombreux messages en parallèle à un sujet de test. La rubrique de test était configurée avec un paramètre de conservation basé sur la taille et le temps agressif qui a provoqué la purge continue du flux d'événements du magasin d'objets. Les segments ont ensuite été archivés. Cela a entraîné de nombreuses suppressions dans le stockage objet par le courtier et la collecte des performances des opérations de suppression du magasin d'objets.
+
+Pour plus d'informations sur la vérification, reportez-vous au https://docs.confluent.io/platform/current/kafka/tiered-storage.html["Confluent"^] site web.
+
+link:kafka-sc-performance-tests-with-produce-consume-workload-generator.html["Ensuite : tests de performances avec un générateur de charges de travail consommant les produits."]

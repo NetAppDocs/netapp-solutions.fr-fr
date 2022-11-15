@@ -1,0 +1,121 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_solution_overview.html 
+keywords: NVA-1160, Red Hat, OpenShift, Netapp, Astra Trident 
+summary: 'Ce document de référence assure la validation du déploiement de la solution Red Hat OpenShift, déployée via IPI (installer provisionnés Infrastructure) dans plusieurs environnements de data Center différents, comme validé par NetApp. Il détaille également l"intégration du stockage avec les systèmes de stockage NetApp grâce à l"orchestrateur de stockage Astra Trident pour la gestion du stockage persistant. Enfin, un certain nombre de validations de solutions et d"utilisations réelles sont explorées et documentées.' 
+---
+= NVA-1160: Red Hat OpenShift avec NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Alan Cowles et Nikhil M Kulkarni, NetApp
+
+Ce document de référence assure la validation du déploiement de la solution Red Hat OpenShift, déployée via IPI (installer provisionnés Infrastructure) dans plusieurs environnements de data Center différents, comme validé par NetApp. Il détaille également l'intégration du stockage avec les systèmes de stockage NetApp grâce à l'orchestrateur de stockage Astra Trident pour la gestion du stockage persistant. Enfin, un certain nombre de validations de solutions et d'utilisations réelles sont explorées et documentées.
+
+
+
+== Cas d'utilisation
+
+L'architecture de la solution Red Hat OpenShift avec NetApp a été conçue pour offrir une valeur exceptionnelle aux clients dans les cas d'utilisation suivants :
+
+* Déploiement et gestion simples de Red Hat OpenShift déployé avec IPI (installation Provisioné Infrastructure) sur un serveur bare Metal, Red Hat OpenStack Platform, Red Hat Virtualization et VMware vSphere.
+* L'association de la puissance des workloads virtualisés et des conteneurs d'entreprise avec Red Hat OpenShift est déployée virtuellement sur OSP, RHV ou vSphere, ou sur un système bare Metal avec OpenShift Virtualization.
+* Exemples de configurations et d'utilisations réelles mettant en avant les fonctionnalités de Red Hat OpenShift avec le stockage NetApp et Astra Trident, l'orchestrateur de stockage open source pour Kubernetes.
+
+
+
+
+== Valeur commerciale
+
+Les entreprises se tournent de plus en plus vers les pratiques DevOps pour créer de nouveaux produits, réduire les cycles de lancement et ajouter rapidement de nouvelles fonctionnalités. En raison de leur nature inné et agile, les conteneurs et les microservices ont un rôle essentiel dans l'accompagnement des pratiques DevOps. Cependant, la pratique du DevOps à l'échelle de production dans un environnement d'entreprise présente ses propres défis et impose certaines exigences à l'infrastructure sous-jacente, notamment :
+
+* Haute disponibilité à tous les niveaux de la pile
+* Simplicité des procédures de déploiement
+* Des opérations et des mises à niveau non disruptives
+* Une infrastructure programmable et basée sur des API pour suivre le rythme de l'agilité des microservices
+* Colocation avec garanties de performances
+* Possibilité d'exécuter simultanément des workloads virtualisés et conteneurisés
+* Possibilité de faire évoluer indépendamment l'infrastructure en fonction des besoins des workloads
+
+
+Red Hat OpenShift avec NetApp reconnaît ces défis et présente une solution qui aide à résoudre chaque problème en mettant en œuvre le déploiement entièrement automatisé de Red Hat OpenShift IPI dans l'environnement de data Center choisi par le client.
+
+
+
+== Présentation de la technologie
+
+La solution Red Hat OpenShift avec NetApp comprend les principaux composants suivants :
+
+
+
+=== Plateforme de conteneurs Red Hat OpenShift
+
+Red Hat OpenShift Container Platform est une plateforme Kubernetes d'entreprise entièrement prise en charge. Red Hat apporte plusieurs améliorations à l'open source Kubernetes afin de fournir une plateforme applicative avec tous les composants entièrement intégrés pour créer, déployer et gérer des applications conteneurisées.
+
+Pour en savoir plus, rendez-vous sur le site web d'OpenShift https://www.openshift.com["ici"].
+
+
+
+=== Systèmes de stockage NetApp
+
+NetApp propose plusieurs systèmes de stockage parfaitement adaptés aux data centers d'entreprise et aux déploiements de cloud hybride. Le portefeuille NetApp inclut des systèmes de stockage NetApp ONTAP, NetApp Element et E-Series, tous capables d'assurer un stockage persistant pour les applications conteneurisées.
+
+Pour en savoir plus, rendez-vous sur le site Web de NetApp https://www.netapp.com["ici"].
+
+
+
+=== Intégrations du stockage NetApp
+
+NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données respectueuse des applications pour les workloads Kubernetes avec état, déployé dans un environnement sur site et optimisé par la technologie de protection des données NetApp de confiance.
+
+Pour plus d'informations, rendez-vous sur le site Web NetApp Astra https://cloud.netapp.com/astra["ici"].
+
+Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes, y compris Red Hat OpenShift.
+
+Pour en savoir plus, rendez-vous sur le site Web Astra Trident https://docs.netapp.com/us-en/trident/index.html["ici"].
+
+
+
+== Options de configuration avancées
+
+Cette section est dédiée aux personnalisations que les utilisateurs du monde réel devraient probablement réaliser lors du déploiement de cette solution en production, telles que la création d'un registre d'images privées dédié ou le déploiement d'instances personnalisées d'équilibreur de charge.
+
+
+
+== Matrice de prise en charge actuelle pour les versions validées
+
+|===
+
+
+| De déduplication | Objectif | Version logicielle 
+
+
+| NetApp ONTAP | Stockage | 9.8 février 9.9.1 
+
+
+| NetApp Element | Stockage | 12.3 
+
+
+| NetApp Astra Control Center | Gestion des données intégrant la cohérence applicative | 21.12.60 
+
+
+| NetApp Astra Trident | Orchestration du stockage | 22.01.0 
+
+
+| Red Hat OpenShift | Orchestration de conteneurs | 4.6 EUS, 4.7, 4.8 
+
+
+| Plateforme Red Hat OpenStack | Infrastructure de cloud privé | 16.1 
+
+
+| Red Hat Virtualization | Virtualisation du data Center | 4.4 
+
+
+| VMware vSphere | Virtualisation du data Center | 6.7U3 
+|===
+link:rh-os-n_overview_openshift.html["Suivant : présentation de Red Hat OpenShift."]

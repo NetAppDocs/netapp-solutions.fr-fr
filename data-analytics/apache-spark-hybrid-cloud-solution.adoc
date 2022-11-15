@@ -1,0 +1,40 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/apache-spark-hybrid-cloud-solution.html 
+keywords: hybrid cloud, operating model, netapp private storage, 
+summary: 'Le data Center d"entreprise moderne est un cloud hybride qui connecte plusieurs environnements d"infrastructures distribuées par le biais d"un plan de gestion continue des données avec un modèle d"exploitation cohérent, sur site et/ou dans plusieurs clouds publics. Pour profiter pleinement d"un cloud hybride, vous devez pouvoir déplacer les données en toute transparence entre vos environnements sur site et multicloud sans avoir à convertir les données ou à remanier l"application.' 
+---
+= Solution cloud hybride
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:apache-spark-testing-results.html["Précédent : résultats des tests."]
+
+Le data Center d'entreprise moderne est un cloud hybride qui connecte plusieurs environnements d'infrastructures distribuées par le biais d'un plan de gestion continue des données avec un modèle d'exploitation cohérent, sur site et/ou dans plusieurs clouds publics. Pour profiter pleinement d'un cloud hybride, vous devez pouvoir déplacer les données en toute transparence entre vos environnements sur site et multicloud sans avoir à convertir les données ou à remanier l'application.
+
+Nous avons indiqué qu'ils commencent leur transition vers le cloud hybride, soit en déplaçant le stockage secondaire vers le cloud pour des utilisations telles que la protection des données, soit en déplaçant les workloads moins stratégiques comme le développement d'applications et le DevOps vers le cloud. Elles passent par la suite à des charges de travail plus stratégiques. L'hébergement web et de contenu, le DevOps et le développement d'applications, les bases de données, l'analytique et les applications conteneurisées font partie des workloads de cloud hybride les plus répandus. La complexité, le coût et les risques liés aux projets d'IA des entreprises ont toujours entravé l'adoption de l'IA, de l'étape expérimentale à la production.
+
+Avec une solution de cloud hybride NetApp, les clients bénéficient d'outils intégrés de sécurité, de gouvernance des données et de conformité avec un seul panneau de commande pour la gestion des données et des workflows dans les environnements distribués, tout en optimisant le coût total de possession en fonction de leur consommation. La figure suivante est un exemple de solution proposée par un partenaire de services clouds chargé d'offrir une connectivité multicloud pour les données d'analytique Big Data des clients.
+
+image:apache-spark-image14.png["Exemple de solution d'un partenaire de services clouds."]
+
+Dans ce scénario, les données IoT reçues dans AWS de différentes sources sont stockées dans un emplacement central dans NetApp Private Storage (NPS). Le stockage NPS est connecté aux clusters Spark ou Hadoop situés dans AWS et Azure, ce qui permet aux applications d'analytique Big Data exécutées dans plusieurs clouds d'accéder aux mêmes données. Voici les principaux défis et exigences de cette utilisation :
+
+* Les clients veulent exécuter les tâches d'analytique sur les mêmes données à l'aide de plusieurs clouds.
+* Les données doivent être reçues de différentes sources, telles que les environnements sur site et cloud, par le biais de différents capteurs et concentrateurs.
+* La solution doit être efficace et économique.
+* Le principal défi consiste à concevoir une solution économique et efficace qui offre des services d'analytique hybride entre les différents environnements sur site et cloud.
+
+
+Notre solution de protection des données et de connectivité multicloud résout le problème des applications d'analytique cloud de plusieurs hyperscalers. Comme illustré dans la figure ci-dessus, les données provenant des capteurs sont transmises et ingérées sur le cluster AWS Spark via Kafka. Les données sont stockées dans un partage NFS hébergé sur NPS, situé en dehors du fournisseur cloud au sein d'un data Center Equinix.
+
+Étant donné que NetApp NPS est connecté à Amazon AWS et Microsoft Azure via respectivement les connexions Direct Connect et Express route, les clients peuvent utiliser le module d'analytique sur place pour accéder aux données à partir de clusters d'analytique Amazon et AWS. Par conséquent, car les systèmes de stockage sur site et NPS exécutent le logiciel ONTAP, https://docs.netapp.com/us-en/ontap/data-protection/snapmirror-replication-concept.html["SnapMirror"^] Permet de mettre en miroir les données NPS dans le cluster sur site pour une analytique de cloud hybride entre les environnements sur site et clouds multiples.
+
+Pour optimiser les performances, NetApp recommande généralement d'utiliser plusieurs interfaces réseau et des connexions directes ou des routes express pour accéder aux données à partir des instances cloud. Nous avons d'autres solutions de transfert de données, notamment https://mysupport.netapp.com/documentation/docweb/index.html?productID=63942&language=en-US["XCP"^] et https://cloud.netapp.com/cloud-sync-service["Cloud Sync"^] Aider les clients à concevoir des clusters Spark dans le cloud hybride intégrant la cohérence applicative, sécurisés et économiques.
+
+link:apache-spark-python-scripts-for-each-major-use-case.html["Suivant : scripts Python pour chaque cas d'utilisation majeur."]

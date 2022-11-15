@@ -1,0 +1,38 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_create_vm.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
+---
+= Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
+:allow-uri-read: 
+
+
+
+
+== Créer une machine virtuelle
+
+Les machines virtuelles sont des déploiements avec état qui requièrent des volumes pour héberger le système d'exploitation et les données. Avec CNV, les machines virtuelles étant exécutées comme des pods, ces dernières sont sauvegardées par des volumes persistants hébergés sur NetApp ONTAP via Trident. Ces volumes sont connectés en tant que disques et stockent l'intégralité du système de fichiers, y compris la source de démarrage de la machine virtuelle.
+
+image::redhat_openshift_image52.jpg[Créer une architecture de VM]
+
+Pour créer un serveur virtuel sur le cluster OpenShift, effectuez les opérations suivantes :
+
+. Accédez à charges de travail > virtualisation > ordinateurs virtuels, puis cliquez sur Créer > avec l'assistant.
+. Sélectionnez le système d'exploitation souhaité et cliquez sur Suivant.
+. Si aucune source d'amorçage n'est configurée sur le système d'exploitation sélectionné, vous devez la configurer. Dans Source d'amorçage, indiquez si vous souhaitez importer l'image OS à partir d'une URL ou d'un registre et fournissez les détails correspondants. Développez Advanced et sélectionnez la classe de stockage sauvegardée par Trident. Cliquez ensuite sur Suivant.
++
+image::redhat_openshift_image53.JPG[Créer la source de démarrage pour la machine virtuelle]
+
+. Si une source d'amorçage est déjà configurée sur le système d'exploitation sélectionné, l'étape précédente peut être ignorée.
+. Dans le volet révision et création, sélectionnez le projet dans lequel vous souhaitez créer la machine virtuelle et indiquez les détails de la machine virtuelle. Assurez-vous que la source de démarrage est sélectionnée pour être Clone et boot à partir du CD-ROM avec le PVC approprié affecté au système d'exploitation sélectionné.
++
+image::redhat_openshift_image54.JPG[Créer une machine virtuelle]
+
+. Si vous souhaitez personnaliser la machine virtuelle, cliquez sur Personnaliser la machine virtuelle et modifiez les paramètres requis.
+. Cliquez sur Créer une machine virtuelle pour créer la machine virtuelle ; le pod correspondant est alors pivotez en arrière-plan.
+
+
+Lorsqu'une source d'amorçage est configurée pour un modèle ou un système d'exploitation à partir d'une URL ou d'un registre, elle crée une demande de volume persistant dans le `openshift-virtualization-os-images` Projetez et téléchargez l'image hôte KVM sur la demande de volume persistant. Vous devez vous assurer que les demandes de volume persistant du modèle disposent d'un espace provisionné suffisant pour prendre en charge l'image hôte KVM pour le système d'exploitation correspondant. Ces demandes de volume virtuel sont ensuite clonées et reliées en tant que rootdisks aux machines virtuelles lors de leur création à l'aide des modèles respectifs de n'importe quel projet.
+
+link:rh-os-n_use_case_openshift_virtualization_workflow_vm_live_migration.html["Suivant : workflows : migration dynamique VM."]

@@ -1,0 +1,65 @@
+---
+sidebar: sidebar 
+permalink: ai/mlrun_technology_overview.html 
+keywords: NetApp Technology Overview ONTAP AI 
+summary:  
+---
+= Présentation de la technologie
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Présentation de NetApp
+
+NetApp est la référence en matière de gestion des données dans le cloud hybride NetApp propose une gamme complète de services qui simplifient la gestion des applications et des données dans les environnements cloud et sur site afin d'accélérer la transformation digitale. Avec ses partenaires, NetApp permet aux entreprises d'envergure mondiale d'exploiter tout le potentiel de leurs données afin de multiplier les points de contact avec les clients, de favoriser l'innovation et d'optimiser leurs opérations.
+
+
+
+== NetApp ONTAP ai
+
+NetApp ONTAP ai, optimisé par les systèmes NVIDIA DGX et le stockage 100 % Flash connecté au cloud NetApp, rationalise le flux des données en toute fiabilité et accélère l'analytique, l'entraînement et l'inférence avec votre Data Fabric qui s'étend de la périphérie, au cœur jusqu'au cloud. Et présente plusieurs avantages pour les services IT :
+
+* Simplifie la conception
+* Offre une évolutivité indépendante des ressources de calcul et de stockage
+* Possibilité de faire évoluer de manière fluide une infrastructure initiale de petite taille
+* NetApp ONTAP ai propose toute une gamme d'options de stockage pour répondre à différents besoins de performance et de costesNetApp ai propose des piles d'infrastructure convergée intégrant NVIDIA DGX-1, un système d'IA à l'échelle du pétaflop, et des switchs Ethernet haute performance NVIDIA Mellanox pour unifier les workloads d'IA, simplifier le déploiement et accélérer le retour sur investissement. Nous avons utilisé ONTAP ai avec un DGX-1 et un système de stockage NetApp AFF A800 pour obtenir ce rapport technique. L'image suivante montre la topologie de ONTAP ai avec le système DGX-1 utilisé dans cette validation.
+
+
+image:mlrun_image3.png["Erreur : image graphique manquante"]
+
+
+
+== Plan de contrôle d'IA NetApp
+
+NetApp ai Control plane vous permet de libérer le potentiel de l'IA et DE L'AM avec une solution qui offre une évolutivité extrême, des déploiements rationalisés et une disponibilité continue des données. La solution ai Control plane intègre Kubernetes et Kubeflow avec une Data Fabric NetApp. Kubernetes, la plateforme standard d'orchestration de conteneurs pour les déploiements cloud, assure l'évolutivité et la portabilité des workloads. Kubeflow est une plateforme de machine learning open-source qui simplifie la gestion et les déploiements, et permet aux développeurs d'optimiser leurs activités de data science. Une Data Fabric NetApp fournit une disponibilité et une portabilité optimales des données pour s'assurer que vos données sont accessibles dans l'ensemble du pipeline, de la périphérie au cœur et jusqu'au cloud. Ce rapport technique utilise le plan de contrôle NetApp ai dans un pipeline MLRun. L'image suivante présente la page de gestion de cluster Kubernetes dans laquelle vous pouvez avoir des terminaux différents pour chaque cluster. Nous avons connecté des volumes persistants NFS au cluster Kubernetes. Les images suivantes montrent un volume persistant connecté au cluster, où https://www.netapp.com/us/media/ds-netapp-project-trident.pdf["NetApp Trident"^] offre une prise en charge du stockage persistant et des fonctionnalités de gestion des données.
+
+image:mlrun_image4.png["Erreur : image graphique manquante"]
+
+image:mlrun_image5.png["Erreur : image graphique manquante"]
+
+image:mlrun_image6.png["Erreur : image graphique manquante"]
+
+
+
+== Vue d'ensemble d'Iguazio
+
+Iguazio Data Science Platform est une plateforme de services en tant que service (PaaS) entièrement intégrée et sécurisée qui simplifie le développement, accélère les performances, facilite la collaboration et répond aux défis opérationnels. Cette plate-forme intègre les composants suivants, et la plate-forme Iguazio pour la science des données est présentée dans l'image suivante :
+
+* Un atelier Data-science qui comprend des ordinateurs portables Jupyter, des moteurs d'analyse intégrés et des solutions Python
+* Gestion des modèles avec suivi des expériences et fonctionnalités de pipeline automatisées
+* Gérer des données et des services DE ML sur un cluster Kubernetes évolutif
+* Nucio, une structure de fonctions sans serveur en temps réel
+* Couche de données extrêmement rapide et sécurisée qui prend en charge SQL, NoSQL, les bases de données de séries chronologiques, les fichiers (objets simples) et la diffusion en continu
+* Intégration avec les bases de données tierces telles que NetApp, Amazon S3, HDFS, SQL et les protocoles de streaming ou de messagerie
+* Tableaux de bord en temps réel basés sur Grafana
+
+
+image:mlrun_image7.png["Erreur : image graphique manquante"]
+
+link:mlrun_software_and_hardware_requirements.html["Ensuite : configuration logicielle et matérielle requise"]

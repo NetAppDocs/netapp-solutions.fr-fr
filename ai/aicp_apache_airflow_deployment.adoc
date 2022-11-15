@@ -1,0 +1,143 @@
+---
+sidebar: sidebar 
+permalink: ai/aicp_apache_airflow_deployment.html 
+keywords: AI, control plane, apache, airflow 
+summary: 'Cette section décrit les tâches à effectuer pour déployer l"air dans votre cluster Kubernetes.' 
+---
+= Déploiement du flux d'air Apache
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+NetApp recommande d'exécuter le flux d'air Apache sur Kubernetes. Cette section décrit les tâches à effectuer pour déployer l'air dans votre cluster Kubernetes.
+
+
+NOTE: Il est possible de déployer du flux d'air sur d'autres plateformes que Kubernetes. Le déploiement de flux d'air sur des plateformes autres que Kubernetes ne fait pas partie du cadre de cette solution.
+
+
+
+== Prérequis
+
+Avant d'effectuer l'exercice de déploiement décrit dans cette section, nous supposons que vous avez déjà effectué les tâches suivantes :
+
+. Vous disposez déjà d'un cluster Kubernetes fonctionnel.
+. Vous avez déjà installé et configuré NetApp Trident dans votre cluster Kubernetes comme décrit dans la section « déploiement et configuration de NetApp Trident ».
+
+
+
+
+== Installer Helm
+
+Le flux d'air est déployé à l'aide de Helm, un gestionnaire de packages populaire pour Kubernetes. Avant de déployer le flux d'air, vous devez installer Helm sur l'hôte de démarrage à déploiement rapide. Pour installer Helm sur l'hôte de saut de déploiement, suivez le https://helm.sh/docs/intro/install/["instructions d'installation"^] Dans la documentation officielle Helm.
+
+
+
+== Définissez la classe de stockage Kubernetes par défaut
+
+Avant de déployer le flux d'air, vous devez désigner une classe de stockage par défaut dans votre cluster Kubernetes. Le processus de déploiement du flux d'air tente de provisionner de nouveaux volumes persistants à l'aide de la classe de stockage par défaut. Si aucune classe de stockage n'est désignée comme classe de stockage par défaut, le déploiement échoue. Pour désigner une classe de stockage par défaut au sein de votre cluster, suivez les instructions de la section link:aicp_kubeflow_deployment_overview.html["Déploiement Kubeflow"]. Si vous avez déjà désigné une classe de stockage par défaut dans votre cluster, vous pouvez ignorer cette étape.
+
+
+
+== Utilisez Helm pour déployer le flux d'air
+
+Pour déployer le flux d'air dans votre cluster Kubernetes à l'aide de Helm, effectuez les tâches suivantes à partir de l'hôte saut de déploiement :
+
+. Déployer le flux d'air à l'aide de Helm en suivant le https://artifacthub.io/packages/helm/airflow-helm/airflow["instructions de déploiement"^] Pour le tableau de débit d'air officiel sur le concentrateur d'artefacts. Les exemples de commandes qui suivent montrent le déploiement du flux d'air à l'aide de Helm. Modifiez, ajoutez et/ou supprimez des valeurs dans `custom- values.yaml` fichier selon votre environnement et la configuration de votre choix.
++
+....
+$ cat << EOF > custom-values.yaml
+###################################
+# Airflow - Common Configs
+###################################
+airflow:
+  ## the airflow executor type to use
+  ##
+  executor: "CeleryExecutor"
+  ## environment variables for the web/scheduler/worker Pods (for airflow configs)
+  ##
+  #
+###################################
+# Airflow - WebUI Configs
+###################################
+web:
+  ## configs for the Service of the web Pods
+  ##
+  service:
+    type: NodePort
+###################################
+# Airflow - Logs Configs
+###################################
+logs:
+  persistence:
+    enabled: true
+###################################
+# Airflow - DAGs Configs
+###################################
+dags:
+  ## configs for the DAG git repository & sync container
+  ##
+  gitSync:
+    enabled: true
+    ## url of the git repository
+    ##
+    repo: "git@github.com:mboglesby/airflow-dev.git"
+    ## the branch/tag/sha1 which we clone
+    ##
+    branch: master
+    revision: HEAD
+    ## the name of a pre-created secret containing files for ~/.ssh/
+    ##
+    ## NOTE:
+    ## - this is ONLY RELEVANT for SSH git repos
+    ## - the secret commonly includes files: id_rsa, id_rsa.pub, known_hosts
+    ## - known_hosts is NOT NEEDED if `git.sshKeyscan` is true
+    ##
+    sshSecret: "airflow-ssh-git-secret"
+    ## the name of the private key file in your `git.secret`
+    ##
+    ## NOTE:
+    ## - this is ONLY RELEVANT for PRIVATE SSH git repos
+    ##
+    sshSecretKey: id_rsa
+    ## the git sync interval in seconds
+    ##
+    syncWait: 60
+EOF
+$ helm install airflow airflow-stable/airflow -n airflow --version 8.0.8 --values ./custom-values.yaml
+...
+Congratulations. You have just deployed Apache Airflow!
+1. Get the Airflow Service URL by running these commands:
+   export NODE_PORT=$(kubectl get --namespace airflow -o jsonpath="{.spec.ports[0].nodePort}" services airflow-web)
+   export NODE_IP=$(kubectl get nodes --namespace airflow -o jsonpath="{.items[0].status.addresses[0].address}")
+   echo http://$NODE_IP:$NODE_PORT/
+2. Open Airflow in your web browser
+....
+. Assurez-vous que tous les modules de ventilation sont opérationnels. Le démarrage des modules peut prendre quelques minutes.
++
+....
+$ kubectl -n airflow get pod
+NAME                                READY   STATUS    RESTARTS   AGE
+airflow-flower-b5656d44f-h8qjk      1/1     Running   0          2h
+airflow-postgresql-0                1/1     Running   0          2h
+airflow-redis-master-0              1/1     Running   0          2h
+airflow-scheduler-9d95fcdf9-clf4b   2/2     Running   2          2h
+airflow-web-59c94db9c5-z7rg4        1/1     Running   0          2h
+airflow-worker-0                    2/2     Running   2          2h
+....
+. Pour obtenir l'URL du service Web de flux d'air, suivez les instructions qui ont été imprimées sur la console lorsque vous avez déployé du flux d'air à l'aide de Helm à l'étape 1.
++
+....
+$ export NODE_PORT=$(kubectl get --namespace airflow -o jsonpath="{.spec.ports[0].nodePort}" services airflow-web)
+$ export NODE_IP=$(kubectl get nodes --namespace airflow -o jsonpath="{.items[0].status.addresses[0].address}")
+$ echo http://$NODE_IP:$NODE_PORT/
+....
+. Confirmez que vous pouvez accéder au service Web de débit d'air.
+
+
+image:aicp_imageaa1.png["Erreur : image graphique manquante"]
+
+link:aicp_example_apache_airflow_workflows_overview.html["Suivant : exemple de flux de production du flux d'air Apache."]

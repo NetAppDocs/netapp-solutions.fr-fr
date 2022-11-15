@@ -1,0 +1,62 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/kafka-sc-solution.html 
+keywords: solution architecture, confluent platform, linux, Fujitsu primergy, intel xenon 
+summary: 'Cette section traite du matériel et des logiciels utilisés pour la vérification des performances en concourant le déploiement de plateforme avec NetApp ONTAP pour le stockage hiérarchisé. Le tableau suivant couvre l"architecture de la solution et les composants de base.' 
+---
+= Solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:kafka-ontap-overview.html["Précédent : présentation."]
+
+Le contrôleur de stockage AFF A900 de Confluent et NetApp optimisé par ONTAP est des systèmes distribués conçus pour les flux de données. Ces deux types de technologies sont évolutives à l'horizontale, tolérantes aux pannes, et offrent d'excellentes performances sous charge. Elles se complètent les unes aux autres en streaming et en traitement des flux de données distribuées avec des coûts de stockage inférieurs grâce à des technologies de réduction des données qui réduisent l'empreinte des données. Le contrôleur de stockage AFF A900 offre des performances exceptionnelles, permettant ainsi de dissocier les ressources de calcul et de stockage. L'administration du système est ainsi simplifiée et les ressources peuvent évoluer de manière indépendante.
+
+image:kafka-sc-image3.png["Image illustrant la présentation de la solution."]
+
+
+
+== Détails de l'architecture de la solution
+
+Cette section traite du matériel et des logiciels utilisés pour la vérification des performances en concourant le déploiement de plateforme avec NetApp ONTAP pour le stockage hiérarchisé. Le tableau suivant couvre l'architecture de la solution et les composants de base.
+
+|===
+| Composant de plate-forme | Configuration de l'environnement 
+
+
+| Plate-forme Confluent version 6.2  a| 
+* 3 x zoopers
+* 8 serveurs de courtage
+* 5 serveurs d'outils
+* 1 x Grafana
+* 1 x centre de contrôle
+
+
+
+
+| Système d'exploitation sur tous les nœuds | Linux (ubuntu 18.04) 
+
+
+| NetApp ONTAP pour les compartiments chauds  a| 
+* 1 paire AFF A900 haute disponibilité (HA)
+* 4 SSD 24 x 800
+* Protocole S3
+* 100 GbE
+
+
+
+
+| 15 serveurs Fujitsu PRIMERGY RX2540  a| 
+* 2 processeurs, 16 cœurs physiques au total
+* Intel Xeon
+* 256 Go de mémoire physique
+* Deux ports 100 GbE
+
+
+|===
+link:kafka-sc-technology-overview.html["Suivant : présentation de la technologie."]

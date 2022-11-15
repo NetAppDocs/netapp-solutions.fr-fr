@@ -1,0 +1,94 @@
+---
+sidebar: sidebar 
+permalink: ehc/aws/aws-guest-dr-storage.html 
+keywords: on premises, on prem, cloud storage, Amazon FSx, Network interface, vm datastore 
+summary: 'Les systèmes NetApp AFF A-Series offrent une infrastructure de stockage haute performance avec des options flexibles de gestion des données, adaptées à un large éventail de scénarios d"entreprise. Dans cette solution, nous avons utilisé un système ONTAP AFF A300 comme système de stockage local principal.' 
+---
+= Stockage
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+link:aws-guest-dr-networking.html["Précédent : mise en réseau."]
+
+Les systèmes NetApp AFF A-Series offrent une infrastructure de stockage haute performance avec des options flexibles de gestion des données, adaptées à un large éventail de scénarios d'entreprise. Dans cette solution, nous avons utilisé un système ONTAP AFF A300 comme système de stockage local principal.
+
+NetApp ONTAP, associé aux outils ONTAP pour VMware et SnapCenter, a été utilisé dans la solution pour fournir des fonctionnalités complètes de gestion et de sauvegarde des applications étroitement intégrées à VMware vSphere.
+
+
+
+== Sur site
+
+Nous avons utilisé le stockage ONTAP pour les datastores VMware qui hébergeaient les machines virtuelles et leurs fichiers VMDK. VMware prend en charge plusieurs protocoles de stockage pour les datastores connectés. Dans cette solution, nous avons utilisé des volumes NFS pour les datastores sur les hôtes ESXi. Cependant, les systèmes de stockage ONTAP prennent en charge tous les protocoles pris en charge par VMware.
+
+La figure suivante décrit les options de stockage VMware.
+
+image:dr-vmc-aws-image7.png["Erreur : image graphique manquante"]
+
+Les volumes ONTAP ont été utilisés pour le stockage connecté aux invités iSCSI et NFS pour nos machines virtuelles applicatives. Nous avons utilisé les protocoles de stockage suivants pour les données d'application :
+
+* Volumes NFS pour les fichiers de base de données Oracle connectés à l'invité.
+* LUN iSCSI pour les bases de données Microsoft SQL Server connectées à l'invité et les journaux de transactions.
+
+
+|===
+| Système d'exploitation | Type de base de données | Protocole de stockage | Description du volume 
+
+
+| Windows Server 2019 | SQL Server 2019 | ISCSI | Fichiers de base de données 
+
+
+|  |  | ISCSI | Fichiers journaux 
+
+
+| Oracle Linux 8.5 | Oracle 19c | NFS | Binaire Oracle 
+
+
+|  |  | NFS | Données Oracle 
+
+
+|  |  | NFS | Fichiers de restauration Oracle 
+|===
+Nous avons également utilisé le stockage ONTAP pour le référentiel de sauvegarde Veeam principal ainsi que pour une cible de sauvegarde pour les sauvegardes de base de données SnapCenter.
+
+* Partage SMB pour le référentiel de sauvegarde Veeam.
+* Partage SMB en tant que cible des sauvegardes de bases de données SnapCenter.
+
+
+
+
+== Le stockage cloud
+
+Cette solution inclut VMware Cloud sur AWS pour l'hébergement de machines virtuelles restaurées dans le cadre du processus de basculement. À ce jour, VMware prend en charge le stockage VSAN pour les datastores hébergeant les machines virtuelles et les VMDK.
+
+La solution FSX pour ONTAP est utilisée comme stockage secondaire pour les données d'application mises en miroir à l'aide de SnapCenter et SyncMirror. Dans le cadre du processus de basculement, le cluster FSX pour ONTAP est converti en stockage primaire et les applications de base de données peuvent reprendre le fonctionnement normal s'exécutant sur le cluster de stockage FSX.
+
+
+
+=== Configuration d'Amazon FSX pour NetApp ONTAP
+
+Pour déployer AWS FSX pour NetApp ONTAP à l'aide de Cloud Manager, suivez les instructions indiquées à l'adresse https://docs.netapp.com/us-en/cloud-manager-fsx-ontap/start/task-getting-started-fsx.html["ce lien"^].
+
+Une fois FSX ONTAP déployé, effectuez un glisser-déposer des instances ONTAP sur site dans FSX ONTAP pour lancer la configuration de la réplication des volumes.
+
+La figure suivante représente notre environnement FSX ONTAP.
+
+image:dr-vmc-aws-image8.png["Erreur : image graphique manquante"]
+
+
+
+=== Interfaces réseau créées
+
+FSX pour NetApp ONTAP dispose d'interfaces réseau préconfigurées et prêtes à l'emploi pour les réseaux iSCSI, NFS, SMB et inter-cluster.
+
+
+
+=== Stockage de datastore de VM
+
+Le SDDC VMware Cloud est fourni avec deux datastores VSAN nommés `vsandatastore` et `workloaddatastore`. Nous avons utilisé `vsandatastore` Pour héberger des VM de gestion avec accès limité aux informations d'identification cloud admin Pour les charges de travail, nous avons utilisé `workloaddatastore`.
+
+link:aws-guest-dr-compute.html["Suivant : calcul."]

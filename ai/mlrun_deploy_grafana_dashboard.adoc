@@ -1,0 +1,60 @@
+---
+sidebar: sidebar 
+permalink: ai/mlrun_deploy_grafana_dashboard.html 
+keywords: NetApp, AI, ML, Cleanup, Grafana 
+summary:  
+---
+= Déployez Grafana Dashboard
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Après le déploiement de tout, nous inférons les nouvelles données. Les modèles prévoient une défaillance sur l'équipement du périphérique réseau. Les résultats de la prédiction sont conservés dans une table de timeseries d'Iguazio. Vous pouvez visualiser les résultats avec Grafana dans la plate-forme intégrée à la politique de sécurité et d'accès aux données d'Iguazio.
+
+Vous pouvez déployer le tableau de bord en important le fichier JSON fourni dans les interfaces de Grafana.
+
+. Pour vérifier que le service Grafana est exécuté, consultez la section Services.
++
+image:mlrun_image22.png["Erreur : image graphique manquante"]
+
+. Si ce n'est pas le cas, déployez une instance à partir de la section Services :
++
+.. Cliquez sur Nouveau service.
+.. Sélectionnez Grafana dans la liste.
+.. Acceptez les valeurs par défaut.
+.. Cliquez sur étape suivante.
+.. Entrez votre ID utilisateur.
+.. Cliquez sur Save Service.
+.. Cliquez sur appliquer les modifications en haut.
+
+
+. Pour déployer le tableau de bord, téléchargez le fichier `NetopsPredictions-Dashboard.json` Via l'interface Jupyter.
++
+image:mlrun_image23.png["Erreur : image graphique manquante"]
+
+. Ouvrez Grafana à partir de la section Services et importez le tableau de bord.
++
+image:mlrun_image24.png["Erreur : image graphique manquante"]
+
+. Cliquez sur Télécharger `*.json` Et sélectionnez le fichier que vous avez téléchargé précédemment (`NetopsPredictions-Dashboard.json`). Le tableau de bord s'affiche une fois le téléchargement terminé.
+
+
+image:mlrun_image25.png["Erreur : image graphique manquante"]
+
+
+
+== Déployer la fonction nettoyage
+
+Lorsque vous générez un grand nombre de données, il est important de préserver la propreté et l'organisation des données. Pour ce faire, déployez la fonction de nettoyage avec le `cleanup.ipynb` bloc-notes.
+
+
+
+== Avantages
+
+NetApp et Iguazio accélèrent et simplifient le déploiement des applications d'IA et DE ML en créant dans des frameworks essentiels, comme Kubeflow, Apache Spark et TensorFlow, avec des outils d'orchestration comme Docker et Kubernetes. En unifiant le pipeline de données de bout en bout, NetApp et Iguazio réduisent la latence et la complexité inhérentes à de nombreuses charges de travail informatiques avancées, afin de combler l'écart entre le développement et les opérations. Les data Scientists peuvent exécuter des requêtes sur d'importants jeux de données et partager en toute sécurité les données et les modèles algorithmiques avec les utilisateurs autorisés au cours de la phase d'entraînement. Une fois que les modèles conteneurisés sont prêts pour la production, vous pouvez facilement les déplacer d'environnements de développement à des environnements opérationnels.
+
+link:mlrun_conclusion.html["Suivant: Conclusion"]

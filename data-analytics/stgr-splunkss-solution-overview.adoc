@@ -1,0 +1,50 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/stgr-splunkss-solution-overview.html 
+keywords: storagegrid, splunk enterprise, smartstore, object storage, machine data 
+summary: Cette page décrit les composants utilisés pour compléter cette solution, notamment NetApp StorageGRID, Splunk Enterprise et Splunk SmartStore. 
+---
+= Présentation de la solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:stgr-splunkss-intelligent-tiering-and-cost-savings.html["Précédent : hiérarchisation intelligente et réduction des coûts."]
+
+
+
+== NetApp StorageGRID
+
+NetApp StorageGRID est une plateforme de stockage objet haute performance et économique. Il propose une gestion des données globale intelligente et pilotée par des règles sur une architecture de grid distribuée basée sur des nœuds. Elle simplifie la gestion de pétaoctets de données non structurées et de milliards d'objets grâce à son espace de noms d'objet global universel unique et à des fonctionnalités avancées de gestion des données. Un accès aux objets unique s'étend sur tous les sites et simplifie les architectures haute disponibilité tout en assurant un accès continu aux objets, quelles que soient les pannes au niveau du site ou de l'infrastructure.
+
+La colocation permet de prendre en charge plusieurs applications de données non structurées cloud et d'entreprise de manière sécurisée dans un même grid, ce qui améliore le ROI et les utilisations de StorageGRID. Plusieurs niveaux de services peuvent être créés avec des règles de cycle de vie des objets basées sur des métadonnées pour optimiser la durabilité, la protection, la performance et la localisation sur plusieurs sites. Les utilisateurs peuvent adapter ces règles et ajuster l'environnement de données de manière non disruptive, à mesure que leurs exigences changent.
+
+SmartStore exploite StorageGRID comme Tier de stockage distant et permet aux clients de déployer plusieurs sites répartis géographiquement pour une disponibilité et une durabilité robustes, présentées comme un seul espace de noms d'objet. Ainsi, Splunk SmartStore peut exploiter les performances élevées de StorageGRID avec une capacité dense et évoluer vers des centaines de nœuds sur plusieurs sites physiques à l'aide d'une seule URL pour interagir avec les objets. Cette URL unique permet également d'étendre le stockage, de mettre à niveau et de réparer sans interruption, même au-delà d'un seul site. Le moteur de règles unique de gestion des données de StorageGRID optimise les niveaux de performance et de durabilité, ainsi que le respect des exigences en matière de localisation des données.
+
+
+
+== Splunk Enterprise
+
+Splunk, leader de la collecte et de l'analyse de données générées par des machines, simplifie et modernise L'IT grâce à ses fonctionnalités d'analytique opérationnelle. Ce logiciel étend également l'analytique business, la sécurité et les utilisations de l'IoT. Le stockage est un facteur stratégique pour réussir le déploiement des logiciels Splunk.
+
+Les données générées par la machine sont le type de Big Data qui connaît la croissance la plus rapide. Le format est imprévisible et provient de nombreuses sources différentes, souvent à des taux élevés et en grands volumes. Ces caractéristiques de charge de travail sont souvent appelées échappement numérique. Grâce à cette solution, Splunk SmartStore peut comprendre ces données et propose un Tiering intelligent des données pour optimiser le placement des données actives et utiles sur le Tier de stockage le plus économique.
+
+
+
+== Splunk SmartStore
+
+Splunk SmartStore est une fonctionnalité d'indexeur qui utilise un stockage objet (également appelé stockage distant ou tiers de stockage distant), tel que StorageGRID pour stocker des données actives à l'aide du protocole S3.
+
+Étant donné que le volume de données d'un déploiement augmente, la demande de stockage dépasse les attentes en matière de ressources informatiques. SmartStore vous permet de gérer vos ressources de stockage et de calcul d'indexeur de manière rentable en faisant évoluer séparément les ressources de calcul et de stockage.
+
+SmartStore introduit un niveau de stockage distant à l'aide du protocole S3 et d'un gestionnaire de cache. Ces fonctionnalités permettent aux données de résider localement sur des indexeurs ou sur un stockage distant. Le gestionnaire de cache, qui réside sur l'indexeur, gère le déplacement des données entre l'indexeur et le Tier de stockage distant. Les données sont stockées dans des compartiments (chaud et chaud) avec les métadonnées de compartiment.
+
+Grâce à SmartStore, vous pouvez réduire au minimum l'encombrement du stockage des indexeur et choisir les ressources de calcul optimisées en E/S car la plupart des données résident sur le Tier de stockage distant. L'indexeur conserve un cache local, représentant la quantité minimale de données nécessaires pour renvoyer les résultats demandés et prévus. Le cache local contient des compartiments à chaud, des copies de compartiments utiles faisant partie des recherches actives ou récentes, et des métadonnées de compartiment.
+
+Avec Splunk SmartStore associé à StorageGRID, les clients peuvent faire évoluer leur environnement de façon incrémentielle grâce à un stockage distant haute performance et économique, tout en bénéficiant d'une grande flexibilité à la solution globale. Les clients peuvent ainsi ajouter des composants (stockage à chaud et/ou stockage S3 chaud) à n'importe quelle quantité donnée, à tout moment, qu'ils aient besoin d'index supplémentaires, de changer la conservation des données ou d'augmenter le taux d'entrée sans interruption.
+
+link:stgr-splunkss-flexible-storagegrid-features-for-splunk-smartstore.html["Next : fonctionnalités flexibles de StorageGRID pour Splunk SmartStore."]

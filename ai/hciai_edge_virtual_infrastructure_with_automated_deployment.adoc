@@ -1,0 +1,58 @@
+---
+sidebar: sidebar 
+permalink: ai/hciai_edge_virtual_infrastructure_with_automated_deployment.html 
+keywords:  
+summary:  
+---
+= Déploiement de VMware Virtual Infrastructure sur NetApp HCI avec le moteur de déploiement NetApp (déploiement automatisé)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Conditions préalables au déploiement NDE
+
+Consulter le https://library.netapp.com/ecm/ecm_download_file/ECMLP2798490["Liste de contrôle de la configuration requise pour NetApp HCI"^] Pour consulter les exigences et recommandations relatives à NetApp HCI avant de commencer le déploiement.
+
+. Configuration et configuration requises pour le réseau et les commutateurs
+. Préparez les ID VLAN requis
+. Configuration de commutateurs
+. Conditions requises pour l'adresse IP pour NetApp HCI et VMware
+. Exigences relatives au DNS et au respect des délais
+. Préparations finales
+
+
+
+
+== Exécution de NDE
+
+Avant d'exécuter le moteur de déploiement NetApp, vous devez terminer le rack et la pile de tous les composants, configurer les switchs réseau et vérifier toutes les conditions préalables. Si vous prévoyez d'autoriser le moteur de déploiement NetApp, vous pouvez exécuter le moteur de déploiement NetApp en vous connectant à l'adresse de gestion d'un nœud de stockage unique.
+
+Le moteur de déploiement NetApp effectue les tâches suivantes pour mettre un système HCI en ligne :
+
+. Installe le nœud de stockage (logiciel NetApp Element) sur au moins deux nœuds de stockage.
+. Installe l'hyperviseur VMware sur au moins deux nœuds de calcul.
+. Installe VMware vCenter pour gérer l'ensemble de la pile NetApp HCI.
+. Installe et configure le nœud de gestion du stockage NetApp (nœud M) et l'agent de surveillance NetApp.
++
+
+NOTE: Cette validation utilise le moteur de déploiement NetApp pour configurer automatiquement toutes les adresses. Vous pouvez également configurer DHCP dans votre environnement ou attribuer manuellement des adresses IP pour chaque nœud de stockage et nœud de calcul. Ces étapes ne sont pas décrites dans ce guide.
+
++
+Comme nous l'avons mentionné précédemment, cette validation utilise une configuration à deux câbles pour les nœuds de calcul.
+
++
+Les étapes détaillées du moteur de déploiement NetApp ne sont pas couvertes dans ce document.
+
++
+Pour obtenir des instructions détaillées sur le déploiement de la plateforme NetApp HCI de base, consultez le http://docs.netapp.com/hci/topic/com.netapp.doc.hci-ude-180/home.html?cp=3_0["Guide de déploiement"^].
+
+. Une fois que NDE a terminé, connectez-vous à vCenter et créez un Port Group distribué `NetApp HCI VDS 01-NFS_Network` Pour que le réseau NFS soit utilisé par ONTAP Select et l'application.
+
+
+link:hciai_edge_netapp_h615cmanual_deployment.html["Suivant : configuration de NetApp H615c (déploiement manuel)"]

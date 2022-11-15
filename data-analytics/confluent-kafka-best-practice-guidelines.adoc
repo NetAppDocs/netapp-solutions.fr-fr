@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/confluent-kafka-best-practice-guidelines.html 
+keywords: best practices, guidelines, nfs, san 
+summary: Cette section présente les leçons tirées de cette certification. 
+---
+= Recommandations sur les bonnes pratiques
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:confluent-kafka-confluent-kafka-rebalance.html["Précédent : clusters à auto-rééquilibrage fluide."]
+
+* Sur la base de notre validation, le stockage objet S3 convient parfaitement au maintien fluide des données.
+* Nous pouvons utiliser un SAN haut débit (notamment FC) pour conserver les données actives du courtier ou le disque local, car, en termes de configuration du stockage multi-niveaux, la taille des données stockées dans le répertoire des courtiers dépend de la taille du segment et de la durée de conservation lorsque les données sont déplacées vers le stockage objet.
+* Les magasins d'objets offrent de meilleures performances lorsque segment.octets est plus élevé ; nous avons testé 512 Mo.
+* Dans Kafka, la longueur de la clé ou de la valeur (en octets) pour chaque enregistrement produit sur le sujet est contrôlée par le `length.key.value` paramètre. Pour StorageGRID, les valeurs d'ingestion et de récupération d'objets S3 sont supérieures à la valeur supérieure. Par exemple, 512 octets fournis pour une récupération de 5,8 Gbit/s, 1024 octets fournis pour 7,5Gbit/s S3 en récupération et 2048 octets fournis à proximité de 10 Gbit/s.
+
+
+La figure suivante présente l'ingestion et la récupération d'objet S3 basées sur `length.key.value`.
+
+image:confluent-kafka-image11.png["Erreur : image graphique manquante"]
+
+* *Kafka Tuning.* pour améliorer les performances du stockage à plusieurs niveaux, vous pouvez augmenter TierFetcherNumThreads et TierArchiverNumThreads. En règle générale, vous souhaitez augmenter TierFetcherNumThreads afin qu'ils correspondent au nombre de cœurs de CPU physiques et qu'ils augmentent TierArchiverNumThreads à la moitié du nombre de cœurs de CPU. Par exemple, dans les propriétés du serveur, si vous avez une machine avec huit cœurs physiques, définissez confluent.Tier.fetcher.num.threads = 8 et confluent.Tier.archiver.num.threads = 4.
+* *Intervalle de temps pour les suppressions de rubrique.* lorsqu'une rubrique est supprimée, la suppression des fichiers de segment de journal dans le stockage d'objet ne commence pas immédiatement. Il y a plutôt un intervalle de temps avec une valeur par défaut de 3 heures avant la suppression de ces fichiers. Vous pouvez modifier la configuration, confluent.tier.topic.delete.check.interval.ms, pour modifier la valeur de cet intervalle. Si vous supprimez une rubrique ou un cluster, vous pouvez également supprimer manuellement les objets du compartiment correspondant.
+* *Listes de contrôle d’accès sur les sujets internes de stockage à plusieurs niveaux.* Une meilleure pratique recommandée pour les déploiements sur site consiste à activer un approbateur ACL sur les sujets internes utilisés pour le stockage à plusieurs niveaux. Définissez les règles ACL pour limiter l'accès à ces données à l'utilisateur du courtier uniquement. Cela sécurise les sujets internes et empêche les accès non autorisés aux données et aux métadonnées de stockage hiérarchisées.
+
+
+[listing]
+----
+kafka-acls --bootstrap-server localhost:9092 --command-config adminclient-configs.conf \
+--add --allow-principal User:<kafka> --operation All --topic "_confluent-tier-state"
+----
+
+NOTE: Remplacer l'utilisateur `<kafka>` avec le véritable courtier principal dans votre déploiement.
+
+Par exemple, la commande `confluent-tier-state` Définit les listes de contrôle d'accès sur la rubrique interne pour le stockage à plusieurs niveaux. Actuellement, une seule rubrique interne est consacrée au stockage à plusieurs niveaux. L'exemple crée une liste de contrôle d'accès qui fournit l'autorisation Kafka principale pour toutes les opérations sur le sujet interne.
+
+link:confluent-kafka-sizing.html["Suivant : dimensionnement."]

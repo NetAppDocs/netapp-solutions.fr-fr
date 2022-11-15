@@ -1,0 +1,30 @@
+---
+sidebar: sidebar 
+permalink: databases/sql-srv-anf_overview.html 
+keywords: use case, rehosting, enterprise resource planning, RDBMS, cloud migration 
+summary: 'Ce document traite du déploiement en temps réel d"un groupe de disponibilité Microsoft SQL Server Always On Availability (AOAG) sur Azure NetApp Files exploitant des machines virtuelles Azure.' 
+---
+= Tr-4897 : SQL Server sur Azure NetApp Files - vue du déploiement réel
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Niyaz Mohamed, NetApp
+
+Les services IT sont confrontés à des changements constants. Selon Gartner, près de 75 % des bases de données auront besoin d'un stockage cloud d'ici 2022. En tant que système de gestion de base de données relationnelle (SGBDR) de premier plan, Microsoft SQL Server est la solution de choix pour les applications et les organisations Windows conçues pour la plate-forme et qui utilisent SQL Server pour tout, de la planification des ressources d'entreprise (ERP) à l'analytique en passant par la gestion de contenu. SQL Server a permis de révolutionner la manière dont les entreprises gèrent des jeux de données massifs et exploitent leurs applications pour répondre aux besoins en termes de performances de schéma et de requêtes.
+
+La plupart des départements IT adoptent une approche axée sur le cloud. Les clients qui ont entamé une phase de transformation évaluent leur paysage IT actuel, puis migrent leurs workloads de bases de données vers le cloud d'après un exercice d'évaluation et de découverte. Certains facteurs justifient la migration vers le cloud : l'élasticité/le bursting, la sortie du data Center, la consolidation du data Center, les scénarios de fin de vie, les fusions, des acquisitions, etc. Les raisons de la migration peuvent varier en fonction de chaque entreprise et de leurs priorités business. Lors de votre transition vers le cloud, il est primordial de choisir le bon stockage cloud pour exploiter toute la puissance du déploiement cloud des bases de données SQL Server.
+
+
+
+== Cas d'utilisation
+
+La migration de l'environnement SQL Server vers Azure et l'intégration de SQL Server avec le vaste éventail de fonctionnalités PaaS (plateforme en tant que service) d'Azure, telles que Azure Data Factory, Azure IoT Hub et Azure machine learning génèrent une valeur commerciale considérable pour soutenir la transformation digitale. En adoptant le cloud, les entités commerciales respectives peuvent se concentrer sur la productivité et fournir de nouvelles fonctionnalités et améliorations plus rapidement (cas d'utilisation du DevTest) qu'en se reposant sur le modèle CapEx ou sur le cloud privé classique. Ce document traite du déploiement en temps réel d'un groupe de disponibilité Microsoft SQL Server Always On Availability (AOAG) sur Azure NetApp Files exploitant des machines virtuelles Azure.
+
+Azure NetApp Files fournit un stockage de grande qualité avec des partages de fichiers disponibles en continu. Les partages disponibles en continu sont requis par les bases de données de production SQL Server sur le partage de fichiers SMB afin de s'assurer que le nœud a toujours accès au stockage de la base de données, notamment lors de scénarios de perturbations tels que les mises à niveau ou les défaillances du contrôleur. Les partages de fichiers disponibles en permanence permettent d'éviter la réplication des données entre les nœuds de stockage. Azure NetApp Files utilise l'évolutivité scale-out SMB 3.0, les pointeurs permanents et le basculement transparent pour prendre en charge la continuité de l'activité en cas d'interruptions planifiées ou non, y compris de nombreuses tâches administratives.
+
+Lors de la planification de migrations clouds, il est recommandé d'évaluer systématiquement la meilleure approche à utiliser. L'approche la plus courante et la plus simple pour la migration d'applications est le réhébergement (aussi appelé lift and shift). L'exemple de scénario fourni dans ce document utilise la méthode de réhébergement. SQL Server sur serveurs virtuels Azure avec Azure NetApp Files vous permet d'utiliser des versions complètes de SQL Server dans le cloud sans avoir à gérer votre matériel sur site. En outre, les machines virtuelles SQL Server simplifient vos coûts de licence lorsque vous payez à l'utilisation, et vous offrent plus de souplesse et d'capacités de bursting pour les scénarios de développement, de test et de mise à jour immobilière.

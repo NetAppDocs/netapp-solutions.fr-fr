@@ -1,0 +1,61 @@
+---
+sidebar: sidebar 
+permalink: xcp/xcp-bp-troubleshooting.html 
+keywords: troubleshooting, problems, error 70, 
+summary: 'Cette section fournit des conseils de dépannage pour la migration des données à l"aide de NetApp XCP.' 
+---
+= Dépannage
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:xcp-bp-best-practice-guidelines-and-recommendations.html["Précédent : recommandations et directives sur les meilleures pratiques."]
+
+
+
+== Erreur 1 : XCP a échoué avec nfs3 erreur 70 : erreur de descripteur de fichier obsolète dans le xcp.log
+
+*Raison et orientation.*
+
+Montez le dossier source et vérifiez qu'il existe. S'il n'existe pas ou s'il a été supprimé, vous recevrez un `stale filehandle` erreur, dans ce cas, vous pouvez ignorer l'erreur.
+
+
+
+== Erreur 2 : le volume de destination NFS de NetApp a de l'espace, mais XCP a échoué avec l'erreur nfs3 28 : aucun espace n'est restant sur le périphérique
+
+*Raison et orientation.*
+
+. Vérifiez l'espace du volume de destination NFS en exécutant le `df` commander ou vérifier le stockage.
++
+....
+root@workr-140: USER3# df -h /xcpdest
+Filesystem                 Size  Used Avail Use% Mounted on
+10.63.150.127:/xcpsrc_vol  4.3T  1.7T  2.6T  40% /xcpsrc_vol
+....
+. Vérifier les inodes du contrôleur de stockage.
++
+....
+A800-Node1-2::> volume show -volume xcpdest -fields files,files-used
+vserver        volume  files    files-used
+-------------- ------- -------- ----------
+A800-Node1_vs1 xcpdest 21251126 21251126
+A800-Node1-2::>
+....
+. Si inode est utilisé, augmentez le nombre d'inodes en exécutant la commande suivante :
++
+....
+A800-Node1-2::> volume modify -volume xcpdest -vserver A800-Node1_vs1 -files 40000000
+Volume modify successful on volume xcpdest of Vserver A800-Node1_vs1.
+A800-Node1-2::> volume show -volume xcpdest -fields files,files-used
+vserver        volume  files    files-used
+-------------- ------- -------- ----------
+A800-Node1_vs1 xcpdest 39999990 21251126
+A800-Node1-2::>
+....
+
+
+link:xcp-bp-where-to-find-additional-information.html["Suivant : où trouver des informations supplémentaires ?"]

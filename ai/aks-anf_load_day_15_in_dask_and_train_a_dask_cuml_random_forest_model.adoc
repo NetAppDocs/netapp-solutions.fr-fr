@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: ai/aks-anf_load_day_15_in_dask_and_train_a_dask_cuml_random_forest_model.html 
+keywords: dask, cuml, dataframe, criteo, click, logs, pandas, scikit, cudf 
+summary: 'Cette section décrit le chargement des journaux Criteo Click jour 15 dans Pandas et la formation d"un modèle de forêt aléatoire d"apprentissage scikit. Dans cet exemple, nous avons effectué le chargement de DataFrame avec DASK cuDF et formé un modèle de forêt aléatoire dans DASk cuML.' 
+---
+= Charger le jour 15 à DASK et former un modèle forestier aléatoire de DASk cuML
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aks-anf_load_criteo_click_logs_day_15_in_pandas_and_train_a_scikit-learn_random_forest_model.html["Précédent: Charger Criteo cliquez sur Logs Day 15 dans Pandas et former un modèle de forêt aléatoire de scikit."]
+
+D'une manière similaire à la section précédente, chargez Criteo Click Logs Day 15 dans Pandas et entraînez un modèle de forêt aléatoire d'apprentissage de scikit. Dans cet exemple, nous avons effectué le chargement de DataFrame avec DASK cuDF et formé un modèle de forêt aléatoire dans DASk cuML. Nous avons comparé les différences en termes de temps et d'échelle d'entraînement dans la section link:aks-anf_training_time_comparison.html["“Comparaison du temps de formation.”"]
+
+
+
+== criteo_dAsk_RF.ipynb
+
+Cet ordinateur portable importe `numpy`, `cuml`, et le nécessaire `dask` bibliothèques, comme illustré dans l'exemple suivant :
+
+....
+import cuml
+from dask.distributed import Client, progress, wait
+import dask_cudf
+import numpy as np
+import cudf
+from cuml.dask.ensemble import RandomForestClassifier as cumlDaskRF
+from cuml.dask.common import utils as dask_utils
+....
+Lancez DASK client().
+
+....
+client = Client()
+....
+Si le cluster est configuré correctement, vous pouvez afficher l'état des nœuds workers.
+
+....
+client
+workers = client.has_what().keys()
+n_workers = len(workers)
+n_streams = 8 # Performance optimization
+....
+Dans notre cluster AKS, l'état suivant s'affiche :
+
+image:aks-anf_image12.png["Erreur : image graphique manquante"]
+
+Notez que DASK utilise le paradigme d'exécution paresseux : plutôt que d'exécuter le code de traitement instantanément, DASK construit plutôt un graphe acyclique dirigé (DAG) d'exécution. DAG contient un ensemble de tâches et leurs interactions dont chaque employé a besoin pour s'exécuter. Cette disposition signifie que les tâches ne sont pas exécutées tant que l'utilisateur n'a pas dit à DASK de les exécuter d'une manière ou d'une autre. Avec DASK, vous disposez de trois options principales :
+
+* *Call Compute() sur un DataFrame.* cet appel traite toutes les partitions, puis renvoie les résultats au planificateur pour l'agrégation finale et la conversion en cuDF DataFrame. Cette option doit être utilisée avec parcimonie et avec des résultats fortement réduits, à moins que le nœud du planificateur ne manque de mémoire.
+* *Call persistent() sur un DataFrame.* cet appel exécute le graphique, mais, au lieu de renvoyer les résultats au nœud du planificateur, il les maintient dans le cluster en mémoire afin que l'utilisateur puisse réutiliser ces résultats intermédiaires dans le pipeline sans avoir besoin de réexécuter le même traitement.
+* *Call head() sur un DataFrame.* tout comme avec cuDF, cet appel renvoie 10 enregistrements au nœud du planificateur. Cette option permet de vérifier rapidement si votre DataFrame contient le format de sortie souhaité ou si les enregistrements eux-mêmes ont un sens, selon votre traitement et votre calcul.
+
+
+Par conséquent, à moins que l'utilisateur n'appelle l'une ou l'autre de ces actions, les travailleurs restent inactifs en attendant que le planificateur lance le traitement. Ce modèle d'exécution paresseux est courant dans les infrastructures informatiques modernes parallèles et distribuées telles qu'Apache Spark.
+
+Le paragraphe suivant forme un modèle de forêt aléatoire en utilisant DASK cuML pour le calcul accéléré par GPU distribué et calcule la précision de prévision des modèles.
+
+....
+Adsf
+# Random Forest building parameters
+n_streams = 8 # optimization
+max_depth = 10
+n_bins = 16
+n_trees = 10
+cuml_model = cumlDaskRF(max_depth=max_depth, n_estimators=n_trees, n_bins=n_bins, n_streams=n_streams, verbose=True, client=client)
+cuml_model.fit(gdf_sliced_small, Y)
+# Model prediction
+pred_df = cuml_model.predict(gdf_test)
+# calculate accuracy
+cu_score = cuml.metrics.accuracy_score( test_y, pred_df )
+....
+link:aks-anf_monitor_dask_using_native_task_streams_dashboard.html["Suivant : surveillez le DASK à l'aide du tableau de bord natif des flux de tâches."]

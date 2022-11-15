@@ -1,0 +1,62 @@
+---
+sidebar: sidebar 
+permalink: ai/mlrun_define_persistent_volume_claim.html 
+keywords: NetApp Trident Volume Jupyter Notebook 
+summary:  
+---
+= Définition de la demande de volume persistant
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+. Enregistrez le YAML suivant dans un fichier pour créer un PVC de type Basic.
++
+....
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: basic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: netapp-file
+....
+. Appliquez le fichier YAML sur votre cluster Kubernetes Iguazio.
+
+
+....
+Kubectl -n default-tenant apply -f <your yaml file>
+....
+
+
+== Relier un volume NetApp au bloc-notes Jupyter
+
+Iguazio propose plusieurs services gérés afin de fournir aux data Scientists une pile complète pour le développement et le déploiement d'applications d'IA/ML. Pour en savoir plus sur ces composants, consultez le https://www.iguazio.com/docs/intro/latest-release/ecosystem/app-services/["Iguazio Présentation des services et outils d'application"^].
+
+Jupyter Notebook est l'un des services gérés. Chaque développeur a son propre déploiement d'un conteneur d'ordinateur portable avec les ressources dont il a besoin pour le développement. Pour leur donner accès à NetApp Cloud Volume, vous pouvez attribuer le volume à leur container et à leur allocation des ressources, exécuter les paramètres des utilisateurs et des variables d'environnement pour les demandes de volume persistant. Cette image présente.
+
+Pour une configuration sur site, vous pouvez vous reporter à https://www.netapp.com/us/media/tr-4798.pdf["TR-4798"^] Vous configurez Trident pour activer les fonctionnalités de gestion des données de NetApp ONTAP, comme l'exécution de copies Snapshot de vos données ou un modèle pour le contrôle des versions. Ajoutez la ligne suivante dans votre fichier de configuration back-end Trident pour rendre les répertoires Snapshot visibles :
+
+....
+{
+    …
+    "defaults": {
+        "snapshotDir": "true"
+    }
+}
+....
+Vous devez créer un fichier de configuration back-end Trident au format JSON, puis exécuter la commande suivante https://netapp-trident.readthedocs.io/en/stable-v18.07/kubernetes/operations/tasks/backends.html["Commande Trident"^] pour la référencer :
+
+....
+tridentctl create backend -f <backend-file>
+....
+image:mlrun_image11.png["Erreur : image graphique manquante"]
+
+link:mlrun_deploying_the_application.html["Suivant : déploiement de l'application"]

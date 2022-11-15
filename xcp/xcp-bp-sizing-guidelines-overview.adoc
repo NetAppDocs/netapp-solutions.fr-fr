@@ -1,0 +1,66 @@
+---
+sidebar: sidebar 
+permalink: xcp/xcp-bp-sizing-guidelines-overview.html 
+keywords: test, time estimate, copy, sync, rename, append, delete 
+summary: 'Cette section fournit le temps approximatif d"exécution des opérations de copie XCP et de synchronisation XCP avec une taille de fichier différente d"un million de fichiers pour NFS.' 
+---
+= Instructions de dimensionnement
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:xcp-bp-deployment-steps.html["Précédent : étapes de déploiement."]
+
+Cette section fournit le temps approximatif d'exécution des opérations de copie XCP et de synchronisation XCP avec une taille de fichier différente d'un million de fichiers pour NFS.
+
+
+
+== Estimation du temps basée sur les tests
+
+Les tests des opérations de copie XCP et de synchronisation ont utilisé le même lit de test que celui utilisé pour le déploiement. Un million de fichiers de trois ensembles de 8 Ko, 16 Ko et 1 Mo ont été créés et les modifications ont été effectuées en temps réel. La fonction de synchronisation XCP a effectué les mises à jour incrémentielles différentielles de la source vers la cible au niveau du fichier. L'opération de mise à jour incrémentielle est une ou plusieurs de ces quatre opérations : renommer les fichiers et dossiers existants, ajouter des données aux fichiers existants, supprimer des fichiers et des dossiers et inclure des liens matériels, logiciels et multiliens supplémentaires. À des fins de test, nous avons mis l'accent sur les opérations de renommage, d'ajout, de suppression et de liens. En d'autres termes, les opérations de modification telles que renommer, ajouter et supprimer ont été effectuées à un taux de modification de 10 à 90 % sur un million de fichiers.
+
+La figure suivante montre les résultats de l'opération de copie XCP.
+
+image:xcp-bp_image10.png["Erreur : image graphique manquante"]
+
+La figure suivante montre les résultats des opérations de renommage et de liaison XCP Sync.
+
+image:xcp-bp_image8.png["Erreur : image graphique manquante"]
+
+La taille du fichier n'est pas propositionnelle à l' `xcp sync` temps de fin pour le transfert des fichiers source renommés ; les graphiques sont linéaires.
+
+Les types de lien sont des liens souples, des liens rigides et des liens multiples. Les liens logiciels sont considérés comme des fichiers normaux. La taille des fichiers n'est pas pertinente pour le temps de terminer l'opération de synchronisation XCP.
+
+Les figures suivantes montrent les résultats des opérations d'ajout et de suppression de XCP sync.
+
+image:xcp-bp_image9.png["Erreur : image graphique manquante"]
+
+Pour les opérations d'ajout et de suppression, les fichiers volumineux sont plus rapides que les fichiers de petite taille. Le temps nécessaire pour terminer l'opération est linéaire selon le pourcentage d'ajout et de suppression des modifications.
+
+
+
+== Comparaison de XCP 1.6.1 à XCP 1.5
+
+Par rapport aux versions précédentes, XCP 1.6.3 et 1.7 offre des performances améliorées. La section suivante présente une comparaison des performances de synchronisation entre XCP 1.6.3 et 1.7 pour des tailles de 8 Ko, 16 Ko et 1 Mo de 1 million de fichiers.
+
+Les figures suivantes montrent les résultats de la performance de synchronisation XCP pour XCP 1.6.3 par rapport à 1.7 (avec une taille de 8 Ko d'un million de fichiers).
+
+image:xcp-bp_image11.png["Erreur : image graphique manquante"]
+
+La figure suivante montre les résultats de la performance de synchronisation XCP pour XCP 1.6.1 par rapport à 1.5 (avec une taille de 16K d'un million de fichiers).
+
+image:xcp-bp_image12.png["Erreur : image graphique manquante"]
+
+La figure suivante montre les résultats de la performance de synchronisation XCP pour XCP 1.6.1 par rapport à 1.5 avec une taille de 1 Mo d'un million de fichiers.
+
+image:xcp-bp_image13.png["Erreur : image graphique manquante"]
+
+En moyenne, la performance de XCP 1.7 s'est améliorée sur ou était similaire à XCP 1.6.3 pour le `xcp sync` Mise à jour incrémentielle différentielle : opérations de renommage, d'ajout, de liaison et de suppression avec une taille de 1 Mo d'un million de fichiers.
+
+En fonction de cette validation des performances, NetApp recommande l'utilisation de XCP 1.7 pour la migration de vos données sur site et dans le cloud.
+
+link:xcp-bp-performance-tuning.html["Suivant : réglage des performances."]

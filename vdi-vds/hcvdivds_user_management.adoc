@@ -1,0 +1,36 @@
+---
+sidebar: sidebar 
+permalink: vdi-vds/hcvdivds_user_management.html 
+keywords: VDS, Azure, Active Directory, NTLM, Kerberos, ADConnect, 
+summary: 'NetApp VDS utilise Azure Active Directory pour l"authentification des identités et les services de domaine Azure Active Directory pour l"authentification NTLM/Kerberos. L"outil ADConnect permet de synchroniser un domaine Active Directory sur site avec Azure Active Directory.' 
+---
+= Gestion des utilisateurs
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+NetApp VDS utilise Azure Active Directory pour l'authentification des identités et les services de domaine Azure Active Directory pour l'authentification NTLM/Kerberos. L'outil ADConnect permet de synchroniser un domaine Active Directory sur site avec Azure Active Directory.
+
+Vous pouvez ajouter de nouveaux utilisateurs à partir du portail ou activer l'espace de travail cloud pour les utilisateurs existants. Les autorisations pour les espaces de travail et les services d'application peuvent être contrôlées par des utilisateurs individuels ou par des groupes. À partir du portail de gestion, les utilisateurs administratifs peuvent être définis pour contrôler les autorisations du portail, des espaces de travail, etc.
+
+La figure suivante décrit la gestion des utilisateurs dans NetApp VDS.
+
+image:hcvdivds_image10.png["Erreur : image graphique manquante"]
+
+Chaque espace de travail réside dans sa propre unité d'organisation Active Directory (ou) sous l'unité d'organisation Cloud Workspace, comme illustré dans la figure suivante.
+
+image:hcvdivds_image11.png["Erreur : image graphique manquante"]
+
+Pour plus d'informations, voir https://youtu.be/RftG7v9n8hw["vidéo"^] Sur les autorisations des utilisateurs et la gestion des utilisateurs dans NetApp VDS.
+
+Lorsqu'un groupe Active Directory est défini comme un groupe CRAUserGroup à l'aide d'un appel API pour le centre de données, tous les utilisateurs de ce groupe sont importés dans CloudWorkspace pour la gestion à l'aide de l'interface utilisateur. Lorsque l'espace de travail Cloud est activé pour l'utilisateur, VDS crée des dossiers d'accueil utilisateur, des autorisations de paramètres, des mises à jour des propriétés utilisateur, etc.
+
+Si l'option utilisateur VDI activé est cochée, VDS crée une machine RDS d'une session dédiée à cet utilisateur. Elle demande le modèle et le datastore à provisionner.
+
+image:hcvdivds_image26.png["Erreur : image graphique manquante"]
+
+link:hcvdivds_workspace_management.html["Suivant : gestion de l'espace de travail"]

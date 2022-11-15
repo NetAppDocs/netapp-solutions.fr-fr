@@ -1,0 +1,36 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/kafka-sc-performance-tests-with-produce-consume-workload-generator.html 
+keywords: data graphs, kafka throughput, s3 tiering traffic, aff a900, resource utilization 
+summary: 'Nous avons réalisé des tests de stockage sur plusieurs niveaux avec cinq ou huit nœuds de courtage lors d"une charge de travail exigeante en produits, avec une paire haute disponibilité AFF A900 sur un contrôleur de stockage NetApp. Selon nos tests, le temps d"exécution et les résultats en termes de performances ont été dimensionnés en conséquence, avec le nombre de nœuds courtiers, jusqu"à ce que l"utilisation des ressources AFF A900 atteigne cent pour cent. La configuration du contrôleur de stockage ONTAP nécessite au moins une paire haute disponibilité.' 
+---
+= Tests de performance avec le générateur de charges de travail produisant la consommation
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:kafka-sc-confluent-performance-validation.html["Précédent : validation des performances confluentes."]
+
+Nous avons réalisé des tests de stockage sur plusieurs niveaux avec cinq ou huit nœuds de courtage lors d'une charge de travail exigeante en produits, avec une paire haute disponibilité AFF A900 sur un contrôleur de stockage NetApp. Selon nos tests, le temps d'exécution et les résultats en termes de performances ont été dimensionnés en conséquence, avec le nombre de nœuds courtiers, jusqu'à ce que l'utilisation des ressources AFF A900 atteigne cent pour cent. La configuration du contrôleur de stockage ONTAP nécessite au moins une paire haute disponibilité.
+
+Les performances de l'opération de récupération S3 ont augmenté de façon linéaire en fonction du nombre de nœuds courtiers en confluent. Le contrôleur de stockage ONTAP prend en charge jusqu'à 12 paires HA dans un déploiement unique.
+
+Le graphique suivant montre le trafic de Tiering S3 combiné avec cinq ou huit nœuds de courtage. Nous avons optimisé les performances d'une seule paire haute disponibilité AFF A900.
+
+image:kafka-sc-image9.png["Ce graphique présente le trafic associé au Tiering S3 avec cinq ou huit nœuds de courtage."]
+
+Le graphique suivant montre le débit Kafka à environ 31,74 Gbit/s.
+
+image:kafka-sc-image10.png["Ce graphique montre le débit Kafka à environ 31,74 Gbit/s."]
+
+Nous avons également observé un débit similaire dans le contrôleur de stockage ONTAP `perfstat` rapport.
+
+....
+object_store_server:wle-mendocino-07-08:get_data:34080805907b/ s
+object_store_server:wle-mendocino-07-08:put_data:484236974b/ s
+....
+link:kafka-sc-performance-best-practice-guidelines.html["Ensuite : recommandations sur les bonnes pratiques en matière de performances."]

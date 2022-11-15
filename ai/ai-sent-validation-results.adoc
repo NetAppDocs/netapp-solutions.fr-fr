@@ -1,0 +1,53 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-sent-validation-results.html 
+keywords: validation, errors, metrics, score, recall, precision 
+summary: 'Comme mentionné dans la section précédente, les erreurs sont propagées dans l"ensemble du pipeline chaque fois qu"au moins deux modèles d"apprentissage machine sont exécutés dans l"ordre. Pour cette solution, le sentiment de la phrase est le facteur le plus important dans la mesure du niveau de risque stock de l’entreprise. Le modèle de parole à texte, bien qu"essentiel au pipeline, sert d"unité de prétraitement avant que les sentiments ne puissent être prédits.' 
+---
+= Résultats de la validation
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-sent-deploying-support-center-sentiment-analysis.html["Précédent : déploiement de l'analyse des sentiments du centre de support."]
+
+Comme mentionné dans la section précédente, les erreurs sont propagées dans l'ensemble du pipeline chaque fois qu'au moins deux modèles d'apprentissage machine sont exécutés dans l'ordre. Pour cette solution, le sentiment de la phrase est le facteur le plus important dans la mesure du niveau de risque stock de l’entreprise. Le modèle de parole à texte, bien qu'essentiel au pipeline, sert d'unité de prétraitement avant que les sentiments ne puissent être prédits. Ce qui compte vraiment, c'est la différence de sentiment entre les phrases de vérité au sol et les phrases prévues. Cela sert de proxy pour le taux d'erreur de mot (WER). La précision de la parole au texte est importante, mais le WER n'est pas directement utilisé dans la mesure finale du pipeline.
+
+....
+PIPELINE_SENTIMENT_METRIC = MEAN(DIFF(GT_sentiment, ASR_sentiment))
+....
+Ces mesures de sentiment peuvent être calculées pour le score F1, le rappel et la précision de chaque phrase. Les résultats peuvent ensuite être agrégés et affichés dans une matrice de confusion, ainsi que les intervalles de confiance pour chaque mesure.
+
+L'apprentissage par transfert améliore les performances des modèles pour une fraction des besoins de données, des délais d'entraînement et des coûts. Les modèles optimisés doivent également être comparés à leurs versions de base afin de garantir que l'apprentissage par transfert améliore les performances au lieu de l'associer. En d'autres termes, le modèle affinée doit optimiser les performances des données de centre de support par rapport au modèle pré-entraînés.
+
+
+
+== Évaluation du pipeline
+
+|===
+| Cas de test | Détails 
+
+
+| Numéro de test | Mesure du sentiment du pipeline 
+
+
+| Conditions préalables au test | Modèles optimisés pour les modèles d'analyse de la voix au texte et des sentiments 
+
+
+| Résultat attendu | La mesure de sentiment du modèle affinée est plus performante que le modèle pré-pré-pré-entraînés d'origine. 
+|===
+
+
+== Mesure du sentiment du pipeline
+
+. Calculez la mesure du sentiment pour le modèle de référence.
+. Calculez la mesure du sentiment pour le modèle affinée.
+. Calculez la différence entre ces mesures.
+. Faire la moyenne des différences entre toutes les phrases.
+
+
+link:ai-sent-videos-and-demos.html["Suivant : vidéos et démonstrations."]

@@ -1,0 +1,98 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/confluent-kafka-confluent-kafka-certification.html 
+keywords: certification, setup, configuration, benchmark 
+summary: Nous avons obtenu la certification avec Kafka pour le stockage hiérarchisé du stockage NetApp StorageGRID. 
+---
+= Vérification confluent
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:confluent-kafka-technology-overview.html["Précédent : présentation de la technologie."]
+
+Nous avons effectué une vérification avec le stockage hiérarchisé Confluent Platform 6.2 dans NetApp StorageGRID. Les équipes NetApp et confluent ont collaboré à cette vérification et ont exécuté les cas de test requis pour la vérification.
+
+
+
+== Configuration de la plate-forme Confluent
+
+Nous avons utilisé la configuration suivante pour la vérification.
+
+À des fins de vérification, nous avons utilisé trois zoopers, cinq courtiers, cinq serveurs d'exécution de scripts de test, des serveurs d'outils nommés avec 256 Go de RAM et 16 processeurs. Pour le stockage NetApp, nous avons utilisé StorageGRID avec un équilibreur de charge SG1000 et avec quatre SGF6024s. Le stockage et les courtiers étaient connectés via des connexions 100 GbE.
+
+La figure suivante montre la topologie réseau de la configuration utilisée pour la vérification de confluent.
+
+image:confluent-kafka-image7.png["Erreur : image graphique manquante"]
+
+Les serveurs d'outils agissent comme des clients d'application qui envoient des demandes aux nœuds de confluent.
+
+
+
+== Configuration du stockage multi-niveaux fluide
+
+La configuration de stockage à plusieurs niveaux nécessite les paramètres suivants dans Kafka :
+
+....
+Confluent.tier.archiver.num.threads=16
+confluent.tier.fetcher.num.threads=32
+confluent.tier.enable=true
+confluent.tier.feature=true
+confluent.tier.backend=S3
+confluent.tier.s3.bucket=kafkasgdbucket1-2
+confluent.tier.s3.region=us-west-2
+confluent.tier.s3.cred.file.path=/data/kafka/.ssh/credentials
+confluent.tier.s3.aws.endpoint.override=http://kafkasgd.rtpppe.netapp.com:10444/
+confluent.tier.s3.force.path.style.access=true
+....
+À des fins de vérification, nous avons utilisé StorageGRID avec le protocole HTTP, mais HTTPS fonctionne également. La clé d'accès et la clé secrète sont stockées dans le nom de fichier fourni dans le `confluent.tier.s3.cred.file.path` paramètre.
+
+
+
+== Stockage objet NetApp - StorageGRID
+
+Nous avons configuré la configuration du site unique dans StorageGRID pour la vérification.
+
+image:confluent-kafka-image8.png["Erreur : image graphique manquante"]
+
+
+
+== Tests de vérification
+
+Nous avons complété les cinq tests suivants pour la vérification. Ces tests sont exécutés sur le cadre de Trogdor. Les deux premiers étaient les tests de fonctionnalité et les trois autres étaient les tests de performance.
+
+
+
+=== Test d'exactitude du magasin d'objets
+
+Ce test détermine si toutes les opérations de base (par exemple GET/PUT/delete) de l'API du magasin d'objets fonctionnent bien selon les besoins du stockage hiérarchisé. C'est un test de base que chaque service de magasin d'objets devrait s'attendre à passer avant les tests suivants. C'est un test d'assurance qui réussit ou échoue.
+
+
+
+=== Test d'exactitude des fonctionnalités de hiérarchisation
+
+Ce test détermine si la fonctionnalité de stockage à plusieurs niveaux fonctionne correctement avec un test assertif qui réussit ou échoue. Le test crée un sujet de test qui est configuré par défaut avec le Tiering activé et une taille de groupe de signets très réduite. Il produit un flux d'événements vers le nouveau sujet de test créé, il attend que les courtiers archivent les segments dans le magasin d'objets, puis il utilise le flux d'événements et valide que le flux consommé correspond au flux produit. Le nombre de messages produits au flux d'événements est configurable, ce qui permet à l'utilisateur de générer une charge de travail suffisamment importante en fonction des besoins du test. La taille réduite du hot set garantit que les fetches du consommateur en dehors du segment actif ne sont servies qu'à partir du magasin d'objets ; cela permet de tester l'exactitude du magasin d'objets pour les lectures. Nous avons effectué ce test avec et sans injection de défaut dans le magasin d'objets. Nous avons simulé une panne des nœuds en arrêtant le service Service Manager dans l'un des nœuds de StorageGRID et en validant que la fonctionnalité de bout en bout fonctionne avec le stockage objet.
+
+
+
+=== Banc d'essai de récupération de Tier
+
+Ce test a validé les performances de lecture du stockage d'objets hiérarchisés et vérifié les demandes de lecture de plage en charge lourde à partir des segments générés par le banc d'essai. Dans ce banc d'essai, confluent a développé des clients personnalisés pour traiter les demandes d'extraction de niveau.
+
+
+
+=== Banc d'essai des charges de travail « production »
+
+Ce test a généré indirectement le workload d'écriture sur le magasin d'objets via l'archivage de segments. Le workload de lecture (segments lus) a été généré à partir du stockage objet lorsque les groupes de consommateurs ont extrait les segments. Ce workload a été généré par le script de test. Ce test a vérifié les performances de lecture et d'écriture sur le stockage objet dans les threads parallèles. Nous avons testé avec et sans injection de panne dans le magasin d'objets, comme nous l'avons fait pour le test d'exactitude de la fonctionnalité de Tiering.
+
+
+
+=== Banc d'essai des workloads de conservation
+
+Ce test a permis de vérifier les performances de suppression d'un magasin d'objets sous un workload de conservation des rubriques lourd. La charge de travail de rétention a été générée à l'aide d'un script de test qui produit de nombreux messages en parallèle à un sujet de test. La rubrique de test était configurée avec un paramètre de conservation basé sur la taille et le temps agressif qui a provoqué la purge continue du flux d'événements du magasin d'objets. Les segments ont ensuite été archivés. Cela a entraîné de nombreuses suppressions dans le stockage objet par le courtier et la collecte des performances des opérations de suppression du magasin d'objets.
+
+link:confluent-kafka-performance-tests-with-scalability.html["Next : tests de performances avec évolutivité."]

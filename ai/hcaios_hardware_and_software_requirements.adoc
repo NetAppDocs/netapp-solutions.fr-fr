@@ -1,0 +1,63 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_hardware_and_software_requirements.html 
+keywords: Hardware, Software, Requirements, NVIDIA, Kubernetes, cnvrg.io, ONTAP 
+summary:  
+---
+= Configuration matérielle et logicielle requise
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section présente les exigences technologiques de la solution ONTAP d'IA.
+
+
+
+== Configuration matérielle requise
+
+Bien que les exigences matérielles dépendent de workloads spécifiques, ONTAP ai peut être déployé à n'importe quelle échelle pour l'ingénierie des données, l'entraînement des modèles et l'inférence de production à partir d'un seul GPU jusqu'à des configurations en rack pour les opérations D'AM/AP à grande échelle. Pour en savoir plus sur ONTAP ai, rendez-vous sur le https://www.netapp.com/us/products/ontap-ai.aspx["Site Web ONTAP ai"^].
+
+Cette solution a été validée à l'aide d'un système DGX-1 pour les ressources de calcul, d'un système de stockage NetApp AFF A800 et de Cisco Nexus 3232C pour la connectivité réseau. L'outil AFF A800 utilisé dans cette validation peut prendre en charge jusqu'à 10 systèmes DGX-1 pour la plupart des workloads D'APPRENTISSAGE PROFOND/D'APPRENTISSAGE PROFOND. La figure suivante présente la topologie ONTAP ai utilisée pour l'entraînement des modèles dans cette validation.
+
+image:hcaios_image6.png["Erreur : image graphique manquante"]
+
+Pour étendre cette solution à un cloud public, Cloud Volumes ONTAP peut être déployé avec des ressources de calcul GPU cloud et intégré dans un environnement Data Fabric de cloud hybride qui permet aux clients d'utiliser les ressources appropriées pour chaque charge de travail.
+
+
+
+== Configuration logicielle requise
+
+Le tableau suivant indique les versions spécifiques utilisées pour la validation de cette solution.
+
+|===
+| Composant | Version 
+
+
+| Ubuntu | 18.04.4 LTS 
+
+
+| SYSTÈME D'EXPLOITATION NVIDIA DGX | 4.4.0 
+
+
+| NVIDIA DeepOps | 20.02.1 
+
+
+| Kubernetes | 1.15 
+
+
+| Gouvernail | 3.1.0 
+
+
+| cnvrg.io | 3.0.0 
+
+
+| NetApp ONTAP | 9.6P4 
+|===
+Pour la validation de cette solution, Kubernetes a été déployé en tant que cluster à un seul nœud sur le système DGX-1. Pour les déploiements à grande échelle, des nœuds maîtres Kubernetes indépendants doivent être déployés pour assurer la haute disponibilité des services de gestion et réserver des ressources DGX précieuses pour les workloads DE ML et de DL.
+
+link:hcaios_solution_deployment_and_validation_details.html["Ensuite : détails du déploiement et de la validation de la solution"]

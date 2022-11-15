@@ -1,0 +1,63 @@
+---
+sidebar: sidebar 
+permalink: ai/mlrun_introduction.html 
+keywords: NetApp, MLRun, Introduction, Audience, Solution 
+summary:  
+---
+= Tr-4834 : NetApp et Iguazio pour le pipeline MLRun
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Rick Huang, David Arnette, NetApp Marcelo Litovsky, Iguazio
+
+Ce document présente en détail le pipeline MLRun utilisant NetApp ONTAP ai, NetApp ai Control plane, le logiciel NetApp Cloud volumes et la plateforme data Science Iguazio. Nous utilisons la fonction sans serveur Nucio, Kubernetes persistent volumes, NetApp Cloud volumes, les copies NetApp Snapshot, le tableau de bord Grafana, Et d'autres services sur la plate-forme Iguazio pour créer un pipeline de données de bout en bout pour la simulation de la détection des défaillances réseau. Nous avons intégré les technologies Iguazio et NetApp afin de permettre un déploiement rapide des modèles, la réplication des données et la surveillance de la production, sur site comme dans le cloud.
+
+Le travail d'un data Scientist doit se concentrer sur l'entraînement et l'ajustement des modèles de machine learning (ML) et d'intelligence artificielle (IA). Toutefois, selon une étude Google, les data Scientists consacrent environ 80 % de leur temps à déterminer comment exploiter leurs modèles pour s'exécuter à grande échelle et dans des applications d'entreprise, comme l'illustre l'image suivante illustrant le développement de modèles dans le workflow d'IA/DE ML.
+
+image:mlrun_image1.png["Erreur : image graphique manquante"]
+
+Pour gérer des projets d'IA et DE ML de bout en bout, il faut avoir une vision plus large des composants de l'entreprise. Bien que le DevOps ait terminé la définition, l'intégration et le déploiement de ces types de composants, les opérations de machine learning ciblent un flux similaire qui inclut les projets d'IA/ML. Pour découvrir ce qu'un pipeline IA/ML de bout en bout touche dans l'entreprise, consultez la liste suivante de composants :
+
+* Stockage
+* Mise en réseau
+* Les bases de données
+* Systèmes de fichiers
+* Conteneurs
+* Intégration continue et pipeline de déploiement continu (ci/CD)
+* Environnement de développement intégré (IDE)
+* Sécurité
+* Règles d'accès aux données
+* Sous-jacent
+* Le cloud
+* Virtualisation
+* Bibliothèques et jeux d'outils de science des données
+
+
+Dans ce document, nous avons démontré que le partenariat entre NetApp et Iguazio simplifie considérablement le développement d'un pipeline IA/ML de bout en bout. Cette simplification accélère le time-to-market de toutes vos applications d'IA/ML.
+
+
+
+== Public visé
+
+L'univers de la science des données touche de nombreuses disciplines en informatique et en affaires.
+
+* Les data Scientists doivent donc pouvoir utiliser leurs outils et leurs bibliothèques de choix.
+* L'ingénieur doit savoir comment les données circulent et où elles résident.
+* Un ingénieur DevOps doit disposer des outils nécessaires pour intégrer les nouvelles applications d'IA et DE ML dans son pipeline ci/CD.
+* Les utilisateurs professionnels veulent avoir accès aux applications d'IA et DE ML. Nous décrivons comment NetApp et Iguazio aident chacun de ces rôles à apporter de la valeur ajoutée à nos plateformes.
+
+
+
+
+== Présentation de la solution
+
+Cette solution suit le cycle de vie d'une application d'IA/DE ML. Nous commençons par le travail des data Scientists pour définir les différentes étapes requises pour préparer les données, et entraîner et déployer les modèles. Nous travaillons avec les tâches nécessaires pour créer un pipeline complet, capable de suivre les artéfacts, de réaliser des tests et de déployer avec Kubeflow. Pour terminer le cycle complet, nous avons intégré le pipeline avec NetApp Cloud volumes pour faciliter le contrôle des versions des données, comme illustré dans l'image suivante.
+
+image:mlrun_image2.png["Erreur : image graphique manquante"]
+
+link:mlrun_technology_overview.html["Suivant : présentation de la technologie"]

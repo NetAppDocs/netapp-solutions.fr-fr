@@ -1,0 +1,111 @@
+= 
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+. Configurer les informations d'identification.
+. Créer des types d'informations d'identification. Pour les solutions impliquant ONTAP, vous devez configurer le type d'identifiants pour qu'il corresponde aux entrées de nom d'utilisateur et de mot de passe. Nous ajouterons également des entrées pour Cloud Central et AWS.
++
+.. Accédez à Administration → types d'informations d'identification, puis cliquez sur Ajouter.
+.. Indiquez le nom et la description.
+.. Collez le contenu suivant dans la configuration d'entrée :
++
+[source, cli]
+----
+fields:
+  - id: dst_cluster_username
+    type: string
+    label: CVO Username
+  - id: dst_cluster_password
+    type: string
+    label: CVO Password
+    secret: true
+  - id: cvo_svm_password
+    type: string
+    label: CVO SVM Password
+    secret: true
+  - id: src_cluster_username
+    type: string
+    label: Source Cluster Username
+  - id: src_cluster_password
+    type: string
+    label: Source Cluster Password
+    secret: true
+  - id: regular_id
+    type: string
+    label: Cloud Central ID
+    secret: true
+  - id: email_id
+    type: string
+    label: Cloud Manager Email
+    secret: true
+  - id: cm_password
+    type: string
+    label: Cloud Manager Password
+    secret: true
+  - id: access_key
+    type: string
+    label: AWS Access Key
+    secret: true
+  - id: secret_key
+    type: string
+    label: AWS Secret Key
+    secret: true
+  - id: token
+    type: string
+    label: Cloud Central Refresh Token
+    secret: true
+----
+.. Collez le contenu suivant dans Configuration d'injecteur et cliquez sur Enregistrer :
++
+[source, cli]
+----
+extra_vars:
+  dst_cluster_username: '{{ dst_cluster_username }}'
+  dst_cluster_password: '{{ dst_cluster_password }}'
+  cvo_svm_password: '{{ cvo_svm_password }}'
+  src_cluster_username: '{{ src_cluster_username }}'
+  src_cluster_password: '{{ src_cluster_password }}'
+  regular_id: '{{ regular_id }}'
+  email_id: '{{ email_id }}'
+  cm_password: '{{ cm_password }}'
+  access_key: '{{ access_key }}'
+  secret_key: '{{ secret_key }}'
+  token: '{{ token }}'
+----
+
+
+. Créez des justificatifs pour ONTAP/CVO/AWS
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les informations d'organisation des informations d'identification ONTAP
+.. Sélectionnez le type d'informations d'identification créé à l'étape précédente.
+.. Sous Type Details, entrez le nom d'utilisateur et le mot de passe de vos clusters source et CVO, Cloud Central/Manager, AWS Access/Secret Key et Cloud Central Refresh Token.
+.. Cliquez sur Save
+
+
+. Créer des informations d'identification pour Oracle (Source)
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation de l'hôte Oracle
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails du type, entrez le nom d'utilisateur et le mot de passe des hôtes Oracle.
+.. Sélectionnez la méthode d'escalade des privilèges appropriée et saisissez le nom d'utilisateur et le mot de passe.
+.. Cliquez sur Save
+
+
+. Créez des informations d'identification pour la destination Oracle
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation pour l'hôte Oracle de reprise sur incident
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails de type, entrez le nom d'utilisateur (utilisateur ec2 ou si vous l'avez modifié par défaut) et la clé privée SSH
+.. Sélectionnez la méthode d'escalade des privilèges correcte (sudo) et entrez le nom d'utilisateur et le mot de passe si nécessaire.
+.. Cliquez sur Save
+
+
+

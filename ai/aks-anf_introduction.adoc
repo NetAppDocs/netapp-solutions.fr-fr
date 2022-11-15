@@ -1,0 +1,62 @@
+---
+sidebar: sidebar 
+permalink: ai/aks-anf_introduction.html 
+keywords: introduction, tr-4904, 4904, tr4904, kubernetes, azure, anf, rapids, dask, ml, ai, machine learning, artificial intelligence, 
+summary: 'Cette solution suit le cycle de vie d"une application d"IA/DE ML. Nous commençons par le travail des data Scientists pour définir les différentes étapes requises pour préparer les données et entraîner les modèles. Grâce À RAPIDS on DASK, nous procédons à une formation distribuée dans le cluster Azure Kubernetes Service (AKS) afin de réduire considérablement le temps d"entraînement par rapport à l"approche conventionnelle Python scikit d"apprentissage. Pour terminer le cycle complet, nous intégrons le pipeline à Azure NetApp Files.' 
+---
+= Tr-4904 : formation distribuée dans Azure - prévision de taux par clic
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Rick Huang, Verron Martina, Muneer Ahmad, NetApp
+
+Le travail d'un data Scientist doit se concentrer sur l'entraînement et l'ajustement des modèles de machine learning (ML) et d'intelligence artificielle (IA). Toutefois, selon une étude menée par Google, les data Scientists consacrent environ 80 % de leur temps à comprendre comment exploiter leurs modèles pour les applications d'entreprise et leur fonctionnement à grande échelle.
+
+Pour gérer des projets d'IA et DE ML de bout en bout, il faut avoir une vision plus large des composants de l'entreprise. Bien que le DevOps ait pris en charge la définition, l'intégration et le déploiement, ces types de composants ciblent LES opérations DE ML un flux similaire qui inclut les projets d'IA/ML. Pour découvrir ce qu'un pipeline IA/ML de bout en bout touche dans l'entreprise, consultez la liste suivante de composants :
+
+* Stockage
+* Mise en réseau
+* Les bases de données
+* Systèmes de fichiers
+* Conteneurs
+* Intégration continue et pipeline de déploiement continu (ci/CD)
+* Environnement de développement intégré (IDE)
+* Sécurité
+* Règles d'accès aux données
+* Sous-jacent
+* Le cloud
+* Virtualisation
+* Bibliothèques et jeux d'outils de science des données
+
+
+
+
+== Public visé
+
+L'univers de la science des données touche plusieurs disciplines au NIVEAU DE L'INFORMATIQUE et des activités :
+
+* Les data Scientists doivent donc pouvoir utiliser leurs outils et leurs bibliothèques de choix.
+* L'ingénieur doit savoir comment les données circulent et où elles résident.
+* Un ingénieur DevOps doit disposer des outils nécessaires pour intégrer les nouvelles applications d'IA et DE ML dans son pipeline ci/CD.
+* Les administrateurs et architectes du cloud doivent pouvoir configurer et gérer les ressources Azure.
+* Les utilisateurs professionnels veulent avoir accès aux applications d'IA et DE ML.
+
+
+Dans ce rapport technique, nous décrirons comment Azure NetApp Files, RAPIDS IA, DASK et Azure aident chacun de ces rôles à générer de la valeur pour le business.
+
+
+
+== Présentation de la solution
+
+Cette solution suit le cycle de vie d'une application d'IA/DE ML. Nous commençons par le travail des data Scientists pour définir les différentes étapes requises pour préparer les données et entraîner les modèles. Grâce À RAPIDS on DASK, nous procédons à une formation distribuée dans le cluster Azure Kubernetes Service (AKS) afin de réduire considérablement le temps d'entraînement par rapport à l'approche conventionnelle Python scikit d'apprentissage. Pour terminer le cycle complet, nous intégrons le pipeline à Azure NetApp Files.
+
+Azure NetApp Files offre plusieurs tiers de performance. Les clients peuvent commencer avec un niveau standard, puis évoluer horizontalement et verticalement jusqu'à un niveau hautes performances sans interruption, sans déplacer aucune donnée. Ainsi, les data Scientists peuvent entraîner des modèles à grande échelle sans problèmes de performances, en évitant les silos de données sur le cluster, comme l'illustre la figure ci-dessous.
+
+image:aks-anf_image1.png["Erreur : image graphique manquante"]
+
+link:aks-anf_technology_overview.html["Suivant : présentation de la technologie."]

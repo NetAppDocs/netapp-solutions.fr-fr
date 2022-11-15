@@ -1,0 +1,59 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-sent-use-cases.html 
+keywords: assessment, call performance, pipeline, speech to text, target audience 
+summary: Avec la technologie de pointe actuelle, les outils de modélisation pré-entraînés publiés par NVIDIA, AWS, Google et autres, un pipeline de bout en bout avec des modèles complexes peut désormais être mis en place et personnalisé avec une facilité relative. 
+---
+= Cas d'utilisation
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-sent-support-center-analytics.html["Précédent : analytique du centre de support."]
+
+En raison du nombre d'appels traités par ces centres d'assistance, l'évaluation du rendement des appels peut prendre beaucoup de temps si elle est effectuée manuellement. Les méthodes traditionnelles, telles que le comptage des sacs de mots et d'autres méthodes, peuvent atteindre une certaine automatisation, mais ces méthodes ne prennent pas en compte les aspects plus nuancés et le contexte sémantique du langage dynamique. Les techniques de modélisation d'IA peuvent être utilisées pour effectuer certaines de ces analyses plus nuancées de manière automatisée. De plus, avec les outils de modélisation pré-entraînés et publiés par NVIDIA, AWS, Google et autres, un pipeline de bout en bout avec des modèles complexes peut maintenant être mis en place et personnalisé avec une facilité relative.
+
+Un pipeline de bout en bout pour l'analyse des sentiments des centres de support permet d'analyser les fichiers audio en temps réel lorsque les employés convertisse avec les appelants. Ensuite, ces fichiers audio sont traités pour être utilisés dans le composant parole-texte qui les convertit au format texte. Chaque phrase de la conversation reçoit un libellé indiquant le sentiment (positif, négatif ou neutre).
+
+L'analyse des sentiments peut fournir un aspect essentiel des conversations pour évaluer la performance des appels. Ces sentiments ajoutent une profondeur supplémentaire aux interactions entre les employés et les appelants. Le tableau de bord des sentiments assistés par l'IA fournit aux responsables un suivi en temps réel des sentiments au sein d'une conversation, ainsi qu'une analyse rétrospective des appels passés de l'employé.
+
+Des outils prédéfinis peuvent être combinés de façon puissante afin de créer rapidement un pipeline d'IA de bout en bout pour résoudre ce problème. Dans ce cas, la bibliothèque NVIDIA RIVA peut être utilisée pour effectuer les deux tâches en série : transcription audio et analyse de sentiment. Le premier est un algorithme de traitement du signal d'apprentissage supervisé et le second est un algorithme de classification NLP d'apprentissage supervisé. Ces algorithmes prêts à l'emploi peuvent être ajustés pour toute utilisation pertinente avec les données pertinentes de l'entreprise à l'aide du kit NVIDIA TAO. Cela entraîne la création de solutions plus précises et plus puissantes pour un coût et des ressources réduits. Les clients peuvent intégrer le https://developer.nvidia.com/maxine["NVIDIA Maxine"^] Infrastructure pour les applications de visioconférence avec accélération graphique dans leur conception de centre de support.
+
+Les utilisations suivantes sont au cœur de cette solution. Dans les deux cas, TAO Toolkit permet de régler avec précision les modèles et RIVA pour le déploiement de modèles.
+
+* Parole-à-texte
+* Analyse des sentiments
+
+
+Pour analyser les interactions entre les employés et les clients du centre de support, chaque conversation client sous forme d'appels audio peut être exécutée dans le pipeline pour extraire des sentiments de phrase. Ces sentiments peuvent ensuite être vérifiés par un humain pour justifier les sentiments ou les ajuster selon les besoins. Les données étiquetées sont ensuite transmises à l'étape de réglage fin pour améliorer les prédictions de sentiment. Si des données de sentiment étiquetées existent déjà, le réglage fin du modèle peut être accéléré. Dans les deux cas, le pipeline est généralisable à d'autres solutions qui exigent l'ingestion de l'audio et la classification des phrases.
+
+image:ai-sent-image1.png["Erreur : image graphique manquante"]
+
+Les résultats des sentiments d'IA sont soit téléchargés vers une base de données cloud externe, soit vers un système de stockage géré par l'entreprise. Les sorties de sentiment sont transférées de cette base de données plus grande vers le stockage local pour une utilisation dans le tableau de bord qui affiche l'analyse de sentiment pour les gestionnaires. La principale fonctionnalité du tableau de bord consiste à interagir avec l’employé du service client en temps réel. Les responsables peuvent évaluer et fournir des commentaires sur les employés lors de leurs appels avec des mises à jour en direct du sentiment de chaque phrase, ainsi qu'un examen historique des performances passées de l'employé ou des réactions des clients.
+
+image:ai-sent-image2.png["Erreur : image graphique manquante"]
+
+Le link:https://github.com/NetApp/netapp-dataops-toolkit/releases/tag/v2.0.0["Kit NetApp DataOps"^] Peut continuer à gérer les systèmes de stockage des données même après que le pipeline d'inférence RIVA génère des étiquettes de sentiments. Les résultats de cette IA peuvent être téléchargés vers un système de stockage des données géré par le kit NetApp DataOps. Les systèmes de stockage des données doivent être capables de gérer des centaines d'insertions et de sélectionner chaque minute. Le système de stockage de périphériques local interroge le stockage de données plus important en temps réel pour l'extraction. Le tableau de bord peut également être interrogé sur ses données historiques afin d'optimiser l'expérience qu'il fournit. Le kit NetApp DataOps facilite ces deux utilisations en clonant rapidement les données et en les distribuant dans tous les tableaux de bord.
+
+
+
+== Public visé
+
+La solution cible plusieurs groupes d'utilisateurs :
+
+* Responsables des employés
+* Ingénieurs/data Scientists
+* Administrateurs IT (sur site, dans le cloud ou hybride)
+
+
+Le suivi des sentiments tout au long des conversations est un outil précieux pour évaluer les performances des employés. Grâce au tableau de bord ai, les responsables peuvent voir comment les employés et les appelants changent leurs sentiments en temps réel, ce qui permet des évaluations en direct et des sessions de guidage. De plus, les entreprises peuvent bénéficier de précieux avis de la part de clients engagés dans des conversations vocales, des chatbots de texte et des visioconférences. Cette analytique client exploite les fonctionnalités de traitement multimodal à grande échelle avec des modèles et des workflows d'IA modernes et à la pointe de la technologie.
+
+En ce qui concerne les données, un grand nombre de fichiers audio sont traités quotidiennement par le centre d'assistance. Le kit NetApp DataOps facilite le traitement des données pour affiner régulièrement les modèles et les tableaux de bord d'analyse de sentiment.
+
+Les administrateurs INFORMATIQUES profitent également du kit NetApp DataOps car il leur permet de déplacer rapidement des données entre les environnements de déploiement et de production. Les environnements et les serveurs NVIDIA doivent également être gérés et distribués pour permettre l'inférence en temps réel.
+
+link:ai-sent-architecture.html["Ensuite : l'architecture."]

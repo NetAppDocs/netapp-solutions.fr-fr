@@ -1,0 +1,57 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/confluent-kafka-introduction.html 
+keywords: tr-4912, tr4912, 4912, introduction, best practices, Kafka, confluent 
+summary: 'Ce document décrit les bonnes pratiques relatives à l"utilisation de Kafka sur un contrôleur de stockage NetApp.' 
+---
+= Tr-4912 : recommandations sur les meilleures pratiques pour le stockage hiérarchisé Kafka fluide avec NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Karthikeyan Nagalingam, Joseph Kandatilparambil, NetApp Rankesh Kumar, confluent
+
+Apache Kafka est une plateforme de streaming aux événements distribuée par la communauté qui prend en charge des milliards d'événements par jour. Initialement conçu comme une file d'attente de messagerie, Kafka repose sur l'abstraction d'un journal de validation distribué. Depuis sa création et l'open source par LinkedIn en 2011, Kafka a évolué depuis la file d'attente des messages vers une plateforme complète de streaming d'événements. Confluent assure la distribution d'Apache Kafka avec la plateforme confluent. La plateforme Confluent complète Kafka avec des fonctions communautaires et commerciales supplémentaires conçues pour améliorer l'expérience de streaming tant des opérateurs que des développeurs en production à grande échelle.
+
+Ce document présente les meilleures pratiques pour l'utilisation du stockage hiérarchisé de niveau confluent sur une offre de stockage objet NetApp en fournissant le contenu suivant :
+
+* Vérification couramment assurée avec le stockage objet NetApp : NetApp StorageGRID
+* Tests des performances du stockage à plusieurs niveaux
+* Instructions sur les meilleures pratiques pour parler couramment les systèmes de stockage NetApp
+
+
+
+
+== Pourquoi le stockage à plusieurs niveaux confluent ?
+
+Confluent est devenu la plateforme de streaming en temps réel par défaut pour de nombreuses applications, en particulier pour le Big Data, l'analytique et les charges de travail de streaming. Le stockage à plusieurs niveaux permet aux utilisateurs de séparer les ressources de calcul du stockage dans la plateforme confluent. Cette solution rend le stockage des données plus économique, vous permet de stocker des volumes presque infinis de données et de faire évoluer les charges de travail à la demande (ou en réduisant). Elle simplifie également les tâches administratives telles que le rééquilibrage des données et des locataires. Les systèmes de stockage compatibles S3 peuvent tirer parti de toutes ces capacités pour démocratiser les données avec tous les événements. L'ingénierie des données est ainsi inutile. Pour plus d'informations sur la raison pour laquelle vous devez utiliser le stockage à plusieurs niveaux pour Kafka, vérifiez link:https://docs.confluent.io/platform/current/kafka/tiered-storage.html#netapp-object-storage["Cet article par confluent"^].
+
+
+
+== Pourquoi choisir NetApp StorageGRID pour le stockage hiérarchisé ?
+
+StorageGRID est une plateforme de stockage objet leader du marché, StorageGRID est une solution de stockage objet Software-defined qui prend en charge les API objet standard telles qu'Amazon simple Storage Service (S3). StorageGRID stocke et gère des volumes massifs de données non structurées pour un stockage objet sécurisé et durable. Vous placez vos contenus au bon endroit, au bon moment, dans le Tier de stockage adéquat, afin d'optimiser les workflows et de réduire les coûts du contenu enrichi distribué à l'échelle mondiale.
+
+Le plus grand atout concurrentiel de StorageGRID est son moteur de règles de gestion du cycle de vie de l'information (ILM) qui permet une gestion du cycle de vie des données pilotée par les règles (policy). Le moteur de règles peut utiliser les métadonnées pour gérer la façon dont les données sont stockées tout au long de leur durée de vie. Il optimise alors la performance et optimise automatiquement les coûts et la durabilité à mesure que les données vieillissent.
+
+
+
+== Activation du stockage à plusieurs niveaux confluent
+
+L'idée de base d'un stockage hiérarchisé est de séparer les tâches du stockage des données du traitement des données. Cette séparation facilite l'évolutivité indépendante du niveau de stockage et du Tier de traitement des données.
+
+Une solution de stockage à plusieurs niveaux pour confluent doit contenir deux facteurs. Tout d'abord, ils doivent contourner ou éviter les propriétés communes de disponibilité et de cohérence du magasin d'objets, comme les incohérences dans les opérations DE LISTE et l'indisponibilité occasionnelle d'objets. Deuxièmement, il doit traiter correctement l'interaction entre le stockage à plusieurs niveaux et le modèle de réplication et de tolérance aux pannes de Kafka, y compris la possibilité pour les dirigeants zombies de continuer à classer les plages de décalage. Le stockage objet NetApp fournit à la fois une disponibilité cohérente des objets et des modèles de haute disponibilité qui rendent le stockage fatigué disponible dans les plages de décalage de Tier. Le stockage objet NetApp procure une disponibilité cohérente des objets et un modèle de haute disponibilité pour que le stockage en fatigue soit disponible dans les plages de décalage de Tier.
+
+Le stockage à plusieurs niveaux vous permet d'utiliser des plateformes haute performance pour les lectures et les écritures à faible latence à proximité de l'arrière de vos données de streaming. Vous pouvez également utiliser des magasins d'objets plus économiques et évolutifs comme NetApp StorageGRID pour les lectures historiques à haut débit. Nous disposons également d'une solution technique pour Spark avec le contrôleur de stockage netapp et découvrez comment dans ce document les détails. La figure suivante montre comment Kafka s'intègre dans un pipeline analytique en temps réel.
+
+image:confluent-kafka-image2.png["Erreur : image graphique manquante"]
+
+La figure suivante décrit le positionnement de NetApp StorageGRID comme le Tier de stockage objet couramment utilisé par Kafka.
+
+image:confluent-kafka-image3.png["Erreur : image graphique manquante"]
+
+link:confluent-kafka-solution.html["Ensuite : détails de l'architecture de la solution."]

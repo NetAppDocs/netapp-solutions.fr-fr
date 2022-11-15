@@ -1,0 +1,73 @@
+---
+sidebar: sidebar 
+permalink: automation/authentication_tokens.html 
+summary: 'Cette page fournit des informations détaillées pour la collecte des jetons d"actualisation requis et des clés d"accès/secrètes pour les déploiements CVO et Cloud Manager Connector via NetApp Cloud Manager.' 
+keywords: netapp, solutions, automation, ansible 
+---
+= Automatisation des solutions NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+
+
+== Conditions requises pour l'authentification AWS pour CVO et le connecteur à l'aide de NetApp Cloud Manager
+
+Pour configurer les déploiements automatisés de Cloud volumes ONTAP et de connecteurs à l'aide de playbooks Ansible via AWX/Ansible Tower, les informations suivantes sont nécessaires :
+
+
+
+=== Acquisition des clés d'accès/secrètes d'AWS
+
+. Pour déployer CVO et le connecteur dans Cloud Manager, nous avons besoin d'AWS Access/Secret Key. Vous pouvez obtenir les clés de la console AWS en lançant IAM--- vos utilisateurs- vos identifiants de sécurité---> Créer une clé d'accès.
+. Copiez les clés d'accès et assurez-les qu'elles soient sécurisées pour qu'elles puissent être utilisées dans le déploiement de Connector et CVO.
+
+
+
+NOTE: Si vous perdez votre clé, vous pouvez créer une autre clé d'accès et supprimer celle que vous avez perdue
+
+image::access_keys.png[Actualiser le token]
+
+
+
+=== Acquisition d'un token d'actualisation sur NetApp Cloud Central
+
+. Connectez-vous à votre compte Cloud Central à l'aide de vos identifiants de compte à l'adresse https://services.cloud.netapp.com/refresh-token[]
+. Générez un token d'actualisation et enregistrez-le pour les déploiements.
+
+
+image::token_authentication.png[Actualiser le token]
+
+
+
+=== Acquisition de l'ID client
+
+. Accédez à la page API pour copier l'ID client sur https://services.cloud.netapp.com/developer-hub[].
+. Cliquez sur « Apprenez comment s'authentifier », dans le coin supérieur droit.
+. Dans la fenêtre authentification qui s'affiche, copiez l'ID du client depuis l'accès normal si vous avez besoin d'un nom d'utilisateur/mot de passe pour vous connecter. Les utilisateurs fédérés avec SSO doivent copier l'ID client à partir de l'onglet « Actualiser token ».
+
+
+image::client_id.JPG[ID client]
+
+
+
+=== Acquisition de Key pair auprès d'AWS
+
+. Dans la console AWS, recherchez « paire de clés » et créez une paire de clés avec « pem ». Souvenez-vous du nom de vous key_pair, nous l'utiliserons pour déployer le connecteur.
+
+
+image::key_pair.png[Paire de touches]
+
+
+
+=== Acquisition de l'ID de compte
+
+. Dans Cloud Manager, cliquez sur compte –> gérer les comptes, puis copiez l'ID de compte à utiliser dans les variables pour AWX.
+
+
+image::account_id.JPG[ID client]

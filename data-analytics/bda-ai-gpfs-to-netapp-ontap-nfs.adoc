@@ -1,0 +1,90 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/bda-ai-gpfs-to-netapp-ontap-nfs.html 
+keywords: GPFS, nfs, nsd, admin node, quorum node, manager node, nsd server, protocol node 
+summary: 'Dans cette validation, nous avons utilisé quatre serveurs comme serveurs NSD (Network Shared Disk) pour fournir des disques physiques pour GPFS. GPFS est créé sur les disques NSD pour les exporter comme des exportations NFS, de sorte que les clients NFS puissent y accéder, comme illustré dans la figure ci-dessous. Nous avons utilisé XCP pour copier les données de GPFS- exportés NFS vers un volume NFS NetApp.' 
+---
+= GPFS jusqu'au NFS NetApp ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:bda-ai-data-mover-solution-for-ai.html["Précédent : solution de transfert de données pour l'IA."]
+
+Dans cette validation, nous avons utilisé quatre serveurs comme serveurs NSD (Network Shared Disk) pour fournir des disques physiques pour GPFS. GPFS est créé sur les disques NSD pour les exporter comme des exportations NFS, de sorte que les clients NFS puissent y accéder, comme illustré dans la figure ci-dessous. Nous avons utilisé XCP pour copier les données de GPFS- exportés NFS vers un volume NFS NetApp.
+
+image:bda-ai-image5.png["Erreur : image graphique manquante"]
+
+
+
+== Les fondamentaux de GPFS
+
+Les types de nœud suivants sont utilisés dans GPFS :
+
+* *Admin node.* Spécifie un champ facultatif contenant un nom de noeud utilisé par les commandes d'administration pour communiquer entre les noeuds. Par exemple, le nœud admin `mastr-51.netapp.com` impossible de transmettre une vérification réseau à tous les autres nœuds du cluster.
+* *Noeud quorum.* détermine si un noeud est inclus dans le pool de noeuds dont le quorum est dérivé. Vous avez besoin d'au moins un nœud comme nœud quorum.
+* *Nœud gestionnaire.* indique si un nœud fait partie du pool de nœuds à partir duquel les gestionnaires de système de fichiers et les gestionnaires de jetons peuvent être sélectionnés. Il est recommandé de définir plusieurs nœuds en tant que nœud gestionnaire. Le nombre de nœuds que vous désignez en tant que Manager dépend de la charge de travail et du nombre de licences de serveur GPFS dont vous disposez. Si vous exécutez des tâches parallèles volumineuses, vous aurez peut-être besoin de plus de nœuds de gestion que dans un cluster à quatre nœuds prenant en charge une application Web.
+* *NSD Server.* le serveur qui prépare chaque disque physique à utiliser avec GPFS.
+* *Protocol node.* le nœud qui partage les données GPFS directement via n'importe quel protocole Secure Shell (SSH) avec NFS. Ce nœud requiert une licence de serveur GPFS.
+
+
+
+
+== Liste des opérations pour GPFS, NFS et XCP
+
+Cette section fournit la liste des opérations qui créent GPFS, exportent GPFS comme une exportation NFS et transfèrent les données à l'aide de XCP.
+
+
+
+=== Créer GPFS
+
+Pour créer GPFS, procédez comme suit :
+
+. Téléchargez et installez l'accès aux données à l'échelle du spectre pour la version Linux sur l'un des serveurs.
+. Installez le package prérequis (Chef par exemple) sur tous les nœuds et désactivez Security-Enhanced Linux (SELinux) sur tous les nœuds.
+. Configurez le nœud d'installation et ajoutez le nœud admin et le nœud GPFS au fichier de définition de cluster.
+. Ajoutez le nœud gestionnaire, le nœud quorum, les serveurs NSD et le nœud GPFS.
+. Ajoutez l'interface graphique, les nœuds d'administration et GPFS, et ajoutez un serveur d'interface graphique supplémentaire si nécessaire.
+. Ajoutez un autre nœud GPFS et vérifiez la liste de tous les nœuds.
+. Spécifiez un nom de cluster, un profil, un binaire de shell distant, un binaire de copie de fichier distant et une plage de ports à définir sur tous les nœuds GPFS du fichier de définition de cluster.
+. Affichez les paramètres de configuration de GPFS et ajoutez un nœud d'administration supplémentaire.
+. Désactivez la collecte de données et téléchargez le paquet de données sur le centre de support IBM.
+. Activez le protocole NTP et vérifiez les configurations avant l'installation.
+. Configurez, créez et vérifiez les disques NSD.
+. Créez le GPFS.
+. Montez le GPFS.
+. Vérifiez et fournissez les autorisations requises pour le GPFS.
+. Vérifiez que GPFS est en lecture et en écriture en exécutant le `dd` commande.
+
+
+
+
+=== Exporter GPFS dans NFS
+
+Pour exporter le GPFS dans NFS, procédez comme suit :
+
+. Exportez GPFS en tant que NFS `/etc/exports` fichier.
+. Installez les modules de serveur NFS requis.
+. Démarrer le service NFS.
+. Répertoriez les fichiers dans GPFS pour valider le client NFS.
+
+
+
+
+=== Configurez le client NFS
+
+Pour configurer le client NFS, procédez comme suit :
+
+. Exportez le GPFS en tant que NFS via le `/etc/exports` fichier.
+. Démarrez les services client NFS.
+. Montez le GPFS via le protocole NFS sur le client NFS.
+. Validez la liste des fichiers GPFS dans le dossier monté NFS.
+. Déplacer les données de GPFS exportés NFS vers NetApp NFS à l'aide de XCP.
+. Valider les fichiers GPFS sur le client NFS.
+
+
+link:bda-ai-hdfs-and-mapr-fs-to-ontap-nfs.html["Next : HDFS et MapR-FS sur ONTAP NFS."]

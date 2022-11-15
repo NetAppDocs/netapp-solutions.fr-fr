@@ -1,0 +1,36 @@
+= 
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Planification du manuel de réplication des journaux
+
+*Configurer et lancer le modèle de travail.*
+
+. Copier le modèle de travail créé précédemment.
++
+.. Accédez à Ressources → modèles.
+.. Recherchez le modèle d'installation ONTAP/CVO et, à l'extrême droite, cliquez sur Copy Template
+.. Cliquez sur Modifier le modèle dans le modèle copié et modifiez le nom en Manuel de réplication des journaux.
+.. Conserver les mêmes inventaires, projets, identifiants pour le modèle.
+.. Sélectionnez ora_Replication_logs.yml comme PlayBook à exécuter.
+.. Les variables resteront les mêmes, mais l'IP du cluster CVO devra être définie dans la variable dst_cluster_ip.
+.. Cliquez sur Enregistrer.
+
+
+. Planifier le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle de manuel de réplication des journaux, puis sur programmes dans le jeu d'options supérieur.
+.. Cliquez sur Ajouter, Ajouter un planning de noms pour la réplication de journaux, choisissez la date/l'heure de début au début de l'heure, choisissez votre fuseau horaire local et la fréquence d'exécution. La fréquence d'exécution sera souvent mise à jour de la réplication SnapMirror.
+
+
++
+
+NOTE: Il est recommandé de définir le programme du journal à mettre à jour toutes les heures pour garantir la récupération de la dernière mise à jour horaire.
+
+

@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: containers/anthos-with-netapp/a-w-n_netapp_element.html 
+keywords: NetApp, Element, Solidfire, iSCSI 
+summary: 'Le logiciel NetApp Element offre des performances modulaires et évolutives, avec chaque nœud de stockage, qui garantissent la capacité et le débit à l"environnement. Les systèmes NetApp Element peuvent évoluer de 4 à 100 nœuds dans un seul cluster et offrir de nombreuses fonctionnalités avancées de gestion du stockage.' 
+---
+= NetApp Element
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+Le logiciel NetApp Element offre des performances modulaires et évolutives, avec chaque nœud de stockage, qui garantissent la capacité et le débit à l'environnement. Les systèmes NetApp Element peuvent évoluer de 4 à 100 nœuds dans un seul cluster et offrir de nombreuses fonctionnalités avancées de gestion du stockage.
+
+image:a-w-n_element.jpg["Erreur : image graphique manquante"]
+
+Pour plus d'informations sur les systèmes de stockage NetApp Element, consultez la https://www.netapp.com/data-storage/solidfire/["Site Web NetApp SolidFire"^].
+
+
+
+== Fonctionnalités de redirection de connexion iSCSI et d'auto-rétablissement
+
+Le logiciel NetApp Element s'appuie sur le protocole de stockage iSCSI, une méthode standard pour encapsuler les commandes SCSI sur un réseau TCP/IP traditionnel. Lorsque les normes SCSI changent ou que les performances des réseaux Ethernet s'améliorent, le protocole de stockage iSCSI est avantageux sans qu'il soit nécessaire de procéder à des modifications.
+
+Bien que tous les nœuds de stockage aient une adresse IP de gestion et une adresse IP de stockage, le logiciel NetApp Element annonce une adresse IP virtuelle de stockage unique (adresse SVIP) pour l'ensemble du trafic de stockage du cluster. Dans le cadre du processus de connexion iSCSI, le stockage peut répondre que le volume cible a été déplacé vers une autre adresse et qu'il ne peut donc pas poursuivre le processus de négociation. L'hôte réémet alors la demande de connexion vers la nouvelle adresse dans un processus qui ne nécessite aucune reconfiguration côté hôte. Ce processus est connu sous le nom de redirection de connexion iSCSI.
+
+La redirection de connexion iSCSI est un élément clé du cluster logiciel NetApp Element. En cas de réception d'une requête de connexion d'hôte, le nœud décide quel membre du cluster doit gérer le trafic en fonction des IOPS et des exigences de capacité du volume. Les volumes sont répartis sur le cluster logiciel NetApp Element et sont redistribués si un seul nœud traite un trop grand trafic pour ses volumes ou si un nouveau nœud est ajouté. Plusieurs copies d'un volume donné sont allouées à travers la baie.
+
+Ainsi, si une défaillance de nœud est suivie d'une redistribution du volume, la connectivité hôte n'a aucun effet au-delà d'une déconnexion et d'une connexion avec redirection vers le nouvel emplacement. Avec la redirection de connexion iSCSI, un cluster logiciel NetApp Element est une architecture scale-out autoréparatrice qui permet des mises à niveau et des opérations sans interruption.
+
+
+
+== Qualité de service du cluster logiciel NetApp Element
+
+Un cluster logiciel NetApp Element permet la configuration dynamique de la QoS par volume. Vous pouvez utiliser les paramètres QoS par volume pour contrôler les performances du stockage en fonction des SLA que vous définissez. Les trois paramètres configurables suivants définissent la QoS :
+
+* *IOPS minimum.* nombre minimum d'IOPS soutenues que le cluster logiciel NetApp Element fournit à un volume. La valeur d'IOPS minimale configurée pour un volume correspond au niveau garanti de performance d'un volume. La performance par volume ne descend pas en dessous de ce niveau.
+* *Nombre maximal d'IOPS.* nombre maximal d'IOPS soutenu que le cluster logiciel NetApp Element fournit à un volume donné.
+* *IOPS en rafale.* le nombre maximal d'IOPS autorisé dans un scénario en rafale courte. Le paramètre de durée de rafale est configurable, avec une valeur par défaut de 1 minute. Si un volume a été exécuté en dessous du niveau d'IOPS maximal, les crédits de bursting sont accumulés. Lorsque les niveaux de performance deviennent très élevés et sont poussés, les pics d'IOPS en dehors des IOPS maximales sont autorisés sur le volume.
+
+
+
+
+== Colocation
+
+La colocation sécurisée offre les fonctionnalités suivantes :
+
+* *Authentification sécurisée.* le protocole CHAP (Challenge-Handshake Authentication Protocol) est utilisé pour sécuriser l'accès au volume. Le protocole LDAP (Lightweight Directory Access Protocol) est utilisé pour sécuriser l'accès au cluster à des fins de gestion et de reporting.
+* *Groupes d'accès de volume (VAGs).* si vous le souhaitez, les VAGs peuvent être utilisés à la place de l'authentification, mappant n'importe quel nombre de noms iSCSI qualifiés (IQN) spécifiques à un initiateur iSCSI à un ou plusieurs volumes. Pour accéder à un volume dans un VAG, l’IQN de l’initiateur doit figurer dans la liste IQN autorisé pour le groupe de volumes.
+* *Réseaux locaux virtuels (VLAN) locataires.* au niveau du réseau, la sécurité réseau de bout en bout entre les initiateurs iSCSI et le cluster logiciel NetApp Element est facilitée par l'utilisation de VLAN. Pour tout VLAN créé pour isoler une charge de travail ou un locataire, le logiciel NetApp Element crée une adresse SVIP cible iSCSI distincte accessible uniquement via le VLAN spécifique.
+* *VLAN activés par VRF* pour prendre en charge encore plus la sécurité et l'évolutivité dans le data Center, le logiciel NetApp Element vous permet d'activer n'importe quel VLAN locataire pour les fonctionnalités de type VRF. Cette fonctionnalité offre deux fonctionnalités clés :
++
+** *Routage L3 vers une adresse SVIP locataire.* cette fonctionnalité vous permet de situer les initiateurs iSCSI sur un réseau ou VLAN séparé de celui du cluster logiciel NetApp Element.
+** *Sous-réseaux IP redondants ou dupliqués.* cette fonctionnalité vous permet d'ajouter un modèle aux environnements de tenant, permettant à chaque VLAN locataire respectif d'être affectés à des adresses IP à partir du même sous-réseau IP. Cette fonctionnalité peut être utile pour les environnements de fournisseurs de services où l'évolutivité et la préservation de l'IPspace sont importantes.
+
+
+
+
+
+
+== Fonctionnalités d'efficacité du stockage
+
+Le cluster logiciel NetApp Element améliore les performances et l'efficacité de stockage globales. Les fonctionnalités suivantes sont effectuées en ligne, sont toujours disponibles et ne nécessitent aucune configuration manuelle de la part de l'utilisateur :
+
+* *Déduplication.* le système stocke uniquement des blocs 4K uniques. Tous les blocs de 4 Ko dupliqués sont automatiquement associés à une version déjà stockée des données. Les données se trouvent sur des disques de niveau bloc et sont mises en miroir à l'aide du logiciel NetApp Element, protection des données Helix. Ce système réduit considérablement la consommation de capacité et les opérations d'écriture dans le système.
+* *Compression.* la compression est effectuée en ligne avant que les données ne soient écrites dans la NVRAM. Les données sont compressées, stockées sous forme de blocs de 4 Ko, et restent compressées dans le système. Cette compression réduit considérablement la consommation de capacité, les opérations d'écriture et la consommation de bande passante dans le cluster.
+* *Provisionnement fin.* cette fonctionnalité fournit la quantité de stockage appropriée au moment où vous en avez besoin, ce qui élimine la consommation de capacité provoquée par des volumes surprovisionnés ou sous-exploités.
+* *Helix.* les métadonnées d'un volume individuel sont stockées sur un lecteur de métadonnées et sont répliquées sur un lecteur de métadonnées secondaire pour assurer la redondance.
+
+
+
+NOTE: Element a été conçu pour l'automatisation. Toutes les fonctionnalités de stockage sont disponibles par le biais d'API. Ces API sont la seule méthode que l'interface utilisateur utilise pour contrôler le système.
+
+link:a-w-n_overview_storint.html["Ensuite, présentation des intégrations de stockage NetApp."]

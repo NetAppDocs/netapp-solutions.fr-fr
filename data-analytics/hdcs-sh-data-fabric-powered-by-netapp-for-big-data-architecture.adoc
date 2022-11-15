@@ -1,0 +1,89 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/hdcs-sh-data-fabric-powered-by-netapp-for-big-data-architecture.html 
+keywords: architecture, data fabric, use cases, nfs, big data 
+summary: 'La Data Fabric optimisée par NetApp simplifie et intègre la gestion des données entre les environnements cloud et sur site afin d"accélérer la transformation digitale. La Data Fabric optimisée par NetApp offre des services et des applications de gestion des données intégrés et cohérents (éléments de base) pour la visibilité, l"exploitation, l"accès, le contrôle ainsi que la protection et la sécurité des données.' 
+---
+= Data Fabric optimisée par NetApp pour l'architecture Big Data
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:hdcs-sh-solution-overview.html["Précédent : présentation de la solution."]
+
+La Data Fabric optimisée par NetApp simplifie et intègre la gestion des données entre les environnements cloud et sur site afin d'accélérer la transformation digitale.
+
+La Data Fabric optimisée par NetApp offre des services et des applications de gestion des données intégrés et cohérents (éléments de base) pour la visibilité, l'exploitation, l'accès, le contrôle ainsi que la protection et la sécurité des données, comme l'illustre la figure ci-dessous.
+
+image:hdcs-sh-image1.png["Erreur : image graphique manquante"]
+
+
+
+== Cas d'utilisation prouvés pour Data Fabric
+
+La Data Fabric optimisée par NetApp offre les neuf cas d'utilisation suivants :
+
+* Accélérez les workloads d'analytique
+* Accélérez la transformation DevOps
+* Créer une infrastructure d'hébergement cloud
+* Intégrez des services de données cloud
+* Protégez et sécurisez les données
+* Optimiser les données non structurées
+* Améliorez l'efficacité du data Center
+* Exploitez et contrôlez vos données
+* Simplifier et automatiser
+
+
+Ce document couvre deux des neuf cas d'utilisation (ainsi que leurs solutions) :
+
+* Accélérez les workloads d'analytique
+* Protégez et sécurisez les données
+
+
+
+
+=== Accès direct NetApp NFS
+
+L'accès direct NetApp NFS (précédemment appelé NetApp in-place Analytics module) (illustré dans la figure ci-dessous) permet aux clients d'exécuter des tâches d'analytique Big Data sur leurs données NFSv3 ou nouveau, ou NFSv4, sans déplacer ou copier les données. Elle empêche plusieurs copies de données et n'a plus besoin de synchroniser les données avec une source. Par exemple, dans le secteur financier, le transfert des données d'un endroit à un autre doit respecter les obligations légales, ce qui n'est pas une tâche facile. Dans ce scénario, l'accès direct NetApp NFS analyse les données financières à partir de leur emplacement d'origine. L'autre avantage clé est que l'accès direct NetApp NFS simplifie la protection des données Hadoop grâce aux commandes Hadoop natives et permet d'activer des workflows de protection des données à partir de la gamme riche de solutions NetApp de gestion des données.
+
+image:hdcs-sh-image2.png["Erreur : image graphique manquante"]
+
+L'accès direct NetApp NFS propose deux types d'options de déploiement pour les clusters Hadoop/Spark :
+
+* Par défaut, les clusters Hadoop/Spark utilisent le système Hadoop Distributed File System (HDFS) pour le stockage des données et le système de fichiers par défaut. L'accès direct NetApp NFS peut remplacer le système HDFS par défaut par un stockage NFS comme système de fichiers par défaut, permettant ainsi des opérations d'analytique directe sur les données NFS.
+* Dans une autre option de déploiement, l'accès direct NetApp NFS prend en charge la configuration de NFS en tant que stockage supplémentaire avec HDFS dans un seul cluster Hadoop/Spark. Dans ce cas, le client peut partager des données via les exports NFS et y accéder depuis le même cluster, ainsi que des données HDFS.
+
+
+Voici les principaux avantages de l'accès direct NetApp NFS :
+
+* Analyse les données de leur emplacement actuel, ce qui empêche la tâche fastidieuse de transférer des données analytiques vers une infrastructure Hadoop telle que HDFS.
+* Réduit le nombre de répliques de trois à un.
+* Permet aux utilisateurs de découpler les ressources de calcul et de stockage.
+* Protège les données grâce aux fonctionnalités avancées de gestion d'ONTAP.
+* Est certifiée avec la plateforme de données Hortonworks.
+* Déploiements dans l'analytique hybride
+* Réduit le temps de sauvegarde grâce à la fonctionnalité multithread dynamique.
+
+
+
+
+=== Les éléments de base du Big Data
+
+La Data Fabric optimisée par NetApp intègre des services et des applications de gestion des données (éléments de base) pour l'accès, le contrôle, la protection et la sécurité des données, comme l'illustre la figure ci-dessous.
+
+image:hdcs-sh-image3.png["Erreur : image graphique manquante"]
+
+Les éléments de base de la figure ci-dessus sont les suivants :
+
+* *NetApp NFS Direct Access.* fournit les derniers clusters Hadoop et Spark avec un accès direct aux volumes NFS NetApp sans configuration logicielle ni pilote supplémentaire.
+* *NetApp Cloud Volumes ONTAP et Cloud volumes Services.* stockage Software-defined basé sur ONTAP s'exécutant dans Amazon Web Services (AWS) ou Azure NetApp Files (ANF) dans les services cloud Microsoft Azure.
+* *Technologie NetApp SnapMirror*. Fournit des fonctionnalités de protection des données entre les instances sur site et ONTAP Cloud ou NPS.
+* *Fournisseurs de services cloud.* ces fournisseurs incluent AWS, Microsoft Azure, Google Cloud et IBM Cloud.
+* *PaaS.* services d'analytique cloud tels qu'Amazon Elastic MapReduce (EMR) et Databricks dans AWS, ainsi que Microsoft Azure HDInsight et Azure Databricks.
+
+
+link:hdcs-sh-hadoop-data-protection-and-netapp.html["Ensuite, la protection des données Hadoop et NetApp."]

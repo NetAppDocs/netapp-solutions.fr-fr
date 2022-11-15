@@ -1,0 +1,56 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_multitenancy_configuration.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, Multitenancy, Multi-tenancy 
+summary: 'Configuration d"une colocation sur Red Hat OpenShift avec NetApp' 
+---
+= Configuration
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+N'importe quelle solution mutualisée permet à aucun utilisateur d'accéder à davantage de ressources du cluster que nécessaire. Ainsi, l'ensemble des ressources à configurer dans le cadre de la configuration de colocation est divisé entre l'administrateur cluster, l'administrateur stockage et les développeurs travaillant sur chaque projet.
+
+Le tableau suivant présente les différentes tâches à effectuer par différents utilisateurs :
+
+|===
+| Rôle | Tâches 
+
+
+.4+| *Cluster-admin* | Créez des projets pour différentes applications ou charges de travail 
+
+
+| Créez ClusterRoles et roles pour Storage-admin 
+
+
+| Créez des rôles et des roleliaisons pour les développeurs qui assignaient un accès à des projets spécifiques 
+
+
+| [Facultatif] configurez les projets pour planifier des pods sur des nœuds spécifiques 
+
+
+.4+| *Storage-admin* | Créez des SVM sur NetApp ONTAP 
+
+
+| Création des systèmes back-end Trident 
+
+
+| Créez des classes de stockage 
+
+
+| Créer des devis de ressources de stockage 
+
+
+.3+| *Développeurs* | Valider l'accès pour créer ou corriger des demandes de volume persistant ou des pods dans le projet affecté 
+
+
+| Valider l'accès pour créer ou corriger des demandes de volume persistant ou des pods dans un autre projet 
+
+
+| Validez l'accès pour afficher ou modifier des projets, des ResourceQuotas et des classes de stockage 
+|===
+link:rh-os-n_use_case_multitenancy_configuration_prerequisites.html["Suivant : prérequis."]

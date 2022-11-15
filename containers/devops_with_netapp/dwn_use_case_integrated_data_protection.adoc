@@ -1,0 +1,158 @@
+---
+sidebar: sidebar 
+permalink: containers/devops_with_netapp/dwn_use_case_integrated_data_protection.html 
+keywords: NetApp Astra Control, Astra Control Center, Application, Trident, Astra Trident, Helm, Operator, ONTAP, OpenShift, Kubernetes, Red Hat OpenShift, DevOps, Data Protection, Continuous Data Protection, Induce Data Protection into CI/CD, CI, CD, CI/CD 
+summary: NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données intégrant la cohérence applicative pour les workloads Kubernetes avec état, déployés dans un environnement sur site avec la technologie NetApp de protection des données éprouvée. 
+---
+= Protection intégrée avec les pipelines ci/CD et NetApp Astra Control
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+
+
+== Présentation
+
+L'une des utilisations les plus courantes des workflows DevOps est l'intégration continue et les pipelines de déploiement continu qui créent, intègrent et exécutent des suites de tests automatisés sur des applications lors de l'exécution du nouveau code par les développeurs. Les ingénieurs DevOps et les ingénieurs de fiabilité des sites (SRE) ont généralement mis en œuvre des pipelines dédiés au développement de nouvelles fonctionnalités, aux tests de régression, aux correctifs, à l'ingénierie de la qualité et à d'autres fonctions dans le processus de développement.
+
+À mesure que les équipes augmentent leur niveau d'automatisation, le rythme des changements dans les applications de production peut sembler compliqué. Par conséquent, certaines équipes préfèrent protéger les applications ou les services de production. Outre la protection des images du code et du conteneur, ils souhaitent également protéger l'état de l'application, les données de configuration (objets Kubernetes et ressources associées à l'application, par exemple) et les données persistantes d'une application.
+
+Dans ce cas d'utilisation, nous examinons de plus près un pipeline de promotion en production qui déploie une nouvelle version d'une application : d'abord dans un environnement intermédiaire, puis dans un environnement de production. Cet exemple s'applique aussi bien aux principaux clouds publics que à un environnement sur site. Bien que nous montrons le déploiement d'une version de l'app, le pipeline peut également être utilisé avec d'autres stratégies, telles que le déploiement bleu/vert ou canari. Dans le cadre du pipeline ci/CD, nous allons protéger l'application en créant une sauvegarde complète de l'application. De nombreux workflows DevOps peuvent être utiles pour une sauvegarde de l'application en production intégrant la cohérence applicative, ainsi que ses données, son état et sa configuration.
+
+image::dwn_image1.jpg[L'architecture DevOps avec NetApp Astra : utilisation 1]
+
+L'application utilisée pour valider ce cas d'utilisation était https://magento.com/["Magento"^], Une solution de commerce électronique avec un front-end basé sur le Web, une instance Elasticsearch pour des fonctions de recherche et d'analyse et une base de données MariaDB qui suit tous les détails de l'inventaire des achats et des transactions. Cette application conteneurisée a été installée sur un cluster Red Hat OpenShift. Chaque pod de l'application utilisait des volumes persistants pour stocker les données. Les volumes persistants ont été automatiquement créés par NetApp Astra Trident, l'orchestrateur de stockage conforme à l'interface de conteneur pour Kubernetes, qui permet de provisionner le stockage sur des systèmes de stockage NetApp. En outre, avec les fonctionnalités de protection des applications d'Astra Control Center, l'application en question a été gérée par Astra Control, qui a ensuite été utilisée pour déclencher les sauvegardes d'application qui stockaient l'état de l'application ainsi que les données stockées dans des volumes persistants. Nous avons utilisé https://github.com/NetApp/netapp-astra-toolkits["Kit de développement logiciel NetApp Astra Control Python"^] Automatiser le processus de déclenchement des sauvegardes d'applications ; celles-ci ont ensuite été intégrées ou CD dans un pipeline. Ce pipeline a été créé et exécuté à l'aide d'un outil ci/CD appelé [https://www.jenkins.io/["Jenkins"^]] automatiser le flux pour créer, protéger et déployer l'application.
+
+Passons en revue les conditions préalables et la procédure pour introduire la protection dans un pipeline ci/CD.
+
+
+
+== Conditions préalables à la validation du cas d'utilisation
+
+Les outils ou plates-formes suivants ont été déployés et configurés comme conditions préalables :
+
+. Plateforme de conteneurs Red Hat OpenShift
+. NetApp Astra Trident a été installé sur OpenShift avec un système back-end configuré pour le système NetApp ONTAP
+. Configuration par défaut de storageclass pointant sur un back-end NetApp ONTAP
+. NetApp Astra Control Center installé sur un cluster OpenShift
+. Cluster OpenShift ajouté en tant que cluster géré à Astra Control Center
+. Jenkins a installé sur un cluster OpenShift et configuré avec un nœud agent sur lequel un moteur Docker est installé
+
+
+
+
+== Installation de l'application
+
+Commençons par l'installation initiale de l'application dans les environnements de stockage et de production. Pour les besoins de ce cas d'utilisation, cette étape est un prérequis, cette opération est effectuée manuellement. Le pipeline ci/CD est utilisé pour les workflows de création et de déploiement ultérieurs suite à la sortie de nouvelle version de l'application.
+
+Dans ce cas d'utilisation, l'environnement de production est un espace de nom appelé `magento-prod`, et l'environnement de staging correspondant est un espace de noms appelé `magento-staging` Configuré sur le cluster Red Hat OpenShift. Pour passer à l'application, procédez comme suit :
+
+. Installez l'application Magento à l'aide du graphique de bitnami Helm sur l'environnement de production. Nous utilisons RWX PVS pour les pods Magento et MariaDB.
++
+[listing]
+----
+[netapp-user@rhel7 na_astra_control_suite]$ helm install --version 14 magento bitnami/magento -n magento-prod --create-namespace --set image.tag=2.4.1-debian-10-r11,magentoHost=10.63.172.243,persistence.magento.accessMode=ReadWriteMany,persistence.apache.accessMode=ReadWriteMany,mariadb.master.persistence.accessModes[0]=ReadWriteMany
+----
++
+
+NOTE: Le diagramme de gouvernail Magento bitnami nécessite un service LoadBalancer pour exposer le service GUI de Magento. Nous avons utilisé link:https://metallb.universe.tf/["MetalLB"^] dans cet exemple, vous pouvez fournir un service d'équilibrage de charge sur site.
+
+. Après quelques minutes, vérifiez que tous les pods et services sont en cours d'exécution.
++
+[listing]
+----
+[netapp-user@rhel7 na_astra_control_suite]$ oc get pods -n magento-prod
+NAME                                                     READY   STATUS    RESTARTS   AGE
+magento-9d658fd96-qrxmt                                  1/1     Running   0          49m
+magento-elasticsearch-coordinating-only-69869cc5-768rm   1/1     Running   0          49m
+magento-elasticsearch-data-0                             1/1     Running   0          49m
+magento-elasticsearch-master-0                           1/1     Running   0          49m
+magento-mariadb-0                                        1/1     Running   0          49m
+----
+. Répétez la même procédure pour l'environnement de staging.
+
+
+
+
+== Gérer l'application Magento dans Astra Control Center
+
+. Accédez à applications et sélectionnez l'onglet applications découvertes.
+. Cliquez sur les points de suspension par rapport à l'application Magento dans l'environnement de production (`magento-prod`), puis cliquez sur gérer.
+. L'application Magento est désormais gérée par Astra Control Center. Toutes les opérations prises en charge par Astra Control peuvent être exécutées sur l'application. Notez également la version de l'application.
++
+image::dwn_image2.jpg[Vérification de la version Magento avant la mise à niveau]
+
+. Répétez les étapes de gestion de l'application Magento dans l'environnement de staging (`magento-staging`).
+
+
+
+
+== Pipeline ci/CD avec protection intégrée
+
+Lorsque nous utilisons de nouvelles versions d'applications, nous utilisons un pipeline ci/CD pour créer l'image de conteneur, sauvegarder les environnements de stockage intermédiaire et de production, déployer la nouvelle version de l'application dans l'environnement intermédiaire, attendre l'approbation pour la promotion de la production, puis déployez la nouvelle version de l'application dans l'environnement de production. Pour utiliser un pipeline ci/CD, procédez comme suit :
+
+. Connectez-vous à Jenkins et créez les informations d'identification requises : un pour les crds Magento, un pour les crds d'administration MariaDB, et le troisième pour les crds racine MariaDB.
+. Accédez à Manage Jenkins > Manage Credentials et cliquez sur le domaine approprié.
+. Cliquez sur Ajouter des informations d'identification et définissez le type sur Nom d'utilisateur avec le mot de passe et la portée définis sur Global. Entrez le nom d'utilisateur, le mot de passe et un ID pour les informations d'identification, puis cliquez sur OK.
++
+image::dwn_image8.jpg[Créer des informations d'identification]
+
+. Répétez la même procédure pour les deux autres identifiants.
+. Retournez au tableau de bord, créez un pipeline en cliquant sur nouvel élément, puis cliquez sur Pipeline.
+. Copiez le pipeline à partir du fichier Jenkinsfile https://github.com/NetApp/netapp-astra-toolkits/blob/main/ci_cd_examples/jenkins_pipelines/protecting_apps_in_ci_cd_pipelines/Jenkinsfile["ici"^].
+. Collez le pipeline dans la section Jenkins Pipeline, puis cliquez sur Save.
+. Remplissez les paramètres du pipeline Jenkins avec les détails respectifs, y compris la version du graphique Helm, la version de l'application Magento à mettre à niveau, la version de la boîte à outils Astra, le FQDN Astra Control Center, le jeton API et son ID d'instance. Spécifiez le registre docker, l'espace de noms et l'adresse IP Magento des environnements de production et de staging, ainsi que les ID d'identification des informations d'identification créées.
++
+[listing]
+----
+MAGENTO_VERSION = '2.4.1-debian-10-r14'
+CHART_VERSION = '14'
+RELEASE_TYPE = 'MINOR'
+ASTRA_TOOLKIT_VERSION = '2.0.2'
+ASTRA_API_TOKEN = 'xxxxxxxx'
+ASTRA_INSTANCE_ID = 'xxx-xxx-xxx-xxx-xxx'
+ASTRA_FQDN = 'netapp-astra-control-center.org.example.com'
+DOCKER_REGISTRY = 'docker.io/netapp-solutions-cicd'
+PROD_NAMESPACE = 'magento-prod'
+PROD_MAGENTO_IP = 'x.x.x.x'
+STAGING_NAMESPACE = 'magento-staging'
+STAGING_MAGENTO_IP = 'x.x.x.x'
+MAGENTO_CREDS = credentials('magento-cred')
+MAGENTO_MARIADB_CREDS = credentials('magento-mariadb-cred')
+MAGENTO_MARIADB_ROOT_CREDS = credentials('magento-mariadb-root-cred')
+----
+. Cliquez sur Créer maintenant. Le pipeline commence à exécuter et progresse à travers les étapes. L'image de l'application est d'abord créée et téléchargée dans le registre du conteneur.
++
+image::dwn_image3.jpg[Progression du pipeline]
+
+. Les sauvegardes d'applications sont lancées par Astra Control.
++
+image::dwn_image4.jpg[Sauvegarde initiée]
+
+. Une fois les étapes de sauvegarde terminées, vérifiez les sauvegardes à partir du centre de contrôle Astra.
++
+image::dwn_image5.jpg[Sauvegarde réussie]
+
+. La nouvelle version de l'application est ensuite déployée dans l'environnement temporaire.
++
+image::dwn_image6.jpg[Déploiement de la phase intermédiaire initié]
+
+. Une fois cette étape terminée, le programme attend que l'utilisateur approuve le déploiement en production. À ce stade, supposons que l'équipe QA effectue des tests manuels et approuve la production. Vous pouvez ensuite cliquer sur approuver pour déployer la nouvelle version de l'application dans l'environnement de production.
++
+image::dwn_image7.jpg[En attente de promotion]
+
+. Vérifiez que l'application de production est également mise à niveau vers la version souhaitée.
++
+image::dwn_image11.jpg[Application Prod mise à niveau]
+
+
+
+Dans le cadre du pipeline ci/CD, nous avons démontré la capacité à protéger l'application par la création d'une sauvegarde complète intégrant la cohérence applicative. Dans la mesure où l'application complète a été sauvegardée dans le cadre du pipeline de promotion à production, vous êtes davantage confiant en matière de déploiements d'applications hautement automatisés. Cette sauvegarde respectueuse des applications, incluant les données, l'état et la configuration de l'application, peut s'avérer utile pour de nombreux workflows DevOps. Un workflow important serait de revenir à la version précédente de l'application en cas de problèmes imprévus.
+
+Bien que nous ayons démontré un workflow ci/CD avec l'outil Jenkins, le concept peut être extrapolé facilement et efficacement à différents outils et stratégies. Pour voir ce cas d'utilisation en action, regardez la vidéo link:dwn_videos_data_protection_in_ci_cd_pipeline.html["ici"^].
+
+link:dwn_videos_and_demos.html["Suivant : vidéos et démonstrations - le DevOps avec NetApp Astra."]

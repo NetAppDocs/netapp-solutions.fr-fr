@@ -1,0 +1,1758 @@
+---
+sidebar: sidebar 
+permalink: automation/cloud_volumes_terraform.html 
+keywords: AWS, Azure, GCP, FSX, CVO, ANF, CVS, Terraform, automation 
+summary: 'Cette page présente la méthode automatisée de déploiement de volumes NetApp sur des fournisseurs cloud (AWS, Azure, GCP) utilisant terraform.' 
+---
+= Cloud volumes Automation via Terraform
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette solution décrit les déploiements automatisés de Cloud volumes sur AWS (CVO pour un nœud unique, CVO pour HA et FSX ONTAP) et Azure (CVO pour un nœud unique, CVO pour ANF) à l'aide de modules Terraform. Le code est disponible à l'adresse https://github.com/NetApp-Automation/na_cloud_volumes_automation[]
+
+
+
+== Conditions préalables
+
+. Terraform >= 0.13
+. Compte Cloud Manager
+. Compte fournisseur cloud – AWS, Azure
+. Machine hôte (tout système d'exploitation pris en charge par Terraform)
+
+
+
+
+== Documentation du fournisseur
+
+La documentation du fournisseur Terraform pour Cloud Manager est disponible à l'adresse suivante : link:https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs["https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs"]
+
+
+
+=== Contrôle de la version du fournisseur
+
+Notez que vous pouvez également contrôler la version du fournisseur. Cela est contrôlé par un bloc required_Provider dans votre configuration Terraform.
+
+La syntaxe est la suivante :
+
+[source, cli]
+----
+terraform {
+  required_providers {
+    netapp-cloudmanager = {
+      source = "NetApp/netapp-cloudmanager"
+      version = "20.10.0"
+    }
+  }
+}
+----
+En savoir plus sur le contrôle de version du fournisseur.
+
+
+
+== Exécution de modules spécifiques
+
+.AWS
+====
+[role="tabbed-block"]
+=====
+.Déploiement de nœud unique CVO
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) à un nœud unique sur AWS (Amazon Web Services).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Configurez les identifiants AWS à partir de l'interface de ligne de commandes.
++
+[source, cli]
+----
+    aws configure
+----
++
+** ID de clé d'accès AWS [aucun] : clé d'accès
+** Clé d'accès secrète AWS [aucune] : clé secrète
+** Nom de la région par défaut [aucun] : US-West-2
+** Format de sortie par défaut [aucun] : json
+
+
+. Mettre à jour les valeurs de variable dans `vars/aws_cvo_single_node_deployment.tfvar`
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable « aws_Connector_Deploy_bool » sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.aws_sn" -var-file="vars/aws_cvo_single_node_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.aws_sn" -var-file="vars/aws_cvo_single_node_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance de NetApp AWS Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *aws_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_aws* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *aws_connector_region* | Chaîne | (Obligatoire) région dans laquelle le connecteur Cloud Manager sera créé. 
+
+
+| *aws_connector_key_name* | Chaîne | (Obligatoire) le nom de la paire de clés à utiliser pour l'instance de connecteur. 
+
+
+| *aws_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *aws_connector_instance_type* | Chaîne | (Requis) le type d'instance (par exemple, t3.XLarge). Au moins 4 CPU et 16 Go de mémoire sont nécessaires. 
+
+
+| *aws_connector_subnet_id* | Chaîne | (Requis) ID du sous-réseau de l'instance. 
+
+
+| *aws_connector_security_group_id* | Chaîne | (Obligatoire) l'ID du groupe de sécurité pour l'instance, plusieurs groupes de sécurité peuvent être fournis séparés par ','. 
+
+
+| *aws_connector_iam_instance_profile_name* | Chaîne | (Obligatoire) le nom du profil d'instance pour le connecteur. 
+
+
+| *aws_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *aws_connector_public_ip_bool* | BOOL | (Facultatif) indique s'il faut associer une adresse IP publique à l'instance. S'il n'est pas fourni, l'association sera effectuée en fonction de la configuration du sous-réseau. 
+|===
+`Single Node Instance`
+
+Variables Terraform pour une instance Cloud volumes ONTAP unique.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *cvo_region* | Chaîne | (Obligatoire) la région où l'environnement de travail sera créé. 
+
+
+| *cvo_subnet_id* | Chaîne | (Obligatoire) ID de sous-réseau dans lequel l'environnement de travail sera créé. 
+
+
+| *cvo_vpc_id* | Chaîne | (Facultatif) ID VPC dans lequel l'environnement de travail sera créé. Si cet argument n'est pas fourni, le VPC sera calculé à l'aide de l'ID de sous-réseau fourni. 
+
+
+| *cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *cvo_writing_speed_state* | Chaîne | (Facultatif) le réglage de la vitesse d'écriture pour Cloud Volumes ONTAP: ['NORMAL','ÉLEVÉ']. La valeur par défaut est 'NORMALE'. 
+|===
+--
+.Déploiement de CVO haute disponibilité
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) dans une paire haute disponibilité sur AWS (Amazon Web Services).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Configurez les identifiants AWS à partir de l'interface de ligne de commandes.
++
+[source, cli]
+----
+    aws configure
+----
++
+** ID de clé d'accès AWS [aucun] : clé d'accès
+** Clé d'accès secrète AWS [aucune] : clé secrète
+** Nom de la région par défaut [aucun] : US-West-2
+** Format de sortie par défaut [aucun] : json
+
+
+. Mettre à jour les valeurs de variable dans `vars/aws_cvo_ha_deployment.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable « aws_Connector_Deploy_bool » sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+      terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.aws_ha" -var-file="vars/aws_cvo_ha_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.aws_ha" -var-file="vars/aws_cvo_ha_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance de NetApp AWS Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *aws_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_aws* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *aws_connector_region* | Chaîne | (Obligatoire) région dans laquelle le connecteur Cloud Manager sera créé. 
+
+
+| *aws_connector_key_name* | Chaîne | (Obligatoire) le nom de la paire de clés à utiliser pour l'instance de connecteur. 
+
+
+| *aws_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *aws_connector_instance_type* | Chaîne | (Requis) le type d'instance (par exemple, t3.XLarge). Au moins 4 CPU et 16 Go de mémoire sont nécessaires. 
+
+
+| *aws_connector_subnet_id* | Chaîne | (Requis) ID du sous-réseau de l'instance. 
+
+
+| *aws_connector_security_group_id* | Chaîne | (Obligatoire) l'ID du groupe de sécurité pour l'instance, plusieurs groupes de sécurité peuvent être fournis séparés par ','. 
+
+
+| *aws_connector_iam_instance_profile_name* | Chaîne | (Obligatoire) le nom du profil d'instance pour le connecteur. 
+
+
+| *aws_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *aws_connector_public_ip_bool* | BOOL | (Facultatif) indique s'il faut associer une adresse IP publique à l'instance. S'il n'est pas fourni, l'association sera effectuée en fonction de la configuration du sous-réseau. 
+|===
+`HA Pair`
+
+Variables Terraform pour les instances NetApp CVO dans la paire HA.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *cvo_is_ha* | BOOL | (Facultatif) indiquez si l'environnement de travail est une paire HA ou non [true, false]. La valeur par défaut est FALSE. 
+
+
+| *nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *cvo_region* | Chaîne | (Obligatoire) la région où l'environnement de travail sera créé. 
+
+
+| *cvo_node1_subnet_id* | Chaîne | (Requis) ID de sous-réseau dans lequel le premier nœud sera créé. 
+
+
+| *cvo_node2_subnet_id* | Chaîne | (Requis) ID de sous-réseau dans lequel le second nœud sera créé. 
+
+
+| *cvo_vpc_id* | Chaîne | (Facultatif) ID VPC dans lequel l'environnement de travail sera créé. Si cet argument n'est pas fourni, le VPC sera calculé à l'aide de l'ID de sous-réseau fourni. 
+
+
+| *cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *cvo_failover_mode* | Chaîne | (Facultatif) pour HA, le mode de basculement pour la paire HA : ['PrivateIP', 'FloatingIP']. 'PrivateIP' est pour une seule zone de disponibilité et 'FloatingIP' est pour plusieurs zones de disponibilité. 
+
+
+| *cvo_mediator_subnet_id* | Chaîne | (Facultatif) pour HA, l'ID de sous-réseau du médiateur. 
+
+
+| *cvo_médiateur_key_pair_name* | Chaîne | (Facultatif) pour HA, le nom de la paire de clés de l'instance médiateur est utilisé. 
+
+
+| *cvo_cluster_flottant_ip* | Chaîne | (Facultatif) pour la HA FloatingIP, l'adresse IP flottante de gestion du cluster. 
+
+
+| *cvo_data_floating_ip* | Chaîne | (Facultatif) pour la HA FloatingIP, l'adresse IP flottante des données. 
+
+
+| *cvo_data_floating_ip2* | Chaîne | (Facultatif) pour la HA FloatingIP, l'adresse IP flottante des données. 
+
+
+| *cvo_svm_flottant_ip* | Chaîne | (Facultatif) pour HA FloatingIP, l'adresse IP flottante de gestion du SVM. 
+
+
+| *cvo_route_table_id* | Liste | (Facultatif) pour HA FloatingIP, la liste des ID de table de routage qui seront mis à jour avec les adresses IP flottantes. 
+|===
+--
+.Déploiement FSX
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp ONTAP FSX sur AWS (Amazon Web Services).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Configurez les identifiants AWS à partir de l'interface de ligne de commandes.
++
+[source, cli]
+----
+    aws configure
+----
++
+** ID de clé d'accès AWS [aucun] : clé d'accès
+** Clé d'accès secrète AWS [aucune] : clé secrète
+** Nom de la région par défaut [aucun] : US-West-2
+** Format de sortie par défaut [aucun] :
+
+
+. Mettre à jour les valeurs de variable dans `vars/aws_fsx_deployment.tfvars`
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable « aws_Connector_Deploy_bool » sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.aws_fsx" -var-file="vars/aws_fsx_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.aws_fsx" -var-file="vars/aws_fsx_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance de NetApp AWS Connector.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *aws_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_aws* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *aws_connector_region* | Chaîne | (Obligatoire) région dans laquelle le connecteur Cloud Manager sera créé. 
+
+
+| *aws_connector_key_name* | Chaîne | (Obligatoire) le nom de la paire de clés à utiliser pour l'instance de connecteur. 
+
+
+| *aws_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *aws_connector_instance_type* | Chaîne | (Requis) le type d'instance (par exemple, t3.XLarge). Au moins 4 CPU et 16 Go de mémoire sont nécessaires. 
+
+
+| *aws_connector_subnet_id* | Chaîne | (Requis) ID du sous-réseau de l'instance. 
+
+
+| *aws_connector_security_group_id* | Chaîne | (Obligatoire) l'ID du groupe de sécurité pour l'instance, plusieurs groupes de sécurité peuvent être fournis séparés par ','. 
+
+
+| *aws_connector_iam_instance_profile_name* | Chaîne | (Obligatoire) le nom du profil d'instance pour le connecteur. 
+
+
+| *aws_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *aws_connector_public_ip_bool* | BOOL | (Facultatif) indique s'il faut associer une adresse IP publique à l'instance. S'il n'est pas fourni, l'association sera effectuée en fonction de la configuration du sous-réseau. 
+|===
+`FSx Instance`
+
+Variables Terraform pour l'instance NetApp ONTAP FSX
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *fsx_name* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *fsx_region* | Chaîne | (Obligatoire) la région où l'environnement de travail sera créé. 
+
+
+| *fsx_primary_subnet_id* | Chaîne | (Obligatoire) ID de sous-réseau principal dans lequel l'environnement de travail sera créé. 
+
+
+| *fsx_secondary_subnet_id* | Chaîne | (Obligatoire) ID de sous-réseau secondaire où l'environnement de travail sera créé. 
+
+
+| *fsx_account_id* | Chaîne | (Requis) ID de compte NetApp auquel l'instance FSX sera associée. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *fsx_workspace_id* | Chaîne | (Requis) ID de l'espace de travail Cloud Manager de l'environnement de travail. 
+
+
+| *fsx_admin_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *fsx_débit_capacité* | Chaîne | (Facultatif) capacité du débit. 
+
+
+| *fsx_storage_capacity_size* | Chaîne | (Facultatif) taille du volume EBS pour le premier agrégat de données. Pour GB, l'unité peut être : [100 ou 500]. Pour TB, l'unité peut être : [1,2,4,8,16]. La valeur par défaut est « 1 ». 
+
+
+| *fsx_storage_capacity_size_unit* | Chaîne | (Facultatif) ['Go' ou 'To']. La valeur par défaut est 'TB'. 
+
+
+| *fsx_cloudmanager_aws_identifiants_noms* | Chaîne | (Requis) Nom du compte d'informations d'identification AWS. 
+|===
+--
+=====
+====
+.Azure
+====
+[role="tabbed-block"]
+=====
+.ANF
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer le volume ANF (Azure NetApp Files) sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettre à jour les valeurs de variable dans `vars/azure_anf.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le volume ANF à l'aide d'un vnet et d'un sous-réseau existants en définissant la valeur "vnet_create_bool" et "subnet_create_bool" sur FALSE et en fournissant la valeur "subnet_ID_for_anf_vol". Vous pouvez également définir ces valeurs sur vrai et créer un nouveau vnet et un nouveau sous-réseau. Dans ce cas, l'ID de sous-réseau sera automatiquement pris à partir du sous-réseau nouvellement créé.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.anf" -var-file="vars/azure_anf.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.anf" -var-file="vars/azure_anf.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`Single Node Instance`
+
+Variables Terraform pour un volume NetApp ANF unique.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *az_location* | Chaîne | (Obligatoire) indique l'emplacement Azure pris en charge où la ressource existe. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_prefix* | Chaîne | (Obligatoire) Nom du groupe de ressources dans lequel le volume NetApp doit être créé. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_vnet_address_space* | Chaîne | (Requis) l'espace d'adresse à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_subnet_address_prefix* | Chaîne | (Obligatoire) le préfixe de l'adresse de sous-réseau à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_volume_path* | Chaîne | (Requis) Un chemin de fichier unique pour le volume. Utilisé lors de la création de cibles de montage. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_capacity_pool_size* | Entier | (Requis) taille de pool de capacité indiquée en To. 
+
+
+| *az_vnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` si vous souhaitez créer un nouveau vnet. Réglez-le sur `false` pour utiliser un vnet existant. 
+
+
+| *az_subnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` pour créer un nouveau sous-réseau. Réglez-le sur `false` pour utiliser un sous-réseau existant. 
+
+
+| *az_subnet_id_for_anf_vol* | Chaîne | (Obligatoire) mentionnez l'ID de sous-réseau au cas où vous décidiez d'utiliser un sous-réseau existant en le définissant `subnet_creation_bool` à vrai. Si elle est définie sur FALSE, conservez-la à la valeur par défaut. 
+
+
+| *az_netapp_pool_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_protocol* | Chaîne | (Facultatif) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_security_style* | Chaîne | (Facultatif) le style de sécurité du volume, les valeurs acceptées sont `Unix` ou `Ntfs`. Si non fourni, le volume à protocole unique est créé par défaut à `Unix` si c'est le cas `NFSv3` ou `NFSv4.1` volume, si `CIFS`, elle est définie par défaut sur `Ntfs`. Dans un volume à double protocole, si ce n'est pas le cas, sa valeur sera `Ntfs`. 
+
+
+| *az_netapp_vol_storage_quota* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
+|===
+--
+.Protection des données ANF
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer le volume ANF (Azure NetApp Files) avec Data protection sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettre à jour les valeurs de variable dans `vars/azure_anf_data_protection.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le volume ANF à l'aide d'un vnet et d'un sous-réseau existants en définissant la valeur "vnet_create_bool" et "subnet_create_bool" sur FALSE et en fournissant la valeur "subnet_ID_for_anf_vol". Vous pouvez également définir ces valeurs sur vrai et créer un nouveau vnet et un nouveau sous-réseau. Dans ce cas, l'ID de sous-réseau sera automatiquement pris à partir du sous-réseau nouvellement créé.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.anf_data_protection" -var-file="vars/azure_anf_data_protection.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.anf_data_protection" -var-file="vars/azure_anf_data_protection.tfvars
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`ANF Data Protection`
+
+Variables Terraform pour un volume ANF unique avec protection des données activée.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *az_location* | Chaîne | (Obligatoire) indique l'emplacement Azure pris en charge où la ressource existe. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_alt_location* | Chaîne | (Requis) emplacement Azure dans lequel le volume secondaire sera créé 
+
+
+| *az_prefix* | Chaîne | (Obligatoire) Nom du groupe de ressources dans lequel le volume NetApp doit être créé. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_vnet_primary_address_space* | Chaîne | (Requis) espace d'adresse à utiliser par le vnet nouvellement créé pour le déploiement de volume primaire ANF. 
+
+
+| *az_vnet_secondary_address_space* | Chaîne | (Requis) l'espace d'adresse à utiliser par le vnet nouvellement créé pour le déploiement de volume secondaire ANF. 
+
+
+| *az_subnet_primary_address_prefix* | Chaîne | (Requis) le préfixe de l'adresse de sous-réseau à utiliser par le vnet nouvellement créé pour le déploiement du volume primaire ANF. 
+
+
+| *az_subnet_secondary_address_prefix* | Chaîne | (Requis) le préfixe de l'adresse de sous-réseau à utiliser par le vnet nouvellement créé pour le déploiement du volume secondaire ANF. 
+
+
+| *az_volume_path_primary* | Chaîne | (Requis) Un chemin de fichier unique pour le volume primaire. Utilisé lors de la création de cibles de montage. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_volume_path_secondaire* | Chaîne | (Requis) Un chemin de fichier unique pour le volume secondaire. Utilisé lors de la création de cibles de montage. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_capacity_pool_size_primary* | Entier | (Requis) taille de pool de capacité indiquée en To. 
+
+
+| *az_capacity_pool_size_secondary* | Entier | (Requis) taille de pool de capacité indiquée en To. 
+
+
+| *az_vnet_primary_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` si vous souhaitez créer un nouveau vnet pour le volume primaire. Réglez-le sur `false` pour utiliser un vnet existant. 
+
+
+| *az_vnet_secondary_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` si vous souhaitez créer un nouveau vnet pour le volume secondaire. Réglez-le sur `false` pour utiliser un vnet existant. 
+
+
+| *az_subnet_primary_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` pour créer un nouveau sous-réseau pour le volume primaire. Réglez-le sur `false` pour utiliser un sous-réseau existant. 
+
+
+| *az_subnet_secondary_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` pour créer un nouveau sous-réseau pour le volume secondaire. Réglez-le sur `false` pour utiliser un sous-réseau existant. 
+
+
+| *az_primary_subnet_id_for_anf_vol* | Chaîne | (Obligatoire) mentionnez l'ID de sous-réseau au cas où vous décidiez d'utiliser un sous-réseau existant en le définissant `subnet_primary_creation_bool` à vrai. Si elle est définie sur FALSE, conservez-la à la valeur par défaut. 
+
+
+| *az_secondary_subnet_id_for_anf_vol* | Chaîne | (Obligatoire) mentionnez l'ID de sous-réseau au cas où vous décidiez d'utiliser un sous-réseau existant en le définissant `subnet_secondary_creation_bool` à vrai. Si elle est définie sur FALSE, conservez-la à la valeur par défaut. 
+
+
+| *az_netapp_pool_service_niveau_principal* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_pool_service_niveau_secondaire* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_service_niveau_principal* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_service_niveau_secondaire* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_protocol_primary* | Chaîne | (Facultatif) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_protocol_secondary* | Chaîne | (Facultatif) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_storage_quota_primary* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
+
+
+| *az_netapp_vol_storage_quota_secondary* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
+
+
+| *az_dp_replication_fréquence* | Chaîne | (Obligatoire) fréquence de réplication, les valeurs prises en charge sont `10minutes`, `hourly`, `daily`, les valeurs sont sensibles à la casse. 
+|===
+--
+.Protocole double ANF
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer le volume ANF (Azure NetApp Files) avec un double protocole activé sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettre à jour les valeurs de variable dans `vars/azure_anf_dual_protocol.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le volume ANF à l'aide d'un vnet et d'un sous-réseau existants en définissant la valeur "vnet_create_bool" et "subnet_create_bool" sur FALSE et en fournissant la valeur "subnet_ID_for_anf_vol". Vous pouvez également définir ces valeurs sur vrai et créer un nouveau vnet et un nouveau sous-réseau. Dans ce cas, l'ID de sous-réseau sera automatiquement pris à partir du sous-réseau nouvellement créé.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.anf_dual_protocol" -var-file="vars/azure_anf_dual_protocol.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.anf_dual_protocol" -var-file="vars/azure_anf_dual_protocol.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`Single Node Instance`
+
+Variables Terraform pour un volume ANF unique avec un double protocole activé.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *az_location* | Chaîne | (Obligatoire) indique l'emplacement Azure pris en charge où la ressource existe. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_prefix* | Chaîne | (Obligatoire) Nom du groupe de ressources dans lequel le volume NetApp doit être créé. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_vnet_address_space* | Chaîne | (Requis) l'espace d'adresse à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_subnet_address_prefix* | Chaîne | (Obligatoire) le préfixe de l'adresse de sous-réseau à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_volume_path* | Chaîne | (Requis) Un chemin de fichier unique pour le volume. Utilisé lors de la création de cibles de montage. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_capacity_pool_size* | Entier | (Requis) taille de pool de capacité indiquée en To. 
+
+
+| *az_vnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` si vous souhaitez créer un nouveau vnet. Réglez-le sur `false` pour utiliser un vnet existant. 
+
+
+| *az_subnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` pour créer un nouveau sous-réseau. Réglez-le sur `false` pour utiliser un sous-réseau existant. 
+
+
+| *az_subnet_id_for_anf_vol* | Chaîne | (Obligatoire) mentionnez l'ID de sous-réseau au cas où vous décidiez d'utiliser un sous-réseau existant en le définissant `subnet_creation_bool` à vrai. Si elle est définie sur FALSE, conservez-la à la valeur par défaut. 
+
+
+| *az_netapp_pool_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_protocol1* | Chaîne | (Requis) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_protocol2* | Chaîne | (Requis) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_storage_quota* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
+
+
+| *az_smb_server_username* | Chaîne | (Obligatoire) Nom d'utilisateur pour créer un objet ActiveDirectory. 
+
+
+| *az_smb_server_password* | Chaîne | (Obligatoire) Mot de passe utilisateur pour créer un objet ActiveDirectory. 
+
+
+| *az_smb_server_name* | Chaîne | (Obligatoire) Nom du serveur pour créer un objet ActiveDirectory. 
+
+
+| *az_smb_dns_server* | Chaîne | (Requis) adresse IP du serveur DNS pour créer un objet ActiveDirectory. 
+|===
+--
+.Volume ANF à partir de copies Snapshot
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer des volumes ANF (Azure NetApp Files) à partir de Snapshot sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettre à jour les valeurs de variable dans `vars/azure_anf_volume_from_snapshot.tfvars`.
+
+
+
+NOTE: Vous pouvez choisir de déployer le volume ANF à l'aide d'un vnet et d'un sous-réseau existants en définissant la valeur "vnet_create_bool" et "subnet_create_bool" sur FALSE et en fournissant la valeur "subnet_ID_for_anf_vol". Vous pouvez également définir ces valeurs sur vrai et créer un nouveau vnet et un nouveau sous-réseau. Dans ce cas, l'ID de sous-réseau sera automatiquement pris à partir du sous-réseau nouvellement créé.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.anf_volume_from_snapshot" -var-file="vars/azure_anf_volume_from_snapshot.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.anf_volume_from_snapshot" -var-file="vars/azure_anf_volume_from_snapshot.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`Single Node Instance`
+
+Variables Terraform pour un volume ANF unique à l'aide des snapshots.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *az_location* | Chaîne | (Obligatoire) indique l'emplacement Azure pris en charge où la ressource existe. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_prefix* | Chaîne | (Obligatoire) Nom du groupe de ressources dans lequel le volume NetApp doit être créé. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_vnet_address_space* | Chaîne | (Requis) l'espace d'adresse à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_subnet_address_prefix* | Chaîne | (Obligatoire) le préfixe de l'adresse de sous-réseau à utiliser par le vnet nouvellement créé pour le déploiement de volume ANF. 
+
+
+| *az_volume_path* | Chaîne | (Requis) Un chemin de fichier unique pour le volume. Utilisé lors de la création de cibles de montage. La modification de cette option force la création d'une nouvelle ressource. 
+
+
+| *az_capacity_pool_size* | Entier | (Requis) taille de pool de capacité indiquée en To. 
+
+
+| *az_vnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` si vous souhaitez créer un nouveau vnet. Réglez-le sur `false` pour utiliser un vnet existant. 
+
+
+| *az_subnet_creation_bool* | Booléen | (Obligatoire) définissez ce booléen sur `true` pour créer un nouveau sous-réseau. Réglez-le sur `false` pour utiliser un sous-réseau existant. 
+
+
+| *az_subnet_id_for_anf_vol* | Chaîne | (Obligatoire) mentionnez l'ID de sous-réseau au cas où vous décidiez d'utiliser un sous-réseau existant en le définissant `subnet_creation_bool` à vrai. Si elle est définie sur FALSE, conservez-la à la valeur par défaut. 
+
+
+| *az_netapp_pool_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_service_niveau* | Chaîne | (Requis) les performances cibles du système de fichiers. Les valeurs valides incluent `Premium` , `Standard` , ou `Ultra`. 
+
+
+| *az_netapp_vol_protocol* | Chaîne | (Facultatif) le protocole du volume cible exprimé sous forme de liste. Une valeur unique prise en charge inclut `CIFS`, `NFSv3`, ou `NFSv4.1`. Si l'argument n'est pas défini, il est défini par défaut à `NFSv3`. Alors que vous modifiez cette configuration, la création d'une nouvelle ressource et la perte de données sont alors nécessaires. 
+
+
+| *az_netapp_vol_storage_quota* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
+
+
+| *az_snapshot_id* | Chaîne | (Requis) ID Snapshot utilisant le nouveau volume ANF à créer. 
+|===
+--
+.Déploiement de nœud unique CVO
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer Cloud volumes ONTAP (Cloud Volumes ONTAP) à un seul nœud sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettez à jour les variables dans `vars\azure_cvo_single_node_deployment.tfvars`.
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.az_cvo_single_node_deployment" -var-file="vars\azure_cvo_single_node_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.az_cvo_single_node_deployment" -var-file="vars\azure_cvo_single_node_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`Single Node Instance`
+
+Variables Terraform pour Cloud Volumes ONTAP à un seul nœud (CVO).
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *refresh_token* | Chaîne | (Requis) le jeton d'actualisation de NetApp Cloud Manager. Ceci peut être généré à partir de netapp Cloud Central. 
+
+
+| *az_connector_name* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *az_connector_location* | Chaîne | (Requis) l'emplacement de création du connecteur Cloud Manager. 
+
+
+| *az_connector_subscription_id* | Chaîne | (Obligatoire) ID de l'abonnement Azure. 
+
+
+| *az_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *az_connector_resource_group* | Entier | (Requis) le groupe de ressources dans Azure où les ressources seront créées. 
+
+
+| *az_connector_subnet_id* | Chaîne | (Obligatoire) le nom du sous-réseau de la machine virtuelle. 
+
+
+| *az_connector_vnet_id* | Chaîne | (Obligatoire) le nom du réseau virtuel. 
+
+
+| *az_connector_network_security_group_name* | Chaîne | (Obligatoire) le nom du groupe de sécurité de l'instance. 
+
+
+| *az_connector_associate_public_ip_address* | Chaîne | (Obligatoire) indique s'il faut associer l'adresse IP publique à la machine virtuelle. 
+
+
+| *az_connector_account_id* | Chaîne | (Requis) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *az_connector_admin_password* | Chaîne | (Obligatoire) le mot de passe du connecteur. 
+
+
+| *az_connector_admin_username* | Chaîne | (Obligatoire) le nom d'utilisateur du connecteur. 
+
+
+| *az_cvo_name* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *az_cvo_location* | Chaîne | (Obligatoire) l'emplacement où l'environnement de travail sera créé. 
+
+
+| *az_cvo_subnet_id* | Chaîne | (Requis) Nom du sous-réseau pour le système Cloud Volumes ONTAP. 
+
+
+| *az_cvo_vnet_id* | Chaîne | (Obligatoire) le nom du réseau virtuel. 
+
+
+| *az_cvo_vnet_resource_group* | Chaîne | (Requis) le groupe de ressources dans Azure associé au réseau virtuel. 
+
+
+| *az_cvo_data_encryption_type* | Chaîne | (Obligatoire) le type de cryptage à utiliser pour l'environnement de travail :  `AZURE`, `NONE`]. La valeur par défaut est `AZURE`. 
+
+
+| *az_cvo_storage_type* | Chaîne | (Requis) le type de stockage du premier agrégat de données :  `Premium_LRS`, `Standard_LRS`, `StandardSSD_LRS`]. La valeur par défaut est `Premium_LRS` 
+
+
+| *az_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *az_cvo_workspace_id* | Chaîne | (Requis) ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *az_cvo_capacity_tier* | Chaîne | (Requis) activation ou non du Tiering des données pour le premier agrégat de données : [`Blob`, `NONE`]. La valeur par défaut est `BLOB`. 
+
+
+| *az_cvo_writing_speed_state* | Chaîne | (Requis) paramètre de vitesse d'écriture pour Cloud Volumes ONTAP :  `NORMAL` , `HIGH`]. La valeur par défaut est `NORMAL`. Cet argument n'est pas pertinent pour les paires haute disponibilité. 
+
+
+| *az_cvo_ontap_version* | Chaîne | (Requis) la version ONTAP requise. Ignoré si la valeur 'use_latest_version' est définie sur TRUE. La valeur par défaut est d'utiliser la dernière version. 
+
+
+| *az_cvo_instance_type* | Chaîne | (Obligatoire) le type d'instance à utiliser, qui dépend du type de licence que vous avez choisi : explore :[`Standard_DS3_v2`], Standard :[`Standard_DS4_v2,Standard_DS13_v2,Standard_L8s_v2`], Prime :[`Standard_DS5_v2`,`Standard_DS14_v2`], BYOL : tous les types d'instances définis pour PayGo. Pour plus d'instances prises en charge, reportez-vous aux notes de version de Cloud Volumes ONTAP. La valeur par défaut est `Standard_DS4_v2` . 
+
+
+| *az_cvo_license_type* | Chaîne | (Obligatoire) le type de licence à utiliser. Pour un seul nœud : [`azure-cot-explore-paygo`, `azure-cot-standard-paygo`, `azure-cot-premium-paygo`, `azure-cot-premium-byol`, `capacity-paygo`]. Pour la haute disponibilité : [`azure-ha-cot-standard-paygo`, `azure-ha-cot-premium-paygo`, `azure-ha-cot-premium-byol`, `ha-capacity-paygo`]. La valeur par défaut est `azure-cot-standard-paygo`. Utiliser `capacity-paygo` ou `ha-capacity-paygo` Pour la haute disponibilité lors de la sélection, apportez votre propre type de licence basée sur la capacité ou Freemium. Utiliser `azure-cot-premium-byol` ou `azure-ha-cot-premium-byol` Pour la haute disponibilité lors de la sélection, indiquez votre propre type de licence, sur la base du nœud. 
+
+
+| *az_cvo_nss_account* | Chaîne | (Requis) ID de compte du site de support NetApp à utiliser avec ce système Cloud Volumes ONTAP. Si le type de licence est BYOL et qu'un compte NSS n'est pas fourni, Cloud Manager tente d'utiliser le premier compte NSS existant. 
+
+
+| *az_tenant_id* | Chaîne | (Obligatoire) ID de locataire du principal de demande/service enregistré dans Azure. 
+
+
+| *az_application_id* | Chaîne | (Obligatoire) ID de demande du principal de demande/service enregistré dans Azure. 
+
+
+| *az_application_key* | Chaîne | (Requis) la clé de demande du principal de demande/service enregistré dans Azure. 
+|===
+--
+.Déploiement de CVO haute disponibilité
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer CVO (Cloud Volumes ONTAP) HA (haute disponibilité) sur Azure.
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation
+----
+. Connexion à votre interface de ligne de commandes Azure (vous devez installer l'interface de ligne de commandes Azure).
++
+[source, cli]
+----
+    az login
+----
+. Mettez à jour les variables dans `vars\azure_cvo_ha_deployment.tfvars`.
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.az_cvo_ha_deployment" -var-file="vars\azure_cvo_ha_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.az_cvo_ha_deployment" -var-file="vars\azure_cvo_ha_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+  terraform destroy
+----
+`HA Pair Instance`
+
+Variables Terraform pour la paire HA Cloud Volumes ONTAP (CVO).
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *refresh_token* | Chaîne | (Requis) le jeton d'actualisation de NetApp Cloud Manager. Ceci peut être généré à partir de netapp Cloud Central. 
+
+
+| *az_connector_name* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *az_connector_location* | Chaîne | (Requis) l'emplacement de création du connecteur Cloud Manager. 
+
+
+| *az_connector_subscription_id* | Chaîne | (Obligatoire) ID de l'abonnement Azure. 
+
+
+| *az_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *az_connector_resource_group* | Entier | (Requis) le groupe de ressources dans Azure où les ressources seront créées. 
+
+
+| *az_connector_subnet_id* | Chaîne | (Obligatoire) le nom du sous-réseau de la machine virtuelle. 
+
+
+| *az_connector_vnet_id* | Chaîne | (Obligatoire) le nom du réseau virtuel. 
+
+
+| *az_connector_network_security_group_name* | Chaîne | (Obligatoire) le nom du groupe de sécurité de l'instance. 
+
+
+| *az_connector_associate_public_ip_address* | Chaîne | (Obligatoire) indique s'il faut associer l'adresse IP publique à la machine virtuelle. 
+
+
+| *az_connector_account_id* | Chaîne | (Requis) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+
+
+| *az_connector_admin_password* | Chaîne | (Obligatoire) le mot de passe du connecteur. 
+
+
+| *az_connector_admin_username* | Chaîne | (Obligatoire) le nom d'utilisateur du connecteur. 
+
+
+| *az_cvo_name* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *az_cvo_location* | Chaîne | (Obligatoire) l'emplacement où l'environnement de travail sera créé. 
+
+
+| *az_cvo_subnet_id* | Chaîne | (Requis) Nom du sous-réseau pour le système Cloud Volumes ONTAP. 
+
+
+| *az_cvo_vnet_id* | Chaîne | (Obligatoire) le nom du réseau virtuel. 
+
+
+| *az_cvo_vnet_resource_group* | Chaîne | (Requis) le groupe de ressources dans Azure associé au réseau virtuel. 
+
+
+| *az_cvo_data_encryption_type* | Chaîne | (Obligatoire) le type de cryptage à utiliser pour l'environnement de travail :  `AZURE`, `NONE`]. La valeur par défaut est `AZURE`. 
+
+
+| *az_cvo_storage_type* | Chaîne | (Requis) le type de stockage du premier agrégat de données :  `Premium_LRS`, `Standard_LRS`, `StandardSSD_LRS`]. La valeur par défaut est `Premium_LRS` 
+
+
+| *az_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *az_cvo_workspace_id* | Chaîne | (Requis) ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *az_cvo_capacity_tier* | Chaîne | (Requis) activation ou non du Tiering des données pour le premier agrégat de données : [`Blob`, `NONE`]. La valeur par défaut est `BLOB`. 
+
+
+| *az_cvo_writing_speed_state* | Chaîne | (Requis) paramètre de vitesse d'écriture pour Cloud Volumes ONTAP :  `NORMAL` , `HIGH`]. La valeur par défaut est `NORMAL`. Cet argument n'est pas pertinent pour les paires haute disponibilité. 
+
+
+| *az_cvo_ontap_version* | Chaîne | (Requis) la version ONTAP requise. Ignoré si la valeur 'use_latest_version' est définie sur TRUE. La valeur par défaut est d'utiliser la dernière version. 
+
+
+| *az_cvo_instance_type* | Chaîne | (Obligatoire) le type d'instance à utiliser, qui dépend du type de licence que vous avez choisi : explore :[`Standard_DS3_v2`], Standard :[`Standard_DS4_v2, Standard_DS13_v2, Standard_L8s_v2`], Prime :[`Standard_DS5_v2`, `Standard_DS14_v2`], BYOL : tous les types d'instances définis pour PayGo. Pour plus d'instances prises en charge, reportez-vous aux notes de version de Cloud Volumes ONTAP. La valeur par défaut est `Standard_DS4_v2` . 
+
+
+| *az_cvo_license_type* | Chaîne | (Obligatoire) le type de licence à utiliser. Pour un seul nœud : [`azure-cot-explore-paygo, azure-cot-standard-paygo, azure-cot-premium-paygo, azure-cot-premium-byol, capacity-paygo`]. Pour la haute disponibilité : [`azure-ha-cot-standard-paygo, azure-ha-cot-premium-paygo, azure-ha-cot-premium-byol, ha-capacity-paygo`]. La valeur par défaut est `azure-cot-standard-paygo`. Utiliser `capacity-paygo` ou `ha-capacity-paygo` Pour la haute disponibilité lors de la sélection, apportez votre propre type de licence basée sur la capacité ou Freemium. Utiliser `azure-cot-premium-byol` ou `azure-ha-cot-premium-byol` Pour la haute disponibilité lors de la sélection, indiquez votre propre type de licence, sur la base du nœud. 
+
+
+| *az_cvo_nss_account* | Chaîne | (Requis) ID de compte du site de support NetApp à utiliser avec ce système Cloud Volumes ONTAP. Si le type de licence est BYOL et qu'un compte NSS n'est pas fourni, Cloud Manager tente d'utiliser le premier compte NSS existant. 
+
+
+| *az_tenant_id* | Chaîne | (Obligatoire) ID de locataire du principal de demande/service enregistré dans Azure. 
+
+
+| *az_application_id* | Chaîne | (Obligatoire) ID de demande du principal de demande/service enregistré dans Azure. 
+
+
+| *az_application_key* | Chaîne | (Requis) la clé de demande du principal de demande/service enregistré dans Azure. 
+|===
+--
+=====
+====
+.GCP
+====
+[role="tabbed-block"]
+=====
+.Déploiement de nœud unique CVO
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) à un nœud unique sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvo_single_node_deployment.tfvar`
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable "gcp_Connector_Deploy_bool" sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gco_single_node" -var-file="vars/gcp_cvo_single_node_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_single_node" -var-file="vars/gcp_cvo_single_node_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance NetApp GCP Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_gcp* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *gcp_connector_project_id* | Chaîne | (Requis) ID_projet GCP dans lequel le connecteur sera créé. 
+
+
+| *gcp_connector_zone* | Chaîne | (Obligatoire) zone GCP dans laquelle le connecteur sera créé. 
+
+
+| *gcp_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *gcp_connector_service_account_email* | Chaîne | (Obligatoire) l'e-mail du compte service pour l'instance de connecteur. Ce compte de service permet au connecteur de créer Cloud Volume ONTAP. 
+
+
+| *gcp_connector_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service permet de créer le connecteur dans GCP. 
+
+
+| *gcp_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+|===
+`Single Node Instance`
+
+Variables Terraform pour une instance NetApp CVO sur GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_project_id* | Chaîne | (Requis) l'ID du projet GCP. 
+
+
+| *gcp_cvo_zone* | Chaîne | (Obligatoire) la zone de la région où l'environnement de travail sera créé. 
+
+
+| *gcp_cvo_gcp_service_account* | Chaîne | (Obligatoire) l'e-mail gcp_service_Account pour activer le Tiering des données inactives vers Google Cloud Storage. 
+
+
+| *gcp_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_workspace_id* | Chaîne | (Facultatif) l'ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *gcp_cvo_license_type* | Chaîne | (Facultatif) le type de licence à utiliser. Pour le nœud unique : [« Capacity-paygo », « gcp-cot-explorer-paygo », « gcp-lit-standard-paiement à l'utilisation », « gcp-lit-premium-paygo », « gcp-lit-premium-byol »], Pour les systèmes HA : [« ha-Capacity-paygo », « gcp-ha-cot-explorer-paygo », « gcp-ha-cot-standard-paygo », « gcp-ha-cot-premium-paygo », « gcp-ha-cot-premium-byol »]. La valeur par défaut est « Capacity-paygo » pour un seul nœud et « HA-Capacity-paygo » pour HA. 
+
+
+| *gcp_cvo_capacity_package_name* | Chaîne | (Facultatif) le nom du paquet de capacité : ['Essential', 'Professional', 'Freemium']. La valeur par défaut est « essentiel ». 
+|===
+--
+.Déploiement de CVO haute disponibilité
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) dans une paire haute disponibilité sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvo_ha_deployment.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable "gcp_Connector_Deploy_bool" sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+      terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gcp_ha" -var-file="vars/gcp_cvo_ha_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_ha" -var-file="vars/gcp_cvo_ha_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance NetApp GCP Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_gcp* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *gcp_connector_project_id* | Chaîne | (Requis) ID_projet GCP dans lequel le connecteur sera créé. 
+
+
+| *gcp_connector_zone* | Chaîne | (Obligatoire) zone GCP dans laquelle le connecteur sera créé. 
+
+
+| *gcp_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *gcp_connector_service_account_email* | Chaîne | (Obligatoire) l'e-mail du compte service pour l'instance de connecteur. Ce compte de service permet au connecteur de créer Cloud Volume ONTAP. 
+
+
+| *gcp_connector_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service permet de créer le connecteur dans GCP. 
+
+
+| *gcp_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+|===
+`HA Pair`
+
+Variables Terraform pour les instances NetApp CVO dans paire HA sur GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_cvo_is_ha* | BOOL | (Facultatif) indiquez si l'environnement de travail est une paire HA ou non [true, false]. La valeur par défaut est FALSE. 
+
+
+| *gcp_nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_project_id* | Chaîne | (Requis) l'ID du projet GCP. 
+
+
+| *gcp_cvo_zone* | Chaîne | (Obligatoire) la zone de la région où l'environnement de travail sera créé. 
+
+
+| *gcp_cvo_node1_zone* | Chaîne | (Facultatif) zone pour le nœud 1. 
+
+
+| *gcp_cvo_node2_zone* | Chaîne | (Facultatif) zone pour le nœud 2. 
+
+
+| *gcp_cvo_zone_médiateur* | Chaîne | (Facultatif) zone pour médiateur. 
+
+
+| *gcp_cvo_vpc_id* | Chaîne | (Facultatif) le nom du VPC. 
+
+
+| *gcp_cvo_subnet_id* | Chaîne | (Facultatif) le nom du sous-réseau pour Cloud Volumes ONTAP. La valeur par défaut est « par défaut ». 
+
+
+| *gcp_cvo_vpc0_node_and_data_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic1, requis pour la connectivité des nœuds et des données. Si vous utilisez un VPC partagé, vous devez fournir netwrok_project_ID. 
+
+
+| *gcp_cvo_vpc1_cluster_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic2, requis pour la connectivité du cluster. 
+
+
+| *gcp_cvo_vpc2_ha_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic3, requis pour la connectivité haute disponibilité. 
+
+
+| *gcp_cvo_vpc3_data_replication* | Chaîne | (Facultatif) le chemin VPC pour le nic4, requis pour la réplication des données. 
+
+
+| *gcp_cvo_subnet0_node_and_data_connectivity* | Chaîne | (Facultatif) chemin de sous-réseau pour nic1, requis pour la connectivité des nœuds et des données. Si vous utilisez un VPC partagé, vous devez fournir netwrok_project_ID. 
+
+
+| *gcp_cvo_subnet1_cluster_connectivity* | Chaîne | (Facultatif) chemin de sous-réseau pour la nic2, requis pour la connectivité du cluster. 
+
+
+| *gcp_cvo_subnet2_ha_connectivity* | Chaîne | (Facultatif) le chemin de sous-réseau pour la nic3 est requis pour la connectivité haute disponibilité. 
+
+
+| *gcp_cvo_subnet3_data_replication* | Chaîne | (Facultatif) chemin de sous-réseau pour nic4, requis pour la réplication des données. 
+
+
+| *gcp_cvo_gcp_service_account* | Chaîne | (Obligatoire) l'e-mail gcp_service_Account pour activer le Tiering des données inactives vers Google Cloud Storage. 
+
+
+| *gcp_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_workspace_id* | Chaîne | (Facultatif) l'ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *gcp_cvo_license_type* | Chaîne | (Facultatif) le type de licence à utiliser. Pour le nœud unique : [« Capacity-paygo », « gcp-cot-explorer-paygo », « gcp-lit-standard-paiement à l'utilisation », « gcp-lit-premium-paygo », « gcp-lit-premium-byol »], Pour les systèmes HA : [« ha-Capacity-paygo », « gcp-ha-cot-explorer-paygo », « gcp-ha-cot-standard-paygo », « gcp-ha-cot-premium-paygo », « gcp-ha-cot-premium-byol »]. La valeur par défaut est « Capacity-paygo » pour un seul nœud et « HA-Capacity-paygo » pour HA. 
+
+
+| *gcp_cvo_capacity_package_name* | Chaîne | (Facultatif) le nom du paquet de capacité : ['Essential', 'Professional', 'Freemium']. La valeur par défaut est « essentiel ». 
+
+
+| *gcp_cvo_gcp_volume_size* | Chaîne | (Facultatif) taille du volume GCP pour le premier agrégat de données. Pour GB, l'unité peut être : [100 ou 500]. Pour TB, l'unité peut être : [1,2,4,8]. La valeur par défaut est '1' . 
+
+
+| *gcp_cvo_gcp_volume_size_unit* | Chaîne | (Facultatif) ['Go' ou 'To']. La valeur par défaut est 'TB'. 
+|===
+--
+.Volume CVS
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVS (Cloud volumes Services) sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-gcp/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvs_volume.tfvars`.
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+      terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gcp_cvs_volume" -var-file="vars/gcp_cvs_volume.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_cvs_volume" -var-file="vars/gcp_cvs_volume.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`CVS Volume`
+
+Variables Terraform pour le volume CVS de NetApp GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_nom_cvs* | Chaîne | (Requis) le nom du volume NetApp CVS. 
+
+
+| *gcp_cvs_id_projet* | Chaîne | (Requis) ID_projet GCP dans lequel le volume CVS sera créé. 
+
+
+| *gcp_cvs_gcp_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service est utilisé pour créer le volume CVS dans GCP. 
+
+
+| *gcp_cvs_région* | Chaîne | (Obligatoire) zone GCP dans laquelle le volume CVS sera créé. 
+
+
+| *gcp_cvs_réseau* | Chaîne | (Requis) le VPC réseau du volume. 
+
+
+| *gcp_cvs_size* | Entier | (Requis) la taille du volume est comprise entre 1024 et 102400 inclus (en Gio). 
+
+
+| *gcp_cvs_volume_path* | Chaîne | (Facultatif) le nom du chemin du volume. 
+
+
+| *gcp_cvs_protocol_types* | Chaîne | (Obligatoire) type_protocole du volume. Pour NFS, utilisez NFSv3 ou NFSv4 et SMB, utilisez CIFS ou MB. 
+|===
+--
+=====
+====

@@ -1,0 +1,59 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_solution_overview.html 
+keywords: NetApp, Solution, Overview, ML 
+summary:  
+---
+= Présentation de la solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section examine un pipeline conventionnel de data science et ses inconvénients. Il présente également l'architecture de la solution de mise en cache de jeux de données proposée.
+
+
+
+== Pipeline de traitement de données conventionnel et inconvénients
+
+Une séquence standard de développement et de déploiement de modèles DE ML implique des étapes itératives qui incluent :
+
+* Ingestion des données
+* Prétraitement des données (création de plusieurs versions des datasets)
+* Exécution de plusieurs expériences impliquant l'optimisation des hyperparamètres, différents modèles, etc
+* Déploiement
+* Monitoringcnvrg.io a développé une plateforme complète pour automatiser toutes les tâches, de la recherche au déploiement. Un petit exemple de captures d'écran du tableau de bord concernant le pipeline est présenté dans la figure suivante.
+
+
+image:hcaios_image2.png["Erreur : image graphique manquante"]
+
+Il est très courant d'avoir plusieurs jeux de données dans les référentiels publics et les données privées. En outre, plusieurs versions sont possibles pour chaque jeu de données suite à un nettoyage de jeux de données ou à l'ingénierie des fonctionnalités. Un tableau de bord fournissant un hub de jeux de données et une version Hub est nécessaire pour garantir la disponibilité des outils de collaboration et de cohérence à l'équipe, comme l'illustre la figure suivante.
+
+image:hcaios_image3.png["Erreur : image graphique manquante"]
+
+L'étape suivante du pipeline est l'entraînement, qui nécessite plusieurs instances parallèles de modèles d'entraînement, chacun associé à un dataset et à une instance de calcul spécifique. La liaison d'un dataset à une certaine instance de calcul est un défi, car il est possible que certaines expériences soient réalisées par des instances GPU d'Amazon Web Services (AWS), tandis que d'autres expériences sont réalisées par des instances DGX-1 ou DGX-2 sur site. D'autres expériences peuvent être exécutées sur des serveurs CPU dans GCP, tandis que l'emplacement du dataset n'est pas à proximité des ressources de calcul lors de l'entraînement. Une proximité raisonnable aurait une connectivité complète 10 GbE ou plus faible latence entre le stockage du dataset et l'instance de calcul.
+
+Les data Scientists doivent en effet télécharger le dataset sur l'instance de calcul pour effectuer l'entraînement et l'expérience. Toutefois, cette approche peut rencontrer plusieurs problèmes :
+
+* Lorsque l'analyste de données télécharge le dataset sur une instance de calcul, aucune garantie ne garantit que le stockage de calcul intégré est performant (un exemple de système haute performance serait la solution NVMe de ONTAP AFF A800).
+* Lorsque le dataset téléchargé réside dans un nœud de calcul, le stockage peut former un goulot d'étranglement lorsque les modèles distribués sont exécutés sur plusieurs nœuds (contrairement au stockage distribué haute performance NetApp ONTAP).
+* La prochaine itération de l'expérience d'entraînement peut être réalisée dans une autre instance de calcul en raison de conflits ou de priorités de file d'attente, créant ainsi une distance réseau considérable entre le dataset et l'emplacement de calcul.
+* Les autres membres de l'équipe effectuant des expériences de formation sur le même cluster de calcul ne peuvent pas partager ce dataset ; chacun effectue le téléchargement (coûteux) du dataset à partir d'un emplacement arbitraire.
+* Si d'autres datasets ou versions du même dataset sont nécessaires pour les tâches d'entraînement ultérieures, les data Scientists doivent de nouveau effectuer le téléchargement (coûteux) du dataset sur l'instance de calcul exécutant les fichiers training.NetApp et cnvrg.io ont créé une nouvelle solution de mise en cache des datasets qui élimine ces obstacles. La solution accélère l'exécution du pipeline DE ML en mettant en cache les datasets fortement sollicités sur le système de stockage hautes performances ONTAP. Avec ONTAP NFS, les datasets sont mis en cache une seule fois dans une structure de données optimisée par NetApp (comme AFF A800), qui est située dans un environnement de calcul. Le stockage ultra-rapide NetApp ONTAP NFS peut servir plusieurs nœuds de calcul DE ML. Résultat : les performances des modèles de formation sont optimisées, ce qui permet à l'entreprise de réaliser des économies, d'améliorer la productivité et d'optimiser l'efficacité opérationnelle.
+
+
+
+
+== Architecture de la solution
+
+Cette solution de NetApp et cnvrg.io fournit une mise en cache des datasets, comme l'illustre la figure suivante. La mise en cache des datasets permet aux data Scientists de choisir la version souhaitée du jeu de données ou du dataset et de la déplacer vers le cache NFS ONTAP, qui se trouve à proximité du cluster de calcul DU ML. Le data Scientist peut désormais réaliser plusieurs expériences sans devoir engendrer de retards ou de téléchargements supplémentaires. En outre, tous les ingénieurs collaborant peuvent utiliser le même dataset avec le cluster de calcul associé (avec la liberté de choisir un nœud) sans téléchargements supplémentaires depuis le data Lake. Ils ont également accès à un tableau de bord qui assure le suivi et le contrôle de tous les datasets et versions, et offre une vue des datasets mis en cache.
+
+La plateforme cnvrg.io détecte automatiquement les datasets obsolètes qui n'ont pas été utilisés depuis un certain temps et les supprime du cache, ce qui conserve l'espace de cache NFS libre pour les datasets plus fréquemment utilisés. Il est important de noter que la mise en cache du dataset avec ONTAP fonctionne dans le cloud et sur site, pour une flexibilité maximale.
+
+image:hcaios_image4.png["Erreur : image graphique manquante"]
+
+link:hcaios_concepts_and_components.html["Suivant : concepts et composants"]

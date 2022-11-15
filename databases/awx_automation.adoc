@@ -1,0 +1,299 @@
+---
+sidebar: sidebar 
+permalink: databases/awx_automation.html 
+keywords: Linux, RHEL Oracle19c, NFS, ONTAP 
+summary: 'Cette page décrit la méthode automatisée de déploiement d"Oracle19c sur le stockage ONTAP NetApp.' 
+---
+= Procédure de déploiement étape par étape
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Déploiement AWX/Tower Oracle 19c Database
+
+
+
+=== 1. Créez l'inventaire, le groupe, les hôtes et les informations d'identification de votre environnement
+
+Cette section décrit la configuration des inventaires, des groupes, des hôtes et des identifiants d'accès dans AWX/Ansible Tower qui préparent l'environnement à l'utilisation des solutions automatisées NetApp.
+
+. Configurer l'inventaire.
++
+.. Accédez à Ressources → inventaires → Ajouter, puis cliquez sur Ajouter un inventaire.
+.. Indiquez le nom et les détails de l'organisation, puis cliquez sur Enregistrer.
+.. Sur la page inventaires, cliquez sur l'inventaire créé.
+.. S'il existe des variables d'inventaire, collez-les dans le champ variables.
+.. Accédez au sous-menu groupes et cliquez sur Ajouter.
+.. Indiquez le nom du groupe pour ONTAP, collez les variables du groupe (le cas échéant) et cliquez sur Enregistrer.
+.. Répétez le processus pour un autre groupe pour Oracle.
+.. Sélectionnez le groupe ONTAP créé, accédez au sous-menu hôtes et cliquez sur Ajouter un nouvel hôte.
+.. Indiquez l'adresse IP de gestion de cluster ONTAP, collez les variables hôte (le cas échéant), puis cliquez sur Enregistrer.
+.. Ce processus doit être répété pour le groupe Oracle et l'adresse IP/nom d'hôte(s) de gestion du ou des hôtes Oracle.
+
+
+. Créer des types d'informations d'identification. Pour les solutions impliquant ONTAP, vous devez configurer le type d'informations d'identification pour qu'il corresponde aux entrées de nom d'utilisateur et de mot de passe.
++
+.. Accédez à Administration → types d'informations d'identification, puis cliquez sur Ajouter.
+.. Indiquez le nom et la description.
+.. Collez le contenu suivant dans la configuration d'entrée :
++
+[source, cli]
+----
+fields:
+  - id: username
+    type: string
+    label: Username
+  - id: password
+    type: string
+    label: Password
+    secret: true
+  - id: vsadmin_password
+    type: string
+    label: vsadmin_password
+    secret: true
+----
+.. Collez le contenu suivant dans la configuration d'injecteur :
++
+[source, cli]
+----
+extra_vars:
+  password: '{{ password }}'
+  username: '{{ username }}'
+  vsadmin_password: '{{ vsadmin_password }}'
+----
+
+
+. Configurer les informations d'identification.
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation de ONTAP.
+.. Sélectionnez le type d'informations d'identification personnalisé que vous avez créé pour ONTAP.
+.. Sous Type Details, entrez le nom d'utilisateur, le mot de passe et le mot de passe vsadmin_password.
+.. Cliquez sur Retour aux informations d'identification et cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation pour Oracle.
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails du type, entrez le nom d'utilisateur et le mot de passe des hôtes Oracle.
+.. Sélectionnez la méthode d'escalade des privilèges appropriée et saisissez le nom d'utilisateur et le mot de passe.
+
+
+
+
+
+
+=== 2. Créez un projet
+
+. Accédez à Ressources → projets, puis cliquez sur Ajouter.
++
+.. Entrez le nom et les détails de l'organisation.
+.. Sélectionnez Git dans le champ Type d'informations d'identification du contrôle source.
+.. entrez <https://github.com/NetApp-Automation/na_oracle19c_deploy.git>[] Comme URL de contrôle de source.
+.. Cliquez sur Enregistrer.
+.. Il peut être nécessaire de synchroniser le projet de temps en temps lorsque le code source change.
+
+
+
+
+
+
+=== 3. Configurer Oracle Host_var
+
+Les variables définies dans cette section sont appliquées à chaque serveur et base de données Oracle.
+
+. Entrez les paramètres spécifiques à votre environnement dans le formulaire variables ou host_var intégrés suivant.
+
+
+
+NOTE: Les éléments en bleu doivent être modifiés pour correspondre à votre environnement.
+
+
+
+=== Config VARS hôte
+
+
+. Remplissez toutes les variables dans les champs bleus.
+. Une fois les variables entrées, cliquez sur le bouton Copier du formulaire pour copier toutes les variables à transférer vers AWX ou Tour.
+. Revenez à AWX ou Tower et accédez à Ressources → hosts, puis sélectionnez et ouvrez la page de configuration du serveur Oracle.
+. Sous l'onglet Détails, cliquez sur Modifier et collez les variables copiées de l'étape 1 dans le champ variables de l'onglet YAML.
+. Cliquez sur Enregistrer.
+. Répétez ce processus pour tous les serveurs Oracle supplémentaires du système.
+
+
+
+
+=== 4. Configurer les variables globales
+
+Les variables définies dans cette section s'appliquent à tous les hôtes Oracle, bases de données et cluster ONTAP.
+
+. Saisissez les paramètres spécifiques à votre environnement dans le formulaire intégré Global variables ou var.
++
+
+NOTE: Les éléments en bleu doivent être modifiés pour correspondre à votre environnement.
+
+
+
+
+
+=== REVENDEURS
+
+
+. Remplissez toutes les variables dans les champs bleus.
+. Une fois les variables entrées, cliquez sur le bouton Copier du formulaire pour copier toutes les variables à transférer vers AWX ou Tour dans le modèle de travail suivant.
+
+
+
+
+=== 5. Configurez et lancez le modèle de travail.
+
+. Créez le modèle de travail.
++
+.. Accédez à Ressources → modèles → Ajouter, puis cliquez sur Ajouter un modèle de travail.
+.. Entrez le nom et la description
+.. Sélectionnez le type de travail ; Exécuter configure le système en fonction d'un manuel de vente et vérifier effectue une exécution sèche d'un manuel de vente sans configurer réellement le système.
+.. Sélectionnez l'inventaire, le projet, le PlayBook et les identifiants correspondant au PlayBook.
+.. Sélectionnez All_PlayBook.yml comme PlayBook par défaut à exécuter.
+.. Collez les variables globales copiées à partir de l'étape 4 dans le champ variables du modèle sous l'onglet YAML.
+.. Cochez la case demander au lancement dans le champ balises de travail.
+.. Cliquez sur Enregistrer.
+
+
+. Lancez le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle souhaité, puis cliquez sur lancer.
+.. Lorsque vous y êtes invité lors du lancement pour les balises de travail, saisissez configuration_requise. Vous devrez peut-être cliquer sur la ligne Créer une balise de travail sous configuration_exigences pour entrer la balise de travail.
++
+
+NOTE: configuration_exigences vous garantit que vous disposez des bibliothèques appropriées pour exécuter les autres rôles.
+
+.. Cliquez sur Suivant, puis sur lancer pour lancer le travail.
+.. Cliquez sur Affichage → travaux pour contrôler la sortie et la progression du travail.
+.. Lorsque vous y êtes invité au lancement pour les balises de tâche, saisissez ontap_config. Vous devrez peut-être cliquer sur la ligne Create Job Tag située juste en dessous d'ontap_config pour entrer la balise de travail.
+.. Cliquez sur Suivant, puis sur lancer pour lancer le travail.
+.. Cliquez sur Affichage → travaux pour contrôler la sortie et la progression du travail
+.. Une fois le rôle ontap_config terminé, exécutez de nouveau le processus pour linux_config.
+.. Accédez à Ressources → modèles.
+.. Sélectionnez le modèle souhaité, puis cliquez sur lancer.
+.. Lorsque vous êtes invité à lancer le type de balises de travail dans linux_config, vous devrez peut-être sélectionner la ligne Créer une « balise de travail » juste en dessous de linux_config pour entrer la balise de travail.
+.. Cliquez sur Suivant, puis sur lancer pour lancer le travail.
+.. Sélectionnez Affichage → travaux pour contrôler la sortie et la progression du travail.
+.. Une fois le rôle linux_config terminé, relancez le processus pour oracle_config.
+.. Accédez à Ressources → modèles.
+.. Sélectionnez le modèle souhaité, puis cliquez sur lancer.
+.. Lorsque vous êtes invité à lancer pour les balises de travail, tapez oracle_config. Vous devrez peut-être sélectionner la ligne Créer une balise de travail juste en dessous d'oracle_config pour entrer la balise de travail.
+.. Cliquez sur Suivant, puis sur lancer pour lancer le travail.
+.. Sélectionnez Affichage → travaux pour contrôler la sortie et la progression du travail.
+
+
+
+
+
+
+=== 6. Déployer des bases de données supplémentaires sur le même hôte Oracle
+
+La partie Oracle du PlayBook crée une base de données de conteneur Oracle unique sur un serveur Oracle par exécution. Pour créer des bases de données de conteneurs supplémentaires sur le même serveur, procédez comme suit.
+
+. Réviser les variables Host_var.
++
+.. Retournez à l'étape 2 - configurer Oracle Host_var.
+.. Remplacez le SID Oracle par une chaîne de nom différente.
+.. Définissez le port d'écoute sur un numéro différent.
+.. Remplacez le port EM Express par un autre numéro si vous installez EM Express.
+.. Copiez et collez les variables hôte révisées dans le champ variables hôte Oracle de l'onglet Détails de la configuration hôte.
+
+
+. Lancez le modèle de travail de déploiement avec uniquement la balise oracle_config.
+
+
+
+
+=== Validation de l'installation d'Oracle
+
+
+[source, cli]
+----
+ps -ef | grep ora
+----
+
+NOTE: Cela répertoriera les processus oracle si l'installation est terminée comme prévu et si la base de données oracle a démarré
+
+
+[source, cli]
+----
+sqlplus / as sysdba
+----
+[oracle@localhost ~]$ sqlplus / as sysdba
+
+SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 12:52:51 2021 version 19.8.0.0.0
+
+Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
+
+Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
+
+SQL>
+
+[source, cli]
+----
+select name, log_mode from v$database;
+----
+SQL> sélectionnez nom, log_mode à partir de v$database; NAME LOG_MODE --------- ----------- JOURNAL D'ARCHIVAGE CDB2
+
+[source, cli]
+----
+show pdbs;
+----
+SQL> affiche les pdb
+
+....
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 CDB2_PDB1                      READ WRITE NO
+         4 CDB2_PDB2                      READ WRITE NO
+         5 CDB2_PDB3                      READ WRITE NO
+....
+[source, cli]
+----
+col svrname form a30
+col dirname form a30
+select svrname, dirname, nfsversion from v$dnfs_servers;
+----
+SQL> col svrname form a30 SQL> col dirname form a30 SQL> sélectionnez svrname, dirname, nfsversion de v$dnfs_servers ;
+
+SVRNAME DIRNAME NFSVERSION -------------------------------------- ------------------------- --------------- 172.21.126.200 /rhelora03_u02 NFSv4.0 172.21.126.200 /rhelora03_u03 NFSv4.0 172.21.126.200 /rhelora03_u01 NFSv4.0
+
+[listing]
+----
+This confirms that dNFS is working properly.
+----
+
+[source, cli]
+----
+sqlplus system@//localhost:1523/cdb2_pdb1.cie.netapp.com
+----
+[oracle@localhost ~]$ sqlplus système@//localhost:1523/cdb2_pdb1.cie.netapp.com
+
+SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 13:19:57 2021 version 19.8.0.0.0
+
+Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
+
+Entrez le mot de passe : heure de la dernière connexion réussie : mercredi 05 2021 17 mai 11:11 -04:00
+
+Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
+
+SQL> show user USER user est "SYSTEM" SQL> show con_name CON_NAME CDB2_PDB1
+
+[listing]
+----
+This confirms that Oracle listener is working properly.
+----
+
+
+=== Où obtenir de l'aide ?
+
+Si vous avez besoin d'aide avec la boîte à outils, veuillez vous joindre à la link:https://netapppub.slack.com/archives/C021R4WC0LC["La communauté NetApp solution Automation prend en charge le Channel Slack"] et recherchez le canal solution-automation pour poser vos questions ou vos questions.

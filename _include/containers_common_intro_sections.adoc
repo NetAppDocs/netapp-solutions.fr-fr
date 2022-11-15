@@ -1,0 +1,162 @@
+= Plateformes NetApp
+:allow-uri-read: 
+
+
+Les entreprises se tournent de plus en plus vers les pratiques DevOps pour créer de nouveaux produits, réduire les cycles de lancement et ajouter rapidement de nouvelles fonctionnalités. En raison de leur nature inné et agile, les conteneurs et les microservices ont un rôle essentiel dans l'accompagnement des pratiques DevOps. Cependant, la pratique du DevOps à l'échelle de production dans un environnement d'entreprise présente ses propres défis et impose certaines exigences à l'infrastructure sous-jacente, notamment :
+
+* Haute disponibilité à tous les niveaux de la pile
+* Simplicité des procédures de déploiement
+* Des opérations et des mises à niveau non disruptives
+* Une infrastructure programmable et basée sur des API pour suivre le rythme de l'agilité des microservices
+* Colocation avec garanties de performances
+* La possibilité d'exécuter simultanément des workloads virtualisés et conteneurisés
+* La possibilité de faire évoluer indépendamment l'infrastructure en fonction des besoins des workloads
+
+
+Red Hat OpenShift Container Platform est une plateforme Kubernetes d'entreprise entièrement prise en charge. Red Hat apporte plusieurs améliorations à l'open source Kubernetes afin de fournir une plateforme applicative avec tous les composants entièrement intégrés pour créer, déployer et gérer des applications conteneurisées.
+
+Pour en savoir plus, rendez-vous sur le site Web OpenShift https://www.openshift.com["ici"].
+
+NetApp propose plusieurs systèmes de stockage parfaitement adaptés aux data centers d'entreprise et aux déploiements de cloud hybride. Le portefeuille NetApp inclut des systèmes de stockage NetApp ONTAP, NetApp Element et E-Series, tous capables d'assurer un stockage persistant pour les applications conteneurisées.
+
+Pour plus d'informations, rendez-vous sur le site Web de NetApp https://www.netapp.com["ici"].
+
+NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données respectueuse des applications pour les workloads Kubernetes avec état, déployés dans un environnement sur site et optimisés par la technologie de protection des données NetApp de confiance.
+
+Pour plus d'informations, rendez-vous sur le site Web NetApp Astra https://cloud.netapp.com/astra["ici"].
+
+Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes telles que {k8s_distribution_name}.
+
+Pour en savoir plus, rendez-vous sur le site Web Astra Trident https://docs.netapp.com/us-en/trident/index.html["ici"].
+
+[role="normal"]
+NetApp propose plusieurs plateformes de stockage compatibles avec Astra Trident et Astra Control pour le provisionnement, la protection et la gestion des données pour les applications conteneurisées.
+
+image:redhat_openshift_image43.png["Erreur : image graphique manquante"]
+
+* Les systèmes AFF et FAS exécutent NetApp ONTAP et fournissent aussi bien le stockage en mode fichier (NFS) que en mode bloc (iSCSI).
+* Cloud Volumes ONTAP et ONTAP Select offrent les mêmes avantages, respectivement, dans le cloud et dans l'espace virtuel.
+* NetApp Cloud Volumes Service (AWS/GCP) et Azure NetApp Files proposent un stockage basé sur des fichiers dans le cloud.
+
+
+* Les systèmes de stockage NetApp Element couvrent des cas d'utilisation de type bloc (iSCSI) dans un environnement hautement évolutif.
+
+
+
+NOTE: Chaque système de stockage du portefeuille NetApp simplifie la gestion et le déplacement des données entre les sites sur site et le cloud, de sorte que vos données sont là où sont vos applications.
+
+Les pages suivantes contiennent des informations supplémentaires sur les systèmes de stockage NetApp validés dans la solution {solution_name} :
+
+* link:{ontap_page_link}["NetApp ONTAP"]
+
+
+* link:{element_page_link}["NetApp Element"]
+
+
+[role="normal"]
+NetApp ONTAP est un puissant outil de gestion du stockage. Il inclut des fonctionnalités telles qu'une interface graphique intuitive, des API REST avec intégration de l'automatisation, des analyses prédictives et des actions correctives informées par IA, des mises à niveau matérielles sans interruption et des importations intersystèmes de stockage.
+
+Pour en savoir plus sur la baie de stockage NetApp ONTAP, consultez la https://www.netapp.com/data-management/ontap-data-management-software/["Site Web NetApp ONTAP"^].
+
+ONTAP offre les fonctionnalités suivantes :
+
+* Système de stockage unifié avec accès et gestion simultanés aux données de NFS, CIFS, iSCSI, FC, FCoE, Et les protocoles FC-NVMe.
+* Différents modèles de déploiement incluent des configurations matérielles sur site 100 % Flash, hybrides et 100 % HDD, des plateformes de stockage basées sur des VM sur un hyperviseur pris en charge comme ONTAP Select, et dans le cloud comme Cloud Volumes ONTAP.
+* Amélioration de l'efficacité du stockage des données sur les systèmes ONTAP avec la prise en charge du Tiering automatique des données, de la compression des données à la volée, de la déduplication et de la compaction.
+* Stockage basé sur la charge de travail, contrôlé par QoS.
+* Intégration transparente dans un cloud public pour le Tiering et la protection des données. ONTAP fournit également des fonctionnalités robustes de protection des données qui le distinguent dans tous les environnements :
++
+** *Copies NetApp Snapshot.* sauvegarde instantanée rapide des données en utilisant un espace disque minimal, sans impact supplémentaire sur les performances.
+** *NetApp SnapMirror.* miroir les copies Snapshot des données d'un système de stockage à un autre. ONTAP prend également en charge la mise en miroir des données vers d'autres plateformes physiques et des services clouds natifs.
+** *SnapLock de NetApp.* pour une administration efficace des données non réinscriptibles, en les écrivant sur des volumes spéciaux qui ne peuvent pas être écrasés ou effacés pour une période déterminée.
+** *NetApp SnapVault.* sauvegarde les données de plusieurs systèmes de stockage sur une copie Snapshot centrale qui sert de sauvegarde à tous les systèmes désignés.
+** *NetApp SyncMirror.* permet la mise en miroir des données en temps réel au niveau RAID sur deux plexes différents de disques connectés physiquement au même contrôleur.
+** *NetApp SnapRestore* permet une restauration rapide des données sauvegardées à la demande à partir de copies Snapshot.
+** *NetApp FlexClone.* assure le provisionnement instantané d'une copie lisible et inscriptible d'un volume NetApp à partir d'une copie Snapshot.
+
+
+
+
+Pour plus d'informations sur ONTAP, consultez le https://docs.netapp.com/us-en/ontap/index.html["Centre de documentation ONTAP 9"^].
+
+
+NOTE: NetApp ONTAP est disponible sur site, virtualisé ou dans le cloud.
+
+image:redhat_openshift_image35.png["Erreur : image graphique manquante"]
+
+
+
+== Plateformes NetApp
+
+
+
+=== NetApp AFF/FAS
+
+NetApp offre des AFF plateformes de stockage FAS (100 % Flash) et scale-out, sur mesure et dotées d'une faible latence, d'une protection des données intégrée et d'une prise en charge multiprotocole.
+
+Ces deux systèmes sont optimisés par le logiciel de gestion des données NetApp ONTAP, le logiciel de gestion des données le plus avancé du secteur pour une gestion du stockage simplifiée, extrêmement disponible et intégrée au cloud qui répond aux besoins de Data Fabric en matière de rapidité, d'efficacité et de sécurité.
+
+Pour en savoir plus sur les plateformes NetApp AFF/FAS, cliquez https://docs.netapp.com/platstor/index.jsp["ici"].
+
+
+
+=== ONTAP Select
+
+ONTAP Select est un déploiement Software-defined de NetApp ONTAP qui peut être déployé sur un hyperviseur de votre environnement. Installée sur VMware vSphere ou KVM, cette solution offre toutes les fonctionnalités et l'expérience d'un système matériel ONTAP.
+
+Pour plus d'informations sur ONTAP Select, cliquez sur https://docs.netapp.com/us-en/ontap-select/["ici"].
+
+
+
+=== Cloud Volumes ONTAP
+
+NetApp Cloud Volumes ONTAP est une version cloud de NetApp ONTAP qui peut être déployée dans un certain nombre de clouds publics, notamment Amazon AWS, Microsoft Azure et Google Cloud.
+
+Pour plus d'informations sur Cloud Volumes ONTAP, cliquez sur https://docs.netapp.com/us-en/occm/#discover-whats-new["ici"].
+
+[role="normal"]
+NetApp propose plusieurs produits pour orchestrer, gérer, protéger et migrer les applications conteneurisées avec état et leurs données.
+
+image:devops_with_netapp_image1.jpg["Erreur : image graphique manquante"]
+
+NetApp Astra Control propose un ensemble complet de services de gestion du stockage et des données respectueuse des applications pour les workloads Kubernetes avec état optimisés par la technologie de protection des données NetApp. Astra Control Service est disponible pour la prise en charge des workloads avec état dans les déploiements Kubernetes cloud natifs. Le centre de contrôle Astra permet de prendre en charge les workloads avec état dans les déploiements sur site de plateformes Kubernetes d'entreprise telles que {k8s_distribution_name}. Pour en savoir plus, rendez-vous sur le site Web NetApp Astra Control https://cloud.netapp.com/astra["ici"].
+
+NetApp Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes telles que {k8s_distribution_name}. Pour en savoir plus, rendez-vous sur le site Web Astra Trident https://docs.netapp.com/us-en/trident/index.html["ici"].
+
+Les pages suivantes présentent des informations supplémentaires sur les produits NetApp validés pour les applications et la gestion du stockage persistant dans la solution {solution_name} :
+
+* link:{astra_control_overview_page_link}["NetApp Astra Control Center"]
+* link:{trident_overview_page_link}["NetApp Astra Trident"]
+
+
+[role="normal"]
+NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données respectueuse des applications pour les workloads Kubernetes avec état, déployés dans un environnement sur site et optimisé par les technologies NetApp de protection des données.
+
+image:redhat_openshift_image44.png["Erreur : image graphique manquante"]
+
+Le centre de contrôle NetApp Astra peut être installé sur un cluster {k8s_distribution_name} sur lequel l'orchestrateur de stockage Astra Trident est déployé et configuré avec des classes de stockage et des systèmes back-end de stockage vers des systèmes de stockage NetApp ONTAP.
+
+Pour en savoir plus sur Astra Trident, rendez-vous sur link:dwn_overview_trident.html["ce document ici"^].
+
+Dans un environnement connecté au cloud, Astra Control Center utilise Cloud Insights pour fournir des fonctionnalités avancées de surveillance et de télémétrie. En l'absence de connexion Cloud Insights, un contrôle limité et une télémétrie (sept jours de metrics) sont disponibles et exportés vers les outils de contrôle natifs Kubernetes (Prometheus et Grafana) via des terminaux ouverts.
+
+Le centre de contrôle Astra est entièrement intégré à l'écosystème NetApp AutoSupport et Active IQ qui fournit un soutien aux utilisateurs, fournit des conseils pour la résolution de problèmes et affiche des statistiques d'utilisation.
+
+En plus de la version payante d'Astra Control Center, une licence d'évaluation de 90 jours est également disponible. La version d'évaluation est prise en charge par e-mail et dans le Channel Slack de la communauté. Les clients ont accès à ces ressources, à d'autres articles de la base de connaissances et à de la documentation disponibles dans le tableau de bord de support des produits.
+
+Pour en savoir plus sur la gamme Astra, consultez le link:https://cloud.netapp.com/astra["Site Web d'Astra"^].
+
+[role="normal"]
+Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes telles que {k8s_distribution_name}. Trident fonctionne avec l'ensemble de la gamme de solutions de stockage NetApp, notamment les systèmes de stockage NetApp ONTAP et Element, et prend également en charge les connexions NFS et iSCSI. Trident accélère le workflow DevOps en permettant aux utilisateurs d'approvisionner et de gérer le stockage à partir de leurs systèmes de stockage NetApp, sans intervention de l'administrateur de stockage.
+
+Un administrateur peut configurer plusieurs systèmes de stockage back-end en fonction des besoins des projets et des modèles de système de stockage. Ces fonctionnalités permettent notamment la compression, des types de disques spécifiques ou des niveaux de QoS garantissant un certain niveau de performance. Une fois définis, ces systèmes back-end peuvent être utilisés par les développeurs dans leurs projets pour créer des demandes de volume persistant et connecter le stockage persistant à la demande dans leurs conteneurs.
+
+image:redhat_openshift_image2.png["Erreur : image graphique manquante"]
+
+Astra Trident a un cycle de développement rapide et, comme Kubernetes, est lancé quatre fois par an.
+
+La dernière version d'Astra Trident est disponible en avril 22.04, en avril 2022. Une matrice de prise en charge pour quelle version de Trident a été testée avec laquelle une distribution Kubernetes est disponible https://docs.netapp.com/us-en/trident/trident-get-started/requirements.html#supported-frontends-orchestrators["ici"].
+
+Depuis la version 20.04, l'opérateur Trident effectue la configuration de Trident. L'opérateur facilite les déploiements à grande échelle et offre un support supplémentaire, notamment l'auto-rétablissement des pods déployés dans le cadre de l'installation de Trident.
+
+Avec la version 21.01, un graphique Helm a été disponible pour faciliter l'installation de l'opérateur Trident.

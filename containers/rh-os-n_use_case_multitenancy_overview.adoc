@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_multitenancy_overview.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, Multitenancy, Multi-tenancy 
+summary: 'Configuration d"une colocation sur Red Hat OpenShift avec NetApp' 
+---
+= Configuration d'une colocation sur Red Hat OpenShift avec NetApp
+:allow-uri-read: 
+
+
+De nombreuses entreprises qui exécutent plusieurs applications ou charges de travail sur des conteneurs ont tendance à déployer un cluster Red Hat OpenShift par application ou par workload. Ils peuvent ainsi mettre en œuvre une isolation stricte pour l'application ou la charge de travail, optimiser les performances et réduire les vulnérabilités de sécurité. Toutefois, le déploiement d'un cluster Red Hat OpenShift distinct pour chaque application présente ses propres problèmes. Cette solution augmente les frais d'exploitation liés à la surveillance et à la gestion seule de chaque cluster, ce qui augmente les coûts du fait de ressources dédiées pour différentes applications et entrave l'évolutivité efficace.
+
+Pour résoudre ces problèmes, il est possible d'exécuter toutes les applications ou charges de travail dans un seul cluster Red Hat OpenShift. Cependant, dans une telle architecture, l'isolement des ressources et les vulnérabilités liées à la sécurité des applications constituent l'un des défis majeurs. Toute vulnérabilité de sécurité dans une charge de travail pourrait naturellement se répandre sur une autre charge de travail, augmentant ainsi la zone d'impact. En outre, une application peut avoir une incidence soudaine et non contrôlée sur les performances d'une autre application, car il n'existe pas de stratégie d'allocation des ressources par défaut.
+
+Les entreprises recherchent donc des solutions qui offrent les meilleures des deux mondes, par exemple, en leur permettant d'exécuter toutes leurs charges de travail dans un cluster unique, tout en offrant les avantages d'un cluster dédié pour chaque charge de travail.
+
+L'une de ces solutions est utile : configurer la colocation sur Red Hat OpenShift. La colocation est une architecture qui permet à plusieurs locataires de coexister sur un même cluster avec une isolation appropriée des ressources, de la sécurité, etc. Dans ce contexte, un locataire peut être considéré comme un sous-ensemble des ressources du cluster qui sont configurées pour être utilisées par un groupe d'utilisateurs particulier à des fins exclusives. La configuration d'une colocation sur un cluster Red Hat OpenShift offre les avantages suivants :
+
+* Réduction des dépenses d'investissement et d'exploitation en permettant le partage des ressources du cluster
+* Réduisez les frais d'exploitation et de gestion
+* Sécurisation des charges de travail contre toute contamination croisée des failles de sécurité
+* Protection des charges de travail contre la dégradation inattendue des performances en raison des conflits des ressources
+
+
+Pour un cluster OpenShift mutualisé entièrement réalisé, les quotas et les restrictions doivent être configurés pour les ressources de cluster appartenant à différents compartiments de ressources : calcul, stockage, réseau, sécurité, etc. Bien que nous aborderons certains aspects de toutes les ressources de cette solution, Nous mettons l'accent sur les bonnes pratiques d'isolation et de sécurisation des données servies ou consommées par plusieurs charges de travail sur le même cluster Red Hat OpenShift en configurant la colocation sur des ressources de stockage allouées de façon dynamique par Astra Trident et sauvegardé par NetApp ONTAP.
+
+link:rh-os-n_use_case_multitenancy_architecture.html["Ensuite : l'architecture."]

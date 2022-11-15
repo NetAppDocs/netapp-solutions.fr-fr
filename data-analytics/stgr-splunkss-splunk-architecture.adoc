@@ -1,0 +1,352 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/stgr-splunkss-splunk-architecture.html 
+keywords: definitions, distributed deployments, data flow, software requirements, design 
+summary: 'Cette page décrit l"architecture Splunk, y compris les définitions clés, les déploiements distribués Splunk, Splunk SmartStore, le flux de données, exigences matérielles et logicielles, exigences uniques et multisites, etc.' 
+---
+= Architecture Splunk
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:stgr-splunkss-flexible-storagegrid-features-for-splunk-smartstore.html["Précédent : fonctionnalités flexibles de StorageGRID pour Splunk SmartStore."]
+
+
+
+== Définitions de clés
+
+Les deux tableaux suivants répertorient les composants Splunk et NetApp utilisés dans le déploiement Splunk distribué.
+
+Les composants matériels Splunk pour la configuration distribuée de Splunk Enterprise sont répertoriés dans ce tableau.
+
+|===
+| Composant Splunk | Tâche 
+
+
+| Indexeur | Référentiel pour les données d'entreprise Splunk 
+
+
+| Transitaire universel | Responsable de l'acquisition des données et de leur transfert vers ces indexeurs 
+
+
+| En-tête de recherche | Le frontal utilisateur utilisé pour rechercher des données dans les indexeurs 
+
+
+| Maître de cluster | Gestion de l'installation de dispositifs d'indexation et de têtes de recherche dans Splunk 
+
+
+| Console de surveillance | Outil de surveillance centralisée utilisé pour l'ensemble du déploiement 
+
+
+| Maître de licence | Le maître de licence gère les licences Splunk Enterprise 
+
+
+| Serveur de déploiement | Met à jour les configurations et distribue les applications au composant de traitement 
+
+
+| Composant de stockage | Tâche 
+
+
+| NetApp AFF | Stockage 100 % Flash utilisé pour gérer les données fortement sollicitées. Également appelé stockage local. 
+
+
+| NetApp StorageGRID | Stockage objet S3 utilisé pour gérer les données de Tier chaud. Utilisé par SmartStore pour déplacer des données entre le niveau chaud et le niveau chaud. Également appelé stockage à distance. 
+|===
+Ce tableau répertorie les composants de l'architecture de stockage Splunk.
+
+|===
+| Composant Splunk | Tâche | Composant responsable 
+
+
+| SmartStore | Indexeurs avec la possibilité de transférer les données depuis un stockage local vers le stockage objet. | Splunk 
+
+
+| Chaud | Le lieu d'atterrissage où les transitaires universels placent des données récemment écrites. Le stockage est inscriptible et les données sont consultables. Ce niveau de données comprend généralement des disques SSD ou des disques durs rapides. | ONTAP 
+
+
+| Gestionnaire de cache | Gère le cache local des données indexées, extrait les données utiles du stockage distant lors d'une recherche et supprime les données les moins utilisées du cache. | SmartStore 
+
+
+| Chaud | Les données sont déplacées de manière logique dans le compartiment, puis renommées dans le Tier chaud en premier depuis le Tier actif. Les données de ce niveau sont protégées et, comme le niveau à chaud, peuvent être composées de disques durs ou SSD plus grande capacité. Les sauvegardes incrémentielles et complètes sont prises en charge à l'aide de solutions communes de protection des données. | StorageGRID 
+|===
+
+
+== De déploiements distribués Splunk
+
+Pour prendre en charge des environnements de taille supérieure dans lesquels les données proviennent de plusieurs machines, vous devez traiter d'importants volumes de données. Si de nombreux utilisateurs doivent rechercher les données, vous pouvez faire évoluer le déploiement en distribuant les instances Splunk Enterprise sur plusieurs machines. Il s'agit d'un déploiement distribué.
+
+Dans un déploiement distribué standard, chaque instance Splunk Enterprise effectue une tâche spécialisée et réside sur l'un des trois tiers de traitement correspondant aux principales fonctions de traitement.
+
+Le tableau suivant répertorie les tiers de traitement Splunk Enterprise.
+
+|===
+| Niveau | Composant | Description 
+
+
+| Saisie de données | Transitaire | Un transitaire consomme des données et les transfère ensuite vers un groupe d'indexeurs. 
+
+
+| Indexation | Indexeur | Un indexeur indexe les données entrantes qu'il reçoit habituellement d'un groupe de transitaires. L'indexeur transforme les données en événements et stocke les événements dans un index. L'indexeur recherche également les données indexées en réponse aux demandes de recherche à partir d'un tête de recherche. 
+
+
+| Gestion des recherches | En-tête de recherche | Un en-tête de recherche sert de ressource centrale pour la recherche. Les en-têtes de recherche d'un cluster sont interchangeables et ont accès aux mêmes recherches, tableaux de bord, objets Knowledge, etc., à partir de n'importe quel membre du cluster de tête de recherche. 
+|===
+Le tableau suivant répertorie les composants importants utilisés dans un environnement distribué Splunk Enterprise.
+
+|===
+| Composant | Description | Responsabilité 
+
+
+| Maître de cluster d'index | Coordonne les activités et les mises à jour d'un groupe d'indexeur | Gestion de l'index 
+
+
+| Groupe d'index | Groupes d'indexeurs Splunk Enterprise configurés pour répliquer les données les uns avec les autres | Indexation 
+
+
+| Déployeur de tête de recherche | Gère le déploiement et les mises à jour du maître de cluster | Gestion des têtes de recherche 
+
+
+| Rechercher le groupe de têtes de recherche | Groupe d'en-têtes de recherche qui sert de ressource centrale pour la recherche | Gestion des recherches 
+
+
+| Balancers de charge | Utilisé par les composants en cluster pour gérer la demande croissante par les têtes de recherche, les indexeurs et la cible S3 pour répartir la charge entre les composants en cluster. | Gestion des charges pour les composants en cluster 
+|===
+Découvrez les avantages des déploiements distribués Splunk Enterprise :
+
+* Accédez à des sources de données diverses ou dispersées
+* Fournir des fonctionnalités capables de gérer les besoins en données des entreprises de toute taille et de toute complexité
+* Bénéficiez d'une haute disponibilité et d'une reprise après incident grâce à la réplication des données et au déploiement multisite
+
+
+
+
+== Splunk SmartStore
+
+SmartStore est une fonctionnalité d'indexeur qui permet aux magasins d'objets distants comme Amazon S3 de stocker des données indexées. Étant donné que le volume de données d'un déploiement augmente, la demande de stockage dépasse les attentes en matière de ressources de calcul. SmartStore vous permet de gérer vos ressources de stockage et de calcul d'indexeur de manière rentable en faisant évoluer ces ressources séparément.
+
+SmartStore présente un niveau de stockage distant et un gestionnaire de cache. Ces fonctionnalités permettent aux données de résider localement sur les indexeurs ou sur le Tier de stockage distant. Le gestionnaire de cache gère le déplacement des données entre l'indexeur et le niveau de stockage distant, qui est configuré sur l'indexeur.
+
+Avec SmartStore, vous pouvez réduire au minimum l'empreinte de stockage des indexeur et choisir des ressources de calcul optimisées en E/S. Le plus grand nombre de données réside dans le stockage distant L'indexeur gère un cache local qui contient une quantité minimale de données : compartiments actifs, copies de compartiments chauds participant à des recherches actives ou récentes, et métadonnées de compartiment.
+
+
+
+== Flux de données Splunk SmartStore
+
+Lorsque les données entrantes de différentes sources atteignent les indexeurs, les données sont indexées et sauvegardées localement dans un compartiment chaud. L'indexeur réplique également les données du compartiment chaud sur les indexeurs cibles. Jusqu'à présent, le flux de données est identique au flux de données pour les index non SmartStore.
+
+Le flux de données diverge lorsque le godet chaud se déplace vers la chaleur. L'indexeur source copie le compartiment chaud dans le magasin d'objets distant (Tier de stockage distant) tout en laissant la copie existante dans son cache, car les recherches ont tendance à s'exécuter sur les données récemment indexées. Toutefois, les indexeurs cibles suppriment leurs copies, car le magasin distant offre une haute disponibilité sans conserver plusieurs copies locales. La copie principale du compartiment réside à présent dans le magasin distant.
+
+L'image suivante présente le flux de données Splunk SmartStore.
+
+image:stgr-splunkss-image5.png["Erreur : image graphique manquante"]
+
+Le gestionnaire de cache sur l'indexeur est central dans le flux de données SmartStore. Il extrait des copies de godets de la boutique à distance, si nécessaire, pour traiter les demandes de recherche. Il supprime également les copies plus anciennes ou moins recherchées des compartiments du cache, car la probabilité de leur participation aux recherches diminue au fil du temps.
+
+Le travail du gestionnaire de cache consiste à optimiser l'utilisation du cache disponible tout en s'assurant que les recherches ont un accès immédiat aux compartiments dont elles ont besoin.
+
+
+
+== Configuration logicielle requise
+
+Le tableau ci-dessous répertorie les composants logiciels requis pour implémenter la solution. Ils peuvent varier selon l'implémentation de la solution et les besoins du client.
+
+|===
+| Famille de produits | Nom du produit | Version du produit | Système d'exploitation 
+
+
+| NetApp StorageGRID | Stockage objet StorageGRID | 11.6 | s/o 
+
+
+| CentOS | CentOS | 8.1 | CentOS 7.x 
+
+
+| Splunk Enterprise | Splunk Enterprise avec SmartStore | 8.0.3 | CentOS 7.x 
+|===
+
+
+== Exigences uniques et multisites
+
+Dans un environnement Splunk d'entreprise (déploiements de taille moyenne ou grande) où les données proviennent de nombreuses machines et où de nombreux utilisateurs ont besoin de rechercher les données, vous pouvez faire évoluer votre déploiement en distribuant les instances Splunk Enterprise sur un ou plusieurs sites.
+
+Découvrez les avantages des déploiements distribués Splunk Enterprise :
+
+* Accédez à des sources de données diverses ou dispersées
+* Fournir des fonctionnalités capables de gérer les besoins en données des entreprises de toute taille et de toute complexité
+* Bénéficiez d'une haute disponibilité et d'une reprise après incident grâce à la réplication des données et au déploiement multisite
+
+
+Le tableau suivant répertorie les composants utilisés dans un environnement distribué Splunk Enterprise.
+
+|===
+| Composant | Description | Responsabilité 
+
+
+| Maître de cluster d'index | Coordonne les activités et les mises à jour d'un groupe d'indexeur | Gestion de l'index 
+
+
+| Groupe d'index | Groupe d'indexeurs Splunk Enterprise configurés pour la réplication des données les uns des autres | Indexation 
+
+
+| Déployeur de tête de recherche | Gère le déploiement et les mises à jour du maître de cluster | Gestion des têtes de recherche 
+
+
+| Rechercher le groupe de têtes de recherche | Groupe d'en-têtes de recherche qui sert de ressource centrale pour la recherche | Gestion des recherches 
+
+
+| Équilibreurs de charge | Utilisé par les composants en cluster pour gérer la demande croissante par les têtes de recherche, les indexeurs et la cible S3 pour répartir la charge entre les composants en cluster. | Gestion de la charge des composants en cluster 
+|===
+Cette figure illustre un exemple de déploiement distribué sur un seul site.
+
+image:stgr-splunkss-image6.png["Erreur : image graphique manquante"]
+
+Cette figure illustre un exemple de déploiement distribué multisite.
+
+image:stgr-splunkss-image7.png["Erreur : image graphique manquante"]
+
+
+
+== Configuration matérielle requise
+
+Les tableaux suivants répertorient le nombre minimal de composants matériels requis pour implémenter la solution. Ils peuvent varier selon les besoins du client et dans une implémentation spécifique de la solution.
+
+
+NOTE: Que vous ayez déployé Splunk SmartStore et StorageGRID dans un seul site ou sur plusieurs sites, tous les systèmes sont gérés depuis une seule interface depuis StorageGRID GRID Manager. Pour plus de détails, reportez-vous à la section « gestion simple avec Grid Manager ».
+
+Ce tableau répertorie le matériel utilisé pour un seul site.
+
+|===
+| Sous-jacent | Quantité | Disque | Capacité exploitable | Remarque 
+
+
+| StorageGRID SG1000 | 1 | s/o | s/o | Nœud d'administration et équilibreur de charge 
+
+
+| StorageGRID SG6060 | 4 | X48, 8 TO (HDD NL-SAS) | 1 PO | Stockage distant 
+|===
+Ce tableau répertorie le matériel utilisé pour une configuration multisite (par site).
+
+|===
+| Sous-jacent | Quantité | Disque | Capacité exploitable | Remarque 
+
+
+| StorageGRID SG1000 | 2 | s/o | s/o | Nœud d'administration et équilibreur de charge 
+
+
+| StorageGRID SG6060 | 4 | X48, 8 TO (HDD NL-SAS) | 1 PO | Stockage distant 
+|===
+
+
+=== Équilibreur de charge StorageGRID NetApp : système SG1000
+
+Le stockage objet nécessite l'utilisation d'un équilibreur de charge afin de présenter le namespace du stockage cloud. StorageGRID prend en charge des équilibreurs de charge tiers provenant de grands fournisseurs tels que F5 et Citrix, mais de nombreux clients choisissent l'équilibreur StorageGRID haute performance pour privilégier la simplicité, la résilience et la performance. Le équilibreur de charge StorageGRID est disponible en tant que VM, conteneur ou appliance dédiée.
+
+Le système StorageGRID SG1000 facilite l'utilisation de groupes haute disponibilité (HA) et de l'équilibrage intelligent de la charge pour les connexions de chemin d'accès aux données S3. Aucun autre système de stockage objet sur site ne fournit un équilibreur de charge personnalisé.
+
+L'appareil SG1000 offre les fonctionnalités suivantes :
+
+* Un équilibreur de charge et, en option, un nœud d'administration fonctionnent pour un système StorageGRID
+* Le programme d'installation de l'appliance StorageGRID simplifie le déploiement et la configuration des nœuds
+* Configuration simplifiée des terminaux S3 et du protocole SSL
+* Bande passante dédiée (au lieu de partager un équilibreur de charge avec d'autres applications)
+* Jusqu'à 4 x 100 Gbit/s de bande passante Ethernet agrégée
+
+
+L'image suivante montre l'appliance SG1000 Gateway Services.
+
+image:stgr-splunkss-image8.png["Erreur : image graphique manquante"]
+
+
+
+=== SG6060
+
+L'appliance StorageGRID SG6060 inclut un contrôleur de calcul (SG6060) et un tiroir de contrôleur de stockage (E-Series E2860) qui contient deux contrôleurs de stockage et 60 disques. Cet appareil offre les fonctions suivantes :
+
+* Évoluez jusqu'à 400 po dans un seul espace de noms.
+* Jusqu'à 4 x 25 Gbit/s de bande passante Ethernet agrégée.
+* Inclut le programme d'installation de l'appliance StorageGRID pour simplifier le déploiement et la configuration des nœuds.
+* Chaque appliance SG6060 peut posséder un ou deux tiroirs d'extension supplémentaires pour un total de 180 disques.
+* Deux contrôleurs E2800 de la gamme E-Series (configuration duplex) pour une prise en charge du basculement du contrôleur de stockage.
+* Tiroir disque à cinq tiroirs contenant soixante disques de 3.5 pouces (deux disques SSD et 58 disques NL-SAS).
+
+
+L'image suivante montre l'appliance SG6060.
+
+image:stgr-splunkss-image9.png["Erreur : image graphique manquante"]
+
+
+
+== Conception Splunk
+
+Le tableau suivant répertorie la configuration Splunk pour un seul site.
+
+|===
+| Composant Splunk | Tâche | Quantité | Cœurs | Mémoire | OS 
+
+
+| Transitaire universel | Responsable de l'acquisition des données et de leur transfert vers ces indexeurs | 4 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Indexeur | Gère les données utilisateur | 10 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| En-tête de recherche | L'utilisateur frontal recherche les données dans les indexeurs | 3 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Déployeur de tête de recherche | Permet de gérer les mises à jour des clusters de têtes de recherche | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Maître de cluster | Gère l'installation et les indexeurs Splunk | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Console de surveillance et maître de licence | Contrôle centralisé de l'ensemble du déploiement Splunk et gère les licences Splunk | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+|===
+Les tableaux suivants décrivent la configuration de Splunk pour les configurations multisites.
+
+Ce tableau répertorie la configuration Splunk pour une configuration multisite (site A).
+
+|===
+| Composant Splunk | Tâche | Quantité | Cœurs | Mémoire | OS 
+
+
+| Transitaire universel | Responsable de l'acquisition des données et de leur transfert vers ces indexeurs. | 4 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Indexeur | Gère les données utilisateur | 10 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| En-tête de recherche | L'utilisateur frontal recherche les données dans les indexeurs | 3 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Déployeur de tête de recherche | Permet de gérer les mises à jour des clusters de têtes de recherche | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Maître de cluster | Gère l'installation et les indexeurs Splunk | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Console de surveillance et maître de licence | Contrôle centralisé de l'ensemble du déploiement Splunk et gère les licences Splunk. | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+|===
+Ce tableau répertorie la configuration Splunk pour une configuration multisite (site B).
+
+|===
+| Composant Splunk | Tâche | Quantité | Cœurs | Mémoire | OS 
+
+
+| Transitaire universel | Responsable de l'acquisition des données et de leur transfert vers ces indexeurs | 4 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Indexeur | Gère les données utilisateur | 10 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| En-tête de recherche | L'utilisateur frontal recherche les données dans les indexeurs | 3 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Maître de cluster | Gère l'installation et les indexeurs Splunk | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+
+
+| Console de surveillance et maître de licence | Contrôle centralisé de l'ensemble du déploiement Splunk et gère les licences Splunk | 1 | 16 cœurs | 32 GO DE RAM | CentOS 8.1 
+|===
+link:stgr-splunkss-single-site-smartstore-performance.html["Suivant : performances SmartStore sur un seul site."]

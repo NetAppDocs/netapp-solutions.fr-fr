@@ -1,0 +1,243 @@
+---
+sidebar: sidebar 
+permalink: ehc/azure/azure-native-dr-jetstream.html 
+keywords: NetApp Solutions, microsoft azure, avs, azure, anf, azure netapp files, ontap, disaster recovery, dr 
+summary:  
+---
+= Reprise après incident avec ANF et JetStream
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+[role="lead"]
+La reprise d'activité dans le cloud est une solution résiliente et économique de protection des workloads contre les pannes sur site et la corruption des données, par exemple, par ransomware. Grâce à la structure VMware VAIO, les charges de travail VMware sur site peuvent être répliquées vers le stockage Azure Blob et récupérées. Vous bénéficiez ainsi d'une perte de données minimale, voire quasi nulle.
+
+Jetstream DR peut être utilisé pour restaurer de manière transparente les workloads répliqués depuis les sites vers AVS, et plus particulièrement vers Azure NetApp Files. Il permet une reprise d'activité économique en utilisant peu de ressources sur le site de reprise d'activité et un stockage cloud économique. Jetstream DR automatise la restauration vers les datastores ANF via Azure Blob Storage. Jetstream DR restaure les ordinateurs virtuels ou groupes de serveurs virtuels indépendants dans l'infrastructure de site de restauration en fonction du mappage du réseau et assure une restauration instantanée pour la protection par ransomware.
+
+Ce document présente les principes JetStream DR des opérations et de ses principaux composants.
+
+.Présentation du déploiement de la solution
+====
+. Installez le logiciel JetStream DR dans le data Center sur site.
++
+.. Téléchargez le pack logiciel JetStream DR depuis Azure Marketplace (ZIP) et déployez JetStream DR MSA (OVA) dans le cluster désigné.
+.. Configurez le cluster à l'aide du package filtre d'E/S (installez JetStream VIB).
+.. Provisionnez Azure Blob (Azure Storage Account) dans la même région que le cluster AVS pour la reprise après incident.
+.. Déployer des appliances DRVA et attribuer des volumes de journaux de réplication (VMDK à partir d'un datastore existant ou d'un stockage iSCSI partagé).
+.. Créez des domaines protégés (groupes de machines virtuelles associées) et attribuez des DRVAs et Azure Blob Storage/ANF.
+.. Démarrer la protection.
+
+
+. Installez le logiciel JetStream DR dans le cloud privé Azure VMware solution.
++
+.. Utilisez la commande Exécuter pour installer et configurer JetStream DR.
+.. Ajoutez le même conteneur Azure Blob et découvrez les domaines à l'aide de l'option Scan Domains.
+.. Déployer les appareils DRVA requis.
+.. Créez des volumes du journal de réplication à l'aide des datastores VSAN ou ANF disponibles.
+.. Importez des domaines protégés et configurez RocVA (Recovery va) pour utiliser le datastore ANF dans le cadre du placement de VM.
+.. Sélectionnez l'option de basculement appropriée et démarrez la réhydratation continue pour les domaines ou les machines virtuelles RTO proches de zéro.
+
+
+. En cas d'incident, déclenchez le basculement vers les datastores Azure NetApp Files sur le site AVS dédié à la reprise après incident.
+. Appelez le rétablissement vers le site protégé après la récupération du site protégé.avant de commencer, assurez-vous que les conditions préalables sont remplies comme indiqué dans le présent document https://docs.microsoft.com/en-us/azure/azure-vmware/deploy-disaster-recovery-using-jetstream["lien"^] De plus, exécutez l'outil de test de bande passante (BWT) fourni par JetStream Software pour évaluer les performances potentielles du stockage Azure Blob et de sa bande passante de réplication lorsqu'il est utilisé avec le logiciel JetStream DR. Une fois les conditions requises, y compris la connectivité, mises en place, configurez et abonnez-vous à JetStream DR pour AVS à partir du https://portal.azure.com/["Azure Marketplace"^]. Une fois le pack logiciel téléchargé, procédez au processus d'installation décrit ci-dessus.
+
+
+====
+Lors de la planification et du démarrage de la protection pour un grand nombre de machines virtuelles (par exemple, 100+), utilisez l'outil de planification des capacités (CPT) du kit d'outils JetStream DR Automation. Fournissez une liste des machines virtuelles à protéger avec leurs préférences RTO et de groupes de récupération, puis exécutez CPT.
+
+CPT effectue les fonctions suivantes :
+
+* Combinaison des machines virtuelles dans des domaines de protection selon leur objectif de durée de restauration.
+* Définir le nombre optimal de DRVAS et leurs ressources.
+* Estimation de la bande passante de réplication requise.
+* L'identification des caractéristiques du volume du journal de réplication (capacité, bande passante, etc.)
+* Estimation de la capacité de stockage objet requise, etc.
+
+
+
+NOTE: Le nombre et le contenu des domaines prescrits dépendent de diverses caractéristiques des VM, telles que les IOPS moyennes, la capacité totale, la priorité (qui définit l'ordre de basculement), RTO et autres.
+
+
+
+== Installer JetStream DR dans le data Center sur site
+
+Le logiciel Jetstream DR est constitué de trois composants principaux : le serveur virtuel Jetstream DR Management Server (MSA), le dispositif virtuel DR (DRVA) et les composants hôtes (packages de filtres d'E/S). MSA est utilisé pour installer et configurer des composants hôtes sur le cluster de calcul, puis pour administrer le logiciel JetStream DR. La liste suivante fournit une description générale du processus d'installation :
+
+.Comment installer JetStream DR sur site
+====
+. Vérifier les prérequis.
+. Exécutez l'outil de planification de la capacité pour obtenir des recommandations en matière de ressources et de configuration (facultatif, mais recommandé pour les essais de validation).
+. Déployez JetStream DR MSA sur un hôte vSphere du cluster désigné.
+. Lancez le MSA à l'aide de son nom DNS dans un navigateur.
+. Enregistrez le serveur vCenter avec MSA.pour effectuer l'installation, procédez comme suit :
+. Après le déploiement de JetStream DR MSA et l'enregistrement du serveur vCenter, accédez au plug-in JetStream DR à l'aide du client Web vSphere. Pour ce faire, accédez à Datacenter > configurer > JetStream DR.
++
+image:vmware-dr-image8.png["Erreur : image graphique manquante"]
+
+. Dans l'interface JetStream DR, sélectionnez le cluster approprié.
++
+image:vmware-dr-image9.png["Erreur : image graphique manquante"]
+
+. Configurez le cluster avec le package de filtre d'E/S.
++
+image:vmware-dr-image10.png["Erreur : image graphique manquante"]
+
+. Ajoutez un stockage Azure Blob Storage situé sur le site de reprise.
+. Déployez une appliance DR virtuelle (DRVA) depuis l'onglet Appliances.
+
+
+
+NOTE: Les DRVAS peuvent être créés automatiquement par CPT, mais pour les tests POC, nous vous recommandons de configurer et d'exécuter manuellement le cycle de reprise après incident (démarrer la protection > basculement > retour arrière).
+
+JetStream DRVA est une appliance virtuelle qui facilite les principales fonctions du processus de réplication des données. Un cluster protégé doit contenir au moins un DRVA et, en général, un DRVA est configuré par hôte. Chaque DRVA peut gérer plusieurs domaines protégés.
+
+image:vmware-dr-image11.png["Erreur : image graphique manquante"]
+
+Dans cet exemple, quatre DRVA ont été créés pour 80 machines virtuelles.
+
+. Créez des volumes de journal de réplication pour chaque DRVA à l'aide de VMDK provenant des datastores disponibles ou des pools de stockage iSCSI partagés indépendants.
+. À partir de l'onglet domaines protégés, créez le nombre requis de domaines protégés à l'aide des informations concernant le site Azure Blob Storage, l'instance DRVA et le journal de réplication. Un domaine protégé définit un ordinateur virtuel ou un ensemble de serveurs virtuels dans le cluster qui sont protégés ensemble et se voit attribuer un ordre de priorité pour les opérations de basculement/retour arrière.
++
+image:vmware-dr-image12.png["Erreur : image graphique manquante"]
+
+. Sélectionnez les machines virtuelles que vous souhaitez protéger et démarrez la protection des machines virtuelles du domaine protégé. La réplication des données commence alors dans le magasin d'objets blob désigné.
+
+
+
+NOTE: Vérifier que le même mode de protection est utilisé pour toutes les VM d'un domaine protégé.
+
+
+NOTE: Le mode Write- Back (VMDK) peut offrir de meilleures performances.
+
+image:vmware-dr-image13.png["Erreur : image graphique manquante"]
+
+Vérifier que les volumes des journaux de réplication sont placés sur un stockage haute performance.
+
+
+NOTE: Les guides d'exécution de basculement peuvent être configurés pour regrouper les VM (appelés groupes de récupération), définir l'ordre de démarrage et modifier les paramètres CPU/mémoire avec les configurations IP.
+
+====
+
+
+== Installez JetStream DR pour AVS dans un cloud privé Azure VMware solution à l'aide de la commande Exécuter
+
+Il est recommandé de créer à l'avance un cluster Pilot-light à trois nœuds sur le site de récupération (AVS). L'infrastructure du site de reprise peut ainsi être préconfigurée, incluant les éléments suivants :
+
+* Segments de réseau de destination, pare-feu, services comme DHCP et DNS, etc.
+* Installation de JetStream DR pour AVS
+* La configuration des volumes ANF en tant que datastores, et moreJetStream DR prend en charge le mode RTO quasi-nul pour les domaines stratégiques. Pour ces domaines, le stockage de destination doit être préinstallé. ANF est un type de stockage recommandé dans ce cas.
+
+
+
+NOTE: La configuration réseau comprenant la création de segments doit être configurée sur le cluster AVS afin de répondre aux exigences sur site.
+
+Selon les exigences des niveaux de service et de l'objectif RTO, il est possible d'utiliser un mode de basculement continu ou standard. Pour un RTO proche de zéro, la réhydratation continue doit être mise sur le site de reprise.
+
+.Comment installer JetStream DR pour AVS dans un cloud privé
+====
+Pour installer JetStream DR pour AVS sur un cloud privé Azure VMware solution, procédez comme suit :
+
+. Depuis le portail Azure, accédez à la solution Azure VMware, sélectionnez le cloud privé et sélectionnez Exécuter la commande > packages > JSDR.Configuration.
++
+
+NOTE: L'utilisateur CloudAdmin par défaut dans Azure VMware solution ne dispose pas des privilèges suffisants pour installer JetStream DR pour AVS. Azure VMware solution permet une installation simplifiée et automatisée de JetStream DR en appelant la commande Azure VMware solution Run pour JetStream DR.
+
++
+La capture d'écran suivante montre l'installation à l'aide d'une adresse IP DHCP.
+
++
+image:vmware-dr-image14.png["Erreur : image graphique manquante"]
+
+. Une fois l'installation de JetStream DR pour AVS terminée, actualisez le navigateur. Pour accéder à l'interface de reprise après incident JetStream, allez dans SDDC Datacenter > configurer > JetStream DR.
++
+image:vmware-dr-image15.png["Erreur : image graphique manquante"]
+
+. À partir de l'interface JetStream DR, ajoutez le compte Azure Blob Storage utilisé pour protéger le cluster sur site en tant que site de stockage, puis exécutez l'option Scan Domains.
++
+image:vmware-dr-image16.png["Erreur : image graphique manquante"]
+
+. Une fois les domaines protégés importés, déployez les appareils DRVA. Dans cet exemple, la réhydratation continue est lancée manuellement à partir du site de restauration à l'aide de l'interface utilisateur JetStream DR.
++
+
+NOTE: Ces étapes peuvent également être automatisées à l'aide de plans créés par CPT.
+
+. Créez des volumes du journal de réplication à l'aide des datastores VSAN ou ANF disponibles.
+. Importez les domaines protégés et configurez le va de restauration de manière à utiliser le datastore ANF pour le positionnement des VM.
++
+image:vmware-dr-image17.png["Erreur : image graphique manquante"]
+
++
+
+NOTE: Assurez-vous que DHCP est activé sur le segment sélectionné et qu'un nombre suffisant d'adresses IP est disponible. Des adresses IP dynamiques sont utilisées temporairement pendant la restauration des domaines. Chaque machine virtuelle de restauration (y compris la réhydratation continue) requiert une adresse IP dynamique individuelle. Une fois la récupération terminée, le IP est libéré et peut être réutilisé.
+
+. Sélectionnez l'option de basculement appropriée (basculement continu ou basculement). Dans cet exemple, la réhydratation continue (basculement continu) est sélectionnée.
++
+image:vmware-dr-image18.png["Erreur : image graphique manquante"]
+
+
+
+====
+
+
+== Exécution du basculement/retour arrière
+
+.Comment effectuer un basculement/retour arrière
+====
+. Après un incident se produit dans le cluster protégé de l'environnement sur site (défaillance partielle ou complète), déclencher le basculement.
++
+
+NOTE: CPT peut être utilisé pour exécuter le plan de basculement pour restaurer les machines virtuelles à partir d'Azure Blob Storage vers le site de restauration du cluster AVS.
+
++
+
+NOTE: Après le basculement (pour la réhydratation en continu ou standard) lorsque les machines virtuelles protégées ont été lancées dans AVS, la protection reprend automatiquement et la reprise après incident JetStream continue de répliquer leurs données dans les conteneurs appropriés/originaux dans Azure Blob Storage.
+
++
+image:vmware-dr-image19.png["Erreur : image graphique manquante"]
+
++
+image:vmware-dr-image20.png["Erreur : image graphique manquante"]
+
++
+La barre des tâches affiche la progression des activités de basculement.
+
+. Une fois la tâche terminée, accédez aux machines virtuelles récupérées et l'entreprise continue d'être opérationnelle normalement.
++
+image:vmware-dr-image21.png["Erreur : image graphique manquante"]
+
++
+Une fois que le site primaire est à nouveau opérationnel, le retour arrière peut être effectué. La protection des machines virtuelles est reprise et la cohérence des données doit être vérifiée.
+
+. Restaurer l'environnement sur site. Selon le type d'incident, il peut être nécessaire de restaurer et/ou de vérifier la configuration du cluster protégé. Si nécessaire, il peut être nécessaire de réinstaller le logiciel JetStream DR.
++
+
+NOTE: Remarque : le `recovery_utility_prepare_failback` Le script fourni dans le kit d'automatisation peut être utilisé pour nettoyer le site protégé d'origine de toutes les machines virtuelles obsolètes, des informations de domaine, etc.
+
+. Accédez à l'environnement sur site restauré, accédez à l'interface utilisateur Jetstream DR et sélectionnez le domaine protégé approprié. Une fois que le site protégé est prêt à être restauré, sélectionnez l'option de retour arrière dans l'interface utilisateur.
++
+image:vmware-dr-image22.png["Erreur : image graphique manquante"]
+
+
+
+
+NOTE: Le plan de restauration généré par CPT peut également être utilisé pour initier le retour des VM et de leurs données du magasin d'objets vers l'environnement VMware d'origine.
+
+
+NOTE: Spécifier le délai maximal après la mise en pause des VM dans le site de reprise et leur redémarrage sur le site protégé. Cette durée comprend l'exécution de la réplication après l'arrêt des machines virtuelles de basculement, la propreté du site de restauration et la recréation des machines virtuelles sur le site protégé. La valeur recommandée par NetApp est de 10 minutes.
+
+Exécuter le processus de retour arrière, puis confirmer la reprise de la protection des machines virtuelles et de la cohérence des données.
+
+====
+
+
+== Récupération de Rantomeware
+
+Récupérer des données suite à un ransomware peut être une tâche extrêmement fastidieuse. En particulier, il peut être difficile pour les services IT de déterminer le point de retour sûr et, une fois déterminé, de garantir la protection des charges de travail récupérées contre les attaques se reproduisant (contre les programmes malveillants en veille ou à l'aide d'applications vulnérables).
+
+Jetstream DR pour AVS avec les datastores Azure NetApp Files peut résoudre ces problèmes en permettant aux entreprises de récupérer les données à partir de points disponibles dans le temps, de sorte que les charges de travail soient récupérées sur un réseau fonctionnel et isolé si nécessaire. La récupération permet aux applications de fonctionner et de communiquer entre elles sans les exposer au trafic nord- sud, offrant ainsi aux équipes de sécurité un endroit sûr pour effectuer des analyses et autres corrections nécessaires.
+
+image:vmware-dr-image23.png["Erreur : image graphique manquante"]

@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_saving_data_to_a_trident-provisioned_persistentvolume.html 
+keywords:  
+summary:  
+---
+= Sauvegarde des données vers un volume persistant provisionné par Trident
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+NetApp Trident est un projet open source entièrement pris en charge et conçu pour vous aider à répondre aux exigences de persistance sophistiquées de vos applications conteneurisées. Vous pouvez lire et écrire des données sur un volume persistant Kubernetes persistant provisionné par Trident avec le Tiering des données, le chiffrement, la technologie NetApp Snapshot, la conformité et les performances élevées proposés par le logiciel de gestion des données NetApp ONTAP.
+
+
+
+== Réutilisation des ESV dans un espace de noms existant
+
+Pour les projets d'IA plus volumineux, il est possible que les conteneurs soient plus efficaces pour lire et écrire les données sur le même volume persistant Kubernetes. Pour réutiliser une demande de volume persistant Kubernetes, l'utilisateur doit avoir déjà créé une demande de volume persistant. Voir la https://netapp-trident.readthedocs.io/["Documentation NetApp Trident"^] Pour plus de détails sur la création d'une demande de volume persistant. Voici un exemple de réutilisation d'un PVC existant :
+
+....
+$ runai submit pvc-test -p team-a --pvc test:/tmp/pvc1mount -i gcr.io/run-ai-demo/quickstart -g 1
+....
+Exécutez la commande suivante pour afficher le statut de cette tâche `pvc-test` pour projet `team-a`:
+
+....
+$ runai get pvc-test -p team-a
+....
+Vous devriez voir le PV /tmp/pvc1mount monté sur `team-a` travail `pvc-test`. Ainsi, plusieurs conteneurs peuvent être lus depuis le même volume, ce qui est utile lorsque plusieurs modèles concurrents sont en cours de développement ou en production. Les data Scientists peuvent élaborer un ensemble de modèles, puis combiner les résultats de prédiction par vote à la majorité ou d'autres techniques.
+
+Pour accéder au shell du conteneur, procédez comme suit :
+
+....
+$ runai bash pvc-test -p team-a
+....
+Vous pouvez ensuite vérifier le volume monté et accéder à vos données dans le conteneur.
+
+Cette fonctionnalité de réutilisation des volumes virtuels fonctionne avec des volumes NetApp FlexVol et des volumes NetApp ONTAP FlexGroup. Les ingénieurs de données peuvent ainsi utiliser des options de gestion des données plus flexibles et plus robustes pour exploiter votre Data Fabric optimisée par NetApp.
+
+link:osrunai_conclusion.html["Suivant: Conclusion"]

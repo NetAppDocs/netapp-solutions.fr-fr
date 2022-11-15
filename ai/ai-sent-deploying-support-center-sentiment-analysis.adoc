@@ -1,0 +1,135 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-sent-deploying-support-center-sentiment-analysis.html 
+keywords: deploy, NetApp DataOps Toolkit, NGC Configuration, NVIDIA RIVA Server, NVIDIA TAO Toolkit, Export TAO models to RIVA 
+summary: Cette section décrit en détail les étapes nécessaires au déploiement de cette solution. 
+---
+= Déploiement de l'analyse des sentiments du centre de support
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-sent-design-considerations.html["Précédent : considérations de conception."]
+
+Le déploiement de la solution implique les composants suivants :
+
+. Kit NetApp DataOps
+. Configuration NGC
+. Serveur NVIDIA RIVA
+. Kit d'outils NVIDIA TAO
+. Exporter des modèles TAO vers RIVA
+
+
+Pour effectuer le déploiement, procédez comme suit :
+
+
+
+== Kit NetApp DataOps : analyse des sentiments des centres de support
+
+Pour utiliser le https://github.com/NetApp/netapp-dataops-toolkit["Kit NetApp DataOps"^], effectuez les opérations suivantes :
+
+. PIP installer la boîte à outils.
++
+....
+python3 -m pip install netapp-dataops-traditional
+....
+. Configuration de la gestion des données
++
+....
+netapp_dataops_cli.py config
+....
+
+
+
+
+== Configuration NGC : analyse du sentiment du centre de support
+
+Pour configurer https://ngc.nvidia.com/setup/installers/cli["NVIDIA NGC"^], effectuez les opérations suivantes :
+
+. Télécharger le contrôleur NGC.
++
+....
+wget -O ngccli_linux.zip https://ngc.nvidia.com/downloads/ngccli_linux.zip && unzip -o ngccli_linux.zip && chmod u+x ngc
+....
+. Ajoutez votre répertoire actuel au chemin d'accès.
++
+....
+echo "export PATH=\"\$PATH:$(pwd)\"" >> ~/.bash_profile && source ~/.bash_profile
+....
+. Vous devez configurer l'interface de ligne de commandes NGC pour que vous puissiez exécuter les commandes. Entrez la commande suivante, y compris votre clé API lorsque vous y êtes invité.
++
+....
+ngc config set
+....
+
+
+Pour les systèmes d'exploitation qui ne sont pas basés sur Linux, rendez-vous sur https://ngc.nvidia.com/setup/installers/cli["ici"^].
+
+
+
+== Serveur NVIDIA RIVA : analyse des sentiments des centres de support
+
+Pour configurer https://docs.nvidia.com/deeplearning/riva/user-guide/docs/quick-start-guide.html["NVIDIA RIVA"^], effectuez les opérations suivantes :
+
+. Téléchargez les fichiers RIVA de NGC.
++
+....
+ngc registry resource download-version nvidia/riva/riva_quickstart:1.4.0-beta
+....
+. Initialiser LA configuration RIVA (`riva_init.sh`).
+. Démarrez LE serveur RIVA (`riva_start.sh`).
+. Démarrez le client RIVA (`riva_start_client.sh`).
+. Dans le client RIVA, installez la bibliothèque de traitement audio ( https://ffmpeg.org/download.html["FFMPEG"^])
++
+....
+apt-get install ffmpeg
+....
+. Démarrez le https://jupyter-server.readthedocs.io/en/latest/["Jupyter"^] serveur.
+. Exécutez le bloc-notes RIVA Inférence Pipeline.
+
+
+
+
+== Kit NVIDIA TAO : analyse des sentiments du centre de support
+
+Pour configurer la boîte à outils NVIDIA TAO, procédez comme suit :
+
+. Préparez et activez un https://docs.python.org/3/library/venv.html["virtualisé"^] Pour la boîte à outils TAO.
+. Installer le https://docs.nvidia.com/tao/tao-toolkit/text/tao_toolkit_quick_start_guide.html["packages requis"^].
+. Tirez manuellement l'image utilisée pendant l'entraînement et le réglage précis.
++
+....
+docker pull nvcr.io/nvidia/tao/tao-toolkit-pyt:v3.21.08-py3
+....
+. Démarrez le https://jupyter-server.readthedocs.io/en/latest/["Jupyter"^] serveur.
+. Exécutez l'ordinateur portable TAT Fine Tuning.
+
+
+
+
+== Exporter des modèles TAO vers RIVA : prendre en charge l'analyse des sentiments des centres de support
+
+À utiliser https://docs.nvidia.com/tao/tao-toolkit/text/riva_tao_integration.html["Modèles TAO Toolkit à RIVA"^], effectuez les opérations suivantes :
+
+. Enregistrez des modèles dans le portable TAT Fine Tuning.
+. Copier des modèles entraînés TAO dans le répertoire de modèle RIVA.
+. Démarrez LE serveur RIVA (`riva_start.sh`).
+
+
+
+
+== Les obstacles au déploiement
+
+Voici quelques points à garder à l'esprit lors du développement de votre propre solution :
+
+* Le kit NetApp DataOps est installé en premier pour assurer le fonctionnement optimal du système de stockage des données.
+* NVIDIA NGC doit être installé avant toute autre chose, car il authentifie le téléchargement des images et des modèles.
+* RIVA doit être installé avant la boîte à outils TAO. L'installation DE RIVA configure le démon docker pour extraire les images si nécessaire.
+* DGX et docker doivent avoir un accès à Internet pour télécharger les modèles.
+
+
+link:ai-sent-validation-results.html["Suivant : résultats de la validation."]

@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: databases/aws_ora_fsx_ec2_deploy_intro.html 
+summary: 'Ce livre blanc fournit des contours et des validations d"une solution pour la haute disponibilité et la reprise après incident des bases de données RDS d"Oracle personnalisées à AWS, en exploitant le service de stockage AWS FSX dans un déploiement de zones de disponibilité multiples.' 
+keywords: HA, DR, database, Oracle, RDS, AWS 
+---
+= WP-7357 : déploiement de bases de données Oracle sur EC2/FSX - Introduction des meilleures pratiques
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+Allen Cao, Niyaz Mohamed, Jeffrey Steiner, NetApp
+
+De nombreuses bases de données Oracle d'entreprise stratégiques sont toujours hébergées sur site, et de nombreuses entreprises cherchent à migrer ces bases de données Oracle vers un cloud public. Souvent, ces bases de données Oracle sont axées sur les applications et requièrent donc des configurations spécifiques à l'utilisateur, une fonctionnalité qui n'offre pas de nombreuses offres de cloud public « base de données en tant que service ». Par conséquent, l'environnement actuel de la base de données nécessite une solution de base de données Oracle basée sur le cloud public, conçue à partir d'un service de calcul et de stockage évolutif haute performance capable de répondre à des besoins uniques. Les instances de calcul AWS EC2 et le service de stockage AWS FSX peuvent être les pièces manquantes dans ce puzzle que vous pouvez exploiter pour créer et migrer vos workloads stratégiques de base de données Oracle vers un cloud public.
+
+Amazon Elastic Compute Cloud (Amazon EC2) est un service Web qui fournit une capacité de calcul sécurisée et redimensionnable dans le cloud. Il est conçu pour faciliter le cloud computing à l'échelle du Web pour les entreprises. L'interface simple de service en ligne Amazon EC2 vous permet d'obtenir et de configurer la capacité en cas de conflits minimes. Il vous offre un contrôle total de vos ressources informatiques et vous permet d'utiliser l'environnement informatique éprouvé d'Amazon.
+
+Amazon FSX pour ONTAP est un service de stockage AWS qui utilise un stockage de niveau bloc et fichier NetApp ONTAP de pointe, exposant les protocoles NFS, SMB et iSCSI. Grâce à un tel moteur de stockage, il n'a jamais été aussi simple de transférer des applications de base de données Oracle stratégiques vers AWS avec des temps de réponse inférieurs à la milliseconde, un débit de plusieurs Gbit/s et plus de 100,000 000 IOPS par instance de base de données. Mieux encore, le service de stockage FSX est doté d'une fonctionnalité de réplication native qui vous permet de migrer facilement votre base de données Oracle sur site vers AWS ou de répliquer votre base de données Oracle stratégique vers une zone de disponibilité AWS secondaire pour la haute disponibilité ou la reprise après incident.
+
+L'objectif de cette documentation est de fournir des processus, des procédures et des conseils détaillés sur les meilleures pratiques pour déployer et configurer une base de données Oracle avec un stockage FSX et une instance EC2 offrant des performances similaires à celles d'un système sur site. NetApp propose également un kit d'automatisation qui automatise la plupart des tâches nécessaires au déploiement, à la configuration et à la gestion de votre workload de base de données Oracle dans le cloud public AWS.
+
+link:aws_ora_fsx_ec2_architecture.html["Ensuite, architecture des solutions."]

@@ -1,0 +1,25 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-protopia-test-and-validation-plan.html 
+keywords: validation scenarios, obfuscation, batch inferencing job 
+summary: Cette section offre un aperçu des trois scénarios validés dans cette solution. 
+---
+= Plan de test et de validation
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ai-protopia-technology-overview.html["Précédent : présentation de la technologie."]
+
+Pour cette conception de la solution, les trois scénarios suivants ont été validés :
+
+* Une tâche d'inférence, avec et sans projet d'obfuscation Protopia, dans un espace de travail JupyterLab orchestré à l'aide du kit d'outils NetApp DataOps pour Kubernetes.
+* Une tâche d'inférence par lot, avec et sans objetProtopia obfuscation, sur Kubernetes avec un volume de données orchestré à l'aide du kit d'outils NetApp DataOps pour Kubernetes.
+* Une tâche d'inférence avec une instance de serveur NVIDIA Triton Inférence orchestrée avec le kit d'outils NetApp DataOps pour Kubernetes. Nous avons appliqué l'obfuscation Protopia à l'image avant d'appeler l'API d'inférence Triton pour simuler l'exigence commune selon laquelle les données transmises sur le réseau doivent être brouillées. Ce workflow s'applique aux cas où les données sont collectées dans une zone de confiance mais doivent être transférées en dehors de cette zone de confiance pour l'inférence. Sans l'obfuscation Protopia, il n'est pas possible d'implémenter ce type de flux de travail sans données sensibles quittant la zone de confiance.
+
+
+link:ai-protopia-test-configuration.html["Suivant : test de la configuration."]

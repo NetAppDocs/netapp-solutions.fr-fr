@@ -1,0 +1,71 @@
+---
+sidebar: sidebar 
+permalink: databases/db_protection_overview.html 
+keywords: Linux, RHEL Oracle19c, NFS, ONTAP, Ansible 
+summary: 'Cette page décrit la méthode automatisée de déploiement d"Oracle19c sur le stockage ONTAP NetApp.' 
+---
+= Présentation de la solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Protection automatisée des données pour les bases de données Oracle
+
+Les entreprises automatisent leur environnement pour gagner en efficacité, accélérer les déploiements et réduire les efforts manuels. Les outils de gestion de la configuration comme Ansible sont utilisés pour rationaliser les opérations des bases de données d'entreprise. Avec cette solution, nous vous montrerons comment utiliser Ansible pour automatiser la protection des données d'Oracle avec NetApp ONTAP. Grâce à la possibilité pour les administrateurs du stockage, les administrateurs système et les administrateurs de bases de données de configurer la réplication des données de manière cohérente et rapide vers un data Center hors site ou un cloud public, vous bénéficiez des avantages suivants :
+
+* Éliminez les complexités de la conception et les erreurs humaines, et mettez en œuvre un déploiement cohérent et des meilleures pratiques reproductibles
+* Diminuer le temps de configuration de la réplication intercluster, de l'instanciation CVO et de la restauration des bases de données Oracle
+* Augmentez la productivité des administrateurs de bases de données, des systèmes et des administrateurs du stockage
+* Assure le flux de travail de restauration de base de données pour faciliter le test d'un scénario de reprise après incident.
+
+
+NetApp fournit aux clients des modules et des rôles Ansible validés pour accélérer le déploiement, la configuration et la gestion du cycle de vie de votre environnement de base de données Oracle. Cette solution fournit des instructions et un code de PlayBook Ansible pour vous aider à :
+
+
+
+=== Réplication sur site à site
+
+* Création des lifs intercluster sur la source et la destination
+* Établir le cluster et le peering de vServers
+* Créer et initialiser SnapMirror des volumes Oracle
+* Créez un planning de réplication via AWX/Tower pour les binaires, les bases de données et les journaux Oracle
+* Restaurez la base de données Oracle sur le volume de destination et connectez-la en ligne
+
+
+
+
+=== Sur site vers CVO dans AWS
+
+* Créer un connecteur AWS
+* Créez l'instance CVO dans AWS
+* Ajoutez un cluster sur site à Cloud Manager
+* Création des lifs intercluster sur la source
+* Établir le cluster et le peering de vServers
+* Créer et initialiser SnapMirror des volumes Oracle
+* Créez un planning de réplication via AWX/Tower pour les binaires, les bases de données et les journaux Oracle
+* Restaurez la base de données Oracle sur le volume de destination et connectez-la en ligne
+
+
+Pour en savoir plus ou pour commencer, consultez les vidéos de présentation ci-dessous.
+
+
+
+=== Déploiements AWX/Tower
+
+* Partie 1: À définir
++
+vidéo::
+
+
+* Partie 2: À déterminer
++
+vidéo:: Lorsque vous êtes prêt, cliquez sur link:db_protection_getting_started.html["ici pour commencer à utiliser la solution"].
+
+
+

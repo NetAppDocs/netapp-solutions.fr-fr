@@ -1,0 +1,49 @@
+---
+sidebar: sidebar 
+permalink: ai/aks-anf_cloud_resource_requirements.html 
+keywords: configuration, configure, resource provider, dask, cloud, Requirements 
+summary: Cette page décrit la configuration des ressources cloud pour Azure NetApp Files. 
+---
+= Ressources cloud nécessaires
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aks-anf_software_requirements.html["Précédent : configuration logicielle requise."]
+
+
+
+== Configurez Azure NetApp Files
+
+Configurez Azure NetApp Files comme décrit à la section https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes?tabs=azure-portal["Démarrage rapide : configurez Azure NetApp Files et créez un volume NFS"^].
+
+Vous pouvez passer outre la section « Créer un volume NFS pour Azure NetApp Files », car vous allez créer des volumes via Trident. Avant de continuer, procédez comme suit :
+
+. Inscrivez-vous à Azure NetApp Files et au fournisseur de ressources NetApp (via le shell Azure) ( https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-register["lien"^]).
+. Créer un compte dans Azure NetApp Files ( https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-create-netapp-account["lien"^]).
+. Configurez un pool de capacité (un minimum de 4 To Standard ou Premium, selon vos besoins) ( https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-set-up-capacity-pool["lien"^]).le tableau suivant répertorie les configurations réseau requises pour la configuration dans le nuage. Le cluster DASK et Azure NetApp Files doivent se trouver sur le même réseau virtuel Azure (vnet) ou un réseau vnet pêche.
+
+
+|===
+| Ressources | Type/version 
+
+
+| Service Azure Kubernetes | 1.18.14 
+
+
+| Nœud agent | 3 x Standard_DS2_v2 
+
+
+| Nœud de processeur graphique | 3 x Standard_NC6s_v3 
+
+
+| Azure NetApp Files | Pool de capacité standard 
+
+
+| Capacité en To | 4 
+|===
+link:aks-anf_click-through_rate_prediction_use_case_summary.html["Suivant : récapitulatif de l'utilisation des prévisions de taux par clic."]

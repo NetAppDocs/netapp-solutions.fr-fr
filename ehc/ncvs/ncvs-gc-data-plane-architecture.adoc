@@ -1,0 +1,38 @@
+---
+sidebar: sidebar 
+permalink: ehc/ncvs/ncvs-gc-data-plane-architecture.html 
+keywords: cloud volumes service, google cloud, service networking, vpc peering 
+summary: 'Cloud Volumes Service pour Google Cloud exploite la structure d"accès aux services privés Google Cloud. Dans ce cadre, les utilisateurs peuvent se connecter à Cloud Volumes Service. Cette structure utilise des services de mise en réseau et des constructions de peering de VPC comme d"autres services Google Cloud, qui assurent une isolation complète entre les locataires.' 
+---
+= Architecture de plan de données
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+link:ncvs-gc-control-plane-architecture.html["Précédent : architecture du plan de contrôle."]
+
+Cloud Volumes Service pour Google Cloud s'appuie sur Google Cloud https://cloud.google.com/vpc/docs/configure-private-services-access["accès aux services privés"^] structure. Dans ce cadre, les utilisateurs peuvent se connecter à Cloud Volumes Service. Cette structure utilise des services de mise en réseau et des constructions de peering de VPC comme d'autres services Google Cloud, qui assurent une isolation complète entre les locataires.
+
+Pour obtenir une présentation de l'architecture de Cloud Volumes Service pour Google Cloud, rendez-vous sur https://cloud.google.com/architecture/partners/netapp-cloud-volumes/architecture["Architecture pour Cloud Volumes Service"^].
+
+Les VPC utilisateur (autonomes ou partagés) sont associés à des VPC au sein de projets de locataires gérés Cloud Volumes Service, qui hébergent les volumes.
+
+image:ncvs-gc-image5.png["Erreur : image graphique manquante"]
+
+La figure précédente montre un projet (projet CVS de milieu de gamme) avec trois réseaux VPC connectés à Cloud Volumes Service et plusieurs VM de moteur de calcul (GCE1-7) partageant des volumes :
+
+* VPC1 permet à GCE1 d’accéder aux volumes A et B.
+* Le VPC2 permet aux GCE2 et GCE4 d'accéder au volume C.
+* Le troisième réseau VPC est un VPC partagé, partagé avec deux projets de service. Il permet aux GCE3, GCE4, GCE5 et GCE6 d'accéder aux volumes D et E. Les réseaux VPC partagés ne sont pris en charge que pour les volumes du type de service CVS-Performance.
+
+
+
+NOTE: Le GCE7 ne peut accéder à aucun volume.
+
+Les données peuvent être chiffrées à la fois en transit (par le chiffrement Kerberos et/ou SMB) et au repos dans Cloud Volumes Service.
+
+link:ncvs-gc-data-encryption-in-transit.html["Suivant : chiffrement des données en transit."]

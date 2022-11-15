@@ -1,0 +1,149 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-edge-introduction.html 
+keywords: tr-4886, tr4886, 4886, introduction, netapp, ai, inferencing, lenovo, thinksystem, solution, design 
+summary: 'Ce document présente une architecture de calcul et de stockage permettant de déployer les inférence d"intelligence artificielle basée sur processeur graphique sur des contrôleurs de stockage NetApp et des serveurs Lenovo ThinkSystem dans un environnement en périphérie qui répond à l"émergence de scénarios applicatifs.' 
+---
+= Tr-4886 : Inférence d'IA en périphérie - NetApp avec Lenovo ThinkSystem - conception de la solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Satish Thyagarajan, NetApp Miroslav Hodak, Lenovo
+
+
+
+== Récapitulatif
+
+Plusieurs scénarios d'applications émergents, tels que les systèmes d'assistance à la conduite automobile (ADAS), le concept d'industrie 4.0, les Smart cities et l'Internet des objets (IoT), requièrent le traitement des flux de données en continu avec une latence quasi nulle. Ce document présente une architecture de calcul et de stockage permettant de déployer l'inférence d'intelligence artificielle (IA) basée sur les processeurs graphiques sur des contrôleurs de stockage NetApp et des serveurs Lenovo ThinkSystem dans un environnement en périphérie qui répond à ces exigences. Ce document fournit également des données de performance pour le banc d'essai MLPerf Inférence standard, en évaluant diverses tâches d'inférence sur des serveurs de périphérie équipés de processeurs graphiques NVIDIA T4. Nous examinons les performances des scénarios d'inférence hors ligne, à flux unique et à flux multiples. Nous montrons également que l'architecture associée à un système de stockage en réseau partagé économique est hautement performante et qu'elle constitue un point central pour la gestion des données et des modèles pour les serveurs de périphérie multiples.
+
+
+
+== Introduction
+
+De plus en plus d'entreprises génèrent des volumes massifs de données à la périphérie du réseau. Pour tirer le meilleur parti des capteurs intelligents et des données de l'IoT, les entreprises recherchent une solution de streaming en temps réel qui met à profit l'informatique en périphérie. De ce fait, les tâches de calcul exigeantes sont de plus en plus effectuées à la périphérie, en dehors des data centers. L'inférence d'IA est un moteur de cette tendance. Les serveurs de périphérie offrent une puissance de calcul suffisante pour ces charges de travail, en particulier lorsqu'ils sont utilisés des accélérateurs, mais le stockage est souvent limité, en particulier dans les environnements multiserveurs. Dans ce document, nous vous montrons comment déployer un système de stockage partagé dans l'environnement de périphérie et comment il tire parti des charges de travail d'inférence d'IA sans imposer de baisse des performances.
+
+Ce document décrit une architecture de référence pour l'inférence d'IA à la périphérie. Elle regroupe plusieurs serveurs Lenovo ThinkSystem Edge avec un système de stockage NetApp pour créer une solution facile à déployer et à gérer. Il est destiné à servir de guide de référence pour les déploiements pratiques dans diverses situations, comme le sol en usine avec plusieurs caméras et capteurs industriels, les systèmes de point de vente dans les transactions au détail ou les systèmes de conduite autonome (FSD) qui identifient les anomalies visuelles des véhicules autonomes.
+
+Ce document comprend le test et la validation d'une configuration de calcul et de stockage composée du serveur Lenovo ThinkSystem SE350 Edge Server et d'un système de stockage NetApp AFF et EF-Series d'entrée de gamme. Ces architectures de référence constituent une solution efficace et économique pour les déploiements d'IA. Elles fournissent également des services de données complets, une protection des données intégrée, une évolutivité transparente et un stockage de données connecté au cloud avec NetApp ONTAP et le logiciel de gestion des données NetApp SANtricity.
+
+
+
+=== Public visé
+
+Ce document est destiné aux publics suivants :
+
+* Les dirigeants et les architectes d'entreprise qui souhaitent proposer l'IA de manière adéquate à la périphérie.
+* Les data Scientists, les ingénieurs de données, les chercheurs d'IA et de machine learning (ML) et les développeurs de systèmes d'IA.
+* Les architectes d'entreprise qui conçoivent des solutions pour le développement de modèles et d'applications d'IA/ML.
+* Les data Scientists et les ingénieurs d'IA qui recherchent des méthodes efficaces pour déployer les modèles de deep learning (DL) et DE MACHINE LEARNING (ML).
+* Des gestionnaires de terminaux et des administrateurs de serveurs en périphérie sont chargés du déploiement et de la gestion des modèles d'inférence à la périphérie.
+
+
+
+
+=== Architecture de la solution
+
+Ce serveur Lenovo ThinkSystem, avec NetApp ONTAP ou NetApp SANtricity, est conçu pour gérer l'inférence d'IA sur de grands datasets grâce à la puissance de traitement des GPU avec les processeurs classiques. Cette validation démontre les performances élevées et une gestion optimale des données grâce à une architecture qui utilise des serveurs Lenovo de périphérie SR350 uniques ou multiples interconnectés à un seul système de stockage AFF NetApp, comme l'illustre les deux figures suivantes.
+
+image:ai-edge-image2.jpg["Erreur : image graphique manquante"]
+
+image:ai-edge-image17.png["Erreur : image graphique manquante"]
+
+La présentation de l'architecture logique de la figure suivante montre le rôle des éléments de calcul et de stockage dans cette architecture. Elle indique en particulier les éléments suivants :
+
+* Les dispositifs de calcul de périphérie exécutant l'inférence sur les données qu'ils reçoivent des caméras, des capteurs, etc.
+* Élément de stockage partagé qui répond à plusieurs besoins :
++
+** Fournit un emplacement central pour les modèles d'inférence et les autres données requises pour effectuer l'inférence. Les serveurs de calcul accèdent directement au stockage et utilisent les modèles d'inférence à l'échelle du réseau sans avoir à les copier localement.
+** Les modèles mis à jour sont fournis ici.
+** Archive les données d'entrée que les serveurs de périphérie reçoivent pour une analyse ultérieure. Par exemple, si les périphériques sont connectés à des caméras, l'élément de stockage conserve les vidéos capturées par les caméras.
+
+
+
+
+image:ai-edge-image3.png["Erreur : image graphique manquante"]
+
+|===
+
+
+| rouge | bleu 
+
+
+| Système de calcul Lenovo | Système de stockage NetApp AFF 
+
+
+| Périphériques exécutant l'inférence sur les entrées des caméras, des capteurs, etc. | Stockage partagé qui contient les modèles d'inférence et les données de terminaux en périphérie à des fins d'analyse ultérieure. 
+|===
+Cette solution NetApp et Lenovo offre les avantages suivants :
+
+* Les GPU ont accéléré le calcul en périphérie.
+* Déploiement de plusieurs serveurs de périphérie sauvegardés et gérés à partir d'un stockage partagé.
+* Protection fiable des données pour respecter les objectifs de point de récupération (RPO) et de délai de restauration (RTO) faibles, sans perte de données.
+* Gestion des données optimisée grâce aux copies et clones NetApp Snapshot pour rationaliser les workflows de développement.
+
+
+
+
+=== Utilisation de cette architecture
+
+Ce document valide la conception et les performances de l'architecture proposée. Toutefois, nous n'avons pas testé certains éléments logiciels, tels que les conteneurs, la charge de travail ou la synchronisation des données avec le cloud ou le data Center sur site, car ils sont spécifiques à un scénario de déploiement. Il existe ici plusieurs choix.
+
+Au niveau de la gestion des conteneurs, la gestion des conteneurs Kubernetes est un bon choix et est bien prise en charge dans une version entièrement en amont (Canonical) ou dans une version modifiée adaptée aux déploiements d'entreprise (Red Hat). Le link:https://docs.netapp.com/us-en/netapp-solutions/ai/aicp_introduction.html["Plan de contrôle d'IA NetApp"^] Qui utilise NetApp Trident et le nouveau système ajouté https://github.com/NetApp/netapp-dataops-toolkit/releases/tag/v2.0.0["Kit NetApp DataOps"^] Traçabilité intégrée, fonctions de gestion des données, interfaces et outils pour les data Scientists et les ingénieurs de données à intégrer au stockage NetApp. Kubeflow, le kit DE ML pour Kubernetes, fournit des fonctionnalités d'IA supplémentaires, ainsi qu'une prise en charge des versions de modèles et KFServing sur plusieurs plateformes telles que TensorFlow ou NVIDIA Triton Inférence Server. Autre option : la plateforme NVIDIA EGX, qui fournit la gestion des charges de travail et l'accès à un catalogue de conteneurs d'inférence d'IA compatibles avec les GPU. Toutefois, il peut être nécessaire de mettre en production des efforts et une expertise considérables. Pour ce faire, il faut parfois l'assistance d'un éditeur indépendant de logiciels ou d'un consultant.
+
+
+
+=== Domaines de solutions
+
+Le principal avantage de l'inférence d'IA et du calcul en périphérie est la capacité des terminaux à calculer, à traiter et à analyser les données avec un niveau élevé de qualité et sans latence. Ce document présente trop d'exemples d'utilisation de Edge Computing, mais voici quelques exemples bien connus :
+
+
+
+==== Automobiles : véhicules autonomes
+
+Le classique illustration se trouve dans les systèmes d'assistance à la conduite automobile (ADAS) pour les véhicules autonomes (AV). Pour être un conducteur sûr, l'IA dans les voitures sans chauffeur doit rapidement traiter un grand nombre de données provenant des caméras et des capteurs. Prendre trop de temps pour interpréter un objet et un être humain peut signifier la vie ou la mort, c'est pourquoi il est essentiel de pouvoir traiter ces données aussi près que possible du véhicule. Dans ce cas, un ou plusieurs serveurs de calcul de périphérie gèrent les entrées des caméras, DES RADARS, lidar et autres capteurs, tandis que le stockage partagé contient les modèles d'inférence et stocke les données d'entrée des capteurs.
+
+
+
+==== Soins de santé : surveillance des patients
+
+L'un des plus grands impacts de l'IA et de l'Edge Computing est sa capacité à améliorer la surveillance continue des patients atteints de maladies chroniques dans les établissements de soins à domicile et les unités de soins intensifs. Les données provenant de dispositifs périphériques qui surveillent les niveaux d’insuline, la respiration, l’activité neurologique, le rythme cardiaque et les fonctions gastro-intestinales nécessitent une analyse instantanée des données qui doivent être traitées immédiatement parce qu’il y a peu de temps pour agir afin de sauver la vie d’une personne.
+
+
+
+==== Vente au détail : paiement sans caissier
+
+L'informatique en périphérie peut alimenter l'IA et LE ML afin d'aider les détaillants à réduire les délais d'exécution et à accroître le trafic au pied. Les systèmes sans caissier prennent en charge différents composants, tels que :
+
+* Authentification et accès. Connecter le client-revendeur physique à un compte validé et autoriser l'accès à l'espace de vente.
+* Surveillance des stocks. Utilisation de capteurs, de tags RFID et de systèmes de vision informatique pour confirmer la sélection ou la désélection d'articles par les acheteurs.
++
+Dans ce cas, chacun des serveurs périphériques gère chaque compteur de réservation et le système de stockage partagé sert de point de synchronisation central.
+
+
+
+
+
+==== Services financiers : sécurité humaine dans les kiosques et prévention de la fraude
+
+Les services bancaires exploitent l'IA et l'informatique en périphérie pour innover et créer des expériences bancaires personnalisées. Les kiosques interactifs qui utilisent l'analytique en temps réel et l'inférence d'IA permettent désormais aux clients d'utiliser les guichets automatiques pour se retirer de l'argent, mais ils surveillent de façon proactive les kiosques visant à identifier les risques de sécurité humaine ou de comportements frauduleux. Dans ce scénario, les serveurs de calcul en périphérie et les systèmes de stockage partagé sont connectés à des kiosques et caméras interactifs pour aider les banques à collecter et à traiter des données à l'aide de modèles d'inférence IA.
+
+
+
+==== Fabrication : industrie 4.0
+
+La quatrième révolution industrielle (Industrie 4.0) a commencé, ainsi que les nouvelles tendances comme Smart Factory et l'impression 3D. Pour se préparer à un avenir piloté par les données, une communication M2M (machine-to-machine) à grande échelle et l'Internet des objets sont intégrés pour permettre une automatisation accrue sans intervention humaine. Le secteur de la fabrication est déjà hautement automatisé et l'ajout de fonctionnalités d'IA représente une continuation naturelle de la tendance à long terme. L'IA permet d'automatiser les opérations qui peuvent être automatisées avec la vision par ordinateur et d'autres fonctionnalités d'IA. Vous pouvez automatiser le contrôle de qualité ou les tâches qui reposent sur la vision humaine ou la prise de décision pour réaliser des analyses plus rapides des matériaux sur les lignes d'assemblage dans les usines de fabrication afin d'aider les usines à respecter les normes ISO requises en matière de sécurité et de gestion de la qualité. Ici, chaque serveur Edge de calcul est connecté à une matrice de capteurs qui surveille le processus de fabrication et les modèles d'inférence mis à jour sont déplacés vers le stockage partagé, si nécessaire.
+
+
+
+==== Télécommunications : détection de la rouille, inspection des tours et optimisation du réseau
+
+Le secteur des télécommunications utilise la vision par ordinateur et des techniques d'IA pour traiter les images qui détectent automatiquement la rouille et identifient les tours cellulaires qui contiennent de la corrosion et requièrent donc une inspection plus poussée. L'utilisation d'images de drone et de modèles d'IA pour identifier des régions distinctes d'une tour pour analyser la rouille, les fissures de surface et la corrosion a augmenté au cours des dernières années. La demande continue d'augmenter pour les technologies d'IA, qui permettent aux infrastructures de télécommunications et aux tours cellulaires d'être inspectées efficacement, évaluées régulièrement pour vérifier leur dégradation et réparées rapidement si nécessaire.
+
+En outre, dans le secteur des télécommunications, l'utilisation d'algorithmes d'IA et DE ML permet de prévoir les modèles de trafic de données, de détecter des périphériques compatibles 5G et d'automatiser et d'augmenter la gestion de l'énergie à entrées multiples et à sorties multiples (MIMO). Le matériel MIMO est utilisé dans les tours radio pour augmenter la capacité du réseau, mais cela est fourni avec des coûts d'énergie supplémentaires. Les modèles ML pour le « mode veille MIMO » déployés sur les sites cellulaires permettent de prévoir l'utilisation efficace des radios et de réduire les coûts de consommation d'énergie pour les opérateurs de réseaux mobiles (MNO). Les solutions d'inférence et de calcul en périphérie d'IA permettent aux entreprises non seulement de réduire la quantité de données transmises aux data centers, mais aussi de réduire leur coût total de possession, d'optimiser les opérations réseau et d'améliorer les performances globales des utilisateurs.
+
+link:ai-edge-technology-overview.html["Suivant : présentation de la technologie."]

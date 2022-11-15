@@ -1,0 +1,64 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_testing_details_for_section_4.10.html 
+keywords:  
+summary:  
+---
+= Détails des tests pour la section 4.10
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Cette section contient des détails sur les tests pour la section link:osrunai_over-quota_fairness.html["Équité excessive"].
+
+Soumettre les travaux dans l'ordre suivant pour `team-a`, `team-b`, et `team-c`:
+
+|===
+| Projet | NB de GPU | Total | Commentaire 
+
+
+| équipe a | 2 | 4/4 | 1 charge de travail mise en attente 
+
+
+| équipe a | 2 | 4/4 | 2 workloads mis en file d'attente 
+
+
+| équipe-b | 2 | 2/2 | 2 workloads mis en file d'attente 
+
+
+| equipe-c | 2 | 2/2 | 2 workloads mis en file d'attente 
+|===
+Voir la séquence de commande exécutée suivante :
+
+....
+$ runai submit a-3-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-a$ runai submit a-4-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-a$ runai submit b-5-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-b$ runai submit c-6-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-c
+....
+À ce stade, vous devez avoir les États suivants :
+
+|===
+| Projet | GPU alloués | Charges de travail en file d'attente 
+
+
+| équipe a | 4/4 | Deux workloads demandent deux GPU 
+
+
+| équipe-b | 2/2 | Deux workloads demandent chacun deux GPU 
+
+
+| equipe-c | 2/2 | Deux workloads demandent chacun deux GPU 
+
+
+| équipe-d | 8/8 | Aucune 
+|===
+Supprimez ensuite toutes les charges de travail de `team-d`:
+
+....
+$ runai delete -p team-d d-1-gggg d-2-gg d-3-gg
+....
+Voir la section link:osrunai_over-quota_fairness.html["Équité excessive"], pour les discussions sur le scénario de test en cours.
+
+link:osrunai_where_to_find_additional_information.html["Suivante : où trouver des informations complémentaires"]

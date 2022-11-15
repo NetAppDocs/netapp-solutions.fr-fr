@@ -1,0 +1,34 @@
+---
+sidebar: sidebar 
+permalink: ai/ai-sent-support-center-analytics.html 
+keywords: tr-4910, tr4910, 4910, sentiment, analysis, customer value, support center, artificial intelligence 
+summary: 'Ce rapport technique fournit des conseils de conception afin que les clients puissent réaliser une analyse des sentiments dans un centre de support global de niveau entreprise en utilisant les technologies de gestion des données NetApp avec un framework logiciel NVIDIA, par le biais de l"apprentissage par transfert et de la discussion sur l"IA.' 
+---
+= Tr-4910 : analyse du sentiment issue des communications avec le client sur NetApp ai
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Rick Huang, Satish Thyagarajan et David Arnette, NetApp Diego Sosa-Coba, SFL Scientific
+
+Ce rapport technique fournit des conseils de conception afin que les clients puissent réaliser une analyse des sentiments dans un centre de support global de niveau entreprise en utilisant les technologies de gestion des données NetApp avec un framework logiciel NVIDIA, par le biais de l'apprentissage par transfert et de la discussion sur l'IA. Cette solution s'applique à tout secteur souhaitant obtenir des informations sur les clients à partir de fichiers vocaux ou texte enregistrés représentant des journaux de conversation, des e-mails et d'autres communications audio ou texte. Nous avons mis en œuvre un pipeline de bout en bout afin de démontrer la reconnaissance vocale automatique, l'analyse des sentiments en temps réel et le réentraînement du modèle de traitement du langage naturel du deep learning. Nous avons également mis en place des fonctionnalités de recyclage sur un cluster de calcul accéléré par processeur graphique grâce au stockage 100 % Flash de NetApp connecté au cloud. Des modèles linguistiques de pointe peuvent être entraînés et optimisés pour inférence rapidement avec le centre de support global. Ils assurent ainsi une expérience client exceptionnelle et permettent d'évaluer de manière objective les performances des employés à long terme.
+
+L'analyse des sentiments est un domaine d'étude dans le traitement du langage naturel (NLP) par lequel des sentiments positifs, négatifs ou neutres sont extraits du texte. Les systèmes d'IA conversationnels ont été étendus à un niveau d'intégration quasi global, car de plus en plus de gens viennent à les interagir avec eux. L'analyse des sentiments présente de nombreux cas d'utilisation, allant de la détermination de la performance des employés du centre de support lors de conversations avec les appelants à la fourniture de réponses de chatbot automatisées appropriées à la prévision du prix des actions d'une entreprise en fonction des interactions entre les représentants des entreprises et le public lors d'appels trimestriels sur les bénéfices. En outre, l'analyse de sentiment peut être utilisée pour déterminer l'opinion du client sur les produits, les services ou l'assistance fournis par la marque.
+
+Cette solution de bout en bout utilise des modèles NLP pour effectuer une analyse de confiance de haut niveau qui permet de créer des cadres analytiques de centre de support. Les enregistrements audio sont traités en texte écrit et le sentiment est extrait de chaque phrase de la conversation. Les résultats, regroupés dans un tableau de bord, peuvent être conçus pour analyser les sentiments de conversation, historiquement et en temps réel. Cette solution peut être généralisée à d'autres solutions avec des modalités de données et des besoins de sortie similaires. Grâce aux données appropriées, d'autres cas d'utilisation peuvent être mis en œuvre. Par exemple, les appels sur les bénéfices de l'entreprise peuvent être analysés pour obtenir un sentiment à l'aide du même pipeline de bout en bout. D'autres formes d'analyses du PNL, telles que la modélisation de sujets et la reconnaissance d'entités nommées (NER), sont également possibles en raison de la nature souple du pipeline.
+
+Ces implémentations d'IA ont été rendues possibles par NVIDIA RIVA, le kit NVIDIA TAO et le kit NetApp DataOps. Les outils NVIDIA sont utilisés pour déployer rapidement des solutions d'IA haute performance à l'aide de modèles et de pipelines prédéfinis. Le kit NetApp DataOps simplifie les tâches de gestion des données pour accélérer le développement.
+
+
+
+== En valeur pour le client
+
+Les entreprises voient les avantages d'un outil d'évaluation des employés et de réaction des clients pour les conversations texte, audio et vidéo pour l'analyse des sentiments. Les responsables bénéficient des informations présentées dans le tableau de bord, ce qui permet d'évaluer les employés et la satisfaction des clients en fonction des deux côtés de la conversation.
+
+Par ailleurs, le kit NetApp DataOps gère les versions et l'allocation des données au sein de l'infrastructure du client. Cela entraîne des mises à jour fréquentes des analyses présentées au tableau de bord sans générer des coûts de stockage de données qui ne sont pas unwieldy.
+
+link:ai-sent-use-cases.html["Ensuite : cas d'utilisation."]

@@ -1,0 +1,106 @@
+---
+sidebar: sidebar 
+permalink: ai/runai-ld_solution_overview.html 
+keywords: azure, lane, detection, architecture, ai, run, machine learning 
+summary: 'Dans cette architecture, l"accent est mis sur la partie la plus gourmande en capacité de calcul du processus d"IA ou de machine learning (ML) distribué de détection de voies.' 
+---
+= Présentation de la solution
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Dans cette architecture, l'accent est mis sur la partie la plus gourmande en capacité de calcul du processus d'IA ou de machine learning (ML) distribué de détection de voies. La détection de voie est l'une des tâches les plus importantes en conduite autonome, ce qui aide à guider les véhicules en localisant les marquages de voie. Des composants statiques comme les marquages de voie guident le véhicule pour conduire sur la route de manière interactive et sûre.
+
+Les approches basées sur le réseau neuronal convolutif (CNN) ont poussé la compréhension et la segmentation des scènes à un nouveau niveau. Bien qu'il ne fonctionne pas bien pour les objets avec de longues structures et régions qui pourraient être obstruées (par exemple, poteaux, ombre sur la voie, etc.). Le réseau neuronal spatial convolutif (SCNN) généralise la CNN à un niveau spatial riche. Elle permet la propagation d'informations entre les neurones dans la même couche, ce qui le rend mieux adapté aux objets structurés tels que les voies, les pôles ou le chariot avec occlusions. Cette compatibilité est due au fait que les informations spatiales peuvent être renforcées et qu'elles préservent la fluidité et la continuité.
+
+Des milliers d'images de scène doivent être injectées dans le système pour permettre au modèle d'apprendre et de distinguer les différents composants du jeu de données. Ces images comprennent la météo, la journée ou la nuit, les routes à plusieurs voies et d'autres conditions de circulation.
+
+Pour la formation, il est nécessaire de disposer d'une bonne qualité et d'une bonne quantité de données. L'entraînement peut prendre plusieurs jours ou plusieurs semaines avec un seul GPU. L'entraînement distribué par les données peut accélérer le processus en utilisant plusieurs processeurs graphiques ou plusieurs nœuds. Horovod est un cadre de ce type qui permet des formations distribuées, mais la lecture des données dans l'ensemble des clusters des GPU peut jouer un rôle obstacle. Les systèmes Azure NetApp Files assurent des débits élevés et une faible latence continue pour fournir des fonctionnalités scale-up et scale-up que les GPU utilisent afin d'exploiter au mieux leur capacité de calcul. Nos expériences ont démontré que tous les GPU du cluster étaient utilisés à plus de 96 % en moyenne pour l'entraînement de la détection de voie à l'aide de SCNN.
+
+
+
+== Public visé
+
+La science des données inclut plusieurs disciplines INFORMATIQUES et commerciales. Par conséquent, plusieurs personnages font partie du public ciblé :
+
+* Les data Scientists doivent donc pouvoir utiliser les outils et les bibliothèques de leur choix.
+* Les ingénieurs de données doivent savoir comment elles circulent et où elles résident.
+* Des experts en matière de conduite autonome.
+* Administrateurs et architectes cloud pour configurer et gérer les ressources cloud (Azure).
+* Un ingénieur DevOps a besoin des outils pour intégrer les nouvelles applications d'IA et DE ML dans son pipeline d'intégration et de déploiement continus.
+* Les utilisateurs professionnels veulent avoir accès aux applications d'IA et DE ML.
+
+
+Dans ce document, nous vous présentons comment Azure NetApp Files, L'EXÉCUTION : l'IA et Microsoft Azure aident chacun de ces rôles à créer de la valeur commerciale.
+
+
+
+== Technologie de la solution
+
+Cette section traite des exigences technologiques pour la détection de voie en mettant en œuvre une solution de formation distribuée à grande échelle qui s'exécute entièrement dans le cloud Azure. La figure ci-dessous présente l'architecture de la solution.
+
+Les éléments utilisés dans cette solution sont les suivants :
+
+* Azure Kubernetes Service (AKS)
+* Références de calcul Azure avec processeurs graphiques NVIDIA
+* Azure NetApp Files
+* EXÉCUTEZ : L'IA
+* NetApp Trident
+
+
+Les liens vers tous les éléments mentionnés ici sont répertoriés dans le link:runai-ld_additional_information.html["Informations supplémentaires"] section.
+
+image:runai-ld_image2.png["Erreur : image graphique manquante"]
+
+
+
+== Ressources et conditions des services clouds
+
+Le tableau suivant répertorie les composants matériels requis pour implémenter la solution. Les composants cloud utilisés dans toute implémentation de cette solution peuvent varier en fonction des besoins du client.
+
+|===
+| Le cloud | Quantité 
+
+
+| AKS | Au moins trois nœuds système et trois nœuds workers GPU 
+
+
+| Nœuds système SKU de machine virtuelle (VM) | Trois Standard_DS2_v2 
+
+
+| Nœuds worker GPU référence VM | Trois Standard_NC6s_v3 
+
+
+| Azure NetApp Files | Niveau standard 4 To 
+|===
+
+
+== Configuration logicielle requise
+
+Le tableau suivant répertorie les composants logiciels requis pour implémenter la solution. Ils peuvent varier selon l'implémentation de la solution et les besoins du client.
+
+|===
+| Logiciel | Version ou autres informations 
+
+
+| AKS - version Kubernetes | 1.18.14 
+
+
+| EXÉCUTEZ :CLI AI | v2.2.25 
+
+
+| EXÉCUTION : version de l'opérateur Kubernetes d'orchestration d'IA | 1.0.109 
+
+
+| Horovod | 0.21.2 
+
+
+| NetApp Trident | 20.01.1 
+
+
+| Gouvernail | 3.0.0 
+|===

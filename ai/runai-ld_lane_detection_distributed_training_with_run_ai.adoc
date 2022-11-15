@@ -1,0 +1,785 @@
+---
+sidebar: sidebar 
+permalink: ai/runai-ld_lane_detection_distributed_training_with_run_ai.html 
+keywords: azure, lane, detection, training, case, tusimple, dataset, aks, subnet, virtual, network, run, ai, deploy, install, download, process, back, end, storage, horovod, snapshot 
+summary: 'Cette section fournit des informations détaillées sur la configuration de la plateforme pour exécuter l"entraînement à grande échelle avec détection de voie à l"aide de LA solution RUN ai orchestrator.' 
+---
+= Détection de voie – entraînement distribué avec RUN:ai
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Cette section fournit des informations détaillées sur la configuration de la plateforme pour exécuter l'entraînement à grande échelle avec détection de voie, à l'aide de L'OUTIL RUN : ai orchestrator. Nous discutons de l'installation de tous les éléments de la solution et de l'exécution du travail de formation distribuée sur ladite plate-forme. La gestion des versions DE ML est réalisée à l'aide de NetApp SnapshotTM lié À L'EXÉCUTION : des expériences d'IA pour atteindre la reproductibilité des données et des modèles. La gestion des versions DE ML joue un rôle crucial dans le suivi des modèles, le partage du travail entre les membres de l'équipe, la reproductibilité des résultats, la rotation de nouvelles versions de modèles vers la production et la provenance des données. Le contrôle des versions DE NetApp ML (Snapshot) permet de capturer des versions instantanées des données, des modèles entraînés et des journaux associés à chaque expérience. Grâce à sa prise en charge avancée des API, il est facile à intégrer AVEC la plateforme D'IA POUR L'EXÉCUTION : il vous suffit de déclencher un événement basé sur l'état d'entraînement. Par ailleurs, il est nécessaire de capturer l'état de l'expérience dans son intégralité, sans modifier quoi que ce soit dans le code ou les conteneurs exécutés sur Kubernetes (K8s).
+
+Enfin, ce rapport technique se conclut par une évaluation des performances sur plusieurs nœuds compatibles avec les processeurs graphiques dans AKS.
+
+
+
+== Formation distribuée pour la détection de voie utilisation du boîtier à l'aide du jeu de données Tusimple
+
+Dans le présent rapport technique, une formation distribuée est réalisée sur le jeu de données Tusimple pour la détection des voies. Horovod est utilisé dans le code d'entraînement pour l'entraînement distribué des données sur plusieurs nœuds GPU simultanément dans le cluster Kubernetes via AKS. Le code est emballé sous forme d'images conteneur pour le téléchargement et le traitement de données Tusimple. Les données traitées sont stockées sur des volumes persistants alloués par le plug-in NetApp Trident. Pour l'entraînement, une autre image de conteneur est créée, et elle utilise les données stockées sur les volumes persistants créés lors du téléchargement des données.
+
+Pour envoyer les données et la tâche d'entraînement, utilisez L'INTELLIGENCE artificielle pour orchestrer l'allocation et la gestion des ressources. EXÉCUTION : ai vous permet d'effectuer des opérations MPI (message Passing interface) nécessaires à Horovod. Cette disposition permet à plusieurs nœuds GPU de communiquer les uns avec les autres afin de mettre à jour le poids de l'entraînement après chaque mini-lot d'entraînement. Il permet également de surveiller la formation via l'interface et l'interface de ligne de commande, ce qui facilite le suivi de la progression des expériences.
+
+NetApp Snapshot est intégré au code d'entraînement et capture l'état des données et le modèle d'entraînement pour chaque expérience. Cette fonctionnalité vous permet de suivre la version des données et du code utilisé, ainsi que le modèle entraîné associé généré.
+
+
+
+== Installation et installation d'AKS
+
+Pour la configuration et l'installation du cluster AKS, accédez à https://docs.microsoft.com/azure/aks/kubernetes-walkthrough-portal["Créer un cluster AKS"^]. Ensuite, suivez ces étapes :
+
+. Lors de la sélection du type de nœuds (qu'il s'agisse de nœuds système (CPU) ou de nœuds worker (GPU), sélectionnez les éléments suivants :
++
+.. Ajouter le nœud système principal nommé `agentpool` au `Standard_DS2_v2` taille. Utilisez les trois nœuds par défaut.
+.. Ajouter un nœud de travail `gpupool` avec `the Standard_NC6s_v3` de taille de pool. Utilisez trois nœuds au minimum pour les nœuds GPU.
++
+image:runai-ld_image3.png["Erreur : image graphique manquante"]
+
++
+
+NOTE: Le déploiement prend de 5 à 10 minutes.
+
+
+
+. Une fois le déploiement terminé, cliquez sur connexion au cluster. Pour vous connecter au cluster AKS récemment créé, installez l'outil de ligne de commandes Kubernetes à partir de votre environnement local (ordinateur portable/PC). Visitez https://kubernetes.io/docs/tasks/tools/install-kubectl/["Installation des outils"^] Pour l'installer conformément à votre système d'exploitation.
+. https://docs.microsoft.com/cli/azure/install-azure-cli["Installez l'interface de ligne de commandes Azure dans votre environnement local"^].
+. Pour accéder au cluster AKS à partir du terminal, entrez tout d'abord `az login` et de saisir les informations d'identification.
+. Exécutez les deux commandes suivantes :
++
+....
+az account set --subscription xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxx
+aks get-credentials --resource-group resourcegroup --name aksclustername
+....
+. Entrez cette commande dans l'interface de ligne de commande Azure :
++
+....
+kubectl get nodes
+....
++
+
+NOTE: Si les six nœuds sont opérationnels comme indiqué ici, votre cluster AKS est prêt et connecté à votre environnement local.
+
++
+image:runai-ld_image4.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Créez un sous-réseau délégué pour Azure NetApp Files
+
+Pour créer un sous-réseau délégué pour Azure NetApp Files, suivez cette série d'étapes :
+
+. Accédez aux réseaux virtuels depuis le portail Azure. Trouvez votre nouveau réseau virtuel. Il devrait avoir un préfixe tel que aks-vnet, comme indiqué ici. Cliquez sur le nom du réseau virtuel.
++
+image:runai-ld_image5.png["Erreur : image graphique manquante"]
+
+. Cliquez sur sous-réseaux et sélectionnez +sous-réseau dans la barre d'outils supérieure.
++
+image:runai-ld_image6.png["Erreur : image graphique manquante"]
+
+. Indiquez au sous-réseau un nom tel que `ANF.sn` Et sous l'en-tête délégation de sous-réseau, sélectionnez Microsoft.NetApp/volumes. Ne rien changer. Cliquez sur OK.
++
+image:runai-ld_image7.png["Erreur : image graphique manquante"]
+
+
+
+Les volumes Azure NetApp Files sont alloués au cluster d'applications et utilisés en tant que demandes de volume persistant dans Kubernetes. Par conséquent, cette allocation nous offre la flexibilité nécessaire pour mapper les volumes à différents services, qu'il s'agit d'ordinateurs portables Jupyter, de fonctions sans serveur, etc
+
+Les utilisateurs des services peuvent consommer le stockage depuis la plateforme de différentes manières. Les principaux avantages de Azure NetApp Files sont les suivants :
+
+* Permet aux utilisateurs d'utiliser les snapshots.
+* Permet aux utilisateurs de stocker de grandes quantités de données sur des volumes Azure NetApp Files.
+* Optimisez les performances des volumes Azure NetApp Files lorsque vous exécutez leurs modèles sur de vastes ensembles de fichiers.
+
+
+
+
+== Définition Azure NetApp Files
+
+Pour terminer la configuration de Azure NetApp Files, vous devez d'abord la configurer comme décrit à la section https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes["Démarrage rapide : configurez Azure NetApp Files et créez un volume NFS"^].
+
+Toutefois, vous pouvez ignorer les étapes de création d'un volume NFS pour Azure NetApp Files lorsque vous créez des volumes via Trident. Avant de continuer, assurez-vous d'avoir :
+
+. https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-register["Enregistré pour Azure NetApp Files et le fournisseur de ressources NetApp (via le shell cloud Azure)"^].
+. https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-create-netapp-account["Créé un compte dans Azure NetApp Files"^].
+. https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-set-up-capacity-pool["Configurez un pool de capacité"^] (Minimum 4 Tio Standard ou Premium selon vos besoins).
+
+
+
+
+== Peering de réseau virtuel AKS et de réseau virtuel Azure NetApp Files
+
+Ensuite, Peer the AKS Virtual Network (vnet) with the Azure NetApp Files vNet en suivant les étapes suivantes :
+
+. Dans la zone de recherche située en haut du portail Azure, saisissez les réseaux virtuels.
+. Cliquez sur VNet aks- vnet-name, puis entrez Peerings dans le champ de recherche.
+. Cliquez sur +Add et entrez les informations fournies dans le tableau ci-dessous :
++
+|===
+| Champ | Valeur ou description 
+
+
+| Nom de la liaison de peering | aks-vnet-name_to_anf 
+
+
+| ID d'abonnement | Abonnement au réseau VNet Azure NetApp Files auquel vous vous trouvez 
+
+
+| Partenaire de peering vnet | Azure NetApp Files vnet 
+|===
++
+
+NOTE: Laissez toutes les sections non astérisque par défaut
+
+. Cliquez SUR AJOUTER ou sur OK pour ajouter le peering au réseau virtuel.
+
+
+Pour plus d'informations, rendez-vous sur https://docs.microsoft.com/azure/virtual-network/tutorial-connect-virtual-networks-portal["Créez, modifiez ou supprimez un peering de réseau virtuel"^].
+
+
+
+== Trident
+
+Trident est un projet open source piloté par NetApp, conçu pour répondre aux demandes de stockage persistant des applications conteneurisées. Trident a été implémenté en tant que contrôleur de provisionnement externe. Fonctionnant comme un pod autonome, il contrôle les volumes et automatise entièrement le provisionnement.
+
+NetApp Trident facilite l'intégration avec K8s en créant et en connectant des volumes persistants pour le stockage des datasets d'entraînement et des modèles entraînés. Grâce à cette fonctionnalité, les data Scientists et les ingénieurs de données peuvent utiliser K8s en toute simplicité, sans avoir à gérer et à stocker manuellement les datasets. Avec Trident, les data Scientists n'ont plus besoin d'apprendre à gérer de nouvelles plateformes de données, puisqu'il intègre les tâches liées à la gestion des données via l'intégration d'API logiques.
+
+
+
+=== Installation de Trident
+
+Pour installer le logiciel Trident, procédez comme suit :
+
+. https://helm.sh/docs/intro/install/["Installez tout d'abord le gouvernail"^].
+. Téléchargez et extrayez le programme d'installation de Trident 21.01.1.
++
+....
+wget https://github.com/NetApp/trident/releases/download/v21.01.1/trident-installer-21.01.1.tar.gz
+tar -xf trident-installer-21.01.1.tar.gz
+....
+. Définissez le répertoire sur `trident-installer`.
++
+....
+cd trident-installer
+....
+. Copier `tridentctl` dans un répertoire de votre système `$PATH.`
++
+....
+cp ./tridentctl /usr/local/bin
+....
+. Installation de Trident sur le cluster K8s avec Helm :
++
+.. Changez le répertoire en répertoire Helm.
++
+....
+cd helm
+....
+.. Installation de Trident.
++
+....
+helm install trident trident-operator-21.01.1.tgz --namespace trident --create-namespace
+....
+.. Vérifiez l'état des modules Trident de la façon habituelle de K8s :
++
+....
+kubectl -n trident get pods
+....
+.. Si tous les modules sont opérationnels, Trident est installé et vous pouvez passer à l'étape supérieure.
+
+
+
+
+
+
+== Configurer le back-end et la classe de stockage Azure NetApp Files
+
+Pour configurer la back-end et la classe de stockage Azure NetApp Files, procédez comme suit :
+
+. Revenir au répertoire de base.
++
+....
+cd ~
+....
+. Cloner le https://github.com/dedmari/lane-detection-SCNN-horovod.git["référentiel de projet"^] `lane-detection-SCNN-horovod`.
+. Accédez au `trident-config` répertoire.
++
+....
+cd ./lane-detection-SCNN-horovod/trident-config
+....
+. Créez un principe de service Azure (le principe du service est celui de la façon dont Trident communique avec Azure pour accéder à vos ressources Azure NetApp Files).
++
+....
+az ad sp create-for-rbac --name
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+....
+{
+  "appId": "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+   "displayName": "netapptrident",
+    "name": "http://netapptrident",
+    "password": "xxxxxxxxxxxxxxx.xxxxxxxxxxxxxx",
+    "tenant": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"
+ }
+....
+. Création de Trident `backend json` fichier.
+. À l'aide de votre éditeur de texte préféré, renseignez les champs suivants du tableau ci-dessous à l'intérieur du `anf-backend.json` fichier.
++
+|===
+| Champ | Valeur 
+
+
+| ID d'abonnement | Votre ID d'abonnement Azure 
+
+
+| ID de tenantID | Votre ID de locataire Azure (à partir de la sortie d'az ad sp à l'étape précédente) 
+
+
+| ID client | Votre AppID (à partir de la sortie d'az ad sp à l'étape précédente) 
+
+
+| ClientSecret | Votre mot de passe (à partir de la sortie d'az ad sp à l'étape précédente) 
+|===
++
+Le fichier doit ressembler à l'exemple suivant :
+
++
+....
+{
+    "version": 1,
+    "storageDriverName": "azure-netapp-files",
+    "subscriptionID": "fakec765-4774-fake-ae98-a721add4fake",
+    "tenantID": "fakef836-edc1-fake-bff9-b2d865eefake",
+    "clientID": "fake0f63-bf8e-fake-8076-8de91e57fake",
+    "clientSecret": "SECRET",
+    "location": "westeurope",
+    "serviceLevel": "Standard",
+    "virtualNetwork": "anf-vnet",
+    "subnet": "default",
+    "nfsMountOptions": "vers=3,proto=tcp",
+    "limitVolumeSize": "500Gi",
+    "defaults": {
+    "exportRule": "0.0.0.0/0",
+    "size": "200Gi"
+}
+....
+. Demandez à Trident de créer le back-end Azure NetApp Files dans le `trident` espace de noms, utilisation `anf-backend.json` comme le fichier de configuration :
++
+....
+tridentctl create backend -f anf-backend.json -n trident
+....
+. Créer la classe de stockage :
++
+.. Les utilisateurs de K8 peuvent provisionner des volumes à l'aide des ESV qui spécifient une classe de stockage par nom. Demandez à K8s de créer une classe de stockage `azurenetappfiles` Cela fera référence au back-end Azure NetApp Files créé à l'étape précédente en utilisant les éléments suivants :
++
+....
+kubectl create -f anf-storage-class.yaml
+....
+.. Vérifiez que la classe de stockage est créée à l'aide de la commande suivante :
++
+....
+kubectl get sc azurenetappfiles
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image8.png["Erreur : image graphique manquante"]
+
+
+
+
+
+
+
+== Déploiement et configuration des composants de snapshot de volume sur AKS
+
+Si votre cluster n'est pas préinstallé avec les composants de snapshot de volume appropriés, vous pouvez installer ces composants manuellement en exécutant les étapes suivantes :
+
+
+NOTE: AKS 1.18.14 n'a pas de contrôleur Snapshot préinstallé.
+
+. Installez les CRD bêta de Snapshot à l'aide des commandes suivantes :
++
+....
+kubectl create -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-3.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml
+kubectl create -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-3.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml
+kubectl create -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-3.0/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
+....
+. Installez le contrôleur Snapshot à l'aide des documents suivants de GitHub :
++
+....
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-3.0/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/release-3.0/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml
+....
+. Configuration de K8s `volumesnapshotclass`: Avant de créer un snapshot de volume, a https://netapp-trident.readthedocs.io/en/stable-v20.01/kubernetes/concepts/objects.html["classe de snapshot de volume"^] doit être configuré. Créez une classe de snapshot de volumes pour Azure NetApp Files et utilisez-la pour gérer les versions DE MACHINE LEARNING avec la technologie NetApp Snapshot. Création `volumesnapshotclass netapp-csi-snapclass` et définissez-le sur `volumesnapshotclass `par défaut tels que :
++
+....
+kubectl create -f netapp-volume-snapshot-class.yaml
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image9.png["Erreur : image graphique manquante"]
+
+. Vérifier que la classe de copie Snapshot du volume a été créée à l'aide de la commande suivante :
++
+....
+kubectl get volumesnapshotclass
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image10.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== EXÉCUTEZ :installation d'ai
+
+Pour installer RUN:ai, procédez comme suit :
+
+. https://docs.run.ai/Administrator/Cluster-Setup/cluster-install/["Installez le cluster RUN:ai sur AKS"^].
+. Accédez à app.runai.ai, cliquez sur Créer un nouveau projet et nommez-le détection de voie. Un namespace est créé sur un cluster K8s à partir de `runai`- suivi du nom du projet. Dans ce cas, l'espace de noms créé serait runai-Lane-détection.
++
+image:runai-ld_image11.png["Erreur : image graphique manquante"]
+
+. https://docs.run.ai/Administrator/Cluster-Setup/cluster-install/["INSTALLER RUN:AI CLI"^].
+. Sur votre terminal, définissez la détection de voie comme EXÉCUTION par défaut : projet ai à l'aide de la commande suivante :
++
+....
+`runai config project lane-detection`
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image12.png["Erreur : image graphique manquante"]
+
+. Créer ClusterRole et ClusterRoleBinding pour l'espace de noms du projet (par exemple, `lane-detection)` donc le compte de service par défaut appartenant à `runai-lane-detection` l'espace de noms est autorisé à effectuer `volumesnapshot` opérations durant l'exécution du travail :
++
+.. Indiquez les espaces de noms pour vérifier cela `runai-lane-detection` existe à l'aide de cette commande :
++
+....
+kubectl get namespaces
+....
++
+La sortie doit apparaître comme dans l'exemple suivant :
+
++
+image:runai-ld_image13.png["Erreur : image graphique manquante"]
+
+
+
+. Créer ClusterRole `netappsnapshot` Et ClusterRoleBinding `netappsnapshot` à l'aide des commandes suivantes :
++
+....
+`kubectl create -f runai-project-snap-role.yaml`
+`kubectl create -f runai-project-snap-role-binding.yaml`
+....
+
+
+
+
+== Téléchargez et traitez le jeu de données Tusimple AS RUN:ai
+
+Le processus de téléchargement et de traitement de TuDataset simple en TANT QU'EXÉCUTION : travail ai est facultatif. Elle comprend les étapes suivantes :
+
+. Créez et poussez l'image docker ou omettez cette étape si vous souhaitez utiliser une image docker existante (par exemple, `muneer7589/download-tusimple:1.0)`
++
+.. Basculer vers le home Directory :
++
+....
+cd ~
+....
+.. Accédez au répertoire des données du projet `lane-detection-SCNN-horovod`:
++
+....
+cd ./lane-detection-SCNN-horovod/data
+....
+.. Modifier `build_image.sh` script shell et remplacez le référentiel docker par le vôtre. Par exemple, remplacer `muneer7589` avec le nom de votre référentiel docker. Vous pouvez également modifier le nom et LA BALISE de l'image docker (par exemple, `download-tusimple` et `1.0`) :
++
+image:runai-ld_image14.png["Erreur : image graphique manquante"]
+
+.. Exécutez le script pour créer l'image docker et l'envoyer dans le référentiel docker à l'aide des commandes suivantes :
++
+....
+chmod +x build_image.sh
+./build_image.sh
+....
+
+
+. Soumettez la tâche RUN : ai pour télécharger, extraire, pré-traiter et stocker le jeu de données Tusimple Lane Detection dans un `pvc`, Qui est créé de manière dynamique par NetApp Trident :
++
+.. Utiliser les commandes suivantes pour envoyer l'EXÉCUTION du travail ai :
++
+....
+runai submit
+--name download-tusimple-data
+--pvc azurenetappfiles:100Gi:/mnt
+--image muneer7589/download-tusimple:1.0
+....
+.. Saisissez les informations du tableau ci-dessous pour soumettre le travail RUN:ai :
++
+|===
+| Champ | Valeur ou description 
+
+
+| -nom | Nom du travail 
+
+
+| -pvc | PVC du format [StorageClassName]:Size:ContainerMountPath dans la soumission de tâche ci-dessus, vous créez un PVC basé sur la demande à l'aide de Trident avec la classe de stockage azurenetappfiles. La capacité de volume persistant est ici de 100Gi et elle est montée sur le chemin /mnt. 
+
+
+| -image | Image Docker à utiliser lors de la création du conteneur pour cette tâche 
+|===
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image15.png["Erreur : image graphique manquante"]
+
+.. Répertorier les travaux RUN:ai soumis.
++
+....
+runai list jobs
+....
++
+image:runai-ld_image16.png["Erreur : image graphique manquante"]
+
+.. Vérifiez les journaux des travaux soumis.
++
+....
+runai logs download-tusimple-data -t 10
+....
++
+image:runai-ld_image17.png["Erreur : image graphique manquante"]
+
+.. Énumérez le `pvc` créé. Utilisez-le `pvc` commande pour la formation à l'étape suivante.
++
+....
+kubectl get pvc | grep download-tusimple-data
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image18.png["Erreur : image graphique manquante"]
+
+.. Vérifiez le travail EN COURS D'EXÉCUTION : ai UI (ou `app.run.ai`).
++
+image:runai-ld_image19.png["Erreur : image graphique manquante"]
+
+
+
+
+
+
+
+== Effectuer une formation sur la détection de voie distribuée à l'aide de Horovod
+
+La formation sur la détection de voie distribuée à l'aide de Horovod est un processus facultatif. Notez toutefois que voici les étapes impliquées :
+
+. Créez et poussez l'image docker ou ignorez cette étape pour utiliser l'image docker existante (par exemple, `muneer7589/dist-lane-detection:3.1):`
++
+.. Basculez vers le répertoire de base.
++
+....
+cd ~
+....
+.. Accédez au répertoire du projet `lane-detection-SCNN-horovod.`
++
+....
+cd ./lane-detection-SCNN-horovod
+....
+.. Modifiez le `build_image.sh` script shell et remplacez le référentiel docker par le vôtre (par exemple, remplacez-le `muneer7589` avec le nom de votre référentiel docker). Vous pouvez également modifier le nom et LA BALISE de l'image docker (`dist-lane-detection` et `3.1, for example)`.
++
+image:runai-ld_image20.png["Erreur : image graphique manquante"]
+
+.. Exécutez le script pour créer l'image docker et l'envoyer dans le référentiel docker.
++
+....
+chmod +x build_image.sh
+./build_image.sh
+....
+
+
+. Soumettre le COURSE : travail d'IA pour la formation distribuée (MPI) :
++
+.. Utilisation de l'option Submit of RUN : l'IA pour la création automatique de volume persistant à l'étape précédente (pour le téléchargement des données) vous permet uniquement d'avoir un accès RWO, qui permet non à plusieurs pods ou nœuds d'accéder au même volume persistant pour l'entraînement distribué. Mettez à jour le mode d'accès sur ReadWriteMany et utilisez le patch Kubernetes pour le faire.
+.. Commencez par obtenir le nom du volume de la demande de volume persistant en exécutant la commande suivante :
++
+....
+kubectl get pvc | grep download-tusimple-data
+....
++
+image:runai-ld_image21.png["Erreur : image graphique manquante"]
+
+.. Corriger le volume et mettre à jour le mode d'accès à ReadWriteMany (remplacer le nom du volume par le vôtre dans la commande suivante) :
++
+....
+kubectl patch pv pvc-bb03b74d-2c17-40c4-a445-79f3de8d16d5 -p '{"spec":{"accessModes":["ReadWriteMany"]}}'
+....
+.. Soumettre le STAGE : ai MPI pour l'exécution du travail de formation répartie en utilisant les informations du tableau ci-dessous :
++
+....
+runai submit-mpi
+--name dist-lane-detection-training
+--large-shm
+--processes=3
+--gpu 1
+--pvc pvc-download-tusimple-data-0:/mnt
+--image muneer7589/dist-lane-detection:3.1
+-e USE_WORKERS="true"
+-e NUM_WORKERS=4
+-e BATCH_SIZE=33
+-e USE_VAL="false"
+-e VAL_BATCH_SIZE=99
+-e ENABLE_SNAPSHOT="true"
+-e PVC_NAME="pvc-download-tusimple-data-0"
+....
++
+|===
+| Champ | Valeur ou description 
+
+
+| nom | Nom du travail de formation distribué 
+
+
+| grand shm | Montage d'un périphérique grand /dev/shm il s'agit d'un système de fichiers partagé monté sur la RAM et fournit suffisamment de mémoire partagée pour que plusieurs collaborateurs du processeur puissent traiter et charger des lots dans la RAM du CPU. 
+
+
+| processus | Nombre de processus de formation distribués 
+
+
+| gpu | Nombre de GPU/processus à allouer pour le travail, trois processus utilisateur sont nécessaires (--processus=3), chacun étant alloué avec un seul GPU (--gpu 1). 
+
+
+| pvc | Utilisez le volume persistant existant (pvc-download-tusimple-data-0) créé par le travail précédent (download-tusimple-data) et monté sur le chemin /mnt 
+
+
+| image | Image Docker à utiliser lors de la création du conteneur pour cette tâche 
+
+
+2+| Définissez les variables d'environnement à définir dans le conteneur 
+
+
+| EMPLOYÉS_UTILISÉS | Le fait de définir l'argument sur true active le chargement de données multi-processus 
+
+
+| NOMBRE_D'EMPLOYÉS | Nombre de processus de travail du chargeur de données 
+
+
+| TAILLE_LOT | Taille des lots d'entraînement 
+
+
+| USE_VAL | Le fait de définir l'argument sur vrai permet la validation 
+
+
+| VAL_BATCH_SIZE | Taille du lot de validation 
+
+
+| ACTIVER_SNAPSHOT | La définition de l'argument sur true permet de prendre des données et des snapshots de modèles entraînés à des fins de gestion des versions DU ML 
+
+
+| NOM_PVC | Nom de la demande de volume persistant pour créer un snapshot de. Dans la soumission des travaux ci-dessus, vous prenez un snapshot de pvc-download-tsimple-Data-0, composé d'un dataset et de modèles entraînés 
+|===
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image22.png["Erreur : image graphique manquante"]
+
+.. Répertorier le travail soumis.
++
+....
+runai list jobs
+....
++
+image:runai-ld_image23.png["Erreur : image graphique manquante"]
+
+.. Journaux des travaux soumis :
++
+....
+runai logs dist-lane-detection-training
+....
++
+image:runai-ld_image24.png["Erreur : image graphique manquante"]
+
+.. Consulter la tâche d'entraînement EXÉCUTÉE : GUI d'IA (ou app.runai.ai): SESSIONS : tableau de bord d'IA, comme le montre les figures ci-dessous). La première figure présente trois processeurs graphiques alloués à la tâche d'entraînement distribuée sur trois nœuds sur AKS, puis la seconde SESSION :ai Jobs :
++
+image:runai-ld_image25.png["Erreur : image graphique manquante"]
+
++
+image:runai-ld_image26.png["Erreur : image graphique manquante"]
+
+.. Une fois l'entraînement terminé, vérifiez la copie NetApp Snapshot créée et associée à L'EXÉCUTION du travail : IA.
++
+....
+runai logs dist-lane-detection-training --tail 1
+....
++
+image:runai-ld_image27.png["Erreur : image graphique manquante"]
+
++
+....
+kubectl get volumesnapshots | grep download-tusimple-data-0
+....
+
+
+
+
+
+
+== Restaurez les données à partir de la copie NetApp Snapshot
+
+Pour restaurer les données à partir de la copie NetApp Snapshot, effectuez la procédure suivante :
+
+. Basculez vers le répertoire de base.
++
+....
+cd ~
+....
+. Accédez au répertoire du projet `lane-detection-SCNN-horovod`.
++
+....
+cd ./lane-detection-SCNN-horovod
+....
+. Modifier `restore-snaphot-pvc.yaml` et mettre à jour `dataSource` `name` Champ de la copie Snapshot à partir duquel vous souhaitez restaurer les données. Vous pouvez également modifier le nom du volume persistant dans lequel les données seront restaurées, dans cet exemple son `restored-tusimple`.
++
+image:runai-ld_image29.png["Erreur : image graphique manquante"]
+
+. Créez un nouveau PVC à l'aide de `restore-snapshot-pvc.yaml`.
++
+....
+kubectl create -f restore-snapshot-pvc.yaml
+....
++
+Le résultat de la commande doit ressembler à l'exemple suivant :
+
++
+image:runai-ld_image30.png["Erreur : image graphique manquante"]
+
+. Si vous souhaitez utiliser les données restaurées pour l'entraînement, la candidature reste la même qu'auparavant. Remplacez uniquement la `PVC_NAME` avec le restauré `PVC_NAME` lors de la soumission du travail de formation, comme l'indique les commandes suivantes :
++
+....
+runai submit-mpi
+--name dist-lane-detection-training
+--large-shm
+--processes=3
+--gpu 1
+--pvc restored-tusimple:/mnt
+--image muneer7589/dist-lane-detection:3.1
+-e USE_WORKERS="true"
+-e NUM_WORKERS=4
+-e BATCH_SIZE=33
+-e USE_VAL="false"
+-e VAL_BATCH_SIZE=99
+-e ENABLE_SNAPSHOT="true"
+-e PVC_NAME="restored-tusimple"
+....
+
+
+
+
+== Évaluation des performances
+
+Pour montrer l'évolutivité linéaire de la solution, des tests de performance ont été réalisés dans deux scénarios : un GPU et trois GPU. L'allocation du GPU, l'utilisation du GPU et de la mémoire, différents metrics à un ou trois nœuds ont été capturés lors de l'entraînement sur le dataset de détection Tulane simple. Les données sont multiplié par cinq dans le seul but d'analyser l'utilisation des ressources au cours des processus d'entraînement.
+
+La solution permet de commencer avec un petit dataset et quelques GPU. Lorsque le volume de données et la demande de GPU augmentent, les clients peuvent faire évoluer horizontalement dynamiquement les téraoctets dans le niveau standard et monter jusqu'au niveau Premium pour obtenir un débit par téraoctet sans déplacer de données. Ce processus est expliqué plus en détail dans la section, link:runai-ld_lane_detection_distributed_training_with_run_ai.html#azure-netapp-files-service-levels["Niveaux de service Azure NetApp Files"].
+
+Le temps de traitement d'un GPU était de 12 heures et 45 minutes. Le temps de traitement sur trois GPU sur trois nœuds était d'environ 4 heures et 30 minutes.
+
+Les chiffres présentés dans la suite de ce document illustrent des exemples de performances et d'évolutivité en fonction des besoins spécifiques de l'entreprise.
+
+La figure ci-dessous illustre l'allocation de 1 GPU et l'utilisation de la mémoire.
+
+image:runai-ld_image31.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre l'utilisation des GPU d'un nœud.
+
+image:runai-ld_image32.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre la taille de la mémoire d'un nœud unique (16 Go).
+
+image:runai-ld_image33.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre le nombre de GPU d'un nœud (1).
+
+image:runai-ld_image34.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre l'allocation de GPU d'un nœud (%).
+
+image:runai-ld_image35.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre trois GPU répartis sur trois nœuds : l'allocation des GPU et la mémoire.
+
+image:runai-ld_image36.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre le taux d'utilisation de trois GPU sur trois nœuds (%).
+
+image:runai-ld_image37.png["Erreur : image graphique manquante"]
+
+La figure ci-dessous illustre l'utilisation de la mémoire de trois nœuds sur trois GPU (%).
+
+image:runai-ld_image38.png["Erreur : image graphique manquante"]
+
+
+
+== Niveaux de service Azure NetApp Files
+
+Vous pouvez modifier le niveau de service d'un volume existant en déplaçant ce volume vers un autre pool de capacité qui utilise le https://docs.microsoft.com/azure/azure-netapp-files/azure-netapp-files-service-levels["niveau de service"^] vous voulez le volume. Cette modification de niveau de service existante pour le volume n'exige pas la migration des données. Elle n'affecte pas non plus l'accès au volume.
+
+
+
+=== Modification dynamique du niveau de service d'un volume
+
+Pour modifier le niveau de service d'un volume, procédez comme suit :
+
+. Sur la page volumes, cliquez avec le bouton droit de la souris sur le volume dont vous souhaitez modifier le niveau de service. Sélectionnez Modifier le pool.
++
+image:runai-ld_image39.png["Erreur : image graphique manquante"]
+
+. Dans la fenêtre change Pool, sélectionnez le pool de capacité vers lequel vous souhaitez déplacer le volume. Cliquez ensuite sur OK.
++
+image:runai-ld_image40.png["Erreur : image graphique manquante"]
+
+
+
+
+
+=== Automatisez les changements de niveau de services
+
+Le changement de niveau de service dynamique est actuellement dans l'aperçu public, mais il n'est pas activé par défaut. Pour activer cette fonction sur l'abonnement Azure, suivez les étapes indiquées dans le document « file:///C:\Users\crich\Downloads\•%09https:\docs.microsoft.com\azure\azure-netapp-files\dynamic-change-volume-service-level["Modification dynamique du niveau de service d'un volume"^]. »
+
+* Vous pouvez également utiliser les commandes suivantes pour Azure : interface de ligne de commandes. Pour plus d'informations sur la modification de la taille du pool de Azure NetApp Files, rendez-vous sur https://docs.microsoft.com/cli/azure/netappfiles/volume?view=azure-cli-latest-az_netappfiles_volume_pool_change["Volume az netappfiles : gestion des ressources de volume Azure NetApp Files (ANF)"^].
++
+....
+az netappfiles volume pool-change -g mygroup
+--account-name myaccname
+-pool-name mypoolname
+--name myvolname
+--new-pool-resource-id mynewresourceid
+....
+* Le `set- aznetappfilesvolumepool` Cmdlet affichée ici peut modifier le pool d’un volume Azure NetApp Files. Pour plus d'informations sur la modification de la taille du pool de volumes et d'Azure PowerShell, rendez-vous sur https://docs.microsoft.com/powershell/module/az.netappfiles/set-aznetappfilesvolumepool?view=azps-5.8.0["Modification du pool d'un volume Azure NetApp Files"^].
++
+....
+Set-AzNetAppFilesVolumePool
+-ResourceGroupName "MyRG"
+-AccountName "MyAnfAccount"
+-PoolName "MyAnfPool"
+-Name "MyAnfVolume"
+-NewPoolResourceId 7d6e4069-6c78-6c61-7bf6-c60968e45fbf
+....
+

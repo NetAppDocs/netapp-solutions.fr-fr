@@ -1,0 +1,36 @@
+= 
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Planification du manuel de réplication des fichiers binaires et des bases de données
+
+*Configurer et lancer le modèle de travail.*
+
+. Copier le modèle de travail créé précédemment.
++
+.. Accédez à Ressources → modèles.
+.. Recherchez le modèle d'installation ONTAP/CVO et, à l'extrême droite, cliquez sur Copy Template
+.. Cliquez sur Modifier le modèle dans le modèle copié et changez le nom en Manuel de réplication de base de données et binaire.
+.. Conserver les mêmes inventaires, projets, identifiants pour le modèle.
+.. Sélectionnez ora_Replication_cg.yml comme PlayBook à exécuter.
+.. Les variables resteront les mêmes, mais l'IP du cluster CVO devra être définie dans la variable dst_cluster_ip.
+.. Cliquez sur Enregistrer.
+
+
+. Planifier le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle de manuel de réplication de base de données et binaire, puis cliquez sur programmes dans le jeu d'options supérieur.
+.. Cliquez sur Ajouter, ajouter un planning de noms pour la réplication binaire et de base de données, choisissez la date/l'heure de début au début de l'heure, choisissez votre fuseau horaire local et la fréquence d'exécution. La fréquence d'exécution sera souvent mise à jour de la réplication SnapMirror.
++
+
+NOTE: Un planning distinct sera créé pour la réplication du volume de journaux afin de pouvoir le répliquer à une fréquence plus élevée.
+
+
+
+

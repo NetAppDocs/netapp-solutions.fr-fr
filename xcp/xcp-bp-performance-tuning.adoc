@@ -1,0 +1,41 @@
+---
+sidebar: sidebar 
+permalink: xcp/xcp-bp-performance-tuning.html 
+keywords: performance, tuning, operations, windows 
+summary: Cette section fournit certains des paramètres de réglage qui aident à améliorer la performance des opérations XCP. 
+---
+= Réglage des performances
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:xcp-bp-sizing-guidelines-overview.html["Précédent : instructions de dimensionnement."]
+
+Cette section fournit certains paramètres d'ajustement qui aident à améliorer la performance des opérations XCP :
+
+* Pour une meilleure évolutivité et une meilleure distribution de la charge de travail sur plusieurs instances XCP, divisez les sous-dossiers de chaque instance XCP pour la migration et le transfert de données.
+* XCP peut utiliser des ressources CPU maximales, plus il y a de cœurs de processeur, plus les performances sont élevées. Par conséquent, vous devriez avoir plus de processeurs dans le serveur XCP. Nous avons testé 128 Go de RAM et 48x de processeurs cœurs, ce qui nous a permis de bénéficier de performances supérieures à 8 fois CPU et de 8 Go de RAM.
+* Copie XCP avec `-parallel` L'option est basée sur le nombre de CPU. Le nombre par défaut de threads parallèles (sept) est parfois suffisant pour la plupart des opérations de transfert et de migration de données XCP. Pour XCP Windows par défaut, le nombre de processus parallèles est égal au nombre de CPU. Le nombre maximum de `-parallel` l'option doit être inférieure ou égale au nombre de cœurs.
+* Le 10GbE est un bon début pour le transfert de données. Nos tests ont été réalisés avec 25 GbE et 100 GbE, qui constituent un meilleur transfert de données et sont recommandés pour le transfert de données de grande taille.
+* Pour Azure NetApp Files, les performances varient selon le niveau de service. Pour plus d'informations, consultez le tableau suivant présentant les niveaux de service et les performances des disques Azure NetApp Files.
+
+
+|===
+| Niveau de service | Standard | Premium | Ultra 
+
+
+| Débit | 16 Mbit/s/téraoctet (To) | 64 Mbit/s/To | 128 Mo/To 
+
+
+| Types de workloads | Partages de fichiers à usage général, messagerie électronique et web | Gestion des bâtiments, bases de données et applications | Applications sensibles à la latence 
+
+
+| Performances expliquées | Performances standard : 4 1,000 IOPS par To (16 000 E/S) et 16 Mbit/s/To | Performances Premium : 4 4,000 IOPS par To (16 000 E/S) et 64 Mbit/s/To | Performances extrêmes : 8,000 000 IOPS par To (16 000 E/S) et 128 Mo/To 
+|===
+Vous devez choisir le niveau de service qui convient en fonction du débit et des types de workloads. La plupart des clients commencent par le niveau Premium et modifient le niveau de service en fonction du workload.
+
+link:xcp-bp-customer-scenarios-overview.html["Suivant : scénarios client."]

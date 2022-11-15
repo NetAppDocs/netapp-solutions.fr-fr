@@ -1,0 +1,52 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_advanced_cluster_management_deployment.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, ONTAP, Trident, Red Hat OpenShift, Advanced Cluster Management, Advanced Cluster Management for Kubernetes 
+summary: Solution NetApp de gestion avancée des clusters pour Kubernetes sur Red Hat OpenShift. 
+---
+= Déploiement de la gestion avancée des clusters pour Kubernetes
+:allow-uri-read: 
+
+
+Pour installer Advanced Cluster Management pour Kubernetes sur un cluster OpenShift, effectuez les opérations suivantes :
+
+. Choisissez un cluster OpenShift en tant que cluster Hub et connectez-vous avec les privilèges cluster-admin.
+. Accédez à Operators > Operators Hub et recherchez Advanced Cluster Management pour Kubernetes.
++
+image::redhat_openshift_image66.jpg[Carreaux ACM]
+
+. Sélectionnez Advanced Cluster Management pour Kubernetes et cliquez sur Install.
++
+image::redhat_openshift_image67.jpg[Détails sur les carreaux ACM]
+
+. Dans l'écran Install Operator, indiquez les détails nécessaires (NetApp recommande de conserver les paramètres par défaut) et cliquez sur Install.
++
+image::redhat_openshift_image68.jpg[Poser la mosaïque de l'opérateur ACM]
+
+. Attendre la fin de l'installation par l'opérateur.
++
+image::redhat_openshift_image69.jpg[Installation de l'opérateur ACM en cours]
+
+. Une fois l'opérateur installé, cliquez sur Créer MultiClusterHub.
++
+image::redhat_openshift_image70.jpg[Conducteur ACM MulticlusterHub]
+
+. Dans l'écran Créer MultiClusterHub, cliquez sur Créer après avoir donné les détails. Cela initie l'installation d'un hub multi-cluster.
++
+image::redhat_openshift_image71.jpg[Écran Créer un concentrateur Multicluster]
+
+. Une fois que tous les pods passent à l'état d'exécution dans l'espace de noms d'open-cluster-management et que l'opérateur passe à l'état « réussi », Advanced Cluster Management pour Kubernetes est installé.
++
+image::redhat_openshift_image72.jpg[Opérateur ACM installé]
+
+. L'installation du concentrateur prend un certain temps et, une fois cette opération effectuée, le concentrateur MultiCluster passe à l'état d'exécution.
++
+image::redhat_openshift_image73.jpg[Concentrateur Multicluster prêt]
+
+. Elle crée une route dans l'espace de noms Open-cluster-management. Connectez-vous à l'URL de la route pour accéder à la console Advanced Cluster Management.
++
+image::redhat_openshift_image74.jpg[Acheminement de la console ACM]
+
+
+
+link:rh-os-n_use_case_advanced_cluster_management_features_cluster_lcm.html["Suivant : fonctionnalités - Cluster Lifecycle Management."]

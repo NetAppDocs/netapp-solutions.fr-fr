@@ -1,0 +1,99 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_concepts_and_components.html 
+keywords: Concepts, Components, Machine Learning, Kubernetes 
+summary:  
+---
+= Concepts et composants
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section aborde les concepts et les composants associés à la mise en cache de données dans un flux DE TRAVAIL DE ML.
+
+
+
+== Apprentissage machine
+
+L'APPRENTISSAGE MACHINE est en passe de devenir essentiel pour de nombreuses entreprises et organisations à travers le monde. Par conséquent, LES équipes IT et DevOps doivent aujourd'hui relever les défis liés à la standardisation des workloads DE ML et au provisionnement des ressources cloud, sur site et de calcul hybride qui prennent en charge les workflows dynamiques et intensifs requis par les pipelines de ML et les pipelines.
+
+
+
+== Apprentissage machine basé sur un conteneur et Kubernetes
+
+Les conteneurs sont des instances isolées de l'espace utilisateur qui s'exécutent sur un noyau de système d'exploitation hôte partagé. Les conteneurs se sont de plus en plus rapidement adoption. Les conteneurs offrent bon nombre des avantages de la boxe applicative offerts par les machines virtuelles. Cependant, les couches de l'hyperviseur et du système d'exploitation invité sur lesquelles reposent les machines virtuelles ont été éliminées, les conteneurs sont beaucoup plus légers.
+
+Les conteneurs permettent également de packaging efficace des dépendances entre applications, des durées d'exécution, etc. Directement avec une application. Le format de conditionnement de conteneurs le plus utilisé est le container Docker. Une application conteneurisée dans le format de conteneur Docker peut être exécutée sur n'importe quel ordinateur capable d'exécuter des conteneurs Docker. Cela est vrai même si les dépendances de l’application ne sont pas présentes sur la machine, car toutes les dépendances sont emballées dans le conteneur lui-même. Pour plus d'informations, consultez la https://www.docker.com/["Site Web de Docker"^].
+
+Kubernetes, l'orchestrateur de conteneur le plus populaire, permet aux data Scientists de lancer des travaux et des pipelines flexibles basés sur des conteneurs. Elle permet également aux équipes chargées de l'infrastructure de gérer et de contrôler les workloads DE ML dans un environnement cloud et géré unique. Pour plus d'informations, consultez la https://kubernetes.io/["Site Web de Kubernetes"^].
+
+
+
+== cnvrg.io
+
+Cnvrg.io est un système d'exploitation d'IA qui transforme la façon dont les entreprises gèrent, évoluent et accélèrent le développement de l'IA et de la data science dans la recherche jusqu'à la production. Conçue par les data Scientists, la plateforme basée sur le code First offre aux data Scientists une grande flexibilité pour une exécution sur site ou dans le cloud. Avec la gestion des modèles, la division MLOps et les solutions continues DE ML, cnvrg.io propose aux équipes de science des données des technologies de pointe afin qu'elles puissent consacrer moins de temps au DevOps et se concentrer sur les algorithmes réels. Depuis l'utilisation de cnvrg.io, les équipes de différents secteurs ont obtenu davantage de modèles en production, ce qui a eu pour conséquence une plus grande valeur commerciale.
+
+
+
+=== Méta-planificateur cnvrg.io
+
+cnvrg. l'e/s dispose d'une architecture unique qui permet AUX INGÉNIEURS ET AUX DÉPARTEMENTS INFORMATIQUES d'associer différentes ressources de calcul au même plan de contrôle et de permettre à cnvrg.io de gérer les tâches DE ML dans l'ensemble des ressources. Cela signifie qu'ELLE peut connecter plusieurs clusters Kubernetes sur site, des serveurs de machine virtuelle et des comptes cloud, et exécuter des workloads DE ML sur toutes les ressources, comme l'illustre la figure suivante.
+
+image:hcaios_image5.png["Erreur : image graphique manquante"]
+
+
+
+=== Cache des données cnvrg.io
+
+grâce à sa technologie de mise en cache des données, cnvrg.io permet aux data scientists de définir des versions de datasets actives et inactives. Par défaut, les jeux de données sont stockés dans une base de données de stockage objet centralisée. Les data Scientists peuvent ensuite mettre en cache une version de données spécifique sur la ressource de calcul sélectionnée pour gagner du temps lors du téléchargement et ainsi augmenter LE DÉVELOPPEMENT DU ML et la productivité. Les datasets qui sont mis en cache et ne sont pas utilisés pendant quelques jours sont automatiquement supprimés du protocole NFS sélectionné. La mise en cache et la suppression du cache peuvent être réalisées en un clic. Aucun codage ni AUCUNE tâche n'est requise POUR LE DevOps.
+
+
+
+=== Flux cnvrg.io et pipelines DE ML
+
+Cnvrg.io écoulements est un outil de construction de pipelines DE ML de production. Chaque composant d'un flux est un script/code exécuté sur un calcul sélectionné avec une image docker de base. Cette conception permet aux data Scientists et aux ingénieurs de créer un pipeline unique capable d'exécuter à la fois sur site et dans le cloud. cnvrg.io garantit le déplacement des données, des paramètres et des artefacts entre les différents composants. En outre, chaque flux est surveillé et suivi pour une science des données 100 % reproductible.
+
+
+
+=== CŒUR cnvrg.io
+
+Le CŒUR cnvrg.io est une plateforme gratuite pour la communauté des sciences des données afin d'aider les data Scientists à se concentrer davantage sur l'informatique et moins sur le DevOps. L'infrastructure flexible DU CŒUR permet aux data Scientists d'utiliser n'importe quel langage, framework d'IA ou environnement de calcul, qu'ils se trouvent sur site ou dans le cloud pour qu'ils puissent faire ce qu'ils font de mieux en créant des algorithmes. Le CŒUR cnvrg.io peut être facilement installé à l'aide d'une seule commande sur tout cluster Kubernetes.
+
+
+
+== NetApp ONTAP ai
+
+ONTAP ai est une architecture de référence de data Center pour les workloads D'AM et d'AP qui utilisent les systèmes de stockage NetApp AFF et les systèmes NVIDIA DGX avec des GPU Tesla V100. ONTAP ai repose sur le protocole de fichiers NFS standard plus de 100 Gb Ethernet, offrant ainsi aux clients une infrastructure DE ML/DL haute performance qui utilise des technologies de data Center standard afin de réduire les frais d'implémentation et d'administration. L'utilisation d'un réseau et de protocoles standardisés permet l'intégration d'ONTAP ai aux environnements de cloud hybride tout en maintenant la cohérence et la simplicité opérationnelles. En tant que solution d'infrastructure prévalidée, ONTAP ai réduit les délais de déploiement et les risques, et réduit considérablement la surcharge administrative, ce qui permet aux clients d'accélérer le retour sur investissement.
+
+
+
+== NVIDIA DeepOps
+
+DeepOps est un projet open source de NVIDIA qui, grâce à Ansible, automatise le déploiement de clusters de serveurs GPU conformément aux bonnes pratiques. DeepOps est modulaire et peut être utilisé pour diverses tâches de déploiement. Pour ce document et l'exercice de validation décrit, DeepOps est utilisé pour déployer un cluster Kubernetes composé de nœuds workers de serveurs GPU. Pour plus d'informations, consultez la https://github.com/NVIDIA/deepops["Site Web de DeepOps"^].
+
+
+
+== NetApp Trident
+
+Trident est un orchestrateur de stockage open source développé et géré par NetApp qui simplifie considérablement la création, la gestion et la consommation du stockage persistant pour les workloads Kubernetes. Trident est une application native de Kubernetes qui s'exécute directement dans un cluster Kubernetes. Avec Trident, les utilisateurs de Kubernetes (développeurs, data Scientists, administrateurs Kubernetes, etc.) peuvent créer, gérer et interagir avec les volumes de stockage persistant dans le format Kubernetes standard qu'ils connaissent déjà. Ils peuvent également bénéficier des fonctionnalités avancées de gestion des données de NetApp et d'un environnement Data Fabric optimisé par la technologie NetApp. Trident élimine les complexités du stockage persistant et facilite la consommation. Pour plus d'informations, consultez la https://netapp-trident.readthedocs.io/en/stable-v18.07/kubernetes/["Site Web Trident"^].
+
+
+
+== NetApp StorageGRID
+
+NetApp StorageGRID est une plateforme de stockage objet Software-defined conçue pour répondre à ces besoins avec un stockage simple et similaire à celui du cloud, accessible via le protocole S3. StorageGRID est un système scale-out conçu pour prendre en charge plusieurs nœuds sur plusieurs sites connectés par Internet, quelle que soit la distance. Grâce au moteur de règles intelligent de StorageGRID, les utilisateurs ont la possibilité de choisir des objets de codage d'effacement sur l'ensemble des sites pour assurer la résilience géographique ou la réplication d'objets entre les sites distants, afin de minimiser la latence d'accès au réseau WAN. Avec cette solution, StorageGRID propose un excellent data Lake de stockage objet primaire de cloud privé.
+
+
+
+== NetApp Cloud Volumes ONTAP
+
+Le logiciel de gestion des données NetApp Cloud Volumes ONTAP permet de contrôler et de protéger les données utilisateur et d'optimiser l'efficacité du stockage, tout en bénéficiant de la flexibilité des fournisseurs de cloud public tels que AWS, Google Cloud Platform et Microsoft Azure. Cloud Volumes ONTAP est un logiciel de gestion des données natif cloud basé sur le logiciel de stockage NetApp ONTAP. Il offre aux utilisateurs une plateforme de stockage universelle haute performance qui répond à leurs besoins cloud. En utilisant le même logiciel de gestion du stockage dans le cloud et sur site, les utilisateurs bénéficient de l'avantage d'un environnement Data Fabric sans devoir former les équipes IT à des méthodes entièrement nouvelles de gestion des données.
+
+Si le client s'intéresse aux modèles de déploiement de cloud hybride, Cloud Volumes ONTAP offre des fonctionnalités et des performances exceptionnelles dans la plupart des clouds publics, afin d'offrir à ses utilisateurs une expérience cohérente et transparente, quel que soit l'environnement.
+
+link:hcaios_hardware_and_software_requirements.html["Suivant : configuration matérielle et logicielle requise"]

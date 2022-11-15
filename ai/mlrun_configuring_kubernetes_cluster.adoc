@@ -1,0 +1,45 @@
+---
+sidebar: sidebar 
+permalink: ai/mlrun_configuring_kubernetes_cluster.html 
+keywords: NetApp, Kubernetes, Cluster, Configuring 
+summary:  
+---
+= Configuration du cluster Kubernetes
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section comprend deux parties pour le déploiement dans le Cloud et sur site, respectivement.
+
+
+
+== Configuration de Cloud Deployment Kubernetes
+
+Grâce à NetApp Cloud Manager, vous pouvez définir la connexion au cluster Iguazio Kubernetes. Trident requiert l'accès à plusieurs ressources au sein du cluster pour rendre le volume disponible.
+
+. Pour activer l'accès, procurez-vous le fichier de configuration Kubernetes à partir d'un des nœuds Iguazio. Le fichier se trouve sous `/home/Iguazio/.kube/config.` Téléchargez ce fichier sur votre bureau.
+. Accédez à découverte du cluster à configurer.
++
+image:mlrun_image9.png["Erreur : image graphique manquante"]
+
+. Téléchargez le fichier de configuration Kubernetes. Voir l'image suivante.
++
+image:mlrun_image10.PNG["Erreur : image graphique manquante"]
+
+. Déployez Trident et associez un volume au cluster. Consultez l'image suivante sur la définition et l'attribution d'un volume persistant au cluster Iguazio.ce processus crée un volume persistant dans le cluster Kubernetes d'Iguazio. Avant de pouvoir l'utiliser, vous devez définir une demande de volume persistant.
+
+
+image:mlrun_image5.png["Erreur : image graphique manquante"]
+
+
+
+== Configuration Kubernetes de déploiement sur site
+
+Pour l'installation sur site de NetApp Trident, consultez la section https://www.netapp.com/us/media/tr-4798.pdf["TR-4798"^] pour plus d'informations. Une fois votre cluster Kubernetes configuré et installé NetApp Trident, vous pouvez vous connecter à Trident au cluster Iguazio pour activer les fonctionnalités de gestion des données NetApp, comme l'utilisation de copies Snapshot de vos données et de votre modèle.
+
+link:mlrun_define_persistent_volume_claim.html["Suivant : définissez une demande de volume persistant"]

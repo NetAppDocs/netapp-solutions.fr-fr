@@ -1,0 +1,45 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_use_case_overview_and_problem_statement.html 
+keywords: NetApp, Case, Overview, Problem, Statement 
+summary:  
+---
+= Présentation du cas d'utilisation et déclaration du problème
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Les datasets et les versions des datasets se trouvent généralement dans un data Lake, tel que le stockage objet StorageGRID de NetApp, ce qui permet de réduire les coûts et d'autres avantages opérationnels. Les data Scientists extraient ces datasets et les préparent en plusieurs étapes pour l'entraînement d'un modèle spécifique, créant souvent plusieurs versions tout au long du processus. À l'étape suivante, le data Scientist doit sélectionner des ressources de calcul optimisées (GPU, instances de processeurs haut de gamme, cluster sur site, etc.) pour exécuter le modèle. La figure suivante illustre l'absence de proximité du dataset dans un environnement de calcul DE ML.
+
+image:hcaios_image1.png["Erreur : image graphique manquante"]
+
+Toutefois, plusieurs expériences d'entraînement doivent être menées en parallèle dans différents environnements de calcul. Chacune d'entre elles nécessite le téléchargement du dataset depuis le data Lake, ce qui est un processus coûteux et chronophage. La proximité du dataset avec l'environnement de calcul (notamment dans le cloud hybride) n'est pas garantie. De plus, les autres membres de l'équipe qui exécutent leurs propres expériences avec le même dataset doivent suivre le même processus fastidieux. Au-delà de la lenteur évidente de l'accès aux données, le suivi des versions de dataset, le partage de dataset, la collaboration et la reproductibilité sont des difficultés autres.
+
+
+
+== Besoins des clients
+
+Les exigences des clients peuvent varier afin d'atteindre les performances d'EXÉCUTION D'APPRENTISSAGE MACHINE tout en utilisant efficacement les ressources. Par exemple, les clients peuvent exiger les éléments suivants :
+
+* L'accès rapide aux datasets à partir de chaque instance de calcul exécutant le modèle d'entraînement, sans complexité coûteuse liée à l'accès aux données ni à des téléchargements
+* L'utilisation d'une instance de calcul (GPU ou processeur) dans le cloud ou sur site sans craindre l'emplacement des datasets
+* Efficacité et productivité accrues grâce aux tests d'entraînement exécutés en parallèle avec les différentes ressources de calcul sur le même dataset, sans délais supplémentaires et sans latence des données
+* Réduction des coûts des instances de calcul
+* Meilleure reproductibilité grâce à des outils permettant de conserver les enregistrements des ensembles de données, leur traçabilité, leurs versions et d'autres détails de métadonnées
+* Partage et collaboration améliorés pour que les membres de l'équipe autorisés puissent accéder aux données et réaliser des expériences
+
+
+Pour implémenter la mise en cache du dataset avec le logiciel de gestion des données NetApp ONTAP, les clients doivent effectuer les tâches suivantes :
+
+* Configurez et définissez le stockage NFS le plus proche des ressources de calcul.
+* Détermination du jeu de données et de la version à mettre en cache
+* Contrôlez la mémoire totale allouée aux datasets en cache et la quantité de stockage NFS disponible pour les validations de cache supplémentaires (par exemple, la gestion du cache).
+* L'âge des datasets dans le cache s'ils n'ont pas été utilisés pendant un certain temps. La valeur par défaut est un jour ; d'autres options de configuration sont disponibles.
+
+
+link:hcaios_solution_overview.html["Ensuite : présentation de la solution"]

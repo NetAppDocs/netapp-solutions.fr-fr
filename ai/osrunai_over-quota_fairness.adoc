@@ -1,0 +1,60 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_over-quota_fairness.html 
+keywords:  
+summary:  
+---
+= Équité excessive
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Dans cette section, nous étudions le scénario dans lequel plusieurs équipes soumettent des charges de travail pour dépasser leurs quotas. De cette façon, nous démontrons comment l'algorithme Run:ai d'équité alloue des ressources de cluster en fonction du rapport des quotas prédéfinis.
+
+Objectifs de ce scénario de test :
+
+* Montrer le mécanisme de mise en file d'attente lorsque plusieurs équipes demandent des GPU sur leur quota.
+* Montrer comment le système distribue une juste part du cluster entre plusieurs équipes qui surpartagent leur quota d'après le rapport entre leurs quotas, de sorte que l'équipe disposant du quota supérieur puisse obtenir une plus grande part de la capacité disponible.
+
+
+À la fin de link:osrunai_basic_resource_allocation_fairness.html["Équité de l'allocation des ressources de base"], deux charges de travail sont mises en file d'attente : une pour `team-b` et un pour `team-c`. Cette section décrit les workloads supplémentaires mis en file d'attente.
+
+Pour plus de détails, y compris les soumissions de travaux, les images de conteneur utilisées et les séquences de commandes exécutées, voir link:osrunai_testing_details_for_section_4.10.html["Détails des tests pour la section 4.10"].
+
+Lorsque tous les travaux sont soumis conformément à la section link:osrunai_testing_details_for_section_4.10.html["Détails des tests pour la section 4.10"], le tableau de bord du système le montre `team-a`, `team-b`, et `team-c` Tous ont plus de GPU que leur quota prédéfini. `team-a` Occupe quatre GPU de plus que son soft quota (quatre) prédéfini, alors que `team-b` et `team-c` Chacun d'eux occupent deux GPU de plus que leur soft quota (deux). Le rapport des GPU sur-quotas alloués est égal à celui de leur quota prédéfini. En effet, le système a utilisé le quota prédéfini comme référence en priorité et provisionné en conséquence lorsque plusieurs équipes demandent plus de GPU, ce qui dépasse leur quota. Un tel équilibrage automatique de la charge garantit équité et priorisation lorsque les équipes de data science d'entreprise sont activement engagées dans le développement et la production de modèles d'IA.
+
+image:osrunai_image10.png["Erreur : image graphique manquante"]
+
+Les résultats de ce scénario de test montrent les éléments suivants :
+
+* Le système commence à mettre hors file d'attente les charges de travail des autres équipes.
+* L'ordre de la démise en file d'attente est déterminé selon des algorithmes d'équité, de telle sorte que `team-b` et `team-c` Obtenir la même quantité de GPU sur-quota (puisqu'ils ont un quota similaire), et `team-a` Double quantité de GPU dans la mesure où le quota est deux fois plus élevé que celui de `team-b` et `team-c`.
+* Toute l'allocation est effectuée automatiquement.
+
+
+Par conséquent, le système doit se stabiliser sur les États suivants :
+
+|===
+| Projet | GPU alloués | Commentaire 
+
+
+| équipe a | 8/4 | Quatre GPU par rapport au quota. File d'attente vide. 
+
+
+| équipe-b | 4/2 | Deux GPU sur le quota. Une charge de travail mise en file d'attente 
+
+
+| equipe-c | 4/2 | Deux GPU sur le quota. Une charge de travail mise en file d'attente 
+
+
+| équipe-d | 0/8 | N'utilisez pas du tout des GPU, aucun workload mis en attente. 
+|===
+La figure suivante montre l'allocation des GPU par projet dans le temps dans le tableau de bord Run:ai Analytics link:osrunai_achieving_high_cluster_utilization_with_over-uota_gpu_allocation.html["Une utilisation élevée des clusters grâce à une allocation GPU sur-quota"], link:osrunai_basic_resource_allocation_fairness.html["Équité de l'allocation des ressources de base"], et link:osrunai_over-quota_fairness.html["Équité excessive"]. Chaque ligne de la figure indique le nombre de GPU provisionnés pour une équipe de data science donnée à tout moment. Le système obtient ainsi l'allocation dynamique de GPU en fonction des charges de travail envoyées. Cette approche permet aux équipes de dépasser les quotas en présence de GPU disponibles dans le cluster, puis d'anticiper les tâches par équité avant d'atteindre la stabilité des quatre équipes.
+
+image:osrunai_image11.png["Erreur : image graphique manquante"]
+
+link:osrunai_saving_data_to_a_trident-provisioned_persistentvolume.html["Suivant : sauvegarde des données dans un volume persistant provisionné par Trident"]

@@ -1,0 +1,393 @@
+= 
+:allow-uri-read: 
+
+
+[role="tabbed-block"]
+====
+.Déploiement de nœud unique CVO
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) à un nœud unique sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvo_single_node_deployment.tfvar`
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable "gcp_Connector_Deploy_bool" sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+    terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gco_single_node" -var-file="vars/gcp_cvo_single_node_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_single_node" -var-file="vars/gcp_cvo_single_node_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance NetApp GCP Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_gcp* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *gcp_connector_project_id* | Chaîne | (Requis) ID_projet GCP dans lequel le connecteur sera créé. 
+
+
+| *gcp_connector_zone* | Chaîne | (Obligatoire) zone GCP dans laquelle le connecteur sera créé. 
+
+
+| *gcp_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *gcp_connector_service_account_email* | Chaîne | (Obligatoire) l'e-mail du compte service pour l'instance de connecteur. Ce compte de service permet au connecteur de créer Cloud Volume ONTAP. 
+
+
+| *gcp_connector_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service permet de créer le connecteur dans GCP. 
+
+
+| *gcp_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+|===
+`Single Node Instance`
+
+Variables Terraform pour une instance NetApp CVO sur GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_project_id* | Chaîne | (Requis) l'ID du projet GCP. 
+
+
+| *gcp_cvo_zone* | Chaîne | (Obligatoire) la zone de la région où l'environnement de travail sera créé. 
+
+
+| *gcp_cvo_gcp_service_account* | Chaîne | (Obligatoire) l'e-mail gcp_service_Account pour activer le Tiering des données inactives vers Google Cloud Storage. 
+
+
+| *gcp_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_workspace_id* | Chaîne | (Facultatif) l'ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *gcp_cvo_license_type* | Chaîne | (Facultatif) le type de licence à utiliser. Pour le nœud unique : [« Capacity-paygo », « gcp-cot-explorer-paygo », « gcp-lit-standard-paiement à l'utilisation », « gcp-lit-premium-paygo », « gcp-lit-premium-byol »], Pour les systèmes HA : [« ha-Capacity-paygo », « gcp-ha-cot-explorer-paygo », « gcp-ha-cot-standard-paygo », « gcp-ha-cot-premium-paygo », « gcp-ha-cot-premium-byol »]. La valeur par défaut est « Capacity-paygo » pour un seul nœud et « HA-Capacity-paygo » pour HA. 
+
+
+| *gcp_cvo_capacity_package_name* | Chaîne | (Facultatif) le nom du paquet de capacité : ['Essential', 'Professional', 'Freemium']. La valeur par défaut est « essentiel ». 
+|===
+--
+.Déploiement de CVO haute disponibilité
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVO (Cloud Volumes ONTAP) dans une paire haute disponibilité sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-cloudmanager/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvo_ha_deployment.tfvars`.
++
+
+NOTE: Vous pouvez choisir de déployer le connecteur en définissant la valeur de la variable "gcp_Connector_Deploy_bool" sur true/false.
+
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+      terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gcp_ha" -var-file="vars/gcp_cvo_ha_deployment.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_ha" -var-file="vars/gcp_cvo_ha_deployment.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`Connector`
+
+Variables Terraform pour l'instance NetApp GCP Connector pour le déploiement CVO.
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_connector_deploy_bool* | BOOL | (Obligatoire) vérifier le déploiement des connecteurs. 
+
+
+| *nom_connecteur_gcp* | Chaîne | (Requis) le nom de Cloud Manager Connector. 
+
+
+| *gcp_connector_project_id* | Chaîne | (Requis) ID_projet GCP dans lequel le connecteur sera créé. 
+
+
+| *gcp_connector_zone* | Chaîne | (Obligatoire) zone GCP dans laquelle le connecteur sera créé. 
+
+
+| *gcp_connector_company* | Chaîne | (Obligatoire) le nom de la société de l'utilisateur. 
+
+
+| *gcp_connector_service_account_email* | Chaîne | (Obligatoire) l'e-mail du compte service pour l'instance de connecteur. Ce compte de service permet au connecteur de créer Cloud Volume ONTAP. 
+
+
+| *gcp_connector_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service permet de créer le connecteur dans GCP. 
+
+
+| *gcp_connector_account_id* | Chaîne | (Facultatif) l'ID de compte NetApp auquel le connecteur sera associé. S'il n'est pas fourni, Cloud Manager utilise le premier compte. Si aucun compte n'existe, Cloud Manager crée un nouveau compte. L'ID de compte est disponible dans l'onglet Account de Cloud Manager à l'adresse https://cloudmanager.netapp.com[]. 
+|===
+`HA Pair`
+
+Variables Terraform pour les instances NetApp CVO dans paire HA sur GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_cvo_is_ha* | BOOL | (Facultatif) indiquez si l'environnement de travail est une paire HA ou non [true, false]. La valeur par défaut est FALSE. 
+
+
+| *gcp_nom_cvo* | Chaîne | (Obligatoire) le nom de l'environnement de travail Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_project_id* | Chaîne | (Requis) l'ID du projet GCP. 
+
+
+| *gcp_cvo_zone* | Chaîne | (Obligatoire) la zone de la région où l'environnement de travail sera créé. 
+
+
+| *gcp_cvo_node1_zone* | Chaîne | (Facultatif) zone pour le nœud 1. 
+
+
+| *gcp_cvo_node2_zone* | Chaîne | (Facultatif) zone pour le nœud 2. 
+
+
+| *gcp_cvo_zone_médiateur* | Chaîne | (Facultatif) zone pour médiateur. 
+
+
+| *gcp_cvo_vpc_id* | Chaîne | (Facultatif) le nom du VPC. 
+
+
+| *gcp_cvo_subnet_id* | Chaîne | (Facultatif) le nom du sous-réseau pour Cloud Volumes ONTAP. La valeur par défaut est « par défaut ». 
+
+
+| *gcp_cvo_vpc0_node_and_data_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic1, requis pour la connectivité des nœuds et des données. Si vous utilisez un VPC partagé, vous devez fournir netwrok_project_ID. 
+
+
+| *gcp_cvo_vpc1_cluster_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic2, requis pour la connectivité du cluster. 
+
+
+| *gcp_cvo_vpc2_ha_connectivity* | Chaîne | (Facultatif) le chemin VPC pour le nic3, requis pour la connectivité haute disponibilité. 
+
+
+| *gcp_cvo_vpc3_data_replication* | Chaîne | (Facultatif) le chemin VPC pour le nic4, requis pour la réplication des données. 
+
+
+| *gcp_cvo_subnet0_node_and_data_connectivity* | Chaîne | (Facultatif) chemin de sous-réseau pour nic1, requis pour la connectivité des nœuds et des données. Si vous utilisez un VPC partagé, vous devez fournir netwrok_project_ID. 
+
+
+| *gcp_cvo_subnet1_cluster_connectivity* | Chaîne | (Facultatif) chemin de sous-réseau pour la nic2, requis pour la connectivité du cluster. 
+
+
+| *gcp_cvo_subnet2_ha_connectivity* | Chaîne | (Facultatif) le chemin de sous-réseau pour la nic3 est requis pour la connectivité haute disponibilité. 
+
+
+| *gcp_cvo_subnet3_data_replication* | Chaîne | (Facultatif) chemin de sous-réseau pour nic4, requis pour la réplication des données. 
+
+
+| *gcp_cvo_gcp_service_account* | Chaîne | (Obligatoire) l'e-mail gcp_service_Account pour activer le Tiering des données inactives vers Google Cloud Storage. 
+
+
+| *gcp_cvo_svm_password* | Chaîne | (Obligatoire) le mot de passe d'administration pour Cloud Volumes ONTAP. 
+
+
+| *gcp_cvo_workspace_id* | Chaîne | (Facultatif) l'ID de l'espace de travail Cloud Manager dans lequel vous souhaitez déployer Cloud Volumes ONTAP. S'il n'est pas fourni, Cloud Manager utilise le premier espace de travail. Vous trouverez l'ID dans l'onglet espace de travail sur https://cloudmanager.netapp.com[]. 
+
+
+| *gcp_cvo_license_type* | Chaîne | (Facultatif) le type de licence à utiliser. Pour le nœud unique : [« Capacity-paygo », « gcp-cot-explorer-paygo », « gcp-lit-standard-paiement à l'utilisation », « gcp-lit-premium-paygo », « gcp-lit-premium-byol »], Pour les systèmes HA : [« ha-Capacity-paygo », « gcp-ha-cot-explorer-paygo », « gcp-ha-cot-standard-paygo », « gcp-ha-cot-premium-paygo », « gcp-ha-cot-premium-byol »]. La valeur par défaut est « Capacity-paygo » pour un seul nœud et « HA-Capacity-paygo » pour HA. 
+
+
+| *gcp_cvo_capacity_package_name* | Chaîne | (Facultatif) le nom du paquet de capacité : ['Essential', 'Professional', 'Freemium']. La valeur par défaut est « essentiel ». 
+
+
+| *gcp_cvo_gcp_volume_size* | Chaîne | (Facultatif) taille du volume GCP pour le premier agrégat de données. Pour GB, l'unité peut être : [100 ou 500]. Pour TB, l'unité peut être : [1,2,4,8]. La valeur par défaut est '1' . 
+
+
+| *gcp_cvo_gcp_volume_size_unit* | Chaîne | (Facultatif) ['Go' ou 'To']. La valeur par défaut est 'TB'. 
+|===
+--
+.Volume CVS
+--
+Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVS (Cloud volumes Services) sur GCP (Google Cloud Platform).
+
+Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-gcp/latest/docs[]
+
+Pour exécuter le modèle :
+
+. Cloner le référentiel.
++
+[source, cli]
+----
+    git clone https://github.com/NetApp-Automation/na_cloud_volumes_automation.git
+----
+. Accédez au dossier souhaité
++
+[source, cli]
+----
+    cd na_cloud_volumes_automation/
+----
+. Enregistrez le fichier JSON de clés d'authentification GCP dans le répertoire.
+. Mettre à jour les valeurs de variable dans `vars/gcp_cvs_volume.tfvars`.
+. Initialisez le référentiel Terraform pour installer tous les éléments requis et préparer le déploiement.
++
+[source, cli]
+----
+      terraform init
+----
+. Vérifiez les fichiers de formulaires à l'aide de la commande terraform validate.
++
+[source, cli]
+----
+    terraform validate
+----
+. Effectuez une exécution sèche de la configuration pour obtenir un aperçu de toutes les modifications attendues par le déploiement.
++
+[source, cli]
+----
+    terraform plan -target="module.gcp_cvs_volume" -var-file="vars/gcp_cvs_volume.tfvars"
+----
+. Exécuter le déploiement
++
+[source, cli]
+----
+    terraform apply -target="module.gcp_cvs_volume" -var-file="vars/gcp_cvs_volume.tfvars"
+----
+
+
+Pour supprimer le déploiement
+
+[source, cli]
+----
+    terraform destroy
+----
+`CVS Volume`
+
+Variables Terraform pour le volume CVS de NetApp GCP
+
+|===
+
+
+| *Nom* | *Type* | *Description* 
+
+
+| *gcp_nom_cvs* | Chaîne | (Requis) le nom du volume NetApp CVS. 
+
+
+| *gcp_cvs_id_projet* | Chaîne | (Requis) ID_projet GCP dans lequel le volume CVS sera créé. 
+
+
+| *gcp_cvs_gcp_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service est utilisé pour créer le volume CVS dans GCP. 
+
+
+| *gcp_cvs_région* | Chaîne | (Obligatoire) zone GCP dans laquelle le volume CVS sera créé. 
+
+
+| *gcp_cvs_réseau* | Chaîne | (Requis) le VPC réseau du volume. 
+
+
+| *gcp_cvs_size* | Entier | (Requis) la taille du volume est comprise entre 1024 et 102400 inclus (en Gio). 
+
+
+| *gcp_cvs_volume_path* | Chaîne | (Facultatif) le nom du chemin du volume. 
+
+
+| *gcp_cvs_protocol_types* | Chaîne | (Obligatoire) type_protocole du volume. Pour NFS, utilisez NFSv3 ou NFSv4 et SMB, utilisez CIFS ou MB. 
+|===
+--
+====

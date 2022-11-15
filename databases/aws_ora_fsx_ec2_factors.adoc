@@ -1,0 +1,95 @@
+---
+sidebar: sidebar 
+permalink: databases/aws_ora_fsx_ec2_factors.html 
+summary: 'Cette section fournit des informations sur les facteurs à prendre en compte lors du déploiement de la base de données Oracle sur l"instance AWS EC2 et le stockage FSX.' 
+keywords: HA, DR, database, Oracle, RDS, AWS, SnapCenter 
+---
+= Facteurs à prendre en compte pour le déploiement de bases de données Oracle
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+link:aws_ora_fsx_ec2_architecture.html["Précédent : architecture de la solution."]
+
+Un cloud public offre de nombreuses options de calcul et de stockage. L'utilisation d'un type d'instance de calcul et d'un moteur de stockage appropriés est un bon point de départ pour le déploiement des bases de données. Vous devez également sélectionner des configurations de calcul et de stockage optimisées pour les bases de données Oracle.
+
+Les sections suivantes décrivent les principaux facteurs à prendre en compte lors du déploiement d'une base de données Oracle dans un cloud public AWS sur une instance EC2 avec un stockage FSX.
+
+
+
+== Performances des VM
+
+Il est important de choisir la bonne taille de machine virtuelle pour obtenir des performances optimales d'une base de données relationnelle dans le cloud public. Pour de meilleures performances, NetApp recommande l'utilisation d'une instance EC2 de la série M5 pour le déploiement Oracle, optimisée pour les charges de travail de la base de données. Le même type d'instance est également utilisé pour alimenter une instance RDS pour Oracle par AWS.
+
+* Choisissez la combinaison de CPU virtuels et de RAM appropriée en fonction des caractéristiques de la charge de travail.
+* Ajoutez de l'espace d'échange à une machine virtuelle. Le déploiement de l'instance EC2 par défaut ne crée pas d'espace d'échange, ce qui n'est pas optimal pour une base de données.
+
+
+
+
+== Disposition du stockage et paramètres
+
+NetApp recommande l'infrastructure de stockage suivante :
+
+* Pour le stockage NFS, la disposition des volumes recommandée est de trois volumes : un pour le binaire Oracle, un pour les données Oracle et un fichier de contrôle dupliqué, et un pour le journal actif Oracle, le journal archivé et le fichier de contrôle.
++
+image:aws_ora_fsx_ec2_stor_12.PNG["Erreur : image graphique manquante"]
+
+* Pour le stockage iSCSI, la disposition des volumes recommandée est de trois volumes : un pour le binaire Oracle, un pour les données Oracle et un fichier de contrôle dupliqué, et un pour le journal actif Oracle, le journal archivé et le fichier de contrôle. Cependant, chaque volume de données et de journaux doit idéalement contenir quatre LUN. Les LUN sont idéalement équilibrées sur les nœuds de cluster haute disponibilité.
++
+image:aws_ora_fsx_ec2_stor_13.PNG["Erreur : image graphique manquante"]
+
+* Pour les IOPS et le débit du stockage, vous pouvez choisir le seuil de provisionnement des IOPS et du débit pour le cluster de stockage FSX. Ces paramètres peuvent être ajustés à la volée à tout moment.
++
+** La valeur d'IOPS automatique est de trois IOPS par Gio de capacité de stockage allouée ou définie par l'utilisateur (jusqu'à 80,000).
+** Le niveau de débit est incrémenté comme suit : 128, 256, 512, 1024, 2045 Mbit/s.
+
+
+
+
+Vérifiez le link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/performance.html["Performances d'Amazon FSX pour NetApp ONTAP"^] Documentation lors du dimensionnement du débit et des opérations d'entrée/sortie par seconde
+
+
+
+== Configuration NFS
+
+Linux, le système d'exploitation le plus courant, comprend des fonctionnalités NFS natives. Oracle propose le client NFS direct (dNFS) intégré en mode natif dans Oracle. Oracle a pris en charge NFSv3 pendant plus de 20 ans, et NFSv4 est pris en charge par Oracle 12.1.0.2 et versions ultérieures. Le déploiement automatisé d'Oracle à l'aide du kit d'automatisation NetApp configure automatiquement dNFS sur NFSv3.
+
+Autres facteurs à prendre en compte :
+
+* Les tables d'emplacements TCP correspondent à l'équivalent NFS de la profondeur de la file d'attente HBA (Host-bus-adapter). Ces tableaux contrôlent le nombre d'opérations NFS qui peuvent être en attente à la fois. La valeur par défaut est généralement 16, un chiffre bien trop faible pour assurer des performances optimales. Le problème inverse se produit sur les noyaux Linux plus récents : la limite de la table des emplacements TCP augmente automatiquement par envoi de demandes, jusqu'à atteindre le niveau de saturation du serveur NFS.
++
+Pour des performances optimales, ajustez les paramètres du noyau qui contrôlent les tables d'emplacements TCP sur 128.
+
++
+[source, cli]
+----
+sysctl -a | grep tcp.*.slot_table
+----
+* Le tableau suivant présente les options de montage NFS recommandées pour Linux NFSv3 : instance unique.
++
+image:aws_ora_fsx_ec2_nfs_01.PNG["Erreur : image graphique manquante"]
+
+
+
+
+NOTE: Avant d'utiliser dNFS, vérifiez que les correctifs décrits dans Oracle Doc 1495104.1 sont installés. À partir d'Oracle 12c, dNFS prend en charge NFS v3, NFS V4 et NFS v4.1. Conformément à la politique de support de NetApp, les versions 3 et 4 sont prises en charge pour tous les clients. Cependant, au moment de la rédaction de ce rapport, NFS v4.1 n'était pas pris en charge pour une utilisation avec Oracle dNFS.
+
+
+
+== Haute disponibilité
+
+Comme indiqué dans l'architecture de la solution, la haute disponibilité est basée sur la réplication au niveau du stockage. Ainsi, la start-up et la disponibilité d'Oracle dépendent de la rapidité à laquelle le calcul et le stockage peuvent être rétablis et rétablis. Voir les facteurs clés suivants :
+
+* Préparez une instance de calcul de secours et synchronisée avec le stockage primaire via la mise à jour parallèle Ansible vers les deux hôtes.
+* Répliquez le volume binaire à partir du volume primaire à des fins de veille, de sorte que vous n'ayez pas besoin d'installer Oracle à la dernière minute et de déterminer ce qui doit être installé et corrigé.
+* La fréquence de réplication détermine la rapidité de restauration de la base de données Oracle pour assurer la disponibilité du service. Il existe un compromis entre la fréquence de réplication et la consommation du stockage.
+* Exploitez l'automatisation pour rendre la restauration et le basculement en veille rapides et exempts d'erreurs humaines. À ce propos, NetApp propose un kit d'automatisation.
+
+
+link:aws_ora_fsx_ec2_procedures.html["Suivant : procédures de déploiement."]

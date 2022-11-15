@@ -1,0 +1,63 @@
+---
+sidebar: sidebar 
+permalink: vdi-vds/hcvdivds_netapp_hci_overview.html 
+keywords: HCI, storage node, compute node, NetApp Deployment Engine, NDE, VMware vCenter 
+summary: 'NetApp HCI est une infrastructure de cloud hybride constituée d"un ensemble de nœuds de stockage et de nœuds de calcul. Elle est disponible en tant qu"unité à deux racks ou en 1 unité, selon le modèle. L"installation et la configuration requises pour déployer les machines virtuelles sont automatisées avec le moteur de déploiement NetApp. Les clusters de calcul sont gérés avec VMware vCenter, et les clusters de stockage sont gérés à l"aide du plug-in vCenter déployé avec NDE.' 
+---
+= Présentation de NetApp HCI
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+NetApp HCI est une infrastructure de cloud hybride constituée d'un ensemble de nœuds de stockage et de nœuds de calcul. Elle est disponible en tant qu'unité à deux racks ou en 1 unité, selon le modèle. L'installation et la configuration requises pour déployer les machines virtuelles sont automatisées avec le moteur de déploiement NetApp. Les clusters de calcul sont gérés avec VMware vCenter, et les clusters de stockage sont gérés à l'aide du plug-in vCenter déployé avec NDE. Une VM de gestion appelée le nœud M est déployée dans le cadre du moteur de déploiement NetApp.
+
+NetApp HCI prend en charge les fonctions suivantes :
+
+* Mises à niveau des versions
+* Envoi d'événements vers vCenter
+* Gestion du plug-in vCenter
+* Un tunnel VPN pour la prise en charge
+* Collecteur NetApp Active IQ
+* L'extension des services cloud de NetApp sur site, ce qui donne la possibilité d'une infrastructure de cloud hybride. La figure suivante décrit les composants d'HCI.
+
+
+image:hcvdivds_image5.png["Erreur : image graphique manquante"]
+
+
+
+== Nœuds de stockage
+
+Les nœuds de stockage sont disponibles en unité de rack demi-largeur ou pleine largeur. Dans un premier temps, quatre nœuds de stockage au moins sont nécessaires et un cluster peut évoluer jusqu'à 40 nœuds. Un cluster de stockage peut être partagé entre plusieurs clusters de calcul. Tous les nœuds de stockage disposent d'un contrôleur de cache afin d'améliorer les performances en écriture. Un seul nœud fournit 50 000 ou 100 000 IOPS à une taille de bloc de 4 Ko.
+
+Les nœuds de stockage NetApp HCI exécutent le logiciel NetApp Element qui permet d'atteindre des limites de QoS minimales, maximales ou en rafale. Le cluster de stockage prend en charge plusieurs nœuds de stockage, bien qu'un nœud de stockage ne puisse pas dépasser un tiers de la capacité totale.
+
+
+
+== Nœuds de calcul
+
+
+NOTE: NetApp prend en charge son stockage connecté à n'importe quel serveur de calcul répertorié dans le https://www.vmware.com/resources/compatibility/search.php?deviceCategory=server["Guide de compatibilité avec VMware"].
+
+Les nœuds de calcul sont disponibles en demi-largeur, pleine largeur et en deux tailles d'unité de rack. Les nœuds NetApp HCI H410C et H610C sont basés sur des processeurs Intel Skylake évolutifs. La technologie H615C est basée sur des processeurs Intel Cascade Lake évolutifs de deuxième génération. Il existe deux modèles de calcul qui contiennent des GPU : ce dernier contient deux cartes NVIDIA M10 et la H615C contient trois cartes NVIDIA T4.
+
+image:hcvdivds_image6.png["Erreur : image graphique manquante"]
+
+La NVIDIA T4 dispose de 40 cœurs RT qui fournissent la puissance de calcul nécessaire pour réaliser le traçage des rayons en temps réel. Le même modèle de serveur utilisé par les concepteurs et les ingénieurs peut désormais être utilisé par les artistes pour créer des images photoréalistes qui offrent des rebondissements de lumière sur les surfaces comme dans la vie réelle. Ce processeur graphique compatible RTX permet de tracer en temps réel jusqu'à cinq rayons Giga par seconde. Combiné au logiciel Quadro Virtual Data Center Workstation (Quadro VDWS), le NVIDIA T4 permet aux artistes de créer des conceptions photoréalistes avec des ombres, des reflets et des réfractions précis sur n'importe quel appareil, où.
+
+Les cœurs Tensor vous permettent d'exécuter des workloads d'inférence d'apprentissage profond. Lors de l'exécution de ces charges de travail, une NVIDIA T4 optimisée avec Quadro VDWS peut assurer des performances jusqu'à 25 fois plus rapides qu'une machine virtuelle basée sur un serveur à processeur uniquement. Un système NetApp H615C équipé de trois cartes NVIDIA T4 dans une unité de rack est une solution idéale pour les workloads graphiques et gourmands en ressources de calcul.
+
+La figure suivante répertorie les cartes graphiques NVIDIA et compare leurs fonctionnalités.
+
+image:hcvdivds_image7.png["Erreur : image graphique manquante"]
+
+Le processeur graphique M10 reste la solution de coût total de possession la plus adaptée aux cas d'utilisation des travailleurs du savoir. Toutefois, le T4 constitue une excellente alternative pour standardiser les GPU sur plusieurs cas d'utilisation, comme les postes de travail virtuels, la performance graphique, le rendu interactif en temps réel et l'inférence. Grâce au T4, le DÉPARTEMENT INFORMATIQUE peut exploiter les mêmes ressources GPU pour exécuter des charges de travail mixtes―, par exemple, exécuter une infrastructure VDI pendant la journée, puis requalifier les ressources pour exécuter des charges de travail de calcul le soir.
+
+Le nœud de calcul H610C est une taille de rack ; il s'agit d'une unité de rack qui consomme moins d'énergie. L' H615C prend en charge le codage et le décodage H.264 et H.265 (vidéo haute efficacité [HEVC]) 4:4:4. Il prend également en charge le décodeur VP9 de plus en plus intégré ; même le paquet de conteneurs WebM servi par YouTube utilise le codec VP9 pour la vidéo.
+
+Le nombre de nœuds d'un cluster de calcul est dicté par VMware ; actuellement, il est 96 avec VMware vSphere 7.0 Update 1. L'association de différents modèles de nœuds de calcul dans un cluster est prise en charge lorsque la compatibilité vMotion améliorée (EVC) est activée.
+
+link:hcvdivds_nvidia_licensing.html["Next : les licences NVIDIA"]

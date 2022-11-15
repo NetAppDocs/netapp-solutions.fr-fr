@@ -1,0 +1,234 @@
+---
+sidebar: sidebar 
+permalink: automation/getting-started.html 
+summary: 'L"automatisation des solutions NetApp permet au client d"automatiser le déploiement, la configuration et l"exécution de nombreuses tâches d"infrastructure et d"applications courantes.' 
+keywords: netapp, awx, tower, ansible tower, solutions, automation, ansible, getting, started 
+---
+= Commencer à utiliser l'automatisation des solutions NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+[role="lead"]
+L'automatisation de la solution NetApp offre une simplicité et une reproductibilité pour la plupart des tâches courantes utilisées par les solutions NetApp.
+
+Avant d'exécuter toute solution d'automatisation, l'environnement doit être configuré pour le mode d'exécution de l'automatisation. Il existe des options pour exécuter l'automatisation à partir de la ligne de commande ou à l'aide d'un outil tel qu'AWX ou tour.
+
+Les sections suivantes présentent les étapes requises pour configurer l'environnement pour chacun des environnements spécifiés.
+
+.Configurez le nœud de contrôle Ansible pour les déploiements CLI sur RHEL/CentOS
+====
+. Exigences pour le nœud de contrôle Ansible, :
++
+.. Un ordinateur RHEL/CentOS avec les packages suivants installés :
++
+... Python3
+... IPF3
+... Ansible (version supérieure à 2.10.0)
+... GIT
+
+
+
+
+
+
+Si vous disposez d'un appareil RHEL/CentOS neuf sans les exigences ci-dessus, suivez les étapes ci-dessous pour configurer cette machine en tant que nœud de contrôle Ansible :
+
+. Activez le référentiel Ansible pour RHEL-8/RHEL-7
++
+.. Pour RHEL-8 (exécutez la commande ci-dessous en tant que root)
++
+[source, cli]
+----
+subscription-manager repos --enable ansible-2.9-for-rhel-8-x86_64-rpms
+----
+.. Pour RHEL-7 (exécutez la commande ci-dessous en tant que root)
++
+[source, cli]
+----
+subscription-manager repos --enable rhel-7-server-ansible-2.9-rpms
+----
+
+
+. Créez un fichier .sh
++
+[source, cli]
+----
+vi setup.sh
+----
+. Collez le contenu ci-dessous dans le fichier
++
+[source, cli]
+----
+#!/bin/bash
+echo "Installing Python ------>"
+sudo yum -y install python3 >/dev/null
+echo "Installing Python Pip ------>"
+sudo yum -y install python3-pip >/dev/null
+echo "Installing Ansible ------>"
+python3 -W ignore -m pip --disable-pip-version-check install ansible >/dev/null
+echo "Installing git ------>"
+sudo yum -y install git >/dev/null
+----
+. Rendre le fichier exécutable
++
+[source, cli]
+----
+chmod +x setup.sh
+----
+. Exécuter le script (en tant que root)
++
+[source, cli]
+----
+./setup.sh
+----
+
+
+====
+.Configurer le nœud de contrôle Ansible pour les déploiements CLI sur Ubuntu/Debian
+====
+. Exigences pour le nœud de contrôle Ansible, :
++
+.. Une machine Ubuntu/Debian avec les paquets suivants installés :
++
+... Python3
+... IPF3
+... Ansible (version supérieure à 2.10.0)
+... GIT
+
+
+
+
+
+
+Si vous avez une machine Ubuntu/Debian neuve sans les exigences ci-dessus, suivez les étapes ci-dessous pour configurer cette machine en tant que nœud de contrôle Ansible :
+
+. Créez un fichier .sh
++
+[source, cli]
+----
+vi setup.sh
+----
+. Collez le contenu ci-dessous dans le fichier
++
+[source, cli]
+----
+#!/bin/bash
+echo "Installing Python ------>"
+sudo apt-get -y install python3 >/dev/null
+echo "Installing Python Pip ------>"
+sudo apt-get -y install python3-pip >/dev/null
+echo "Installing Ansible ------>"
+python3 -W ignore -m pip --disable-pip-version-check install ansible >/dev/null
+echo "Installing git ------>"
+sudo apt-get -y install git >/dev/null
+----
+. Rendre le fichier exécutable
++
+[source, cli]
+----
+chmod +x setup.sh
+----
+. Exécuter le script (en tant que root)
++
+[source, cli]
+----
+./setup.sh
+----
+
+
+====
+.Configurer Ansible Tower ou AWX pour les déploiements Tower/AWX
+====
+Cette section décrit les étapes requises pour configurer les paramètres dans AWX/Ansible Tower qui préparent l'environnement pour l'utilisation des solutions automatisées NetApp.
+
+. Configurer l'inventaire.
++
+.. Accédez à Ressources → inventaires → Ajouter, puis cliquez sur Ajouter un inventaire.
+.. Indiquez le nom et les détails de l'entreprise, puis cliquez sur Save.
+.. Dans la page inventaires, cliquez sur les ressources d'inventaire que vous venez de créer.
+.. S'il existe des variables d'inventaire, collez-les dans le champ variables.
+.. Accédez au sous-menu groupes et cliquez sur Ajouter.
+.. Indiquez le nom du groupe, copiez les variables du groupe (si nécessaire), puis cliquez sur Enregistrer.
+.. Cliquez sur le groupe créé, accédez au sous-menu hôtes et cliquez sur Ajouter un nouvel hôte.
+.. Indiquez le nom d'hôte et l'adresse IP de l'hôte, collez les variables hôte (si nécessaire), puis cliquez sur Enregistrer.
+
+
+. Créer des types d'informations d'identification. Pour les solutions impliquant ONTAP, Element, VMware ou toute autre connexion de transport basée sur HTTPS, vous devez configurer le type d'informations d'identification pour qu'il corresponde aux entrées de nom d'utilisateur et de mot de passe.
++
+.. Accédez à Administration → types d'informations d'identification et cliquez sur Ajouter.
+.. Indiquez le nom et la description.
+.. Collez le contenu suivant dans la configuration d'entrée :
+
+
+
+
+[listing]
+----
+fields:
+- id: username
+type: string
+label: Username
+- id: password
+type: string
+label: Password
+secret: true
+- id: vsadmin_password
+type: string
+label: vsadmin_password
+secret: true
+----
+. Collez le contenu suivant dans la configuration de l'injecteur :
+
+
+[listing]
+----
+extra_vars:
+password: '{{ password }}'
+username: '{{ username }}'
+vsadmin_password: '{{ vsadmin_password }}'
+----
+. Configurer les informations d'identification.
++
+.. Accédez à Ressources → informations d'identification et cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation.
+.. Sélectionnez le type d'informations d'identification correct ; si vous souhaitez utiliser la connexion SSH standard, sélectionnez le type machine ou sélectionnez le type d'informations d'identification personnalisé que vous avez créé.
+.. Entrez les autres détails correspondants et cliquez sur Enregistrer.
+
+
+. Configurer le projet.
++
+.. Accédez à Ressources → projets et cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation.
+.. Sélectionnez Git pour le type d'identification du contrôle source.
+.. Collez l'URL du contrôle source (ou l'URL du clone git) correspondant à la solution spécifique.
+.. Si l'URL Git est contrôlée par accès, créez et joignez les informations d'identification correspondantes dans les informations d'identification du contrôle source.
+.. Cliquez sur Enregistrer.
+
+
+. Configurez le modèle de travail.
++
+.. Accédez à Ressources → modèles → Ajouter, puis cliquez sur Ajouter un modèle de travail.
+.. Entrez le nom et la description.
+.. Sélectionnez le type de travail ; Run configure le système en fonction d'un PlayBook et Check effectue une analyse sèche du PlayBook sans configurer le système.
+.. Sélectionnez l'inventaire, le projet et les identifiants correspondant au PlayBook.
+.. Sélectionnez le PlayBook à exécuter comme partie du modèle de job.
+.. Généralement, les variables sont collées pendant l'exécution. Par conséquent, pour demander à l'invite de remplir les variables pendant l'exécution, assurez-vous de cocher la case demander au lancement correspondant au champ variable.
+.. Indiquez tous les autres détails nécessaires, puis cliquez sur Enregistrer.
+
+
+. Lancez le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle souhaité, puis cliquez sur lancer.
+.. Remplissez toutes les variables si vous y êtes invité au lancement, puis cliquez à nouveau sur lancer.
+
+
+
+
+====

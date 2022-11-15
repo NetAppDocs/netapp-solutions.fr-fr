@@ -1,0 +1,144 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/apache-spark-solution-overview.html 
+keywords: introduction, overview, 4570, tr4570, customer challenges, justification 
+summary: 'Ce document est consacré à l"architecture Apache Spark, aux utilisations client et au portefeuille de solutions de stockage NetApp dans le domaine de l"analytique Big Data et de l"intelligence artificielle. Nous présentons également les résultats de plusieurs tests basés sur des outils standard d"IA, de machine learning et de deep learning utilisés par rapport à un système Hadoop classique, afin de choisir la solution Spark appropriée.' 
+---
+= Tr-4570 : Solutions de stockage NetApp pour Apache Spark : architecture, cas d'utilisation et résultats des performances
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Rick Huang, Karthikeyan Nagalingam, NetApp
+
+Ce document est consacré à l'architecture Apache Spark, aux utilisations client et au portefeuille de solutions de stockage NetApp consacré à l'analytique Big Data et à l'intelligence artificielle (IA). Nous avons également présenté les résultats de plusieurs tests à l'aide des outils standard de l'IA, du machine learning (ML) et du deep learning (DL) par rapport à un système Hadoop standard qui vous permet de choisir la solution Spark adaptée. Il vous faut tout d'abord une architecture Spark, les composants appropriés et deux modes de déploiement (cluster et client).
+
+Ce document présente également des cas d'utilisation pour résoudre les problèmes de configuration. Il présente également la gamme de solutions de stockage NetApp qui traite de l'analytique Big Data, de l'IA, DU ML et du DL avec Spark. Nous terminons ensuite avec les résultats des tests effectués à partir des cas d'utilisation propres à Spark et de la gamme de solutions NetApp Spark.
+
+
+
+== Défis des clients
+
+Cette section se concentre sur les défis clients liés à l'analytique Big Data et à l'IA/AM/AP dans des secteurs en croissance de données tels que le commerce, le marketing digital, la banque, la fabrication discrète, la fabrication des processus, américain et à ses services professionnels.
+
+
+
+=== Performances imprévisibles
+
+Les déploiements Hadoop classiques utilisent généralement du matériel ordinaire. Pour optimiser les performances, vous devez configurer le réseau, le système d'exploitation, le cluster Hadoop, les composants de l'écosystème tels que Spark et le matériel. Même si vous ajustez chaque couche, il peut être difficile d'atteindre les niveaux de performance souhaités, car Hadoop fonctionne sur du matériel générique qui n'a pas été conçu pour assurer de hautes performances dans votre environnement.
+
+
+
+=== Pannes de nœuds et de supports
+
+Même dans des conditions normales, le matériel de base est susceptible de subir des défaillances. Si un disque d'un nœud de données tombe en panne, le maître Hadoop considère par défaut que ce nœud est défectueux. Il copie ensuite les données spécifiques de ce nœud sur le réseau, des réplicas à un nœud en bon état. Ce processus ralentit les paquets réseau pour toutes les tâches Hadoop. Le cluster doit ensuite recopier les données et supprimer les données sur-répliquées lorsque le nœud défectueux revient à un état sain.
+
+
+
+=== Dépendance vis-à-vis d'un fournisseur Hadoop
+
+Les distributeurs Hadoop disposent de leur propre distribution Hadoop avec leurs propres versions, qui dépendent des clients de ces distributions. Toutefois, de nombreux clients ont besoin d'une prise en charge pour les analyses en mémoire qui n'lient pas le client à des distributions Hadoop spécifiques. Ils ont besoin de la liberté de changer de distribution tout en bénéficiant de l'analytique.
+
+
+
+=== Manque de support pour plus d'une langue
+
+Les clients ont souvent besoin d'un support pour plusieurs langues en plus des programmes MapReduce Java pour exécuter leurs tâches. Les options telles que SQL et les scripts offrent davantage de flexibilité pour obtenir les réponses, davantage d'options pour organiser et récupérer les données, et accélèrent le déplacement des données dans une structure analytique.
+
+
+
+=== Difficulté d'utilisation
+
+Pendant quelques temps, certains se plaignent du fait que Hadoop est difficile à utiliser. Même si Hadoop est devenu plus simple et plus puissant à chaque nouvelle version, cette critique a persisté. Hadoop exige de comprendre les modèles de programmation Java et MapReduce, ce qui représente un véritable défi pour les administrateurs de base de données et les équipes qui disposent de compétences classiques en matière de script.
+
+
+
+=== Structures et outils complexes
+
+Les équipes chargées de l'IA sont confrontées à plusieurs défis. Même avec des connaissances avancées en science des données, les outils et les frameworks pour différents écosystèmes et applications de déploiement ne se traduisent pas toujours par une traduction unique. Une plate-forme de data science doit s'intégrer en toute transparence aux plateformes Big Data correspondantes intégrées sur Spark et offrir la facilité de déplacement des données, des modèles réutilisables, un code prêt à l'emploi et des outils qui prennent en charge les meilleures pratiques en matière de prototypage, de validation, de gestion des versions, de partage, de réutilisation, et de déploiement rapide des modèles en production.
+
+
+
+== Pourquoi choisir NetApp ?
+
+NetApp peut améliorer votre expérience Spark de l'une des manières suivantes :
+
+* L'accès direct NetApp NFS (voir la figure ci-dessous) permet aux clients d'exécuter des tâches d'analytique Big Data sur leurs données NFSv3 ou NFSv4 existantes ou nouvellement sollicitées sans déplacer ou copier les données. Elle empêche plusieurs copies de données et n'a plus besoin de synchroniser les données avec une source.
+* Optimisation du stockage et réduction de la réplication des serveurs. Par exemple, la solution Hadoop de NetApp E-Series nécessite deux à trois réplicas des données et la solution FAS Hadoop requiert une source de données, mais aucune réplication ou copie de données. Les solutions de stockage NetApp génèrent également moins de trafic serveur à serveur.
+* Amélioration des tâches Hadoop et du comportement du cluster en cas de panne de disque ou de nœud.
+* De meilleures performances d'ingestion des données.
+
+
+image:apache-spark-image1.png["Autres configurations Apache Spark"]
+
+Dans le secteur financier et de la santé par exemple, ces transferts de données doivent se conformer à des obligations légales, une tâche ardue. Dans ce scénario, l'accès direct NetApp NFS analyse les données financières et de santé à partir de leur emplacement d'origine. L'autre avantage clé est que l'accès direct NetApp NFS simplifie la protection des données Hadoop grâce aux commandes Hadoop natives et à l'activation des workflows de protection des données avec la gamme complète de solutions NetApp de gestion des données.
+
+L'accès direct NetApp NFS propose deux types d'options de déploiement pour les clusters Hadoop/Spark :
+
+* Par défaut, les clusters Hadoop ou Spark utilisent le système HDFS (Hadoop Distributed File System) pour le stockage des données et le système de fichiers par défaut. NetApp NFS direct peut remplacer le système HDFS par défaut par un stockage NFS comme système de fichiers par défaut, permettant ainsi une analytique directe sur les données NFS.
+* Dans une autre option de déploiement, l'accès direct NetApp NFS prend en charge la configuration de NFS en tant que stockage supplémentaire et HDFS dans un cluster Hadoop ou Spark unique. Dans ce cas, le client peut partager des données via les exports NFS et y accéder depuis le même cluster, ainsi que des données HDFS.
+
+
+Les principaux avantages de l'accès direct NetApp NFS sont les suivants :
+
+* L'analyse des données depuis leur emplacement actuel empêche toute tâche fastidieuse de transférer des données analytiques vers une infrastructure Hadoop telle que HDFS.
+* Réduction du nombre de répliques de trois à un.
+* Les utilisateurs peuvent découpler les ressources de calcul et de stockage afin de les faire évoluer de façon indépendante.
+* Protection des données grâce aux fonctionnalités avancées de gestion d'ONTAP.
+* Certification avec la plateforme de données Hortonworks.
+* Déploiements d'analytique hybride.
+* Réduction des délais de sauvegarde grâce à la fonctionnalité multithread dynamique.
+
+
+Voir https://docs.netapp.com/us-en/netapp-solutions/data-analytics/hdcs-sh-solution-overview.html["Tr-4657 : solutions de données de cloud hybride NetApp - Spark et Hadoop en fonction des cas d'utilisation clients"^] Pour la sauvegarde de données Hadoop, la sauvegarde et la reprise d'activité depuis le cloud vers les systèmes sur site, ce qui permet le DevTest sur les données Hadoop existantes, la protection des données et la connectivité multicloud, et l'accélération des workloads d'analytique.
+
+Les sections suivantes décrivent les fonctionnalités de stockage importantes pour les clients Spark.
+
+
+
+=== Hiérarchisation du stockage
+
+La hiérarchisation du stockage Hadoop permet de stocker des fichiers de différents types de stockage conformément à une règle de stockage. Les types de stockage sont notamment `hot`, `cold`, `warm`, `all_ssd`, `one_ssd`, et `lazy_persist`.
+
+Nous avons validé la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l'AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l'E-Series en compte huit.
+
+La figure suivante montre les performances des solutions NetApp pour un SSD Hadoop.
+
+image:apache-spark-image2.png["Temps de tri de 1 To de données."]
+
+* La configuration NL-SAS de base utilisait huit nœuds de calcul et 96 disques NL-SAS. Cette configuration a généré 1 To de données en 4 minutes et 38 secondes. Voir https://www.netapp.com/media/16420-tr-3969.pdf["Tr-3969 solution NetApp E-Series pour Hadoop"^] pour plus d'informations sur le cluster et la configuration du stockage.
+* Grâce à TeraGen, la configuration SSD a généré 1 To de données 15,6 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). En fonction de la durée d'exécution des tâches, elle était presque deux fois plus rapide que la configuration NL-SAS.
+* Grâce à Terasort, la configuration SSD a trié 1 To de données 1138.36 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). Par conséquent, par disque, c'était environ trois fois plus rapide que la configuration NL-SAS.
+
+
+
+
+=== Évolutivité des performances - évolutivité horizontale
+
+Pour augmenter la puissance de calcul d'un cluster Hadoop dans une solution AFF, il est possible d'ajouter des nœuds de données avec un nombre approprié de contrôleurs de stockage. NetApp recommande de démarrer avec quatre nœuds de données par baie de contrôleur de stockage, puis d'augmenter le nombre de huit nœuds de données par contrôleur de stockage, en fonction des caractéristiques des charges de travail.
+
+AFF et FAS sont parfaits pour l'analytique sur place. Vous pouvez ajouter des gestionnaires de nœuds et, sans interrompre l'activité, un contrôleur de stockage à la demande sans interrompre l'activité. Nous proposons des fonctionnalités riches avec AFF et FAS, notamment la prise en charge des supports NVMe, l'efficacité garantie, la réduction des données, la qualité de service, l'analytique prédictive, tiering, réplication, déploiement dans le cloud et sécurité. Pour aider les clients à satisfaire leurs besoins, NetApp propose des fonctionnalités telles que l'analytique des systèmes de fichiers, les quotas et l'équilibrage de la charge intégrée sans frais de licence supplémentaires. NetApp fournit de meilleures performances que ses concurrents en termes de nombre de tâches simultanées, de latence inférieure ou d'opérations simplifiées, et un débit par seconde supérieur à celui de ses concurrents. De plus, NetApp Cloud Volumes ONTAP s'exécute sur les trois principaux fournisseurs cloud.
+
+
+
+=== Évolutivité des performances - évolutivité verticale
+
+Les fonctionnalités scale-up permettent d'ajouter des disques aux systèmes AFF, FAS et E-Series lorsque vous avez besoin de capacité de stockage supplémentaire. Avec Cloud Volumes ONTAP, l'évolutivité du stockage jusqu'au niveau des po est deux facteurs : Tiering des données peu utilisées vers un stockage objet à partir d'un stockage bloc et pile des licences Cloud Volumes ONTAP sans calcul supplémentaire.
+
+
+
+=== Protocoles multiples
+
+Les systèmes NetApp prennent en charge la plupart des protocoles pour les déploiements Hadoop, notamment SAS, iSCSI, FCP, InfiniBand, Et NFS.
+
+
+
+=== Solutions opérationnelles et prises en charge
+
+Les solutions Hadoop décrites dans ce document sont prises en charge par NetApp. Ces solutions sont également certifiées avec les principaux distributeurs Hadoop. Pour plus d'informations, reportez-vous à la section https://www.mapr.com/partners/partner/netapp["MAPR"^] site, le http://hortonworks.com/partner/netapp/["Hortonworks"^] Et le Cloudera http://www.cloudera.com/partners/partners-listing.html?q=netapp["certification"^] et http://www.cloudera.com/partners/solutions/netapp.html["en tant que partenaire"^] distants.
+
+link:apache-spark-target-audience.html["Suivant : public cible."]

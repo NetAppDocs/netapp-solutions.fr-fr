@@ -1,0 +1,49 @@
+---
+sidebar: sidebar 
+permalink: ai/aks-anf_install_and_set_up_the_aks_cluster.html 
+keywords: aks, install, cluster, node type, system, worker 
+summary: Cette page décrit les étapes de configuration du cluster AKS. 
+---
+= Installez et configurez le cluster AKS
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aks-anf_click-through_rate_prediction_use_case_summary.html["Précédent : récapitulatif de l'utilisation des prévisions de taux par clic."]
+
+Pour installer et configurer le cluster AKS, reportez-vous à la page Web https://docs.microsoft.com/azure/aks/kubernetes-walkthrough-portal["Créer un cluster AKS"^] puis procédez comme suit :
+
+. Lors de la sélection du type de nœud (nœuds du système [CPU] ou du worker [GPU]), sélectionnez ce qui suit :
++
+.. Les nœuds du système primaire doivent être de type Standard DS2v2 (`agentpool` trois nœuds par défaut).
+.. Ajoutez ensuite le nœud de travail Standard_NC6s_v3 pool (trois nœuds minimum) pour le groupe d'utilisateurs (pour les nœuds GPU) nommé `gpupool`.
++
+image:aks-anf_image3.png["Erreur : image graphique manquante"]
+
+
+
+. Le déploiement prend entre 5 et 10 minutes. Lorsque l'opération est terminée, cliquez sur Connect to Cluster.
+. Pour vous connecter au cluster AKS nouvellement créé, installez les éléments suivants à partir de votre environnement local (ordinateur portable/pc) :
++
+.. L'outil de ligne de commande Kubernetes à l'aide de https://kubernetes.io/docs/tasks/tools/install-kubectl/["Instructions fournies pour votre système d'exploitation"^]
+.. L'interface de ligne de commandes Azure, comme décrit dans le document, https://docs.microsoft.com/cli/azure/install-azure-cli["Installez l'interface de ligne de commande Azure"^]
+
+
+. Pour accéder au cluster AKS à partir du terminal, entrez `az login` et entrez les informations d'identification.
+. Exécutez les deux commandes suivantes :
++
+....
+az account set --subscription xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxxxx
+aks get-credentials --resource-group resourcegroup --name aksclustername
+....
+. Entrez `Azure CLI: kubectl get nodes`.
+. Si les six nœuds sont actifs, comme illustré dans l'exemple suivant, votre cluster AKS est prêt et connecté à votre environnement local
+
+
+image:aks-anf_image4.png["Erreur : image graphique manquante"]
+
+link:aks-anf_create_a_delegated_subnet_for_azure_netapp_files.html["Créez ensuite un sous-réseau délégué pour Azure NetApp Files."]

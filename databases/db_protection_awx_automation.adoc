@@ -1,0 +1,405 @@
+---
+sidebar: sidebar 
+permalink: databases/db_protection_awx_automation.html 
+keywords: Linux, RHEL Oracle19c, NFS, ONTAP 
+summary: 'Cette page décrit la protection automatisée des données d"Oracle19c sur le stockage ONTAP NetApp.' 
+---
+= Procédure de déploiement étape par étape
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Protection des données Oracle AWX/Tower
+
+
+
+=== Créez l'inventaire, le groupe, les hôtes et les informations d'identification de votre environnement
+
+Cette section décrit la configuration des inventaires, des groupes, des hôtes et des identifiants d'accès dans AWX/Ansible Tower qui préparent l'environnement à l'utilisation des solutions automatisées NetApp.
+
+. Configurer l'inventaire.
++
+.. Accédez à Ressources → inventaires → Ajouter, puis cliquez sur Ajouter un inventaire.
+.. Indiquez le nom et les détails de l'organisation, puis cliquez sur Enregistrer.
+.. Sur la page inventaires, cliquez sur l'inventaire créé.
+.. Accédez au sous-menu groupes et cliquez sur Ajouter.
+.. Indiquez le nom oracle de votre premier groupe et cliquez sur Enregistrer.
+.. Répétez le processus pour un second groupe appelé dr_oracle.
+.. Sélectionnez le groupe oracle créé, accédez au sous-menu hôtes et cliquez sur Ajouter un nouvel hôte.
+.. Indiquez l'adresse IP de gestion de l'hôte Oracle source, puis cliquez sur Enregistrer.
+.. Ce processus doit être répété pour le groupe dr_oracle et ajouter l'adresse IP/nom d'hôte de gestion de l'hôte DR/destination Oracle.
+
+
++
+
+NOTE: Les instructions ci-dessous pour créer les types d'identifiants d'identifiants pour une certification sur site avec ONTAP ou CVO pour AWS sont décrites ci-dessous.
+
+
+
+[role="tabbed-block"]
+====
+.Sur site
+--
+. Configurer les informations d'identification.
+. Créer des types d'informations d'identification. Pour les solutions impliquant ONTAP, vous devez configurer le type d'informations d'identification pour qu'il corresponde aux entrées de nom d'utilisateur et de mot de passe.
++
+.. Accédez à Administration → types d'informations d'identification, puis cliquez sur Ajouter.
+.. Indiquez le nom et la description.
+.. Collez le contenu suivant dans la configuration d'entrée :
++
+[source, cli]
+----
+fields:
+  - id: dst_cluster_username
+    type: string
+    label: Destination Cluster Username
+  - id: dst_cluster_password
+    type: string
+    label: Destination Cluster Password
+    secret: true
+  - id: src_cluster_username
+    type: string
+    label: Source Cluster Username
+  - id: src_cluster_password
+    type: string
+    label: Source Cluster Password
+    secret: true
+----
+.. Collez le contenu suivant dans Configuration d'injecteur, puis cliquez sur Enregistrer :
++
+[source, cli]
+----
+extra_vars:
+  dst_cluster_username: '{{ dst_cluster_username }}'
+  dst_cluster_password: '{{ dst_cluster_password }}'
+  src_cluster_username: '{{ src_cluster_username }}'
+  src_cluster_password: '{{ src_cluster_password }}'
+----
+
+
+. Créer des informations d'identification pour ONTAP
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les informations d'organisation des informations d'identification ONTAP
+.. Sélectionnez le type d'informations d'identification créé à l'étape précédente.
+.. Sous Détails du type, entrez le nom d'utilisateur et le mot de passe de vos clusters source et destination.
+.. Cliquez sur Save
+
+
+. Créez des informations d'identification pour Oracle
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation pour Oracle
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails du type, entrez le nom d'utilisateur et le mot de passe des hôtes Oracle.
+.. Sélectionnez la méthode d'escalade des privilèges appropriée et saisissez le nom d'utilisateur et le mot de passe.
+.. Cliquez sur Save
+.. Répétez le processus si nécessaire pour une autre information d'identification pour l'hôte dr_oracle.
+
+
+
+
+--
+.CVO
+--
+. Configurer les informations d'identification.
+. Créer des types d'informations d'identification. Pour les solutions impliquant ONTAP, vous devez configurer le type d'identifiants pour qu'il corresponde aux entrées de nom d'utilisateur et de mot de passe. Nous ajouterons également des entrées pour Cloud Central et AWS.
++
+.. Accédez à Administration → types d'informations d'identification, puis cliquez sur Ajouter.
+.. Indiquez le nom et la description.
+.. Collez le contenu suivant dans la configuration d'entrée :
++
+[source, cli]
+----
+fields:
+  - id: dst_cluster_username
+    type: string
+    label: CVO Username
+  - id: dst_cluster_password
+    type: string
+    label: CVO Password
+    secret: true
+  - id: cvo_svm_password
+    type: string
+    label: CVO SVM Password
+    secret: true
+  - id: src_cluster_username
+    type: string
+    label: Source Cluster Username
+  - id: src_cluster_password
+    type: string
+    label: Source Cluster Password
+    secret: true
+  - id: regular_id
+    type: string
+    label: Cloud Central ID
+    secret: true
+  - id: email_id
+    type: string
+    label: Cloud Manager Email
+    secret: true
+  - id: cm_password
+    type: string
+    label: Cloud Manager Password
+    secret: true
+  - id: access_key
+    type: string
+    label: AWS Access Key
+    secret: true
+  - id: secret_key
+    type: string
+    label: AWS Secret Key
+    secret: true
+  - id: token
+    type: string
+    label: Cloud Central Refresh Token
+    secret: true
+----
+.. Collez le contenu suivant dans Configuration d'injecteur et cliquez sur Enregistrer :
++
+[source, cli]
+----
+extra_vars:
+  dst_cluster_username: '{{ dst_cluster_username }}'
+  dst_cluster_password: '{{ dst_cluster_password }}'
+  cvo_svm_password: '{{ cvo_svm_password }}'
+  src_cluster_username: '{{ src_cluster_username }}'
+  src_cluster_password: '{{ src_cluster_password }}'
+  regular_id: '{{ regular_id }}'
+  email_id: '{{ email_id }}'
+  cm_password: '{{ cm_password }}'
+  access_key: '{{ access_key }}'
+  secret_key: '{{ secret_key }}'
+  token: '{{ token }}'
+----
+
+
+. Créez des justificatifs pour ONTAP/CVO/AWS
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les informations d'organisation des informations d'identification ONTAP
+.. Sélectionnez le type d'informations d'identification créé à l'étape précédente.
+.. Sous Type Details, entrez le nom d'utilisateur et le mot de passe de vos clusters source et CVO, Cloud Central/Manager, AWS Access/Secret Key et Cloud Central Refresh Token.
+.. Cliquez sur Save
+
+
+. Créer des informations d'identification pour Oracle (Source)
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation de l'hôte Oracle
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails du type, entrez le nom d'utilisateur et le mot de passe des hôtes Oracle.
+.. Sélectionnez la méthode d'escalade des privilèges appropriée et saisissez le nom d'utilisateur et le mot de passe.
+.. Cliquez sur Save
+
+
+. Créez des informations d'identification pour la destination Oracle
++
+.. Accédez à Ressources → informations d'identification, puis cliquez sur Ajouter.
+.. Entrez le nom et les détails de l'organisation pour l'hôte Oracle de reprise sur incident
+.. Sélectionnez le type d'informations d'identification de la machine.
+.. Sous Détails de type, entrez le nom d'utilisateur (utilisateur ec2 ou si vous l'avez modifié par défaut) et la clé privée SSH
+.. Sélectionnez la méthode d'escalade des privilèges correcte (sudo) et entrez le nom d'utilisateur et le mot de passe si nécessaire.
+.. Cliquez sur Save
+
+
+
+
+--
+====
+
+
+=== Créer un projet
+
+. Accédez à Ressources → projets, puis cliquez sur Ajouter.
++
+.. Entrez le nom et les détails de l'organisation.
+.. Sélectionnez Git dans le champ Type d'informations d'identification du contrôle source.
+.. entrez <https://github.com/NetApp-Automation/na_oracle19c_data_protection.git>[] Comme URL de contrôle de source.
+.. Cliquez sur Enregistrer.
+.. Il peut être nécessaire de synchroniser le projet de temps en temps lorsque le code source change.
+
+
+
+
+
+
+=== Configurer les variables globales
+
+Les variables définies dans cette section s'appliquent à tous les hôtes Oracle, bases de données et cluster ONTAP.
+
+. Saisissez les paramètres spécifiques à votre environnement dans le formulaire intégré Global variables ou var.
++
+
+NOTE: Les éléments en bleu doivent être modifiés pour correspondre à votre environnement.
+
++
+[role="tabbed-block"]
+====
+.Sur site
+--
+
+--
+.CVO
+--
+
+--
+====
+
+
+
+
+=== Manuels de vente automatisation
+
+Il y a quatre manuels de vente distincts qui doivent être exécutés.
+
+. PlayBook pour la configuration de votre environnement, sur site ou Cloud volumes ONTAP.
+. Manuel de vente pour la réplication de fichiers binaires et de bases de données Oracle selon un calendrier
+. Manuel de vente pour la réplication des journaux Oracle selon un planning
+. Manuel de vente pour la récupération de votre base de données sur un hôte de destination
+
+
+[role="tabbed-block"]
+====
+.Configuration d'ONTAP/CVO
+--
+Configuration de ONTAP et CVO
+
+*Configurer et lancer le modèle de travail.*
+
+. Créez le modèle de travail.
++
+.. Accédez à Ressources → modèles → Ajouter, puis cliquez sur Ajouter un modèle de travail.
+.. Entrez le nom Configuration ONTAP/CVO
+.. Sélectionnez le type de travail ; Exécuter configure le système en fonction d'un manuel de vente.
+.. Sélectionnez l'inventaire, le projet, le PlayBook et les identifiants correspondant au PlayBook.
+.. Sélectionnez le manuel de vente ontap_setup.yml pour un environnement sur site ou sélectionnez cvo_setup.yml pour la réplication vers une instance CVO.
+.. Collez les variables globales copiées à partir de l'étape 4 dans le champ variables du modèle sous l'onglet YAML.
+.. Cliquez sur Enregistrer.
+
+
+. Lancez le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle souhaité, puis cliquez sur lancer.
++
+
+NOTE: Nous utiliserons ce modèle et le copierons pour les autres manuels de vente.
+
+
+
+
+
+--
+.Réplication pour volumes binaires et de base de données
+--
+Planification du manuel de réplication des fichiers binaires et des bases de données
+
+*Configurer et lancer le modèle de travail.*
+
+. Copier le modèle de travail créé précédemment.
++
+.. Accédez à Ressources → modèles.
+.. Recherchez le modèle d'installation ONTAP/CVO et, à l'extrême droite, cliquez sur Copy Template
+.. Cliquez sur Modifier le modèle dans le modèle copié et changez le nom en Manuel de réplication de base de données et binaire.
+.. Conserver les mêmes inventaires, projets, identifiants pour le modèle.
+.. Sélectionnez ora_Replication_cg.yml comme PlayBook à exécuter.
+.. Les variables resteront les mêmes, mais l'IP du cluster CVO devra être définie dans la variable dst_cluster_ip.
+.. Cliquez sur Enregistrer.
+
+
+. Planifier le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle de manuel de réplication de base de données et binaire, puis cliquez sur programmes dans le jeu d'options supérieur.
+.. Cliquez sur Ajouter, ajouter un planning de noms pour la réplication binaire et de base de données, choisissez la date/l'heure de début au début de l'heure, choisissez votre fuseau horaire local et la fréquence d'exécution. La fréquence d'exécution sera souvent mise à jour de la réplication SnapMirror.
++
+
+NOTE: Un planning distinct sera créé pour la réplication du volume de journaux afin de pouvoir le répliquer à une fréquence plus élevée.
+
+
+
+
+
+--
+.Réplication pour les volumes de journaux
+--
+Planification du manuel de réplication des journaux
+
+*Configurer et lancer le modèle de travail.*
+
+. Copier le modèle de travail créé précédemment.
++
+.. Accédez à Ressources → modèles.
+.. Recherchez le modèle d'installation ONTAP/CVO et, à l'extrême droite, cliquez sur Copy Template
+.. Cliquez sur Modifier le modèle dans le modèle copié et modifiez le nom en Manuel de réplication des journaux.
+.. Conserver les mêmes inventaires, projets, identifiants pour le modèle.
+.. Sélectionnez ora_Replication_logs.yml comme PlayBook à exécuter.
+.. Les variables resteront les mêmes, mais l'IP du cluster CVO devra être définie dans la variable dst_cluster_ip.
+.. Cliquez sur Enregistrer.
+
+
+. Planifier le modèle de travail.
++
+.. Accédez à Ressources → modèles.
+.. Cliquez sur le modèle de manuel de réplication des journaux, puis sur programmes dans le jeu d'options supérieur.
+.. Cliquez sur Ajouter, Ajouter un planning de noms pour la réplication de journaux, choisissez la date/l'heure de début au début de l'heure, choisissez votre fuseau horaire local et la fréquence d'exécution. La fréquence d'exécution sera souvent mise à jour de la réplication SnapMirror.
+
+
++
+
+NOTE: Il est recommandé de définir le programme du journal à mettre à jour toutes les heures pour garantir la récupération de la dernière mise à jour horaire.
+
+
+
+--
+.Restaurez et récupérez la base de données
+--
+Planification du manuel de réplication des journaux
+
+*Configurer et lancer le modèle de travail.*
+
+. Copier le modèle de travail créé précédemment.
++
+.. Accédez à Ressources → modèles.
+.. Recherchez le modèle d'installation ONTAP/CVO et, à l'extrême droite, cliquez sur Copy Template
+.. Cliquez sur Modifier le modèle dans le modèle copié et modifiez le nom en Manuel de restauration et de récupération.
+.. Conserver les mêmes inventaires, projets, identifiants pour le modèle.
+.. Sélectionnez ora_Recovery.yml comme manuel de vente à exécuter.
+.. Les variables resteront les mêmes, mais l'IP du cluster CVO devra être définie dans la variable dst_cluster_ip.
+.. Cliquez sur Enregistrer.
+
+
++
+
+NOTE: Ce PlayBook ne sera pas exécuté tant que vous n'êtes pas prêt à restaurer votre base de données sur le site distant.
+
+
+
+--
+====
+
+
+=== Récupération de la base de données Oracle
+
+. Les volumes de données des bases de données Oracle de production sur site sont protégés via la réplication NetApp SnapMirror vers un cluster ONTAP redondant dans un data Center secondaire ou vers Cloud Volume ONTAP dans un cloud public. Dans un environnement de reprise après incident entièrement configuré, les instances de calcul de restauration dans le data Center secondaire ou dans le cloud public sont de secours et prêtes à restaurer la base de données de production en cas d'incident. Les instances de calcul de secours sont maintenues synchronisées avec les instances sur site en exécutant des mises à jour paraellel sur le patch du noyau du système d'exploitation ou la mise à niveau en parallèle.
+. Dans cette solution démontrée, le volume binaire Oracle est répliqué sur la cible et monté sur l'instance cible pour créer la pile logicielle Oracle. Cette approche de restauration d'Oracle a un avantage sur une nouvelle installation d'Oracle à la dernière minute lorsqu'un incident s'est produit. Cela garantit que l'installation d'Oracle est parfaitement synchronisée avec les niveaux de patch et d'installation du logiciel de production sur site, etc. Cependant, cela peut avoir ou non des implications de licence logicielle supplémentaires pour le volume binaire Oracle répliqué sur le site de reprise, selon la structure des licences logicielles avec Oracle. Il est recommandé à l'utilisateur de vérifier avec son personnel chargé des licences logicielles afin d'évaluer les exigences de licence Oracle potentielles avant de décider d'utiliser la même approche.
+. L'hôte Oracle de secours au niveau de la destination est configuré avec les configurations prérequis d'Oracle.
+. Les SnapMirrors sont rompus et les volumes sont créés pour être inscriptibles et montés sur l'hôte Oracle de secours.
+. Le module de récupération Oracle effectue les tâches suivantes pour la récupération et le démarrage d'Oracle sur le site de reprise après le montage de tous les volumes de base de données sur l'instance de calcul de secours.
++
+.. Synchronisez le fichier de contrôle : nous avons déployé des fichiers de contrôle Oracle dupliqués sur un volume de base de données différent afin de protéger le fichier de contrôle de base de données stratégique. L'une est sur le volume de données et l'autre sur le volume du journal. Les volumes de données et de journaux sont répliqués à une fréquence différente, mais ils sont désynchronisés au moment de la restauration.
+.. Rééditer le binaire Oracle : comme le binaire Oracle est transféré vers un nouvel hôte, il faut un rélien.
+.. Restaurer base de données Oracle : le mécanisme de récupération récupère le dernier numéro de modification du système dans le dernier journal archivé disponible dans le volume du journal Oracle à partir du fichier de contrôle et récupère la base de données Oracle pour récupérer toutes les transactions commerciales qui ont pu être répliquées vers le site de reprise après incident au moment de la défaillance. La base de données est ensuite démarrée dans une nouvelle incarnation pour effectuer des connexions utilisateur et une transaction commerciale sur le site de reprise.
+
+
+
+
+
+NOTE: Avant d'exécuter le manuel de récupération, assurez-vous d'avoir bien les éléments suivants : assurez-vous de les copier sur /etc/oratab et /etc/oraInst.loc de l'hôte Oracle source vers l'hôte de destination

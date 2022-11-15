@@ -1,0 +1,36 @@
+---
+sidebar: sidebar 
+permalink: ehc/aws/aws-guest-dr-compute.html 
+keywords: on premises, on prem, cloud, compute, HPE Proliant, Windows Server, SQL Server 
+summary: 'VMware vSphere fournit une infrastructure virtualisée dans le data Center et dans tous les principaux fournisseurs cloud. Cet écosystème est idéal pour les scénarios de reprise après incident pour lesquels le calcul virtualisé reste cohérent, quel que soit l"emplacement. Cette solution utilise les ressources de calcul virtualisées VMware à la fois sur l"emplacement du data Center et dans le cloud VMware sur AWS.' 
+---
+= Calcul
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+link:aws-guest-dr-storage.html["Précédent : stockage."]
+
+VMware vSphere fournit une infrastructure virtualisée dans le data Center et dans tous les principaux fournisseurs cloud. Cet écosystème est idéal pour les scénarios de reprise après incident pour lesquels le calcul virtualisé reste cohérent, quel que soit l'emplacement. Cette solution utilise les ressources de calcul virtualisées VMware à la fois sur l'emplacement du data Center et dans le cloud VMware sur AWS.
+
+
+
+== Sur site
+
+Cette solution utilise des serveurs HPE ProLiant DL360 Gen 10 exécutant VMware vSphere v7.0U3. Nous avons déployé six instances de calcul pour fournir les ressources adéquates à nos serveurs SQL Server et Oracle.
+
+Nous avons déployé 10 machines virtuelles Windows Server 2019 exécutant SQL Server 2019 avec des tailles de base de données variables et 10 machines virtuelles Oracle Linux 8.5 qui exécutent Oracle 19c, une nouvelle fois, avec des bases de données de tailles variables.
+
+
+
+== Le cloud
+
+Nous avons déployé un SDDC dans VMware Cloud sur AWS avec deux hôtes pour fournir les ressources adéquates afin d'exécuter les machines virtuelles restaurées à partir de notre site principal.
+
+image:dr-vmc-aws-image9.png["Erreur : image graphique manquante"]
+
+link:aws-guest-dr-cloud-backup-tools.html["Outils de sauvegarde dans le cloud."]

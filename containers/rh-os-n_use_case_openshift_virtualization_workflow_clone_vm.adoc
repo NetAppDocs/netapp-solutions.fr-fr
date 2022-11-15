@@ -1,0 +1,72 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_clone_vm.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
+---
+= Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
+:allow-uri-read: 
+
+
+
+
+== Clonage de VM
+
+Le clonage d'une machine virtuelle existante dans OpenShift est réalisé avec la prise en charge de la fonctionnalité de clonage de volumes CSI d'Astra Trident. Le clonage de volumes CSI permet de créer une nouvelle demande de volume persistant en utilisant une demande de volume en tant que source de données en dupliquant son volume persistant. Une fois le nouveau PVC créé, il fonctionne comme une entité distincte et sans lien ou dépendance sur le PVC source.
+
+image::redhat_openshift_image57.jpg[Architecture de clonage de VM]
+
+Le clonage de volumes CSI peut prendre en compte certaines restrictions :
+
+. Le PVC source et le PVC de destination doivent être dans le même projet.
+. Le clonage est pris en charge au sein de la même classe de stockage.
+. Le clonage n'est possible que lorsque les volumes source et de destination utilisent le même paramètre Volumemode. Par exemple, un volume de bloc ne peut être cloné que vers un autre volume de bloc.
+
+
+Les VM d'un cluster OpenShift peuvent être clonés de deux manières :
+
+. En cours d'arrêt de la machine virtuelle source
+. En conservant la machine virtuelle source en service
+
+
+
+
+=== En cours d'arrêt de la machine virtuelle source
+
+Le clonage d'une machine virtuelle existante en fermant cette machine virtuelle est une fonctionnalité OpenShift native prise en charge d'Astra Trident. Procédez comme suit pour cloner une machine virtuelle.
+
+. Accédez à charges de travail > virtualisation > machines virtuelles, puis cliquez sur les points de suspension situés à côté de la machine virtuelle que vous souhaitez cloner.
+. Cliquez sur Cloner l'ordinateur virtuel et fournissez les détails concernant la nouvelle machine virtuelle.
++
+image::redhat_openshift_image58.JPG[cloner la machine virtuelle]
+
+. Cliquez sur Cloner l'ordinateur virtuel. La machine virtuelle source est arrêtée et commence la création de la machine virtuelle clone.
+. Une fois cette étape terminée, vous pouvez accéder au contenu de la machine virtuelle clonée et le vérifier.
+
+
+
+
+=== En conservant la machine virtuelle source en service
+
+Une machine virtuelle existante peut également être clonée en clonant le volume persistant existant de la machine virtuelle source, puis en créant une nouvelle machine virtuelle à l'aide du volume persistant cloné. Cette méthode n'exige pas l'arrêt de la machine virtuelle source. Procédez comme suit pour cloner une machine virtuelle sans la désactiver.
+
+. Accédez à Storage > PersistentVolumeClaims et cliquez sur les points de suspension en regard du volume persistant associé à la machine virtuelle source.
+. Cliquez sur Cloner le PVC et fournir les détails du nouveau PVC.
++
+image::redhat_openshift_image59.JPG[cloner la demande de volume persistant]
+
+. Cliquez ensuite sur Cloner. Cela crée une demande de volume persistant pour la nouvelle machine virtuelle.
+. Accédez à charges de travail > virtualisation > machines virtuelles, puis cliquez sur Créer > avec YAML.
+. Dans la section spécifications > modèle > spécifications > volumes, fixez le PVC cloné à la place du disque conteneur. Fournir tous les autres détails relatifs à la nouvelle machine virtuelle selon vos besoins.
++
+[source, cli]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-clone
+----
+. Cliquez sur Créer pour créer la nouvelle machine virtuelle.
+. Une fois la machine virtuelle créée, accédez-y et vérifiez que la nouvelle machine virtuelle est un clone de la machine virtuelle source.
+
+
+link:rh-os-n_use_case_openshift_virtualization_workflow_vm_from_snapshot.html["Next : workflows : création d'une machine virtuelle à partir d'une copie Snapshot."]

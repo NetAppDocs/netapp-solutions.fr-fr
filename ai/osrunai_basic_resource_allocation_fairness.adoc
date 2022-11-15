@@ -1,0 +1,30 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_basic_resource_allocation_fairness.html 
+keywords:  
+summary:  
+---
+= Équité de l'allocation des ressources de base
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Dans cette section, quand nous le montrons `team-d` Lorsque plusieurs GPU sont en attente (ils sont sous leur quota), le système interrompt les charges de travail de `team-b` et `team-c` et les déplace dans un état en attente de façon équitable.
+
+Pour plus de détails, y compris les soumissions de travaux, les images de conteneur utilisées et les séquences de commandes exécutées, reportez-vous à la section link:osrunai_testing_details_for_section_4.9.html["Détails des tests pour la section 4.9"].
+
+La figure suivante montre l'utilisation du cluster résultant, les GPU alloués par équipe et les tâches en attente dus à l'équilibrage de la charge automatique et à la planification préventive. Nous pouvons observer que lorsque le nombre total de GPU requis par toutes les charges de travail d'équipe dépasse le nombre total de GPU disponibles dans le cluster, l'algorithme d'équité interne de Run:ai interrompt chaque tâche pour `team-b` et `team-c` parce qu'ils ont atteint leur quota de projet. Cela assure, de manière générale, l'utilisation élevée des clusters et les équipes de data Scientists restent contraintes pour les ressources définies par un administrateur.
+
+image:osrunai_image9.png["Erreur : image graphique manquante"]
+
+Les résultats de ce scénario de test démontrent ce qui suit :
+
+* *Équilibrage automatique de la charge.* le système équilibre automatiquement le quota des GPU, de sorte que chaque équipe utilise maintenant son quota. Les charges de travail suspendues appartiennent à des équipes qui ont terminé leur quota.
+* *Pause de partage équitable.* le système choisit d'arrêter la charge de travail d'une équipe qui a surpassé leur quota et de mettre fin à la charge de travail de l'autre équipe. Exécutez :l'IA dispose d'algorithmes d'équité internes.
+
+
+link:osrunai_over-quota_fairness.html["Suivant : équité excessive"]

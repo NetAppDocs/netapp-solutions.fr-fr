@@ -1,0 +1,30 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_kubernetes_deployment.html 
+keywords: Kubernetes, Deployment, NVIDIA, DeepOps 
+summary:  
+---
+= Déploiement Kubernetes
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Pour déployer et configurer votre cluster Kubernetes avec NVIDIA DeepOps, effectuez les tâches suivantes à partir d'un hôte de démarrage du déploiement :
+
+. Téléchargez NVIDIA DeepOps en suivant les instructions sur le https://github.com/NVIDIA/deepops/blob/master/docs/getting-started.md["Page de démarrage"^] Sur le site GitHub NVIDIA DeepOps.
+. Déployez Kubernetes dans votre cluster en suivant les instructions du https://github.com/NVIDIA/deepops/blob/master/docs/kubernetes-cluster.md["Guide de déploiement Kubernetes"^] Sur le site GitHub NVIDIA DeepOps.
+
+
+
+NOTE: Pour que le déploiement Kubernetes de DeepOps fonctionne, le même utilisateur doit exister sur tous les nœuds maîtres et workers Kubernetes.
+
+Si le déploiement échoue, modifiez la valeur de `kubectl_localhost` à faux dans `deepops/config/group_vars/k8s-cluster.yml` et répétez l'étape 2. Le `Copy kubectl binary to ansible host` tâche, qui s'exécute uniquement lorsque la valeur de `kubectl_localhost` Est vrai, dépend du module récupérer Ansible, qui présente des problèmes connus d'utilisation de la mémoire. Ces problèmes d'utilisation de la mémoire peuvent parfois entraîner l'échec de la tâche. Si la tâche échoue en raison d'un problème de mémoire, le reste de l'opération de déploiement ne s'effectue pas correctement.
+
+Si le déploiement se termine correctement une fois que vous avez modifié la valeur de `kubectl_localhost` à `false`, vous devez ensuite copier manuellement `kubectl binary` D'un nœud maître Kubernetes vers l'hôte de démarrage du déploiement Vous pouvez trouver l'emplacement du `kubectl binary` sur un nœud maître spécifique en exécutant le `which kubectl` commandez directement sur ce nœud.
+
+link:hcaios_cnvrg.io_deployment.html["Suivant : déploiement Cnvrg.io"]
