@@ -33,6 +33,7 @@ FSX pour ONTAP fournit également un stockage durable et haute disponibilité av
 === FSX ONTAP en tant que stockage invité connecté
 
 .Configuration d'Amazon FSX pour NetApp ONTAP avec VMware Cloud sur AWS
+[%collapsible]
 ====
 Amazon FSX pour NetApp ONTAP Files partages et LUN peuvent être montés depuis les machines virtuelles créées dans l'environnement VMware SDDC au sein de VMware Cloud au sein d'AWS. Les volumes peuvent également être montés sur le client Linux et mappés sur le client Windows à l'aide du protocole NFS ou SMB. Les LUN sont accessibles sur les clients Linux ou Windows sous forme de périphériques de bloc lorsqu'ils sont montés sur iSCSI. Vous pouvez configurer rapidement Amazon FSX pour le système de fichiers NetApp ONTAP en procédant comme suit.
 
@@ -41,6 +42,7 @@ NOTE: Amazon FSX pour NetApp ONTAP et VMware Cloud sur AWS doivent se trouver da
 
 ====
 .Création et montage d'Amazon FSX pour les volumes ONTAP
+[%collapsible]
 ====
 Pour créer et monter un système de fichiers Amazon FSX pour NetApp ONTAP, procédez comme suit :
 
@@ -103,6 +105,7 @@ image:aws-fsx-guest-11.png[""]
 
 ====
 .Montez le volume ONTAP FSX sur le client Linux
+[%collapsible]
 ====
 Pour monter le volume ONTAP FSX créé à l'étape précédente. Depuis les VM Linux dans VMC sur AWS SDDC, effectuez les opérations suivantes :
 
@@ -126,6 +129,7 @@ image:aws-fsx-guest-21.png[""]
 video::vmc_linux_vm_nfs.mp4[]
 ====
 .Connexion de volumes ONTAP FSX aux clients Microsoft Windows
+[%collapsible]
 ====
 Pour gérer et mapper des partages de fichiers sur un système de fichiers Amazon FSX, l'interface graphique dossiers partagés doit être utilisée.
 
@@ -159,6 +163,7 @@ image:aws-fsx-guest-26.png[""]
 
 ====
 .Connectez un LUN FSX pour NetApp ONTAP à un hôte utilisant iSCSI
+[%collapsible]
 ====
 video::vmc_windows_vm_iscsi.mp4[]
 Le trafic iSCSI pour FSX traverse la passerelle de transit VMware Transit Connect/AWS via les routes fournies dans la section précédente. Pour configurer un LUN dans Amazon FSX pour NetApp ONTAP, suivez la documentation qui s'y trouve link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/supported-fsx-clients.html["ici"].
@@ -169,6 +174,7 @@ Dans ce document, la connexion du LUN iSCSI à un hôte Windows est décrite ci-
 
 ====
 .Provisionnement d'un LUN dans FSX pour NetApp ONTAP :
+[%collapsible]
 ====
 . Accédez à l'interface de ligne de commande de NetApp ONTAP à l'aide du port de gestion du système FSX pour le système de fichiers ONTAP.
 . Créer les LUN avec la taille requise, comme indiqué dans la sortie du dimensionnement.
@@ -283,6 +289,7 @@ De par sa conception, CVO fournit des performances extrêmes et des fonctionnali
 === Cloud Volumes ONTAP (CVO) comme stockage connecté à l'invité
 
 .Déploiement de la nouvelle instance Cloud Volumes ONTAP dans AWS (faites vous-même)
+[%collapsible]
 ====
 Les partages et les LUN Cloud Volumes ONTAP peuvent être montés sur les VM créées dans le cloud VMware dans un environnement SDDC d'AWS. Les volumes peuvent également être montés sur des clients Windows Linux natifs d'AWS VM, et les LUN sont accessibles sur des clients Linux ou Windows en tant que périphériques de blocs lorsqu'ils sont montés sur iSCSI, car Cloud Volumes ONTAP prend en charge les protocoles iSCSI, SMB et NFS. Les volumes Cloud Volumes ONTAP peuvent être configurés en quelques étapes simples.
 
@@ -351,6 +358,7 @@ image:aws-cvo-guest-14.png[""]
 
 ====
 .Configurations supplémentaires pour les volumes SMB
+[%collapsible]
 ====
 . Une fois l'environnement de travail prêt, assurez-vous que le serveur CIFS est configuré avec les paramètres de configuration DNS et Active Directory appropriés. Cette étape est requise avant de pouvoir créer le volume SMB.
 +
@@ -374,6 +382,7 @@ image:aws-cvo-guest-24.png[""]
 
 ====
 .Connectez la LUN à un hôte
+[%collapsible]
 ====
 Pour connecter le LUN Cloud Volumes ONTAP à un hôte, procédez comme suit :
 
@@ -423,6 +432,7 @@ Sur les clients Linux, assurez-vous que le démon iSCSI est en cours d'exécutio
 
 ====
 .Montez un volume NFS Cloud Volumes ONTAP sur un client Linux
+[%collapsible]
 ====
 Pour monter le système de fichiers Cloud Volumes ONTAP (DIY) depuis des VM dans le VMC sur le SDDC AWS, effectuez la procédure suivante :
 

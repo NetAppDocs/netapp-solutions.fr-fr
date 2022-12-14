@@ -204,7 +204,7 @@ L'équipe d'automatisation NetApp propose un kit d'automatisation qui permet d'e
 
 === Préparez un contrôleur Ansible pour exécuter l'automatisation
 
-Suivre les instructions de la section « and connecting to an EC2 instance for hosting Oracle database« Pour provisionner une petite instance Linux EC2 afin d'exécuter le contrôleur Ansible. Au lieu d'utiliser RedHat, Amazon Linux t2.large avec 2 vCPU et 8 Go de RAM doit suffire.
+Suivre les instructions de la section «<<Création et connexion à une instance EC2 pour héberger la base de données Oracle>>« Pour provisionner une petite instance Linux EC2 afin d'exécuter le contrôleur Ansible. Au lieu d'utiliser RedHat, Amazon Linux t2.large avec 2 vCPU et 8 Go de RAM doit suffire.
 
 
 
@@ -226,7 +226,7 @@ git clone https://github.com/NetApp-Automation/na_rds_fsx_oranfs_config.git
 
 Voir ces instructions détaillées link:https://docs.netapp.com/us-en/netapp-solutions/databases/cli_automation.html["Déploiement de la base de données Oracle 19c par CLI"^] Pour déployer Oracle 19c avec automatisation de l'interface de ligne de commande. Il existe une modification de la syntaxe de commande pour l'exécution de PlayBook, car vous utilisez une paire de clés SSH à la place d'un mot de passe pour l'authentification d'accès aux hôtes. La liste suivante fournit un récapitulatif de haut niveau :
 
-. Par défaut, une instance EC2 utilise une paire de clés SSH pour l'authentification des accès. À partir des répertoires racine d'automatisation du contrôleur Ansible `/home/ec2-user/na_oracle19c_deploy`, et `/home/ec2-user/na_rds_fsx_oranfs_config`, Faites une copie de la clé SSH `accesststkey.pem` Pour l'hôte Oracle déployé à l'étape « and connecting to an EC2 instance for hosting Oracle database."
+. Par défaut, une instance EC2 utilise une paire de clés SSH pour l'authentification des accès. À partir des répertoires racine d'automatisation du contrôleur Ansible `/home/ec2-user/na_oracle19c_deploy`, et `/home/ec2-user/na_rds_fsx_oranfs_config`, Faites une copie de la clé SSH `accesststkey.pem` Pour l'hôte Oracle déployé à l'étape «<<Création et connexion à une instance EC2 pour héberger la base de données Oracle>>."
 . Connectez-vous à l'hôte DB de l'instance EC2 en tant qu'utilisateur ec2 et installez la bibliothèque python3.
 +
 [source, cli]
@@ -492,7 +492,7 @@ NOTE: Vous pouvez activer l'élagage des journaux d'archive Oracle dans la strat
 
 La sauvegarde de base de données dans SnapCenter peut être configurée par l'utilisateur et peut être configurée individuellement ou en tant que groupe dans un groupe de ressources. L'intervalle de sauvegarde dépend des objectifs RTO et RPO. NetApp recommande d'exécuter une sauvegarde complète de base de données toutes les quelques heures et d'archiver la sauvegarde des journaux à une fréquence plus élevée (par exemple 10-15 minutes) pour une restauration rapide.
 
-Reportez-vous à la section Oracle du link:https://docs.netapp.com/us-en/netapp-solutions/databases/hybrid_dbops_snapcenter_getting_started_onprem.html#8-implement-backup-policy-to-protect-database["Mise en œuvre d'une stratégie de sauvegarde pour protéger la base de données"^] pour obtenir des processus détaillés étape par étape pour la mise en œuvre de la stratégie de sauvegarde créée dans la section  backup policy for Oracle database et pour la planification des tâches de sauvegarde.
+Reportez-vous à la section Oracle du link:https://docs.netapp.com/us-en/netapp-solutions/databases/hybrid_dbops_snapcenter_getting_started_onprem.html#8-implement-backup-policy-to-protect-database["Mise en œuvre d'une stratégie de sauvegarde pour protéger la base de données"^] pour obtenir des processus détaillés étape par étape pour la mise en œuvre de la stratégie de sauvegarde créée dans la section <<Configurer la règle de sauvegarde pour la base de données Oracle>> et pour la planification des tâches de sauvegarde.
 
 L'image suivante fournit un exemple de groupes de ressources configurés pour sauvegarder une base de données Oracle.
 

@@ -24,6 +24,7 @@ NOTE: Déployez la solution FSX pour ONTAP et bénéficiez de la même disponibi
 NOTE: Vous ne pouvez pas déployer FSX pour ONTAP dans le VPC connecté. Vous devez au contraire le déployer dans un nouveau VPC désigné, puis connecter le VPC à une passerelle de transit gérée VMware (vTGW) via des groupes SDDC.
 
 .Étape 1 : création d'Amazon FSX pour ONTAP dans un nouveau VPC désigné
+[%collapsible]
 ====
 Pour créer et monter le système de fichiers Amazon FSX pour NetApp ONTAP, effectuez la procédure suivante :
 
@@ -147,6 +148,7 @@ Pour en savoir plus sur les performances d'Amazon FSX pour ONTAP, consultez http
 
 ====
 .Étape 2 : créer un groupe SDDC
+[%collapsible]
 ====
 Une fois les systèmes de fichiers et les SVM créés, utilisez VMware Console pour créer un groupe SDDC et configurer VMware Transit Connect. Pour ce faire, effectuez la procédure suivante et n'oubliez pas que vous devez naviguer entre VMware Cloud Console et la console AWS.
 
@@ -165,6 +167,7 @@ image:fsx-nfs-image13.png["Erreur : image graphique manquante"]
 
 ====
 .Étape 3 : configurer VMware Transit Connect
+[%collapsible]
 ====
 . Reliez le nouveau VPC désigné au groupe SDDC. Sélectionnez l'onglet *VPC externe* et suivez la https://docs.vmware.com/en/VMware-Cloud-on-AWS/services/com.vmware.vmc-aws-operations/GUID-A3D03968-350E-4A34-A53E-C0097F5F26A9.html["Instructions pour connecter un VPC externe au groupe"^]. Ce processus peut prendre 10-15 minutes.
 +
@@ -193,6 +196,7 @@ image:fsx-nfs-image16.png["Erreur : image graphique manquante"]
 
 ====
 .Étape 4 : création d'une connexion de passerelle de transit
+[%collapsible]
 ====
 . Dans la console AWS, accédez à la page de service VPC et naviguez jusqu'au VPC utilisé pour provisionner le système de fichiers FSX. Ici, vous créez une pièce jointe de passerelle de transit en cliquant sur *Transit Gateway Attachment* dans le volet de navigation à droite.
 . Sous *VPC Attachment*, vérifiez que la prise en charge DNS est cochée et sélectionnez le VPC dans lequel FSX pour ONTAP a été déployé.
@@ -230,6 +234,7 @@ image:fsx-nfs-image22.png["Erreur : image graphique manquante"]
 
 ====
 .Étape 5 : configurer le routage (AWS VPC et SDDC) et les groupes de sécurité
+[%collapsible]
 ====
 . Dans la console AWS, créez la route à nouveau vers le SDDC en localisant le VPC dans la page de service VPC et en sélectionnant la table *main* route pour le VPC.
 . Naviguez jusqu'à la table de routage dans le panneau inférieur et cliquez sur *Modifier les routes*.
@@ -259,6 +264,7 @@ Il s'agit de la dernière étape de préparation de la connectivité au SDDC app
 
 ====
 .Étape 6 : relier un volume NFS comme datastore au cluster SDDC
+[%collapsible]
 ====
 Une fois le système de fichiers provisionné et la connectivité en place, accédez à VMware Cloud Console pour monter le datastore NFS.
 

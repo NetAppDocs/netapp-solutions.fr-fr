@@ -69,6 +69,7 @@ NOTE: Plusieurs options de connexion des data centers sur site à Azure restent 
 === Détails du déploiement
 
 .Configurez CVO pour Azure et répliquez les volumes dans CVO
+[%collapsible]
 ====
 La première étape consiste à configurer Cloud Volumes ONTAP sur Azure (https://docs.netapp.com/us-en/netapp-solutions/ehc/azure/azure-guest.html["Lien"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
@@ -76,6 +77,7 @@ image:dr-cvo-avs-image2.png["Erreur : image graphique manquante"]
 
 ====
 .Configurez l'accès aux données des hôtes AVS et CVO
+[%collapsible]
 ====
 Deux facteurs importants à prendre en compte lors du déploiement d'un SDDC sont la taille du cluster SDDC dans la solution Azure VMware et le délai de conservation d'un SDDC. Ces deux considérations clés à prendre en compte dans une solution de reprise sur incident permettent de réduire les coûts d'exploitation globaux. Le SDDC peut héberger jusqu'à trois hôtes, tout comme un cluster multi-hôtes dans un déploiement à grande échelle.
 
@@ -89,6 +91,7 @@ Une fois que Cloud Volumes ONTAP et AVS ont été correctement configurés, comm
 
 ====
 .Installer JetStream DR dans le data Center sur site
+[%collapsible]
 ====
 Le logiciel Jetstream DR est constitué de trois composants principaux : le serveur virtuel JetStream DR Management Server (MSA), le dispositif virtuel DR (DRVA) et les composants hôtes (packages de filtres E/S). MSA est utilisé pour installer et configurer des composants hôtes sur le cluster de calcul, puis pour administrer le logiciel JetStream DR. La procédure d'installation est la suivante :
 
@@ -196,6 +199,7 @@ L'état des runbooks de basculement et de retour arrière est désormais répert
 
 ====
 .Installer JetStream DR pour AVS dans le cloud privé
+[%collapsible]
 ====
 Il est recommandé de créer à l'avance un cluster Pilot-light à trois nœuds sur le site de récupération (AVS). L'infrastructure du site de reprise peut ainsi être préconfigurée, notamment :
 
@@ -268,6 +272,7 @@ Le processus de basculement continu démarre et sa progression peut être survei
 
 ====
 .Basculement et rétablissement
+[%collapsible]
 ====
 . Après un incident se produit dans le cluster protégé de l'environnement sur site (défaillance partielle ou complète), vous pouvez déclencher le basculement pour les machines virtuelles à l'aide de Jetstream après avoir déclenché la relation SnapMirror pour les volumes d'application respectifs.
 +

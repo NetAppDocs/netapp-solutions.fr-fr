@@ -69,6 +69,7 @@ NOTE: Plusieurs options de connexion des data centers sur site à Google Cloud s
 === Détails du déploiement
 
 .Configurez CVO pour Google Cloud et répliquez les volumes dans CVO
+[%collapsible]
 ====
 La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-guest.html["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
@@ -79,6 +80,7 @@ Pour obtenir des exemples d'instructions détaillées sur la configuration de Sn
 video::dr-cvo-gcve-video2.mp4[Review of SQL VM protection with SnapCenter]
 ====
 .Configurez l'accès aux données des hôtes GCVE et CVO
+[%collapsible]
 ====
 Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont la taille du cluster SDDC dans la solution GCVE et le temps de maintenance du SDDC. Ces deux considérations clés à prendre en compte dans une solution de reprise sur incident permettent de réduire les coûts d'exploitation globaux. Le SDDC peut héberger jusqu'à trois hôtes, tout comme un cluster multi-hôtes dans un déploiement à grande échelle.
 
@@ -90,19 +92,20 @@ Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, com
 
 ====
 .Installer les composants Veeam
+[%collapsible]
 ====
-Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d'utilisation, nul besoin de déployer un magasin d'objets pour Veeam et le référentiel scale-out non plus requis.
-
-https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html["Se référer à la documentation Veeam pour la procédure d'installation"]
+Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d'utilisation, nul besoin de déployer un magasin d'objets pour Veeam et le référentiel scale-out non plus requis.https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html["Se référer à la documentation Veeam pour la procédure d'installation"]
 
 ====
 .Configuration de la réplication de machine virtuelle avec Veeam
+[%collapsible]
 ====
 VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. https://helpcenter.veeam.com/docs/backup/qsg_vsphere/replication_job.html["Configuration de la tâche de réplication de VM vSphere"] À l'étape traitement invité de l'assistant, sélectionnez Désactiver le traitement de l'application, car nous utilisons SnapCenter pour la sauvegarde et la restauration intégrant la cohérence applicative.
 
 video::dr-cvo-gcve-video1.mp4[Veeam Replication Job of SQL VM]
 ====
 .Le basculement de la machine virtuelle Microsoft SQL Server
+[%collapsible]
 ====
 video::dr-cvo-gcve-video3.mp4[Failover of SQL VM]
 ====

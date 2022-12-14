@@ -124,7 +124,7 @@ Volume successfully created and bound to PersistentVolumeClaim (PVC) 'inference-
 ....
 . Remplissez le nouveau volume persistant avec les données sur lesquelles vous souhaitez procéder à l'inférence.
 +
-Il existe plusieurs méthodes pour charger des données sur un volume persistant. Si vos données sont actuellement stockées dans une plateforme de stockage objet compatible S3, comme NetApp StorageGRID ou Amazon S3, vous pouvez utiliser https://github.com/NetApp/netapp-dataops-toolkit/blob/main/netapp_dataops_k8s/docs/data_movement.md["Fonctionnalités du kit de données NetApp Data Mover S3"^]. Une autre méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section « 1 – On-demand inferencing in JupyterLab. »
+Il existe plusieurs méthodes pour charger des données sur un volume persistant. Si vos données sont actuellement stockées dans une plateforme de stockage objet compatible S3, comme NetApp StorageGRID ou Amazon S3, vous pouvez utiliser https://github.com/NetApp/netapp-dataops-toolkit/blob/main/netapp_dataops_k8s/docs/data_movement.md["Fonctionnalités du kit de données NetApp Data Mover S3"^]. Une autre méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section «<<Scénario 1 : inférence à la demande dans JupyterLab>>. »
 
 . Créez une tâche Kubernetes pour la tâche d'inférence des lots. L'exemple suivant montre une tâche d'inférence par lot pour un cas d'utilisation de détection d'image. Ce travail effectue l'inférence sur chaque image d'un ensemble d'images et écrit les metrics de précision d'inférence sur le mode stdout.
 +
@@ -272,7 +272,7 @@ Volume successfully created and bound to PersistentVolumeClaim (PVC) 'triton-mod
 ....
 . Stockez votre modèle sur le nouveau volume persistant dans un https://github.com/triton-inference-server/server/blob/main/docs/model_repository.md["format"^] C'est reconnu par le serveur NVIDIA Triton Inférence Server.
 +
-Il existe plusieurs méthodes pour charger des données sur un volume persistant. Une méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section « 1 – On-demand inferencing in JupyterLab. ”
+Il existe plusieurs méthodes pour charger des données sur un volume persistant. Une méthode simple consiste à créer un espace de travail JupyterLab, puis à télécharger des fichiers via l'interface Web de JupyterLab, comme indiqué dans les étapes 3 à 5 de la section «<<Scénario 1 : inférence à la demande dans JupyterLab>>. ”
 
 . Utilisez le kit NetApp DataOps pour déployer une nouvelle instance NVIDIA Triton Inférence Server.
 +

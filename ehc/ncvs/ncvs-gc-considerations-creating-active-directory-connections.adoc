@@ -108,11 +108,11 @@ Cloud Volumes Service apparaît dans Active Directory comme un objet de compte m
 * CIFS/SMB et NFS Kerberos créent des objets de compte de machine distincts.
 * Le protocole NFS avec LDAP activé crée un compte machine dans Active Directory pour les liaisons LDAP Kerberos.
 * Les volumes à double protocole avec LDAP partagent le compte de machine CIFS/SMB pour LDAP et SMB.
-* Les comptes de machine CIFS/SMB utilisent une convention de dénomination de NOM-1234 (identifiant aléatoire à quatre chiffres avec tiret ajouté à <10 caractères name) pour le compte de machine. Vous pouvez définir LE NOM à l'aide du paramètre Nom NetBIOS de la connexion Active Directory (voir la section « Directory connection details”).
+* Les comptes de machine CIFS/SMB utilisent une convention de dénomination de NOM-1234 (identifiant aléatoire à quatre chiffres avec tiret ajouté à <10 caractères name) pour le compte de machine. Vous pouvez définir LE NOM à l'aide du paramètre Nom NetBIOS de la connexion Active Directory (voir la section «<<Détails de la connexion à Active Directory>>”).
 * NFS Kerberos utilise NFS-NAME-1234 comme convention de nommage (15 caractères au maximum). Si plus de 15 caractères sont utilisés, le nom est NFS-TRONQUÉ-NAME-1234.
 * Les instances CVS-Performance uniquement avec LDAP activées créent un compte de machine SMB pour la liaison au serveur LDAP avec la même convention de nommage que les instances CIFS/SMB.
 * Lorsqu'un compte de machine SMB est créé, les partages admin masqués par défaut (voir la section link:ncvs-gc-smb.html#default-hidden-shares["« Partages masqués par défaut »"]) Sont également créés (c$, admin$, ipc$), mais ces partages n'ont pas de listes de contrôle d'accès attribuées et sont inaccessibles.
-* Les objets de compte machine sont placés par défaut dans CN=Computers, mais un vous pouvez spécifier une autre UO si nécessaire. Voir la section « needed to create SMB machine accounts” Pour plus d'informations sur les droits d'accès nécessaires pour ajouter/supprimer des objets de compte machine pour Cloud Volumes Service.
+* Les objets de compte machine sont placés par défaut dans CN=Computers, mais un vous pouvez spécifier une autre UO si nécessaire. Voir la section «<<Autorisations nécessaires pour créer des comptes de machine SMB>>” Pour plus d'informations sur les droits d'accès nécessaires pour ajouter/supprimer des objets de compte machine pour Cloud Volumes Service.
 
 
 Lorsque Cloud Volumes Service ajoute le compte de machine SMB à Active Directory, les champs suivants sont renseignés :
