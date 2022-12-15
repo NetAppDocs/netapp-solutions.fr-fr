@@ -8719,7 +8719,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-11-15 18:39:08 +0000">11/15/2022</time>
+    <time datetime="2022-12-14 19:12:15 +0000">12/14/2022</time>
     
   
 
@@ -8828,8 +8828,8 @@ Plusieurs options de connexion des data centers sur site à Google Cloud sont po
 </div>
 <div class="sect2">
 <h3 id="détails-du-déploiement">Détails du déploiement</h3>
-<div class="exampleblock">
-<div class="title">Exemple 1. Configurez CVO pour Google Cloud et répliquez les volumes dans CVO</div>
+<details>
+<summary class="title">Configurez CVO pour Google Cloud et répliquez les volumes dans CVO</summary>
 <div class="content">
 <div class="paragraph">
 <p>La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (<a href="https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-guest.html" target="_blank" rel="noopener">"cvo"</a>) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.</p>
@@ -8848,9 +8848,9 @@ Your browser does not support the video tag.
 </div>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 2. Configurez l&#8217;accès aux données des hôtes GCVE et CVO</div>
+</details>
+<details>
+<summary class="title">Configurez l&#8217;accès aux données des hôtes GCVE et CVO</summary>
 <div class="content">
 <div class="paragraph">
 <p>Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont la taille du cluster SDDC dans la solution GCVE et le temps de maintenance du SDDC. Ces deux considérations clés à prendre en compte dans une solution de reprise sur incident permettent de réduire les coûts d&#8217;exploitation globaux. Le SDDC peut héberger jusqu&#8217;à trois hôtes, tout comme un cluster multi-hôtes dans un déploiement à grande échelle.</p>
@@ -8865,20 +8865,17 @@ Your browser does not support the video tag.
 <p>Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, commencez à configurer Veeam pour automatiser la restauration des workloads sur site vers GCVE (machines virtuelles avec VMDK d&#8217;application et VM avec stockage « Guest ») en utilisant la fonctionnalité de réplication Veeam et en utilisant SnapMirror pour les copies de volumes d&#8217;application vers Cloud Volumes ONTAP.</p>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 3. Installer les composants Veeam</div>
+</details>
+<details>
+<summary class="title">Installer les composants Veeam</summary>
 <div class="content">
 <div class="paragraph">
-<p>Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d&#8217;utilisation, nul besoin de déployer un magasin d&#8217;objets pour Veeam et le référentiel scale-out non plus requis.</p>
-</div>
-<div class="paragraph">
-<p><a href="https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html">"Se référer à la documentation Veeam pour la procédure d&#8217;installation"</a></p>
+<p>Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d&#8217;utilisation, nul besoin de déployer un magasin d&#8217;objets pour Veeam et le référentiel scale-out non plus requis.https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html["Se référer à la documentation Veeam pour la procédure d&#8217;installation"]</p>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 4. Configuration de la réplication de machine virtuelle avec Veeam</div>
+</details>
+<details>
+<summary class="title">Configuration de la réplication de machine virtuelle avec Veeam</summary>
 <div class="content">
 <div class="paragraph">
 <p>VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. <a href="https://helpcenter.veeam.com/docs/backup/qsg_vsphere/replication_job.html">"Configuration de la tâche de réplication de VM vSphere"</a> À l&#8217;étape traitement invité de l&#8217;assistant, sélectionnez Désactiver le traitement de l&#8217;application, car nous utilisons SnapCenter pour la sauvegarde et la restauration intégrant la cohérence applicative.</p>
@@ -8891,9 +8888,9 @@ Your browser does not support the video tag.
 </div>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 5. Le basculement de la machine virtuelle Microsoft SQL Server</div>
+</details>
+<details>
+<summary class="title">Le basculement de la machine virtuelle Microsoft SQL Server</summary>
 <div class="content">
 <div class="videoblock">
 <div class="content">
@@ -8903,7 +8900,7 @@ Your browser does not support the video tag.
 </div>
 </div>
 </div>
-</div>
+</details>
 </div>
 </div>
 </div>

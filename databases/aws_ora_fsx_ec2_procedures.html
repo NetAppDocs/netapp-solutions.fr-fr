@@ -8719,7 +8719,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-11-15 18:39:08 +0000">11/15/2022</time>
+    <time datetime="2022-12-14 19:12:15 +0000">12/14/2022</time>
     
   
 
@@ -9031,7 +9031,7 @@ La création de LUN iSCSI n&#8217;est actuellement pas prise en charge par la co
 <div class="sect2">
 <h3 id="préparez-un-contrôleur-ansible-pour-exécuter-lautomatisation">Préparez un contrôleur Ansible pour exécuter l&#8217;automatisation</h3>
 <div class="paragraph">
-<p>Suivre les instructions de la section « and connecting to an EC2 instance for hosting Oracle database« Pour provisionner une petite instance Linux EC2 afin d&#8217;exécuter le contrôleur Ansible. Au lieu d&#8217;utiliser RedHat, Amazon Linux t2.large avec 2 vCPU et 8 Go de RAM doit suffire.</p>
+<p>Suivre les instructions de la section «<a href="#création-et-connexion-à-une-instance-ec2-pour-héberger-la-base-de-données-oracle">Création et connexion à une instance EC2 pour héberger la base de données Oracle</a>« Pour provisionner une petite instance Linux EC2 afin d&#8217;exécuter le contrôleur Ansible. Au lieu d&#8217;utiliser RedHat, Amazon Linux t2.large avec 2 vCPU et 8 Go de RAM doit suffire.</p>
 </div>
 </div>
 <div class="sect2">
@@ -9058,7 +9058,7 @@ La création de LUN iSCSI n&#8217;est actuellement pas prise en charge par la co
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Par défaut, une instance EC2 utilise une paire de clés SSH pour l&#8217;authentification des accès. À partir des répertoires racine d&#8217;automatisation du contrôleur Ansible <code>/home/ec2-user/na_oracle19c_deploy</code>, et <code>/home/ec2-user/na_rds_fsx_oranfs_config</code>, Faites une copie de la clé SSH <code>accesststkey.pem</code> Pour l&#8217;hôte Oracle déployé à l&#8217;étape « and connecting to an EC2 instance for hosting Oracle database."</p>
+<p>Par défaut, une instance EC2 utilise une paire de clés SSH pour l&#8217;authentification des accès. À partir des répertoires racine d&#8217;automatisation du contrôleur Ansible <code>/home/ec2-user/na_oracle19c_deploy</code>, et <code>/home/ec2-user/na_rds_fsx_oranfs_config</code>, Faites une copie de la clé SSH <code>accesststkey.pem</code> Pour l&#8217;hôte Oracle déployé à l&#8217;étape «<a href="#création-et-connexion-à-une-instance-ec2-pour-héberger-la-base-de-données-oracle">Création et connexion à une instance EC2 pour héberger la base de données Oracle</a>."</p>
 </li>
 <li>
 <p>Connectez-vous à l&#8217;hôte DB de l&#8217;instance EC2 en tant qu&#8217;utilisateur ec2 et installez la bibliothèque python3.</p>
@@ -9398,7 +9398,7 @@ Vous pouvez activer l&#8217;élagage des journaux d&#8217;archive Oracle dans la
 <p>La sauvegarde de base de données dans SnapCenter peut être configurée par l&#8217;utilisateur et peut être configurée individuellement ou en tant que groupe dans un groupe de ressources. L&#8217;intervalle de sauvegarde dépend des objectifs RTO et RPO. NetApp recommande d&#8217;exécuter une sauvegarde complète de base de données toutes les quelques heures et d&#8217;archiver la sauvegarde des journaux à une fréquence plus élevée (par exemple 10-15 minutes) pour une restauration rapide.</p>
 </div>
 <div class="paragraph">
-<p>Reportez-vous à la section Oracle du <a href="https://docs.netapp.com/us-en/netapp-solutions/databases/hybrid_dbops_snapcenter_getting_started_onprem.html#8-implement-backup-policy-to-protect-database" target="_blank" rel="noopener">"Mise en œuvre d&#8217;une stratégie de sauvegarde pour protéger la base de données"</a> pour obtenir des processus détaillés étape par étape pour la mise en œuvre de la stratégie de sauvegarde créée dans la section  backup policy for Oracle database et pour la planification des tâches de sauvegarde.</p>
+<p>Reportez-vous à la section Oracle du <a href="https://docs.netapp.com/us-en/netapp-solutions/databases/hybrid_dbops_snapcenter_getting_started_onprem.html#8-implement-backup-policy-to-protect-database" target="_blank" rel="noopener">"Mise en œuvre d&#8217;une stratégie de sauvegarde pour protéger la base de données"</a> pour obtenir des processus détaillés étape par étape pour la mise en œuvre de la stratégie de sauvegarde créée dans la section <a href="#configurer-la-règle-de-sauvegarde-pour-la-base-de-données-oracle">Configurer la règle de sauvegarde pour la base de données Oracle</a> et pour la planification des tâches de sauvegarde.</p>
 </div>
 <div class="paragraph">
 <p>L&#8217;image suivante fournit un exemple de groupes de ressources configurés pour sauvegarder une base de données Oracle.</p>

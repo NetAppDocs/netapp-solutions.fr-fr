@@ -8719,7 +8719,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-11-15 18:39:08 +0000">11/15/2022</time>
+    <time datetime="2022-12-14 19:12:15 +0000">12/14/2022</time>
     
   
 
@@ -8806,7 +8806,7 @@
 <img src="/us-en/netapp-solutions/images/note.svg" alt="Note">
 </td>
 <td class="content">
-Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;afficher comme personne lors de l&#8217;exécution des commandes de liste de répertoires sur les clients NFS. Ceci est dû à la configuration du mappage de domaine d&#8217;ID du client. Voir la section appelée  and the nobody user/group pour plus de détails sur ce problème et sur la façon de le résoudre.
+Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;afficher comme personne lors de l&#8217;exécution des commandes de liste de répertoires sur les clients NFS. Ceci est dû à la configuration du mappage de domaine d&#8217;ID du client. Voir la section appelée <a href="#nfsv4-1-et-personne-utilisateurgroupe">NFSv4.1 et personne utilisateur/groupe</a> pour plus de détails sur ce problème et sur la façon de le résoudre.
 </td>
 </tr>
 </table>
@@ -8820,7 +8820,7 @@ Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;af
 <p>Sous Linux, le compte racine a accès à toutes les commandes, fichiers et dossiers d&#8217;un système de fichiers Linux. En raison de la puissance de ce compte, les bonnes pratiques en matière de sécurité exigent souvent que l&#8217;utilisateur root soit désactivé ou restreint d&#8217;une façon ou d&#8217;une autre. Dans les exportations NFS, la puissance dont dispose un utilisateur root sur les fichiers et les dossiers peut être contrôlée dans Cloud Volumes Service au moyen de règles et de stratégies d&#8217;exportation et d&#8217;un concept appelé « squash racine ».</p>
 </div>
 <div class="paragraph">
-<p>Le scaling racine garantit que l&#8217;utilisateur root accédant à un montage NFS est écrasé à l&#8217;utilisateur numérique anonyme 65534 (voir la section « anonymous user”) et n&#8217;est actuellement disponible que lors de l&#8217;utilisation de CVS-Performance en sélectionnant Désactivé pour l&#8217;accès racine lors de la création de règles d&#8217;export. Si l&#8217;utilisateur root est écrasé par l&#8217;utilisateur anonyme, il n&#8217;a plus accès à exécuter CHown ou <a href="https://en.wikipedia.org/wiki/Setuid" target="_blank" rel="noopener">"commandes setuid/setgid (le bit collant)"</a> Sur les fichiers ou dossiers du montage NFS, et les fichiers ou dossiers créés par l&#8217;utilisateur root affichent l&#8217;UID d&#8217;anon comme propriétaire/groupe. En outre, les ACL NFSv4 ne peuvent pas être modifiés par l&#8217;utilisateur root. Cependant, l&#8217;utilisateur root a toujours accès aux fichiers chmod et supprimés pour lesquels il n&#8217;a pas d&#8217;autorisations explicites. Si vous souhaitez limiter l&#8217;accès aux autorisations de fichier et de dossier d&#8217;un utilisateur root, envisagez d&#8217;utiliser un volume avec des listes de contrôle d&#8217;accès NTFS, créant un utilisateur Windows nommé <code>root</code>, et application des autorisations souhaitées aux fichiers ou dossiers.</p>
+<p>Le scaling racine garantit que l&#8217;utilisateur root accédant à un montage NFS est écrasé à l&#8217;utilisateur numérique anonyme 65534 (voir la section «<a href="L&.html#8217;utilisateur anonyme">L&.html</a>”) et n&#8217;est actuellement disponible que lors de l&#8217;utilisation de CVS-Performance en sélectionnant Désactivé pour l&#8217;accès racine lors de la création de règles d&#8217;export. Si l&#8217;utilisateur root est écrasé par l&#8217;utilisateur anonyme, il n&#8217;a plus accès à exécuter CHown ou <a href="https://en.wikipedia.org/wiki/Setuid" target="_blank" rel="noopener">"commandes setuid/setgid (le bit collant)"</a> Sur les fichiers ou dossiers du montage NFS, et les fichiers ou dossiers créés par l&#8217;utilisateur root affichent l&#8217;UID d&#8217;anon comme propriétaire/groupe. En outre, les ACL NFSv4 ne peuvent pas être modifiés par l&#8217;utilisateur root. Cependant, l&#8217;utilisateur root a toujours accès aux fichiers chmod et supprimés pour lesquels il n&#8217;a pas d&#8217;autorisations explicites. Si vous souhaitez limiter l&#8217;accès aux autorisations de fichier et de dossier d&#8217;un utilisateur root, envisagez d&#8217;utiliser un volume avec des listes de contrôle d&#8217;accès NTFS, créant un utilisateur Windows nommé <code>root</code>, et application des autorisations souhaitées aux fichiers ou dossiers.</p>
 </div>
 </div>
 </div>
@@ -8831,10 +8831,10 @@ Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;af
 <p>L&#8217;ID utilisateur anonyme (anon) spécifie un ID utilisateur UNIX ou un nom d&#8217;utilisateur qui est mappé aux requêtes client qui arrivent sans identifiants NFS valides. Cela peut inclure l&#8217;utilisateur racine lorsque le squaing racine est utilisé. L&#8217;utilisateur d&#8217;anon dans Cloud Volumes Service est 65534.</p>
 </div>
 <div class="paragraph">
-<p>Cet UID est normalement associé au nom d&#8217;utilisateur <code>nobody</code> ou <code>nfsnobody</code> Dans les environnements Linux. Cloud Volumes Service utilise également 65534 comme pcuser UNIX local (voir la section « local UNIX users and groups”), qui est également l&#8217;utilisateur de secours par défaut pour les mappages de noms Windows à UNIX lorsqu&#8217;aucun utilisateur UNIX correspondant valide n&#8217;est trouvé dans LDAP.</p>
+<p>Cet UID est normalement associé au nom d&#8217;utilisateur <code>nobody</code> ou <code>nfsnobody</code> Dans les environnements Linux. Cloud Volumes Service utilise également 65534 comme pcuser UNIX local (voir la section «<a href="#utilisateurs-et-groupes-unix-locaux-par-défaut">Utilisateurs et groupes UNIX locaux par défaut</a>”), qui est également l&#8217;utilisateur de secours par défaut pour les mappages de noms Windows à UNIX lorsqu&#8217;aucun utilisateur UNIX correspondant valide n&#8217;est trouvé dans LDAP.</p>
 </div>
 <div class="paragraph">
-<p>En raison des différences entre les noms d&#8217;utilisateur Linux et Cloud Volumes Service pour UID 65534, la chaîne de nom des utilisateurs mappés sur 65534 risque de ne pas correspondre lors de l&#8217;utilisation de NFSv4.1. Vous pouvez donc voir <code>nobody</code> en tant qu&#8217;utilisateur sur certains fichiers et dossiers. Voir la section « and the nobody user/group” pour plus d&#8217;informations sur ce problème et sur la façon de le résoudre.</p>
+<p>En raison des différences entre les noms d&#8217;utilisateur Linux et Cloud Volumes Service pour UID 65534, la chaîne de nom des utilisateurs mappés sur 65534 risque de ne pas correspondre lors de l&#8217;utilisation de NFSv4.1. Vous pouvez donc voir <code>nobody</code> en tant qu&#8217;utilisateur sur certains fichiers et dossiers. Voir la section «<a href="#nfsv4-1-et-personne-utilisateurgroupe">NFSv4.1 et personne utilisateur/groupe</a>” pour plus d&#8217;informations sur ce problème et sur la façon de le résoudre.</p>
 </div>
 </div>
 </div>
@@ -8862,7 +8862,7 @@ Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;af
 <p><strong>Règles d&#8217;accès RO/RW.</strong> sélectionnez lecture/écriture ou lecture seulement pour contrôler le niveau d&#8217;accès à l&#8217;exportation.</p>
 </li>
 <li>
-<p><strong>Accès racine (activé/désactivé).</strong> configure le squash racine (voir la section « root user« pour plus de détails).</p>
+<p><strong>Accès racine (activé/désactivé).</strong> configure le squash racine (voir la section «<a href="L&.html#8217;utilisateur root">L&.html</a>« pour plus de détails).</p>
 </li>
 <li>
 <p><strong>Type de protocole.</strong> cette option limite l&#8217;accès au montage NFS à une version de protocole spécifique. Lorsque vous spécifiez à la fois NFS v3 et NFS v4.1 pour le volume, laissez les deux vides ou cochez les deux cases.</p>
@@ -8878,7 +8878,7 @@ Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;af
 <h2 id="changer-la-propriété-chown-et-le-groupe-de-changement-chgrp">Changer la propriété (chown) et le groupe de changement (chgrp)</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>NFS sur Cloud Volumes Service ne permet à l&#8217;utilisateur root d&#8217;exécuter chown/chgrp que sur des fichiers et des dossiers. Les autres utilisateurs voient un <code>Operation not permitted</code> erreur : même sur les fichiers qu&#8217;ils possèdent. Si vous utilisez du squash racine (comme décrit dans la section « root user”), la racine est écrasée à un utilisateur non root et ne peut pas accéder à chown et chgrp. Il n&#8217;existe actuellement aucune solution de contournement dans Cloud Volumes Service pour permettre aux chown et aux chgrp de non-root utilisateurs. Si des modifications de propriété sont requises, envisagez d&#8217;utiliser des volumes à double protocole et définissez le style de sécurité sur NTFS pour contrôler les autorisations du côté Windows.</p>
+<p>NFS sur Cloud Volumes Service ne permet à l&#8217;utilisateur root d&#8217;exécuter chown/chgrp que sur des fichiers et des dossiers. Les autres utilisateurs voient un <code>Operation not permitted</code> erreur : même sur les fichiers qu&#8217;ils possèdent. Si vous utilisez du squash racine (comme décrit dans la section «<a href="L&.html#8217;utilisateur root">L&.html</a>”), la racine est écrasée à un utilisateur non root et ne peut pas accéder à chown et chgrp. Il n&#8217;existe actuellement aucune solution de contournement dans Cloud Volumes Service pour permettre aux chown et aux chgrp de non-root utilisateurs. Si des modifications de propriété sont requises, envisagez d&#8217;utiliser des volumes à double protocole et définissez le style de sécurité sur NTFS pour contrôler les autorisations du côté Windows.</p>
 </div>
 </div>
 </div>
@@ -9006,7 +9006,7 @@ Lors de l&#8217;utilisation de NFSv4.1, l&#8217;utilisateur root peut s&#8217;af
 <p>L&#8217;utilisation de volumes à double protocole et l&#8217;application de listes de contrôle d&#8217;accès NTFS au volume oblige les clients NFSv3 à résoudre des ID numériques à des noms d&#8217;utilisateur UNIX valides afin de s&#8217;authentifier correctement pour accéder aux montages. Pour cela, il est nécessaire d&#8217;activer LDAP et de configurer les identités d&#8217;utilisateur et de groupe UNIX.</p>
 </li>
 <li>
-<p>L&#8217;affaissement de l&#8217;utilisateur root limite les dommages qu&#8217;un utilisateur root peut faire sur un montage NFS, mais ne élimine pas complètement les risques. Pour plus d&#8217;informations, reportez-vous à la section « root user. »</p>
+<p>L&#8217;affaissement de l&#8217;utilisateur root limite les dommages qu&#8217;un utilisateur root peut faire sur un montage NFS, mais ne élimine pas complètement les risques. Pour plus d&#8217;informations, reportez-vous à la section «<a href="L&.html#8217;utilisateur root">L&.html</a>. »</p>
 </li>
 </ul>
 </div>
@@ -9297,7 +9297,7 @@ drwxrwxrwx 7 root   root         4096 Feb  3 12:06 ..
 </div>
 </div>
 <div class="paragraph">
-<p>Pour plus d&#8217;informations sur ce problème et sur la façon de le résoudre, reportez-vous à la section « and the nobody user/group. »</p>
+<p>Pour plus d&#8217;informations sur ce problème et sur la façon de le résoudre, reportez-vous à la section «<a href="#nfsv4-1-et-personne-utilisateurgroupe">NFSv4.1 et personne utilisateur/groupe</a>. »</p>
 </div>
 </div>
 <div class="sect2">

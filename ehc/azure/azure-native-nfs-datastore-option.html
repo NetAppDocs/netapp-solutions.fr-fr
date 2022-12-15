@@ -8717,7 +8717,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-11-15 18:39:08 +0000">11/15/2022</time>
+    <time datetime="2022-12-14 19:12:15 +0000">12/14/2022</time>
     
   
 
@@ -8890,8 +8890,8 @@ Cette fonction est actuellement dans l&#8217;aperçu public.
 <div class="paragraph">
 <p>Pour joindre un volume Azure NetApp File en tant que datastore VMware d&#8217;un cloud privé Azure VMware solution, assurez-vous que les conditions préalables suivantes sont remplies.</p>
 </div>
-<div class="exampleblock">
-<div class="title">Exemple 1. Prérequis</div>
+<details>
+<summary class="title">Prérequis</summary>
 <div class="content">
 <div class="olist arabic">
 <ol class="arabic">
@@ -9004,9 +9004,9 @@ az feature register --name "CloudSanExperience" --namespace "Microsoft.AVS"</pre
 </div>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 2. Création et montage de volumes Azure NetApp Files</div>
+</details>
+<details>
+<summary class="title">Création et montage de volumes Azure NetApp Files</summary>
 <div class="content">
 <div class="olist arabic">
 <ol class="arabic">
@@ -9069,9 +9069,9 @@ az feature register --name "CloudSanExperience" --namespace "Microsoft.AVS"</pre
 <p>Pour en savoir plus sur les performances de volume Azure NetApp Files par taille ou quota, reportez-vous à la section <a href="https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-performance-considerations" target="_blank" rel="noopener">"Performances de Azure NetApp Files"</a>.</p>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 3. Ajoutez le datastore Azure NetApp Files dans le cloud privé</div>
+</details>
+<details>
+<summary class="title">Ajoutez le datastore Azure NetApp Files dans le cloud privé</summary>
 <div class="content">
 <div class="paragraph">
 <p>Pour ajouter un magasin de données Azure NetApp Files à un cloud privé, procédez comme suit :</p>
@@ -9119,7 +9119,7 @@ az feature register --name "CloudSanExperience" --namespace "Microsoft.AVS"</pre
 <p><span class="image"><img src="./../../media/vmware-dr-image5.png" alt="Erreur : image graphique manquante"></span></p>
 </div>
 </div>
-</div>
+</details>
 </div>
 </div>
 <div class="sect1">
@@ -9295,16 +9295,16 @@ az feature register --name "CloudSanExperience" --namespace "Microsoft.AVS"</pre
 <div class="sect1">
 <h2 id="charges-de-travail">Charges de travail</h2>
 <div class="sectionbody">
-<div class="exampleblock">
-<div class="title">Exemple 4. Migration</div>
+<details>
+<summary class="title">Migration</summary>
 <div class="content">
 <div class="paragraph">
 <p>L&#8217;un des cas d&#8217;utilisation les plus courants est la migration. Utilisez VMware HCX ou vMotion pour déplacer des machines virtuelles sur site. Vous pouvez également utiliser Rivermeadow pour migrer des machines virtuelles vers des datastores Azure NetApp Files.</p>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 7. La protection des données</div>
+</details>
+<details>
+<summary class="title">La protection des données</summary>
 <div class="content">
 <div class="paragraph">
 <p>La sauvegarde des machines virtuelles et leur restauration rapide sont parmi les grands avantages des datastores ANF. Utilisez les copies Snapshot pour réaliser des copies rapides de votre machine virtuelle ou de votre datastore sans affecter les performances, puis envoyez-les au stockage Azure pour une protection des données à plus long terme ou vers une région secondaire à l&#8217;aide d&#8217;une réplication inter-région pour la reprise après incident. Cette approche réduit l&#8217;espace de stockage et la bande passante réseau en stockant uniquement les informations modifiées.</p>
@@ -9324,8 +9324,8 @@ Avec les datastores ANF, l&#8217;option Restaurer vers un nouveau volume peut ê
 </tr>
 </table>
 </div>
-<div class="exampleblock">
-<div class="title">Exemple 5. Cloud Backup pour machines virtuelles</div>
+<details>
+<summary class="title">Cloud Backup pour machines virtuelles</summary>
 <div class="content">
 <div class="paragraph">
 <p>Cloud Backup pour machines virtuelles fournit une interface utilisateur graphique de client web vSphere sur vCenter pour protéger les machines virtuelles Azure VMware solution et les datastores Azure NetApp Files via des règles de sauvegarde. Ces règles peuvent définir une planification, une conservation et d&#8217;autres fonctionnalités. La fonctionnalité Cloud Backup pour machine virtuelle peut être déployée à l&#8217;aide de la commande Exécuter.</p>
@@ -9368,9 +9368,9 @@ Grâce à la technologie Snapshot de Azure NetApp Files, les sauvegardes et les 
 <p><span class="image"><img src="./../../media/vmware-dr-image7.png" alt="Erreur : image graphique manquante"></span></p>
 </div>
 </div>
-</div>
-<div class="exampleblock">
-<div class="title">Exemple 6. Reprise après incident avec Azure NetApp Files, JetStream DR et Azure VMware solution</div>
+</details>
+<details>
+<summary class="title">Reprise après incident avec Azure NetApp Files, JetStream DR et Azure VMware solution</summary>
 <div class="content">
 <div class="paragraph">
 <p>La reprise d&#8217;activité dans le cloud est une solution résiliente et économique de protection des workloads contre les pannes sur site et la corruption des données, par exemple, par ransomware. Grâce à la structure VMware VAIO, les charges de travail VMware sur site peuvent être répliquées vers le stockage Azure Blob et récupérées. Vous bénéficiez ainsi d&#8217;une perte de données minimale, voire quasi nulle. Jetstream DR peut être utilisé pour restaurer de manière transparente les workloads répliqués depuis les sites vers AVS, et plus particulièrement vers Azure NetApp Files. Il permet une reprise d&#8217;activité économique en utilisant peu de ressources sur le site de reprise d&#8217;activité et un stockage cloud économique. Jetstream DR automatise la restauration vers les datastores ANF via Azure Blob Storage. Jetstream DR restaure les ordinateurs virtuels ou groupes de serveurs virtuels indépendants dans l&#8217;infrastructure de site de restauration en fonction du mappage du réseau et assure une restauration instantanée pour la protection par ransomware.</p>
@@ -9379,9 +9379,9 @@ Grâce à la technologie Snapshot de Azure NetApp Files, les sauvegardes et les 
 <p><a href="azure-native-dr-jetstream.html">"Solution de reprise après incident avec ANF, JetStream et AVS"</a>.</p>
 </div>
 </div>
+</details>
 </div>
-</div>
-</div>
+</details>
 </div>
 </div>
 
