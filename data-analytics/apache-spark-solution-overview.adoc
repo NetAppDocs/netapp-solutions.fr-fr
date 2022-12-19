@@ -104,7 +104,7 @@ Les sections suivantes décrivent les fonctionnalités de stockage importantes p
 
 La hiérarchisation du stockage Hadoop permet de stocker des fichiers de différents types de stockage conformément à une règle de stockage. Les types de stockage sont notamment `hot`, `cold`, `warm`, `all_ssd`, `one_ssd`, et `lazy_persist`.
 
-Nous avons validé la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l'AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l'E-Series en compte huit.
+Nous avons validé la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l'AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l'E-Series en compte huit. Cela nous a principalement permis de comparer les performances des disques SSD aux disques durs.
 
 La figure suivante montre les performances des solutions NetApp pour un SSD Hadoop.
 
@@ -113,6 +113,8 @@ image:apache-spark-image2.png["Temps de tri de 1 To de données."]
 * La configuration NL-SAS de base utilisait huit nœuds de calcul et 96 disques NL-SAS. Cette configuration a généré 1 To de données en 4 minutes et 38 secondes. Voir https://www.netapp.com/media/16420-tr-3969.pdf["Tr-3969 solution NetApp E-Series pour Hadoop"^] pour plus d'informations sur le cluster et la configuration du stockage.
 * Grâce à TeraGen, la configuration SSD a généré 1 To de données 15,6 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). En fonction de la durée d'exécution des tâches, elle était presque deux fois plus rapide que la configuration NL-SAS.
 * Grâce à Terasort, la configuration SSD a trié 1 To de données 1138.36 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). Par conséquent, par disque, c'était environ trois fois plus rapide que la configuration NL-SAS.
+* En résumé, le passage des disques rotatifs au 100 % Flash améliore les performances. Le nombre de nœuds de calcul n'était pas un goulot d'étranglement. Avec le stockage 100 % Flash de NetApp, les performances d'exécution évoluent parfaitement.
+* Avec NFS, les données étaient fonctionnellement équivalentes au regroupement des pools, ce qui permet de réduire le nombre de nœuds de calcul en fonction de votre charge de travail. Les utilisateurs d'un cluster Apache Spark n'ont pas besoin de rééquilibrer manuellement les données lors de la modification du nombre de nœuds de calcul.
 
 
 
