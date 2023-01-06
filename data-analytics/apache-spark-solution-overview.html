@@ -3786,6 +3786,8 @@
 
 
 
+
+
     
       <ul class="subfolders" style="display:none;">
         <li class="pdf-ux-container">
@@ -8195,6 +8197,13 @@
         Outils ONTAP pour VMware vSphere - sécurité produit
       </a></li><li 
       data-pdf-exists="true" 
+      data-pdf-filename="Le plug-in SnapCenter VMware vSphere : sécurité du produit"
+      data-li-level="3#" 
+      class=" "
+    ><a class="na-navbar-padding" href="/fr-fr/netapp-solutions/virtualization/scvmware-security-secure-development-activities.html">
+        Le plug-in SnapCenter VMware vSphere : sécurité du produit
+      </a></li><li 
+      data-pdf-exists="true" 
       data-pdf-filename="Automatisation VMware vSphere"
       data-li-level="3" 
       class="subfolders "
@@ -8728,7 +8737,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-12-19 22:23:25 +0000">12/19/2022</time>
+    <time datetime="2023-01-06 16:49:09 +0000">01/06/2023</time>
     
   
 
@@ -8876,7 +8885,12 @@
 <p>La hiérarchisation du stockage Hadoop permet de stocker des fichiers de différents types de stockage conformément à une règle de stockage. Les types de stockage sont notamment <code>hot</code>, <code>cold</code>, <code>warm</code>, <code>all_ssd</code>, <code>one_ssd</code>, et <code>lazy_persist</code>.</p>
 </div>
 <div class="paragraph">
-<p>Nous avons validé la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l&#8217;AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l&#8217;E-Series en compte huit. Cela nous a principalement permis de comparer les performances des disques SSD aux disques durs.</p>
+<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; NOUS AVONS VALIDÉ la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l&#8217;AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l&#8217;E-Series en compte huit. Cette comparaison a notamment pour objectif de comparer les performances des SSD et des disques durs.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Nous avons validé la hiérarchisation du stockage Hadoop sur un contrôleur de stockage NetApp AFF et un contrôleur de stockage E-Series avec des disques SSD et SAS utilisant différentes règles de stockage. Le cluster Spark avec l&#8217;AFF-A800 dispose de quatre nœuds de traitement, tandis que le cluster avec l&#8217;E-Series en compte huit. Cela nous a principalement permis de comparer les performances des disques SSD aux disques durs. &gt;&gt;&gt;&gt;&gt;&gt; a51c9ddf73ca69e1120ce05edc7b0b9607b96eae</p>
 </div>
 <div class="paragraph">
 <p>La figure suivante montre les performances des solutions NetApp pour un SSD Hadoop.</p>
@@ -8893,13 +8907,25 @@
 <p>Grâce à TeraGen, la configuration SSD a généré 1 To de données 15,6 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). En fonction de la durée d&#8217;exécution des tâches, elle était presque deux fois plus rapide que la configuration NL-SAS.</p>
 </li>
 <li>
-<p>Grâce à Terasort, la configuration SSD a trié 1 To de données 1138.36 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). Par conséquent, par disque, c&#8217;était environ trois fois plus rapide que la configuration NL-SAS.</p>
+<p>Grâce à Terasort, la configuration SSD a trié 1 To de données 1138.36 fois plus vite que la configuration NL-SAS. De plus, la configuration SSD utilisait deux fois moins de nœuds de calcul et deux fois moins de disques (24 disques SSD au total). Par conséquent, par disque, c&#8217;était environ trois fois plus rapide que la configuration NL-SAS. &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; TÊTE</p>
 </li>
+<li>
+<p>En passant de disques rotatifs à un système 100 % Flash, le message clé est d&#8217;améliorer les performances. Le nombre de nœuds de calcul n&#8217;était pas un goulot d&#8217;étranglement. Avec le stockage 100 % Flash de NetApp, les performances d&#8217;exécution évoluent parfaitement.</p>
+</li>
+<li>
+<p>Avec NFS, les données étaient fonctionnellement équivalentes au regroupement des pools, ce qui permet de réduire le nombre de nœuds de calcul en fonction de votre charge de travail. Les utilisateurs du cluster Apache Spark n&#8217;ont pas besoin de rééquilibrer manuellement les données lors de la modification du nombre de nœuds de calcul.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p>En résumé, le passage des disques rotatifs au 100 % Flash améliore les performances. Le nombre de nœuds de calcul n&#8217;était pas un goulot d&#8217;étranglement. Avec le stockage 100 % Flash de NetApp, les performances d&#8217;exécution évoluent parfaitement.</p>
 </li>
 <li>
-<p>Avec NFS, les données étaient fonctionnellement équivalentes au regroupement des pools, ce qui permet de réduire le nombre de nœuds de calcul en fonction de votre charge de travail. Les utilisateurs d&#8217;un cluster Apache Spark n&#8217;ont pas besoin de rééquilibrer manuellement les données lors de la modification du nombre de nœuds de calcul.</p>
+<p>Avec NFS, les données étaient fonctionnellement équivalentes au regroupement des pools, ce qui permet de réduire le nombre de nœuds de calcul en fonction de votre charge de travail. Les utilisateurs d&#8217;un cluster Apache Spark n&#8217;ont pas besoin de rééquilibrer manuellement les données lors de la modification du nombre de nœuds de calcul. &gt;&gt;&gt;&gt;&gt;&gt; a51c9ddf73ca69e1120ce05edc7b0b9607b96eae</p>
 </li>
 </ul>
 </div>
