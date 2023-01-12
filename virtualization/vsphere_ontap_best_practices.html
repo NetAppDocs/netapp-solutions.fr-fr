@@ -8746,7 +8746,7 @@
 <p class="page-details">
   
     
-    <time datetime="2022-11-15 18:39:08 +0000">11/15/2022</time>
+    <time datetime="2023-01-12 22:15:13 +0000">01/12/2023</time>
     
   
 
@@ -8760,12 +8760,12 @@
 <h2 id="fonctionnalités-du-datastore-et-du-protocole-vsphere">Fonctionnalités du datastore et du protocole vSphere</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Cinq protocoles sont utilisés pour connecter VMware vSphere aux datastores sur un système exécutant le logiciel ONTAP :</p>
+<p>Sept protocoles sont utilisés pour connecter VMware vSphere aux datastores sur un système exécutant le logiciel ONTAP :</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>FC</p>
+<p>FCP</p>
 </li>
 <li>
 <p>FCoE</p>
@@ -8774,31 +8774,39 @@
 <p>NVMe/FC</p>
 </li>
 <li>
+<p>NVMe/TCP</p>
+</li>
+<li>
 <p>ISCSI</p>
 </li>
 <li>
-<p>NFS</p>
+<p>NFS v3</p>
+</li>
+<li>
+<p>NFS v4.1</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>FC, FCoE, NVMe/FC et iSCSI sont des protocoles de bloc qui utilisent le VMFS (Virtual machine File System) vSphere pour stocker des VM au sein de LUN ONTAP ou d&#8217;espaces de noms contenus dans un volume ONTAP. Notez que depuis vSphere 7.0, VMware ne prend plus en charge la technologie FCoE dans les environnements de production. NFS est un protocole de fichier qui place les machines virtuelles dans des datastores (qui sont simplement des volumes ONTAP) sans avoir besoin de VMFS. SMB, iSCSI ou NFS peuvent également être utilisés directement d&#8217;un système d&#8217;exploitation invité à un système d&#8217;exploitation ONTAP.</p>
+<p>FCP, FCoE, NVMe/FC, NVMe/TCP et iSCSI sont des protocoles de bloc qui utilisent vSphere Virtual machine File System (VMFS) pour stocker des VM au sein de LUN ONTAP ou des espaces de noms NVMe contenus dans un volume ONTAP FlexVol. Notez que depuis vSphere 7.0, VMware ne prend plus en charge la technologie FCoE dans les environnements de production. NFS est un protocole de fichier qui place les machines virtuelles dans des datastores (qui sont simplement des volumes ONTAP) sans avoir besoin de VMFS. SMB (CIFS), iSCSI, NVMe/TCP ou NFS peuvent également être utilisés directement d&#8217;un système d&#8217;exploitation invité à ONTAP.</p>
 </div>
 <div class="paragraph">
-<p>Les tableaux suivants présentent les fonctionnalités de data store traditionnelles prises en charge par vSphere avec ONTAP. Ces informations ne s&#8217;appliquent pas aux datastores vvols, mais elles s&#8217;appliquent généralement aux versions vSphere 6.x et 7.x utilisant des versions ONTAP prises en charge. Vous pouvez également consulter <a href="https://www.vmware.com/support/pubs/" target="_blank" rel="noopener">"Valeurs maximales de configuration VMware"</a> Pour les versions de vSphere spécifiques afin de confirmer les limites spécifiques.</p>
+<p>Les tableaux suivants présentent les fonctionnalités de data store traditionnelles prises en charge par vSphere avec ONTAP. Ces informations ne s&#8217;appliquent pas aux datastores vvols, mais elles s&#8217;appliquent généralement aux versions vSphere 6.x et ultérieures utilisant des versions ONTAP prises en charge. Vous pouvez également consulter <a href="https://www.vmware.com/support/pubs/" target="_blank" rel="noopener">"Valeurs maximales de configuration VMware"</a> Pour les versions de vSphere spécifiques afin de confirmer les limites spécifiques.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Capacités/fonctionnalités</th>
 <th class="tableblock halign-left valign-top">FC/FCoE</th>
 <th class="tableblock halign-left valign-top">ISCSI</th>
+<th class="tableblock halign-left valign-top">NVMe-of</th>
 <th class="tableblock halign-left valign-top">NFS</th>
 </tr>
 </thead>
@@ -8807,31 +8815,36 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Format</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mappage de périphériques VMFS ou bruts (RDM)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VMFS ou RDM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VMFS</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">S/O</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Nombre maximal de datastores ou de LUN</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">256 cibles/HBA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">256 cibles</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1024 LUN par hôte</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1024 LUN par serveur</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">256 Namespeces par serveur</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">256 monte le NFS par défaut. MaxVolumes est 8. Utilisez les outils ONTAP pour VMware vSphere et augmentez jusqu&#8217;à 256.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Taille maximale des datastores</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">64 TO</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">64 TO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64 TO</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Volume FlexVol de 100 To ou supérieur avec FlexGroup volume</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Taille maximale des fichiers de datastores (pour les disques VMDK utilisant vSphere version 5.5 et VMFS 5 ou version ultérieure)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Taille maximale des fichiers du datastore</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">62TO</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">62TO</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">16 To 62 To correspond à la taille maximale prise en charge par vSphere.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">62TO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16 To ou 62 To avec ONTAP 9.12.1RC1 et versions ultérieures avec des fichiers volumineux activés</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Profondeur de file d&#8217;attente optimale par LUN ou par système de fichiers</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S/O</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Négociation automatique</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Se reporter à NFS.MaxQueueDepth dans <a href="https://docs.netapp.com/us-en/netapp-solutions/virtualization/vsphere_ontap_recommended_esxi_host_and_other_ontap_settings.html" target="_blank" rel="noopener">"Hôte ESXi recommandé et autres paramètres ONTAP recommandés"</a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -8840,16 +8853,18 @@
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Capacité/fonctionnalité</th>
 <th class="tableblock halign-left valign-top">FC/FCoE</th>
 <th class="tableblock halign-left valign-top">ISCSI</th>
+<th class="tableblock halign-left valign-top">NVMe-of</th>
 <th class="tableblock halign-left valign-top">NFS</th>
 </tr>
 </thead>
@@ -8859,9 +8874,11 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Stockage vMotion</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
@@ -8871,9 +8888,11 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Storage Distributed Resource Scheduler (SDRS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
@@ -8883,10 +8902,12 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Microsoft Cluster Service (MSCS) ou mise en cluster de basculement au sein d&#8217;une machine virtuelle</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui*</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui*</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Non pris en charge</p></td>
 </tr>
@@ -8895,15 +8916,18 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Gestionnaire de reprise de site</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Non**</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">V3 uniquement**</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Machines virtuelles à provisionnement fin (disques virtuels)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui ce paramètre est défini par défaut pour toutes les machines virtuelles sur NFS lorsqu&#8217;elles n&#8217;utilisent pas VAAI.</p></td>
@@ -8912,34 +8936,35 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Chemins d&#8217;accès multiples natifs VMware</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui, en utilisant le nouveau plug-in haute performance (HPP)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">S/O</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>*NetApp recommande l&#8217;utilisation d&#8217;iSCSI « in-guest » pour les clusters Microsoft, plutôt que de VMDK « multi-writer » dans un datastore VMFS. Cette approche est entièrement prise en charge par Microsoft et VMware, et offre une grande flexibilité avec ONTAP (SnapMirror vers des systèmes ONTAP sur site ou dans le cloud), est facile à configurer et à automatiser et peut être protégée avec SnapCenter. VSphere 7 intègre une nouvelle option clustered VMDK. Cette approche est différente des VMDK compatibles avec plusieurs enregistreurs, mais elle requiert un datastore présenté via le protocole FC sur lequel la prise en charge de VMDK en cluster est activée. D&#8217;autres restrictions s&#8217;appliquent. Voir VMware <a href="https://docs.vmware.com/en/VMware-vSphere/7.0/vsphere-esxi-vcenter-server-70-setup-wsfc.pdf" target="_blank" rel="noopener">"Configuration de Windows Server Failover Clustering"</a> documentation pour les instructions de configuration.</p>
-</div>
-<div class="paragraph">
 <p>Le tableau suivant répertorie les fonctionnalités de gestion du stockage ONTAP prises en charge.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Capacités/fonctionnalités</th>
 <th class="tableblock halign-left valign-top">FC/FCoE</th>
 <th class="tableblock halign-left valign-top">ISCSI</th>
+<th class="tableblock halign-left valign-top">NVMe-of</th>
 <th class="tableblock halign-left valign-top">NFS</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Déduplication des données</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D&#8217;économies sur la baie</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">D&#8217;économies sur la baie</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">D&#8217;économies sur la baie</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Économies au niveau du datastore</p></td>
@@ -8949,9 +8974,11 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore ou RDM</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore ou RDM</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datastore</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Redimensionnement datastore</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Évoluer uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Évoluer uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Évoluer uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Croissance, croissance automatique et réduction des volumes</p></td>
@@ -8960,18 +8987,21 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Plug-ins SnapCenter pour applications Windows, Linux (invités)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Non</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Contrôle et configuration de l&#8217;hôte à l&#8217;aide des outils ONTAP pour VMware vSphere</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Non</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Provisionnement avec les outils ONTAP pour VMware vSphere</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Non</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 </tbody>
@@ -8981,16 +9011,18 @@
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Capacités/fonctionnalités</th>
 <th class="tableblock halign-left valign-top">FC/FCoE</th>
 <th class="tableblock halign-left valign-top">ISCSI</th>
+<th class="tableblock halign-left valign-top">NVMe-of</th>
 <th class="tableblock halign-left valign-top">NFS</th>
 </tr>
 </thead>
@@ -9000,15 +9032,18 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SRM pris en charge par les sauvegardes répliquées</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Non**</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">V3 uniquement**</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SnapMirror volume</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
@@ -9017,10 +9052,12 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Accès image VMDK</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP, vSphere client et le navigateur du datastore du client Web vSphere</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Accès niveau fichier VMDK</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP, Windows uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP, Windows uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciel de sauvegarde VADP, Windows uniquement</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Logiciels de sauvegarde VADP et applications tierces</p></td>
@@ -9029,10 +9066,17 @@
 <td class="tableblock halign-left valign-top"><p class="tableblock">Granularité NDMP</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Datastore</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Datastore ou VM</p></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>*NetApp recommande l&#8217;utilisation d&#8217;iSCSI « in-guest » pour les clusters Microsoft, plutôt que de VMDK « multiwriter » dans un datastore VMFS. Cette approche est entièrement prise en charge par Microsoft et VMware, et offre une grande flexibilité avec ONTAP (SnapMirror vers des systèmes ONTAP sur site ou dans le cloud), est facile à configurer et à automatiser et peut être protégée avec SnapCenter. VSphere 7 intègre une nouvelle option clustered VMDK. Cette approche est différente des VMDK compatibles avec plusieurs enregistreurs, qui requièrent un datastore présenté via le protocole FC pour lequel la prise en charge de VMDK en cluster est activée. D&#8217;autres restrictions s&#8217;appliquent. Voir VMware <a href="https://docs.vmware.com/en/VMware-vSphere/7.0/vsphere-esxi-vcenter-server-70-setup-wsfc.pdf" target="_blank" rel="noopener">"Configuration de Windows Server Failover Clustering"</a> documentation pour les instructions de configuration.</p>
+</div>
+<div class="paragraph">
+<p>**Les datastores utilisant NVMe-of et NFS v4.1 nécessitent une réplication vSphere. SRM ne prend pas en charge la réplication basée sur les baies.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -9071,7 +9115,7 @@
 <div class="ulist">
 <ul>
 <li>
-<p>Le déploiement de vSphere avec des datastores NFS ONTAP offre une implémentation très performante et facile à gérer qui fournit des ratios VM/datastore qui ne peuvent pas être obtenus avec des protocoles de stockage de niveau bloc. Cette architecture peut entraîner une multiplication par dix de la densité des datastores avec une corrélation réduction du nombre de datastores. Bien qu&#8217;un datastore plus volumineux puisse améliorer l&#8217;efficacité du stockage et offrir des avantages opérationnels, envisagez d&#8217;utiliser au moins quatre datastores (volumes FlexVol) pour stocker vos machines virtuelles sur un seul contrôleur ONTAP afin d&#8217;optimiser les performances des ressources matérielles. Cette approche vous permet également de créer des datastores avec différentes règles de restauration. Certaines peuvent être sauvegardées ou répliquées plus fréquemment que d&#8217;autres, en fonction des besoins de l&#8217;entreprise. Les volumes FlexGroup n&#8217;ont pas besoin de plusieurs datastores pour améliorer les performances lors de l&#8217;évolution de la conception.</p>
+<p>Le déploiement de vSphere avec des datastores NFS ONTAP offre une implémentation très performante et facile à gérer qui fournit des ratios VM/datastore qui ne peuvent pas être obtenus avec des protocoles de stockage de niveau bloc. Cette architecture peut entraîner une multiplication par dix de la densité des datastores avec une corrélation réduction du nombre de datastores. Bien qu&#8217;un datastore plus volumineux puisse améliorer l&#8217;efficacité du stockage et offrir des avantages opérationnels, envisagez d&#8217;utiliser au moins quatre datastores (volumes FlexVol) pour stocker vos machines virtuelles sur un seul contrôleur ONTAP afin d&#8217;optimiser les performances des ressources matérielles. Cette approche vous permet également de créer des datastores avec différentes règles de restauration. Certaines peuvent être sauvegardées ou répliquées plus fréquemment que d&#8217;autres, en fonction des besoins de l&#8217;entreprise. Les volumes FlexGroup n&#8217;ont pas besoin de plusieurs datastores pour améliorer les performances, car ils évoluent indépendamment de la conception.</p>
 </li>
 <li>
 <p>NetApp recommande l&#8217;utilisation des volumes FlexVol et, à partir des volumes ONTAP 9.8 FlexGroup, des datastores NFS. Les autres conteneurs de stockage ONTAP, tels que les qtrees, ne sont généralement pas pris en charge par les outils ONTAP pour VMware vSphere. Le déploiement de datastores sous forme de qtrees sur un volume unique peut être utile pour les environnements hautement automatisés qui peuvent bénéficier de quotas au niveau des datastores ou de clones de fichiers des machines virtuelles.</p>
@@ -9080,7 +9124,7 @@
 <p>La taille correcte des datastores de volumes FlexVol est d&#8217;environ 4 To à 8 To. Cette taille constitue un bon équilibre pour les performances, la facilité de gestion et la protection des données. Démarrer petit (4 To, par exemple) et étendre le datastore en fonction des besoins (jusqu&#8217;à 100 To maximum). Les datastores plus petits peuvent être plus rapides à restaurer depuis la sauvegarde ou après un incident, et déplacés rapidement dans l&#8217;ensemble du cluster. Envisagez d&#8217;utiliser la fonction de dimensionnement automatique de ONTAP pour augmenter et réduire automatiquement le volume en fonction des modifications de l&#8217;espace utilisé. Les outils ONTAP de l&#8217;assistant de provisionnement des datastores VMware vSphere utilisent la taille automatique par défaut pour les nouveaux datastores. Vous pouvez également personnaliser davantage les seuils d&#8217;extension et de réduction ainsi que la taille maximale et minimale, avec System Manager ou la ligne de commandes.</p>
 </li>
 <li>
-<p>Les datastores VMFS peuvent également être configurés avec des LUN accessibles via FC, iSCSI ou FCoE. VMFS permet d&#8217;accéder simultanément aux LUN classiques par chaque serveur ESX d&#8217;un cluster. Les datastores VMFS peuvent être jusqu&#8217;à 64 To et comprennent jusqu&#8217;à 32 LUN de 2 To (VMFS 3) ou un seul LUN de 64 To (VMFS 5). La taille de LUN maximale de ONTAP est de 16 To sur la plupart des systèmes et de 128 To sur tous les systèmes SAN. Il est donc possible de créer un datastore VMFS 5 de taille maximale sur la plupart des systèmes ONTAP en utilisant quatre LUN de 16 To. Bien que les charges de travail E/S élevées puissent bénéficier des performances de plusieurs LUN (avec les systèmes FAS ou AFF haut de gamme), cet avantage peut être compensé par la complexité de gestion supplémentaire qui permet de créer, de gérer et de protéger les LUN du datastore et un risque de disponibilité accru. NetApp recommande généralement d&#8217;utiliser un volume LUN unique et important pour chaque datastore et ne peut être étendu que si le besoin de dépasser 16 To de data store. Comme pour NFS, envisagez l&#8217;utilisation de plusieurs datastores (volumes) pour optimiser les performances d&#8217;un seul contrôleur ONTAP.</p>
+<p>Les datastores VMFS peuvent également être configurés avec des LUN accessibles via FC, iSCSI ou FCoE. VMFS permet d&#8217;accéder simultanément aux LUN classiques par chaque serveur ESX d&#8217;un cluster. Les datastores VMFS peuvent être jusqu&#8217;à 64 To et comprennent jusqu&#8217;à 32 LUN de 2 To (VMFS 3) ou un seul LUN de 64 To (VMFS 5). La taille de LUN maximale de ONTAP est de 16 To sur la plupart des systèmes et de 128 To sur les baies SAN. Il est donc possible de créer un datastore VMFS 5 de taille maximale sur la plupart des systèmes ONTAP en utilisant quatre LUN de 16 To. Bien que les charges de travail E/S élevées puissent bénéficier de la performance de plusieurs LUN (avec les systèmes FAS ou AFF haut de gamme), cet avantage peut être compensé par la complexité de gestion supplémentaire qui permet de créer, de gérer et de protéger les LUN des datastores et un risque de disponibilité accru. NetApp recommande généralement d&#8217;utiliser un volume LUN unique et important pour chaque datastore et ne peut être étendu que si le besoin de dépasser 16 To de data store. Comme pour NFS, envisagez l&#8217;utilisation de plusieurs datastores (volumes) pour optimiser les performances d&#8217;un seul contrôleur ONTAP.</p>
 </li>
 <li>
 <p>Les anciens systèmes d&#8217;exploitation invités (OS) devaient s&#8217;aligner sur le système de stockage pour obtenir des performances et une efficacité du stockage optimales. Cependant, les systèmes d&#8217;exploitation actuels pris en charge par les fournisseurs de Microsoft et de distributeurs Linux tels que Red Hat ne nécessitent plus d&#8217;ajustements pour aligner la partition du système de fichiers sur les blocs du système de stockage sous-jacent dans un environnement virtuel. Si vous utilisez un ancien système d&#8217;exploitation pouvant nécessiter un alignement, recherchez dans la base de connaissances de support NetApp des articles utilisant « alignement de machines virtuelles » ou demandez une copie du rapport TR-3747 à un contact partenaire ou commercial NetApp.</p>
@@ -9167,16 +9211,16 @@
 <div class="ulist">
 <ul>
 <li>
-<p>Utilisez les commutateurs qui prennent en charge l&#8217;agrégation de liens des ports sur deux châssis de commutateurs distincts, en utilisant une approche de groupe d&#8217;agrégation de liens multichâssis, comme Virtual PortChannel (VPC) de Cisco.</p>
+<p>Utilisez les commutateurs qui prennent en charge l&#8217;agrégation de liens des ports sur deux châssis de commutateurs distincts en utilisant une approche de groupe d&#8217;agrégation de liens multichâssis, comme Virtual PortChannel (VPC) de Cisco.</p>
 </li>
 <li>
 <p>Désactiver LACP pour les ports de switch connectés à ESXi, sauf si vous utilisez dvswitches 5.1 ou version ultérieure avec LACP configuré.</p>
 </li>
 <li>
-<p>Utilisez LACP pour créer des agrégats de liens pour les systèmes de stockage ONTAP, avec des groupes d&#8217;interface multimode dynamiques avec un hachage IP.</p>
+<p>Utilisez LACP pour créer des agrégats de liens pour les systèmes de stockage ONTAP avec des groupes d&#8217;interface multimode dynamiques avec un hachage IP.</p>
 </li>
 <li>
-<p>Utiliser la stratégie de regroupement de hachage IP sur ESXi.</p>
+<p>Utilisez une stratégie de regroupement de hachage IP sur ESXi.</p>
 </li>
 </ul>
 </div>
@@ -9256,7 +9300,7 @@
 </tbody>
 </table>
 <div class="paragraph">
-<p>*Les LIFs des SVM se connectent aux ports, aux groupes d&#8217;interface ou aux interfaces VLAN dotés de VLAN, MTU et d&#8217;autres paramètres, mais les paramètres ne sont pas gérés au niveau des SVM.</p>
+<p>*Les LIF SVM se connectent aux ports, aux groupes d&#8217;interface ou aux interfaces VLAN dotés de VLAN, MTU et d&#8217;autres paramètres. Cependant, les paramètres ne sont pas gérés au niveau de la SVM.</p>
 </div>
 <div class="paragraph">
 <p>**Ces périphériques ont leur propre adresse IP pour la gestion, mais ces adresses ne sont pas utilisées dans le contexte du réseau de stockage VMware ESXi.</p>
@@ -9384,7 +9428,7 @@
 <p>Règle d&#8217;accès RW : sys</p>
 </li>
 <li>
-<p>UID anonyme :</p>
+<p>UID anonyme</p>
 </li>
 <li>
 <p>Superutilisateur : sys</p>
@@ -9400,22 +9444,22 @@
 <div class="ulist">
 <ul>
 <li>
-<p>Protocole d&#8217;accès. nfs (qui inclut nfs3 et nfs4)</p>
+<p>Protocole d&#8217;accès : nfs (qui inclut nfs3 et nfs4)</p>
 </li>
 <li>
-<p>Spéc. Correspondance client. 192.168.42.21</p>
+<p>Spéc. Correspondance client : 192.168.42.21</p>
 </li>
 <li>
-<p>Règle d&#8217;accès RO. system</p>
+<p>Règle d&#8217;accès RO : sys</p>
 </li>
 <li>
-<p>Règle d&#8217;accès RW. jamais (meilleure sécurité pour les volumes racine)</p>
+<p>Règle d&#8217;accès RW : jamais (meilleure sécurité pour le volume racine)</p>
 </li>
 <li>
-<p>UID anonyme.</p>
+<p>UID anonyme</p>
 </li>
 <li>
-<p>Super-utilisateur. Sys (également requis pour le volume racine avec VAAI)</p>
+<p>Superutilisateur : sys (également requis pour le volume racine avec VAAI)</p>
 </li>
 </ul>
 </div>
@@ -9515,7 +9559,7 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Accélération matérielle (VAAI)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Oui (vSphere 6.5 et versions ultérieures, plug-in NetApp VAAI 1.1.2)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oui.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Authentification Kerberos</p></td>
@@ -9525,7 +9569,7 @@
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Prise en charge des chemins d&#8217;accès</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Non</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Non (ESXi 6.5 et versions ultérieures prennent en charge via l&#8217;agrégation de sessions ; ONTAP prend en charge via pNFS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ESXi 7.0U3f et versions ultérieures prennent en charge l&#8217;agrégation de sessions avec ONTAP 9.12.1RC1 et versions ultérieures</p></td>
 </tr>
 </tbody>
 </table>
