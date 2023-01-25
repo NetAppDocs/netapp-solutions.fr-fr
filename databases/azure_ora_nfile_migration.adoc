@@ -1,0 +1,190 @@
+---
+sidebar: sidebar 
+permalink: databases/azure_ora_nfile_migration.html 
+summary: 'Cette section décrit comment migrer la base de données Oracle d"un système sur site vers un système Azure NetApp Files, et vice-versa.' 
+keywords: database, Oracle, Azure, ANF, Azure NetApp Files, migration 
+---
+= Migration de la base de données sur site vers le cloud Azure
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+link:azure_ora_nfile_protection.html["Précédent : protection de la base de données."]
+
+Suite à la décision d'Oracle de sortir les bases de données à instance unique, de nombreuses entreprises ont transformé des bases de données Oracle à instance unique en bases de données de conteneurs mutualisés. Cela permet de déplacer facilement un sous-ensemble de bases de données de conteneurs appelé PDB vers le cloud avec l'option de disponibilité maximale, ce qui réduit les temps d'indisponibilité lors de la migration.
+
+Toutefois, si vous disposez toujours d'une seule instance d'une base de données Oracle, vous pouvez d'abord la convertir en une base de données de conteneurs multi-locataires en place avant de tenter de déplacer le PDB.
+
+Dans les deux cas, nous détaillés dans les sections suivantes, pour la migration des bases de données Oracle sur site vers le cloud Azure.
+
+
+
+== Conversion d'une instance unique non-CDB en PDB dans un CDB mutualisé
+
+Si vous possédez toujours une base de données Oracle à instance unique, elle doit être convertie en base de données de conteneurs mutualisés, que vous souhaitiez la migrer vers le cloud ou non, car Oracle cessera bientôt de prendre en charge des bases de données à instance unique.
+
+Les procédures suivantes connectent une base de données à instance unique à une base de données de conteneurs en tant que base de données enfichable ou PDB.
+
+. Créez une base de données de conteneur de shell sur le même hôte que la base de données à instance unique dans une base séparée `ORACLE_HOME`.
+. Arrêtez la base de données d'instance unique et redémarrez-la en mode lecture seule.
+. Exécutez le `DBMS_PDB.DESCRIBE` procédure de génération des métadonnées de la base de données.
++
+[source, cli]
+----
+BEGIN
+  DBMS_PDB.DESCRIBE(
+    pdb_descr_file => '/home/oracle/ncdb.xml');
+END;
+/
+----
+. Arrêtez la base de données à instance unique.
+. Démarrez la base de données du conteneur.
+. Exécutez le `DBMS_PDB.CHECK_PLUG_COMPATIBILITY` Fonction permettant de déterminer si le non-CDB est compatible avec le CDB.
++
+[source, cli]
+----
+SET SERVEROUTPUT ON
+DECLARE
+  compatible CONSTANT VARCHAR2(3) :=
+    CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(
+           pdb_descr_file => '/disk1/oracle/ncdb.xml',
+           pdb_name       => 'NCDB')
+    WHEN TRUE THEN 'YES'
+    ELSE 'NO'
+END;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE(compatible);
+END;
+/
+----
++
+Si la sortie est OUI, le non-CDB est compatible et vous pouvez passer à l'étape suivante.
+
++
+Si la sortie est NON, alors le non-CDB n'est pas compatible et vous pouvez vérifier le `PDB_PLUG_IN_VIOLATIONS` afficher pour voir pourquoi il n'est pas compatible. Toutes les violations doivent être corrigées avant de continuer. Par exemple, toute discordance de version ou de correctif doit être résolue en exécutant une mise à niveau ou l'utilitaire opach. Après avoir corrigé les violations, exécutez `DBMS_PDB.CHECK_PLUG_COMPATIBILITY` Encore une fois pour s'assurer que le non-CDB est compatible avec le CDB.
+
+. Connectez l'instance unique non-CDB.
++
+[source, cli]
+----
+CREATE PLUGGABLE DATABASE ncdb USING '/home/oracle/ncdb.xml'
+  COPY
+  FILE_NAME_CONVERT = ('/disk1/oracle/dbs/', '/disk2/oracle/ncdb/')
+;
+----
++
+
+NOTE: S'il n'y a pas suffisamment d'espace sur l'hôte, le `NOCOPY` Vous pouvez utiliser l'option pour créer le PDB. Dans ce cas, un non-CDB à instance unique n'est pas utilisable après la connexion en tant que PDB car les fichiers de données d'origine ont été utilisés pour le PDB. Veillez à créer une sauvegarde avant la conversion afin qu'il y ait quelque chose à redescendre en cas de problème.
+
+. Démarrez avec la mise à niveau PDB après la conversion si la version entre le non-CDB source à instance unique et le CDB cible sont différentes. Pour la conversion de la même version, cette étape peut être ignorée.
++
+[source, cli]
+----
+sqlplus / as sysdba;
+----
++
+[source, cli]
+----
+alter session set container=ncdb;
+----
++
+[source, cli]
+----
+alter pluggable database open upgrade;
+exit;
+----
++
+[source, cli]
+----
+dbupgrade -c ncdb -l /home/oracle
+----
++
+Vérifiez le fichier journal de mise à niveau dans `/home/oracle` répertoire.
+
+. Ouvrez la base de données enfichable, recherchez les violations de plug-in pdb et recompilez les objets non valides.
++
+[source, cli]
+----
+alter pluggable database ncdb open;
+----
++
+[source, cli]
+----
+alter session set container=ncdb;
+select message from pdb_plug_in_violations where type like '%ERR%' and status <> 'RESOLVED';
+----
++
+[source, cli]
+----
+$ORACLE_HOME/perl/bin/perl $ORACLE_HOME/rdbms/admin/catcon.pl -n 1 -c 'ncdb' -e -b utlrp -d $ORACLE_HOME/rdbms/admin utlrp.sql
+----
+. L'exécution `noncdb_to_pdb.sql` pour mettre à jour le dictionnaire de données.
++
+[source, cli]
+----
+sqlplus / as sysdba
+----
++
+[source, cli]
+----
+alter session set container=ncdb;
+@$ORACLE_HOME/rdbms/admin/noncdb_to_pdb.sql;
+----
++
+Arrêtez et redémarrez la base de données du conteneur. Le ncb est sorti du mode restreint.
+
+
+
+
+
+== Migrez des bases de données Oracle sur site vers Azure avec la relocalisation de l'infrastructure de données
+
+La relocalisation d'Oracle PDB avec l'option de disponibilité maximale utilise la technologie de clonage à chaud PDB, qui active la disponibilité du PDB source pendant que le PDB est copié sur la cible. Lors du basculement, les sessions et les connexions sont redirigées automatiquement vers le PDB cible. Ainsi, le temps d'arrêt est réduit en fonction de la taille du PDB déplacé. NetApp fournit un kit d'outils basé sur Ansible qui automatise la procédure de migration.
+
+. Créez un CDB dans le cloud public Azure sur une machine virtuelle Azure avec la même version et le même niveau de patch.
+. Depuis le contrôleur Ansible, clonez une copie du kit d'automatisation.
++
+[source, cli]
+----
+git clone https://github.com/NetApp-Automation/na_ora_aws_migration.git
+----
+. Lisez les instructions du fichier README.
+. Configurez les fichiers de variables hôte Ansible pour les serveurs Oracle source et cible, ainsi que le fichier de configuration de l'hôte du serveur DB pour la résolution du nom.
+. Installez les prérequis sur le contrôleur Ansible sur le contrôleur Ansible.
++
+[source, cli]
+----
+ansible-playbook -i hosts requirements.yml
+ansible-galaxy collection install -r collections/requirements.yml --force
+----
+. Exécutez toutes les tâches de pré-migration sur le serveur sur site.
++
+[source, cli]
+----
+ansible-playbook -i hosts ora_pdb_relocate.yml -u admin -k -K -t ora_pdb_relo_onprem
+----
++
+
+NOTE: L'utilisateur admin est l'utilisateur de gestion sur l'hôte serveur Oracle sur site avec des privilèges sudo. L'utilisateur admin est authentifié par un mot de passe.
+
+. Exécutez la relocalisation de l'APB Oracle depuis les sites vers l'hôte Oracle Azure cible.
++
+[source, cli]
+----
+ansible-playbook -i hosts ora_pdb_relocate.yml -u azureuser --private-key db1.pem -t ora_pdb_relo_primary
+----
+
+
+
+NOTE: Le contrôleur Ansible peut être situé sur site ou dans le cloud Azure. Le contrôleur doit disposer d'une connectivité avec l'hôte du serveur Oracle sur site et l'hôte VM Azure Oracle. Le port de base de données Oracle (tel que 1521) est ouvert entre l'hôte du serveur Oracle sur site et l'hôte VM Azure Oracle.
+
+
+
+== Options supplémentaires de migration de base de données Oracle
+
+Pour plus d'informations sur les options de migration, reportez-vous à la documentation Microsoft : link:https://learn.microsoft.com/en-us/azure/architecture/example-scenario/oracle-migrate/oracle-migration-overview["Processus de décision de migration de bases de données Oracle"^].

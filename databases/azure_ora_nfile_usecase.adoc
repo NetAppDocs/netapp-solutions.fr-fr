@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: databases/azure_ora_nfile_usecase.html 
+summary: 'Ce guide des bonnes pratiques présente une solution pour le déploiement et la protection d"une base de données Oracle sur le stockage de fichiers Azure NetApp et Azure VM.' 
+keywords: database, Oracle, Azure NetApp files, Azure 
+---
+= Tr-4954 : déploiement et protection de bases de données Oracle sur Azure NetApp Files
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:table-stripes: odd
+:imagesdir: ./../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+De nombreuses bases de données d'entreprise Oracle stratégiques sont toujours hébergées sur site, et de nombreuses entreprises cherchent à migrer ces bases de données Oracle vers un cloud public. Souvent, ces bases de données Oracle sont axées sur les applications et requièrent donc des configurations spécifiques à l'utilisateur, une fonctionnalité qui n'offre pas de nombreuses offres de cloud public « base de données en tant que service ». Par conséquent, l'environnement actuel de la base de données nécessite une solution de base de données Oracle basée sur le cloud public, conçue à partir d'un service de calcul et de stockage évolutif haute performance capable de répondre à des besoins uniques. Les instances de calcul de machine virtuelle Azure et le service de stockage Azure NetApp Files peuvent être les pièces manquantes dans ce puzzle que vous pouvez exploiter pour créer et migrer des workloads de bases de données Oracle stratégiques vers un cloud public.
+
+Les machines virtuelles Azure sont l'un des différents types de ressources informatiques à la demande et évolutives qu'Azure propose. Généralement, vous choisissez une machine virtuelle lorsque vous avez besoin de plus de contrôle sur l'environnement informatique que les autres choix. Azure Virtual machines offre un moyen simple et rapide de créer un ordinateur avec les configurations spécifiques nécessaires pour exécuter votre base de données Oracle, qu'il s'agisse de workloads gourmands en mémoire ou de calcul. Les machines virtuelles d'un réseau virtuel Azure peuvent facilement être connectées au réseau de votre entreprise, par exemple via un tunnel VPN sécurisé.
+
+Azure NetApp Files est un service Microsoft entièrement géré qui accélère et optimise la sécurité de vos workloads de bases de données dans le cloud. Ils ont été conçus pour répondre aux exigences essentielles de l'exécution de charges de travail haute performance, telles que les bases de données Oracle dans le cloud. Ils fournissent des tiers de performance qui reflètent les exigences de l'éventail réel d'IOPS, la faible latence, la haute disponibilité, la durabilité élevée, la facilité de gestion à grande échelle, sauvegarde, restauration et clonage rapides et efficaces. Ces fonctionnalités sont possibles, car Azure NetApp Files repose sur des systèmes NetApp ONTAP 100 % Flash physiques qui s'exécutent dans l'environnement de data Center Azure. Azure NetApp Files est entièrement intégré aux data centers et au portail Azure. Les clients peuvent utiliser la même interface graphique et les mêmes API pour créer et gérer des fichiers partagés que tous les autres objets Azure. Avec Azure NetApp Files, vous pouvez exploiter toutes les fonctionnalités d'Azure sans risques, coûts, délais supplémentaires et bénéficier de la seule solution de service de fichiers d'entreprise native dans Azure.
+
+Décrit en détail comment déployer, configurer et protéger une base de données Oracle avec une machine virtuelle Azure et un service de stockage Azure NetApp Files qui offre performances et durabilité similaires à celles d'un système sur site. Pour obtenir des conseils sur les meilleures pratiques, consultez le document TR-4780 link:https://www.netapp.com/media/17105-tr4780.pdf["Les bases de données Oracle sur Microsoft Azure"^]. Plus important encore, NetApp propose également des kits d'automatisation qui automatisent la plupart des tâches requises pour le déploiement, la configuration, la protection des données, la migration et la gestion des charges de travail de vos bases de données Oracle dans le cloud public Azure. Les kits d'automatisation sont disponibles en téléchargement sur le site GitHub public de NetApp : link:https://github.com/NetApp-Automation/["Automatisation NetApp"^].
+
+link:azure_ora_nfile_architecture.html["Ensuite, architecture des solutions."]
