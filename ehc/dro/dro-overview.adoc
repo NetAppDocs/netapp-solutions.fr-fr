@@ -77,7 +77,7 @@ Pour commencer avec DRO, utilisez le système d'exploitation Ubuntu sur une inst
 
 === Configuration requise pour le système d'exploitation
 
-* Ubuntu focal 20.04 (LTS)
+* Ubuntu 20.04 (LTS) avec au moins 2 Go et 4 CPU virtuels
 * Les packages suivants doivent être installés sur la machine virtuelle de l'agent désigné :
 +
 ** Docker
@@ -100,7 +100,7 @@ NOTE: Le `deploy.sh` le script exécute toutes les conditions préalables requis
 +
 [listing]
 ----
-git clone <link here>
+https://github.com/NetApp-Automation/DRO.git
 ----
 +
 
@@ -110,7 +110,7 @@ NOTE: L'agent peut être installé sur site ou dans un VPC AWS.
 +
 [listing]
 ----
-tar xvf draas_package.tar
+tar xvf DRO-prereq.tar
 ----
 . Accédez au répertoire et exécutez le script de déploiement comme suit :
 +
@@ -118,14 +118,26 @@ tar xvf draas_package.tar
 ----
 sudo sh deploy.sh
 ----
-. Accédez à l'interface utilisateur à l'aide des informations d'identification suivantes : *
+. Pour accéder à l'interface utilisateur, procédez comme suit :
++
+[listing]
+----
+https://<host-ip-address>
+----
++
+avec les informations d'identification par défaut suivantes :
 
-
++
 [listing]
 ----
 Username: admin
 Password: admin
 ----
+
+
+
+NOTE: Le mot de passe peut être modifié à l'aide de l'option « Modifier le mot de passe ».
+
 image::dro-vmc-image3.png[Écran de connexion à Disaster Recovery Orchestrator.]
 
 
