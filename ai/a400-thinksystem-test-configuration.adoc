@@ -1,0 +1,75 @@
+---
+sidebar: sidebar 
+permalink: ai/a400-thinksystem-test-configuration.html 
+keywords: solution architecture, storage controller 
+summary: 'Cette section décrit les configurations testées, l"infrastructure réseau, le serveur SR670 V2 et les détails du provisionnement du stockage.' 
+---
+= Configuration du test
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:a400-thinksystem-test-results.html["Précédent : résultats du test."]
+
+[role="lead"]
+Cette section décrit les configurations testées, l'infrastructure réseau, le serveur SR670 V2 et les détails du provisionnement de stockage NetApp.
+
+
+
+== Architecture de la solution
+
+Nous avons utilisé les composants de la solution répertoriés dans le tableau suivant pour cette validation.
+
+|===
+| Composants de la solution | Détails 
+
+
+| Serveurs Lenovo ThinkSystem  a| 
+* Deux serveurs SR670 V2 équipés chacun de huit cartes graphiques NVIDIA A100 de 80 Go
+* Chaque serveur contient 2 processeurs Intel Xeon Platinum 8360Y (28 cœurs physiques) et 1 To de RAM
+
+
+
+
+| Linux (Ubuntu – 20.04 avec CUDA 11.8) |  
+
+
+| Système de stockage NetApp AFF (paire HA)  a| 
+* Le logiciel NetApp ONTAP 9.10.1
+* SSD 24x 960 Go
+* Protocole NFS
+* 1 groupe d'interface (ifgrp) par contrôleur, avec quatre adresses IP logiques pour les points de montage
+
+
+|===
+Pour cette validation, nous avons utilisé ResNet v2.0 avec le niveau de base ImageNet défini par MLPerf v2.0. Le dataset est stocké dans un système de stockage NetApp AFF avec le protocole NFS. Les SR670 ont été connectés au système de stockage NetApp AFF A400 via un switch de 100 GbE.
+
+ImageNET est un jeu de données d'images fréquemment utilisé. Il contient près de 1.3 millions d'images pour une taille totale de 144 Go. La taille moyenne de l'image est de 108Ko.
+
+La figure suivante représente la topologie réseau de la configuration testée.
+
+image:a400-thinksystem-image7.png["Ce graphique représente la couche de calcul, un Lenovo ThinkSystem SR670 V2, la couche réseau, un switch Ethernet Lenovo et la couche stockage, un contrôleur de stockage NetApp AFF A400. Toutes les connexions réseau sont incluses."]
+
+
+
+== Contrôleur de stockage
+
+Le tableau suivant répertorie la configuration du stockage.
+
+|===
+| Contrôleur | Agrégat | Volume FlexGroup | Taille de l'agrégat | Taille du volume | Point de montage du système d'exploitation 
+
+
+| Contrôleur 1 | Agr1 | /a400-100g | 9 TO | 19 TO | /a400-100g 
+
+
+| Contrôleur 2 | Agr2 | /a400-100g | 9 TO |  | /a400-100g 
+|===
+
+NOTE: Le dossier /a400-100g contient le dataset utilisé pour la validation ResNet.
+
+link:a400-thinksystem-test-procedure-and-detailed-results.html["Suivant : procédure de test et résultats détaillés."]

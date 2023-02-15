@@ -1,0 +1,51 @@
+---
+sidebar: sidebar 
+permalink: ai/a400-thinksystem-introduction.html 
+keywords: tr4810, 4810, introduction, cluster architecture, lenovo, ai 
+summary: 'Cette solution est axée sur une architecture en clusters d"entrée et de milieu de gamme, dotée de systèmes de stockage NetApp et de serveurs Lenovo optimisés pour les workloads d"intelligence artificielle. Elle s"adresse aux équipes de petite et moyenne taille, pour lesquelles la plupart des tâches de calcul sont à un seul nœud (à un ou plusieurs GPU) ou sont distribuées sur plusieurs nœuds de calcul. Cette limitation n"est pas grave, car la plupart des tâches quotidiennes d"entraînement IA sont effectuées sur un seul nœud.' 
+---
+= Tr-4810 : NetApp AFF A400 avec Lenovo ThinkSystem SR670 V2 pour l'IA et l'entraînement des modèles DE ML
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Sathish Thyagarajan, David Arnette, NetApp Mircea Troaca, Lonovo
+
+[role="lead"]
+Cette solution présente une architecture en cluster de milieu de gamme reposant sur un système de stockage NetApp et des serveurs Lenovo optimisés pour les workloads d'intelligence artificielle (IA). Elle s'adresse aux entreprises de toutes tailles, pour lesquelles la plupart des tâches de calcul sont des nœuds uniques (un ou plusieurs processeurs graphiques) ou distribuées sur quelques nœuds de calcul. Cette solution répond à la plupart des tâches quotidiennes d'entraînement IA de nombreuses entreprises.
+
+Ce document porte sur le test et la validation d'une configuration de calcul et de stockage composée de huit processeurs graphiques Lenovo SR670V2, d'un système de stockage NetApp AFF A400 de milieu de gamme et d'un commutateur d'interconnexion 100 GbE. Pour mesurer les performances, nous avons utilisé ResNet50 avec le dataset ImageNet, une taille de batchs de 408, une demi-précision, CUDA et cuDNN. Cette architecture offre une solution efficace et économique pour les petites et moyennes entreprises. Il s'agit du premier démarrage des initiatives d'IA qui requièrent les fonctionnalités haute performance du stockage de données NetApp ONTAP connecté au cloud.
+
+
+
+== Public visé
+
+Ce document est destiné aux publics suivants :
+
+* Data Scientists, ingénieurs de données, administrateurs de données et développeurs de systèmes d'IA
+* Les architectes d'entreprise qui conçoivent des solutions pour le développement des modèles d'IA
+* Data Scientists et ingénieurs de données qui recherchent des méthodes efficaces pour atteindre leurs objectifs de développement du deep learning (DL) et du machine learning (ML)
+* Dirigeants d'entreprise et décideurs IT/d'entreprise qui veulent accélérer le délai de mise sur le marché des initiatives d'IA
+
+
+
+
+== Architecture de la solution
+
+Dotée de serveurs Lenovo ThinkSystem et de NetApp ONTAP avec stockage AFF, cette solution est conçue pour gérer l'entraînement d'IA sur de grands datasets, grâce à la puissance de traitement des processeurs graphiques avec des processeurs classiques. Cette validation démontre les performances élevées et une gestion optimale des données grâce à une architecture scale-out qui utilise un, deux ou quatre serveurs Lenovo SR670 V2 avec un seul système de stockage NetApp AFF A400. La figure suivante fournit une vue d'ensemble de l'architecture.
+
+image:a400-thinksystem-image2.png["Cette image représente un commutateur Ethernet entouré par le serveur de gestion, quatre SR670 V2s avec huit GPU chacun et un système de stockage NetApp ONTAP."]
+
+Cette solution NetApp et Lenovo offre les avantages suivants :
+
+* Performances très efficaces et économiques lors de l'exécution de plusieurs tâches de formation en parallèle
+* Performances évolutives en fonction du nombre de serveurs Lenovo et de différents modèles de contrôleurs de stockage NetApp
+* Protection fiable des données pour respecter les objectifs de point de récupération (RPO) et de délai de restauration (RTO) faibles, sans perte de données
+* Gestion des données optimisée avec les copies Snapshot et les clones pour rationaliser les workflows de développement
+
+
+link:a400-thinksystem-technology-overview.html["Suivant : présentation de la technologie."]
