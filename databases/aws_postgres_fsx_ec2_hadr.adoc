@@ -1,0 +1,288 @@
+---
+sidebar: sidebar 
+permalink: databases/aws_postgres_fsx_ec2_hadr.html 
+keywords: PostgreSQL, AWS, FSx ONTAP, Database, Open Source Database 
+summary: 'Cette solution fournit des informations détaillées sur le déploiement de bases de données PostgreSQL et la configuration haute disponibilité/reprise après incident, le basculement et les synchronisations basées sur la technologie NetApp SnapMirror intégrée dans l"offre de stockage FSX ONTAP et le kit d"automatisation NetApp Ansible dans AWS.' 
+---
+= Tr-4956 : déploiement haute disponibilité et reprise après incident PostgreSQL automatisé dans AWS FSX/EC2
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+
+
+== Objectif
+
+PostgreSQL est une base de données open-source largement utilisée qui est classée numéro quatre parmi les dix plus populaires moteurs de base de données par link:https://db-engines.com/en/ranking["Moteurs DB"^]. D'une part, PostgreSQL tire sa popularité de son modèle open-source sans licence tout en conservant des fonctionnalités sophistiquées. D'autre part, comme les données proviennent de sources ouvertes, il existe un manque de conseils détaillés sur le déploiement de bases de données de production dans les domaines de la haute disponibilité et de la reprise après incident, en particulier dans le cloud public. En général, il peut être difficile de configurer un système haute disponibilité/reprise PostgreSQL classique avec des systèmes de secours et à chaud, de réplication en continu, etc. Tester l'environnement de haute disponibilité/reprise après incident en mettant en avant le site de secours, puis en retournant au site primaire peut interrompre la production. Des problèmes de performances sont documentés sur le site principal lorsque des charges de travail de lecture sont déployées sur le streaming à chaud.
+
+Dans cette documentation, nous vous montrerons comment passer à la solution haute disponibilité/reprise en continu PostgreSQL au niveau de l'application et créer une solution haute disponibilité/reprise après incident PostgreSQL basée sur le stockage ONTAP AWS FSX pour les fichiers de bases de données et les instances de calcul EC2, comme les serveurs DB PostgreSQL. La solution crée un système plus simple et comparable et offre des résultats équivalents lorsque l'on compare la réplication de streaming PostgreSQL classique au niveau applicatif pour la haute disponibilité et la reprise après incident.
+
+Cette solution repose sur la technologie de réplication de stockage NetApp SnapMirror éprouvée et mature, disponible dans le stockage cloud FSX ONTAP natif AWS pour PostgreSQL HA/DR. Il est simple à implémenter grâce à un kit d'automatisation fourni par l'équipe NetApp Solutions. Elles offrent des fonctionnalités similaires, tout en éliminant la complexité et les difficultés liées aux performances sur le site principal grâce à la solution de haute disponibilité/reprise après incident basée sur le streaming au niveau des applications. La solution peut être facilement déployée et testée sans affecter le site principal actif.
+
+Cette solution répond aux cas d'utilisation suivants :
+
+* Profitez d'un déploiement haute disponibilité/reprise après incident pour PostgreSQL dans le cloud public AWS
+* Test et validation d'une charge de travail PostgreSQL dans le cloud public AWS
+* Test et validation d'une stratégie haute disponibilité/de reprise après incident PostgreSQL basée sur la technologie de réplication NetApp SnapMirror
+
+
+
+
+== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* L'administrateur de bases de données qui souhaite déployer PostgreSQL avec la haute disponibilité et la reprise d'activité dans le cloud public AWS.
+* L'architecte de solution de base de données qui souhaite tester les workloads PostgreSQL dans le cloud public AWS.
+* L'administrateur du stockage qui souhaite déployer et gérer des instances PostgreSQL déployées sur le stockage AWS FSX.
+* Le propriétaire de l'application qui souhaite mettre en place un environnement PostgreSQL dans AWS FSX/EC2.
+
+
+
+
+== Environnement de test et de validation de la solution
+
+Le test et la validation de cette solution ont été réalisés dans un environnement AWS FSX et EC2 qui ne correspond pas à l'environnement de déploiement final. Pour plus d'informations, reportez-vous à la section <<Key Factors for Deployment Consideration>>.
+
+
+
+=== Architecture
+
+image::aws_postgres_fsx_ec2_architecture.PNG[Cette image fournit une vue détaillée de l'entreprise de la solution de cloud hybride PostgreSQL, y compris les solutions côté local et le site AWS.]
+
+
+
+=== Composants matériels et logiciels
+
+|===
+
+
+3+| *Matériel* 
+
+
+| Stockage ONTAP FSX | Version actuelle | Deux paires haute disponibilité FSX dans le même VPC et la même zone de disponibilité que les clusters haute disponibilité de secours et primaires 
+
+
+| Instance EC2 pour le calcul | t2.XLarge/4 vCPU/16 Gbit/s | Deux instances T2 XLarge d'EC2 en tant qu'instances de calcul principales et de secours 
+
+
+| Contrôleur Ansible | CentOS VM/4 vCPU/8 Go sur site | Une machine virtuelle pour héberger le contrôleur d'automatisation Ansible, soit sur site, soit dans le cloud 
+
+
+3+| *Logiciel* 
+
+
+| Red Hat Linux | RHEL-8.6.0_HVM-20220503-x86_64-2-Hourly2-GP2 | Déploiement de l'abonnement Red Hat pour les tests 
+
+
+| CentOS Linux | CentOS Linux version 8.2.2004 (cœur) | Hébergement du contrôleur Ansible déployé dans un laboratoire sur site 
+
+
+| PostgreSQL | Version 14.5 | L'automatisation extrait la dernière version disponible de PostgreSQL à partir du postgresql.ora yum repo 
+
+
+| Ansible | Version 2.10.3 | Conditions requises pour les collections et bibliothèques requises installées avec le PlayBook des besoins 
+|===
+
+
+=== Facteurs clés à prendre en compte lors du déploiement
+
+* *Sauvegarde, restauration et récupération de base de données PostgreSQL.* Une base de données PostgreSQL prend en charge plusieurs méthodes de sauvegarde, telles qu'une sauvegarde logique à l'aide de pg_dump, une sauvegarde physique en ligne avec pg_basebackup ou une commande de sauvegarde du système d'exploitation de niveau inférieur, et des instantanés cohérents au niveau du stockage. Cette solution utilise des snapshots de groupes de cohérence NetApp pour les données de base de données PostgreSQL et la sauvegarde, la restauration et la récupération de volumes WAL au site de secours. Les copies Snapshot de volume de groupe de cohérence NetApp séquence les E/S au fur et à mesure de leur écriture sur le stockage et protègent l'intégrité des fichiers de données de base de données.
+* *Instances de calcul EC2.* dans ces tests et validations, nous avons utilisé le type d'instance AWS EC2 t2.XLarge pour l'instance de calcul de la base de données PostgreSQL. NetApp recommande d'utiliser une instance M5 de type EC2 comme instance de calcul pour PostgreSQL lors du déploiement, car elle est optimisée pour les charges de travail de base de données. L'instance de calcul de secours doit toujours être déployée dans la même zone que le système de fichiers passif (de secours) déployé pour le cluster FSX HA.
+* *Clusters HA de stockage FSX déploiement sur une ou plusieurs zones.* lors de ces tests et validations, nous avons déployé un cluster HA FSX dans une zone de disponibilité AWS unique. Pour le déploiement de production, NetApp recommande de déployer une paire haute disponibilité FSX dans deux zones de disponibilité différentes. Si une distance spécifique est requise entre le système principal et la veille, une paire haute disponibilité de secours peut être configurée pour assurer la continuité de l'activité dans une autre région. Un cluster FSX HA est provisionné dans une paire haute disponibilité qui est mise en miroir synchrone dans une paire de systèmes de fichiers actifs-passifs afin d'assurer la redondance au niveau du stockage.
+* *Données PostgreSQL et placement de journaux.* les déploiements PostgreSQL classiques partagent le même répertoire racine ou les mêmes volumes pour les fichiers de données et de journaux. Lors de nos tests et validations, nous avons séparé les données PostgreSQL et les logs en deux volumes distincts pour les performances. Un lien logiciel est utilisé dans le répertoire de données pour pointer vers le répertoire ou le volume du journal qui héberge les journaux PostgreSQL WAL et les journaux WAL archivés.
+* *Compteur de délai de démarrage du service PostgreSQL.* cette solution utilise des volumes montés sur NFS pour stocker le fichier de base de données PostgreSQL et les fichiers journaux WAL. Lors du redémarrage d'un hôte de base de données, le service PostgreSQL peut essayer de démarrer pendant que le volume n'est pas monté. Cela entraîne un échec de démarrage du service de base de données. Un délai de temporisation de 10 à 15 secondes est nécessaire pour que la base de données PostgreSQL démarre correctement.
+* *RPO/RTO pour la continuité de l'activité.* la réplication de données FSX du stockage primaire au mode de secours pour la reprise après incident est basée sur ASYNC, ce qui signifie que l'RPO dépend de la fréquence des sauvegardes Snapshot et de la réplication SnapMirror. Par ailleurs, la fréquence plus élevée de la copie Snapshot et de la réplication SnapMirror réduit le RPO. Il existe donc un équilibre entre perte potentielle de données en cas d'incident et coût de stockage incrémentiel. Nous avons déterminé que la copie Snapshot et la réplication SnapMirror peuvent être implémentées dans des intervalles d'à peine 5 minutes pour le RPO et que PostgreSQL peut être restauré sur le site de secours en moins d'une minute pour le RTO.
+* *Sauvegarde de la base de données.* après l'implémentation ou la migration d'une base de données PostgreSQL vers un système de stockage FSX AWS à partir d'un centre de données On-Prenail, les données sont automatiquement synchronisées en miroir dans la paire HA FSX pour la protection. En outre, les données sont protégées par un site de secours répliqué en cas d'incident. Pour une protection des données ou une conservation des sauvegardes à plus long terme, NetApp recommande d'utiliser l'utilitaire de sauvegarde PostgreSQL pg_basebackup intégré pour exécuter une sauvegarde complète de base de données qui peut être portée vers le stockage d'objets blob S3.
+
+
+
+
+== Déploiement de la solution
+
+Le déploiement de cette solution peut être réalisé automatiquement à l'aide du kit d'automatisation basé sur NetApp Ansible, en suivant les instructions détaillées ci-dessous.
+
+. Lisez les instructions de la boîte à outils d'automatisation Readme.md link:https://github.com/NetApp-Automation/na_postgresql_aws_deploy_hadr["na_postgresql_aws_deploy_hadr"].
+. Regardez la vidéo suivante.
++
+video::aws_postgres_fsx_ec2_deploy_hadr.mp4[]
+. Configurez les fichiers de paramètres requis (`hosts`, `host_vars/host_name.yml`, `fsx_vars.yml`) en saisissant des paramètres spécifiques à l'utilisateur dans le modèle dans les sections correspondantes. Utilisez ensuite le bouton Copy pour copier des fichiers vers l'hôte du contrôleur Ansible.
+
+
+
+
+=== Conditions préalables au déploiement automatisé
+
+Le déploiement nécessite les conditions préalables suivantes.
+
+. Un compte AWS a été configuré et les segments de réseau et de VPC nécessaires ont été créés dans votre compte AWS.
+. À partir de la console AWS EC2, vous devez déployer deux instances Linux EC2, une comme serveur DB PostgreSQL principal au niveau du site principal et une instance du site de reprise en veille. Pour assurer la redondance des ressources de calcul sur les sites de reprise après incident principaux et de secours, déployez deux instances Linux EC2 supplémentaires en tant que serveurs DB PostgreSQL de secours. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au diagramme de l'architecture de la section précédente. Consultez également le link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html["Guide de l'utilisateur pour les instances Linux"] pour en savoir plus.
+. À partir de la console AWS EC2, déployez deux clusters HA du stockage ONTAP FSX pour héberger les volumes de base de données PostgreSQL. Si vous ne connaissez pas le déploiement du stockage FSX, reportez-vous à la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de FSX pour les systèmes de fichiers ONTAP"] pour obtenir des instructions détaillées.
+. Créez une machine virtuelle CentOS Linux pour héberger le contrôleur Ansible. Le contrôleur Ansible peut être situé sur site ou dans le cloud AWS. S'il est situé sur site, vous devez disposer d'une connectivité SSH avec les clusters de stockage VPC, EC2 Linux et FSX.
+. Configurez le contrôleur Ansible comme décrit dans la section « configurez le nœud de contrôle Ansible pour les déploiements CLI sur RHEL/CentOS » à partir de la ressource link:https://docs.netapp.com/us-en/netapp-solutions/automation/getting-started.html["Commencer à utiliser l'automatisation des solutions NetApp"].
+. Clonez une copie du kit d'automatisation à partir du site GitHub public de NetApp.
++
+[source, cli]
+----
+git clone https://github.com/NetApp-Automation/na_postgresql_aws_deploy_hadr.git
+----
+. À partir du répertoire racine du kit, exécutez les playbooks requis pour installer les collections et les bibliothèques requises pour le contrôleur Ansible.
++
+[source, cli]
+----
+ansible-playbook -i hosts requirements.yml
+----
++
+[source, cli]
+----
+ansible-galaxy collection install -r collections/requirements.yml --force --force-with-deps
+----
+. Récupérez les paramètres d'instance FSX EC2 requis pour le fichier de variables hôte DB `host_vars/*` et le fichier de variables globales `fsx_vars.yml` configuration.
+
+
+
+
+=== Configurez le fichier hosts
+
+Saisissez les noms d'hôtes des instances EC2 et IP de gestion de cluster FSX ONTAP primaires dans le fichier hosts.
+
+....
+# Primary FSx cluster management IP address
+[fsx_ontap]
+172.30.15.33
+....
+....
+# Primary PostgreSQL DB server at primary site where database is initialized at deployment time
+[postgresql]
+psql_01p ansible_ssh_private_key_file=psql_01p.pem
+....
+....
+# Primary PostgreSQL DB server at standby site where postgresql service is installed but disabled at deployment
+# Standby DB server at primary site, to setup this server comment out other servers in [dr_postgresql]
+# Standby DB server at standby site, to setup this server comment out other servers in [dr_postgresql]
+[dr_postgresql] --
+psql_01s ansible_ssh_private_key_file=psql_01s.pem
+#psql_01ps ansible_ssh_private_key_file=psql_01ps.pem
+#psql_01ss ansible_ssh_private_key_file=psql_01ss.pem
+....
+
+
+=== Configurez le fichier host_name.yml dans le dossier Host_var
+
+Entrez les paramètres appropriés pour votre système dans les champs en bleu souligné, puis copiez et collez les entrées dans le `host_name.yml` Fichier dans le contrôleur Ansible `host_vars` dossier.
+
+
+
+
+=== Configurez le fichier global fsx_var.yml dans le dossier rva
+
+Entrez les paramètres appropriés pour votre système dans les champs en bleu souligné, puis copiez et collez les entrées dans le `fsx_vars.yml` Fichier sur l'hôte du contrôleur Ansible.
+
+
+
+
+=== Déploiement PostgreSQL et configuration haute disponibilité/reprise après incident
+
+Les tâches suivantes permettent de déployer le service du serveur de base de données PostgreSQL et d'initialiser la base de données sur le site primaire du serveur de base de données EC2 principal. Un hôte de serveur BDD EC2 principal en veille est ensuite configuré sur le site de secours. Enfin, la réplication du volume de la base de données est configurée depuis le cluster FSX du site principal vers le cluster FSX du site de secours pour la reprise après incident.
+
+. Créez des volumes de base de données sur le cluster FSX primaire et configurez postgresql sur l'hôte de l'instance EC2 principale.
++
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_deploy.yml -u ec2-user --private-key psql_01p.pem -e @vars/fsx_vars.yml
+----
+. Configurez l'hôte de l'instance EC2 de reprise après incident de secours.
++
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_standby_setup.yml -u ec2-user --private-key psql_01s.pem -e @vars/fsx_vars.yml
+----
+. Configurer le peering de clusters FSX ONTAP et la réplication du volume de la base de données.
++
+[source, cli]
+----
+ansible-playbook -i hosts fsx_replication_setup.yml -e @vars/fsx_vars.yml
+----
+. Consolider les étapes précédentes en une seule étape du déploiement PostgreSQL et de la configuration de la haute disponibilité et de la reprise après incident.
++
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_hadr_setup.yml -u ec2-user -e @vars/fsx_vars.yml
+----
+. Pour configurer un hôte DB PostgreSQL de secours sur les sites primaire ou de secours, commentez tous les autres serveurs de la section fichier hosts [dr_postgresql], puis exécutez le PlayBook postgresql_standby_setup.yml avec l'hôte cible respectif (tel que psql_01ps ou l'instance de calcul EC2 de secours sur le site primaire). Assurez-vous qu'un fichier de paramètres hôte tel que `psql_01ps.yml` est configuré sous `host_vars` répertoire.
++
+[source, cli]
+----
+[dr_postgresql] --
+#psql_01s ansible_ssh_private_key_file=psql_01s.pem
+psql_01ps ansible_ssh_private_key_file=psql_01ps.pem
+#psql_01ss ansible_ssh_private_key_file=psql_01ss.pem
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_standby_setup.yml -u ec2-user --private-key psql_01ps.pem -e @vars/fsx_vars.yml
+----
+
+
+
+
+=== Sauvegarde et réplication de snapshot de la base de données PostgreSQL vers le site de secours
+
+La sauvegarde et la réplication de snapshot de la base de données PostgreSQL vers le site de secours peuvent être contrôlées et exécutées sur le contrôleur Ansible à l'aide d'un intervalle défini par l'utilisateur. Nous avons vérifié que l'intervalle peut aller jusqu'à 5 minutes. Par conséquent, en cas de défaillance sur le site primaire, il y a 5 minutes de perte de données potentielle en cas de défaillance immédiatement avant la prochaine sauvegarde Snapshot planifiée.
+
+[source, cli]
+----
+*/15 * * * * /home/admin/na_postgresql_aws_deploy_hadr/data_log_snap.sh
+----
+
+
+=== Le basculement vers un site de secours pour la reprise après incident
+
+Pour tester le système haute disponibilité/reprise PostgreSQL en tant qu'exercice de reprise après incident, exécutez le basculement et la restauration de base de données PostgreSQL sur l'instance de base de données EC2 principale en attente sur le site en exécutant le manuel de vente suivant. Dans un scénario de reprise d'activité effectivement, exécutez la même opération pour un basculement vers le site de reprise sur incident.
+
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_failover.yml -u ec2-user --private-key psql_01s.pem -e @vars/fsx_vars.yml
+----
+
+
+=== Resynchronisation des volumes de bases de données répliqués après le test de basculement
+
+Exécutez la resynchronisation après le test de basculement pour rétablir la réplication SnapMirror volume de bases de données.
+
+[source, cli]
+----
+ansible-playbook -i hosts postgresql_standby_resync.yml -u ec2-user --private-key psql_01s.pem -e @vars/fsx_vars.yml
+----
+
+
+=== Le basculement du serveur BDD EC2 principal vers le serveur DB EC2 de secours en raison d'une défaillance de l'instance de calcul EC2
+
+NetApp recommande d'exécuter un basculement manuel avec un système d'exploitation cluster bien établi pouvant nécessiter une licence.
+
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur les informations données dans ce livre blanc, consultez ces documents et/ou sites web :
+
+* Amazon FSX pour NetApp ONTAP
++
+link:https://aws.amazon.com/fsx/netapp-ontap/["https://aws.amazon.com/fsx/netapp-ontap/"^]
+
+* Amazon EC2
++
+link:https://aws.amazon.com/pm/ec2/?trk=36c6da98-7b20-48fa-8225-4784bced9843&sc_channel=ps&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2&ef_id=Cj0KCQiA54KfBhCKARIsAJzSrdqwQrghn6I71jiWzSeaT9Uh1-vY-VfhJixF-xnv5rWwn2S7RqZOTQ0aAh7eEALw_wcB:G:s&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2["https://aws.amazon.com/pm/ec2/?trk=36c6da98-7b20-48fa-8225-4784bced9843&sc_channel=ps&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2&ef_id=Cj0KCQiA54KfBhCKARIsAJzSrdqwQrghn6I71jiWzSeaT9Uh1-vY-VfhJixF-xnv5rWwn2S7RqZOTQ0aAh7eEALw_wcB:G:s&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2"^]
+
+* Automatisation des solutions NetApp
++
+link:https://review.docs.netapp.com/us-en/netapp-solutions_ajc_psql_aws/automation/automation_introduction.html["https://review.docs.netapp.com/us-en/netapp-solutions_ajc_psql_aws/automation/automation_introduction.html"^]
+
+
