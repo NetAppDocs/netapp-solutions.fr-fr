@@ -21,7 +21,7 @@ Allen Cao, Niyaz Mohamed, NetApp
 
 PostgreSQL est une base de données open-source largement utilisée qui est classée numéro quatre parmi les dix plus populaires moteurs de base de données par link:https://db-engines.com/en/ranking["Moteurs DB"^]. D'une part, PostgreSQL tire sa popularité de son modèle open-source sans licence tout en conservant des fonctionnalités sophistiquées. D'autre part, comme les données proviennent de sources ouvertes, il existe un manque de conseils détaillés sur le déploiement de bases de données de production dans les domaines de la haute disponibilité et de la reprise après incident, en particulier dans le cloud public. En général, il peut être difficile de configurer un système haute disponibilité/reprise PostgreSQL classique avec des systèmes de secours et à chaud, de réplication en continu, etc. Tester l'environnement de haute disponibilité/reprise après incident en mettant en avant le site de secours, puis en retournant au site primaire peut interrompre la production. Des problèmes de performances sont documentés sur le site principal lorsque des charges de travail de lecture sont déployées sur le streaming à chaud.
 
-Dans cette documentation, nous vous montrerons comment passer à la solution haute disponibilité/reprise en continu PostgreSQL au niveau de l'application et créer une solution haute disponibilité/reprise après incident PostgreSQL basée sur le stockage ONTAP AWS FSX pour les fichiers de bases de données et les instances de calcul EC2, comme les serveurs DB PostgreSQL. La solution crée un système plus simple et comparable et offre des résultats équivalents lorsque l'on compare la réplication de streaming PostgreSQL classique au niveau applicatif pour la haute disponibilité et la reprise après incident.
+Dans cette documentation, nous vous montrerons comment passer à la solution haute disponibilité et de reprise en continu PostgreSQL au niveau de l'application, et créer une solution haute disponibilité/reprise après incident PostgreSQL basée sur le stockage ONTAP AWS FSX et les instances de calcul EC2 en utilisant la réplication au niveau du stockage. La solution crée un système plus simple et comparable et offre des résultats équivalents lorsque l'on compare la réplication de streaming PostgreSQL classique au niveau applicatif pour la haute disponibilité et la reprise après incident.
 
 Cette solution repose sur la technologie de réplication de stockage NetApp SnapMirror éprouvée et mature, disponible dans le stockage cloud FSX ONTAP natif AWS pour PostgreSQL HA/DR. Il est simple à implémenter grâce à un kit d'automatisation fourni par l'équipe NetApp Solutions. Elles offrent des fonctionnalités similaires, tout en éliminant la complexité et les difficultés liées aux performances sur le site principal grâce à la solution de haute disponibilité/reprise après incident basée sur le streaming au niveau des applications. La solution peut être facilement déployée et testée sans affecter le site principal actif.
 
@@ -265,7 +265,7 @@ ansible-playbook -i hosts postgresql_standby_resync.yml -u ec2-user --private-ke
 
 === Le basculement du serveur BDD EC2 principal vers le serveur DB EC2 de secours en raison d'une défaillance de l'instance de calcul EC2
 
-NetApp recommande d'exécuter un basculement manuel avec un système d'exploitation cluster bien établi pouvant nécessiter une licence.
+NetApp recommande d'exécuter un basculement manuel ou un logiciel de cluster OS bien établi pouvant nécessiter une licence.
 
 
 
@@ -283,6 +283,6 @@ link:https://aws.amazon.com/pm/ec2/?trk=36c6da98-7b20-48fa-8225-4784bced9843&sc_
 
 * Automatisation des solutions NetApp
 +
-link:https://review.docs.netapp.com/us-en/netapp-solutions_ajc_psql_aws/automation/automation_introduction.html["https://review.docs.netapp.com/us-en/netapp-solutions_ajc_psql_aws/automation/automation_introduction.html"^]
+link:https://docs.netapp.com/us-en/netapp-solutions/automation/automation_introduction.html["https://docs.netapp.com/us-en/netapp-solutions/automation/automation_introduction.html"^]
 
 
