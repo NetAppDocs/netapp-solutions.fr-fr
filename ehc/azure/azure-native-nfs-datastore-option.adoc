@@ -86,9 +86,6 @@ La nouvelle intégration entre Azure NetApp Files vous permet de créer des data
 
 NOTE: Pour des performances optimales, déployez la baie Azure NetApp Files dans la même zone de disponibilité que le cloud privé. La colocation dotée de la fonction Express route fastpath offre les meilleures performances, avec une latence réseau minimale.
 
-
-NOTE: Cette fonction est actuellement dans l'aperçu public.
-
 Pour joindre un volume Azure NetApp File en tant que datastore VMware d'un cloud privé Azure VMware solution, assurez-vous que les conditions préalables suivantes sont remplies.
 
 .Prérequis
@@ -167,7 +164,7 @@ image:vmware-dr-image3.png["Erreur : image graphique manquante"]
 
  a| 
 * NFSv3 est pris en charge pour les datastores sur Azure NetApp Files.
-* Utilisez le niveau Premium ou Ultra pour des performances optimales.
+* Utilisez le Tier Premium ou standard pour les charges de travail dépendantes de la capacité et le Tier Ultra pour les charges de travail exigeant des performances limitées tout en complétant le stockage VSAN par défaut.
 
 
 |===
@@ -177,12 +174,15 @@ image:vmware-dr-image3.png["Erreur : image graphique manquante"]
 
 image:vmware-dr-image4.png["Erreur : image graphique manquante"]
 
-Pour en savoir plus sur les performances de volume Azure NetApp Files par taille ou quota, reportez-vous à la section https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-performance-considerations["Performances de Azure NetApp Files"^].
+Pour en savoir plus sur les performances de volume Azure NetApp Files par taille ou quota, reportez-vous à la section link:https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-performance-considerations["Performances de Azure NetApp Files"^].
 
 ====
 .Ajoutez le datastore Azure NetApp Files dans le cloud privé
 [%collapsible]
 ====
+
+NOTE: Un volume Azure NetApp Files peut être connecté à votre cloud privé à l'aide du portail Azure. Suivez ceci link:https://learn.microsoft.com/en-us/azure/azure-vmware/attach-azure-netapp-files-to-azure-vmware-solution-hosts?tabs=azure-portal["Lien Microsoft"] Pour monter un datastore Azure NetApp Files étape par étape via l'utilisation du portail Azure.
+
 Pour ajouter un magasin de données Azure NetApp Files à un cloud privé, procédez comme suit :
 
 . Une fois les fonctionnalités requises enregistrées, reliez un datastore NFS au cluster cloud privé Azure VMware solution en exécutant la commande appropriée.
@@ -230,13 +230,15 @@ image:vmware-dr-image6.png["Erreur : image graphique manquante"]
 
 Pour plus d'informations, voir https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-service-levels["Niveaux de service pour Azure NetApp Files"^].
 
+Se reporter à ceci link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-benchmarks-azure-vmware-solution["Lien Microsoft"] pour obtenir des bancs d'essai de performances détaillés et utilisables lors d'un exercice de dimensionnement.
+
 |===
 | Points à retenir 
 
 
  a| 
-* Utilisez le niveau Premium ou Ultra pour les volumes de datastores pour des performances optimales.
-* Pour les exigences en matière de partage de fichiers des machines virtuelles invitées, utilisez des volumes de niveau Standard ou Premium.
+* Utilisez le niveau Premium ou Standard pour les volumes de datastores pour des performances et une capacité optimales. Si des performances sont requises, vous pouvez utiliser le niveau Ultra.
+* Pour les exigences de montage invité, utilisez le niveau Premium ou Ultra et pour les exigences de partage de fichiers des machines virtuelles invitées, utilisez des volumes de niveau Standard ou Premium.
 
 
 |===
@@ -250,6 +252,8 @@ Pour exploiter davantage de bande passante disponible avec des volumes Azure Net
 
 Pour une bande passante plus élevée, il est recommandé de créer plusieurs datastores à l'aide de plusieurs volumes ANF, de créer des VMDK et de répartir les volumes logiques sur des VMDK.
 
+Se reporter à ceci link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-benchmarks-azure-vmware-solution["Lien Microsoft"] pour obtenir des bancs d'essai de performances détaillés et utilisables lors d'un exercice de dimensionnement.
+
 |===
 | Points à retenir 
 
@@ -258,30 +262,7 @@ Pour une bande passante plus élevée, il est recommandé de créer plusieurs da
 * La solution Azure VMware autorise huit datastores NFS par défaut. Ceci peut être augmenté via une demande d'assistance.
 * Tirez parti de la technologie ER fastpath et de la référence Ultra pour bénéficier d'une bande passante plus élevée et d'une latence plus faible. Plus d'informations
 * Grâce aux fonctionnalités réseau de base d'Azure NetApp Files, la connectivité d'Azure VMware est liée à la bande passante du circuit ExpressRoute et à la passerelle ExpressRoute.
-* Pour les volumes Azure NetApp Files avec des fonctionnalités réseau « standard » (actuellement dans la présentation publique), ExpressRoute est pris en charge. Lorsqu'il est activé, le raccourci envoie directement le trafic réseau aux volumes Azure NetApp Files, en contournant la passerelle pour fournir une bande passante plus élevée et une latence plus faible.
-
-
-|===
-
-
-== Optimisation des performances
-
-Bien que le nombre recommandé de machines virtuelles par datastore NFS soit subjectif, de nombreux facteurs déterminent le nombre optimal de machines virtuelles qui peuvent être placées sur chaque datastore. Si la plupart des administrateurs ne considèrent que la capacité, le volume d'E/S simultanées envoyées au VMDK est l'un des facteurs les plus importants pour les performances globales. L'hôte ESXi dispose de nombreux mécanismes permettant d'assurer l'équité entre les machines virtuelles concurrentes pour les ressources des datastores. Cependant, le moyen le plus simple de contrôler les performances est de réguler le nombre de machines virtuelles placées sur chaque datastore. Si les modèles d'E/S des machines virtuelles concurrentes envoient trop de trafic au datastore, les files d'attente des disques sont saturées et une latence plus élevée est générée.
-
-
-
-== Dimensionnement du volume et du datastore
-
-Lors de la création d'un volume sur Azure NetApp Files à des fins de datastore, il est recommandé de créer un volume dont les besoins ne sont pas supérieurs. Bien que la taille maximale du volume puisse atteindre 100 To, NetApp recommande de commencer par une petite capacité de datastore et de la développer si nécessaire. Le dimensionnement des datastores évite de placer accidentellement un trop grand nombre d'ordinateurs virtuels dans le datastore et diminue le risque de conflits des ressources. Étant donné que la taille des datastores et des VMDK peut être facilement augmentée si une machine virtuelle a besoin de plus de capacité, il n'est pas nécessaire de créer des datastores supérieurs aux besoins. Pour des performances optimales, il est recommandé d'augmenter le nombre de datastores au lieu d'en augmenter la taille.
-
-|===
-| Points à retenir 
-
-
- a| 
-* La taille des datastores NFS ANF est de 4 To à 8 To.
-* Placez 15-20 machines virtuelles sur un seul datastore. Selon les besoins des VM, il peut être porté à 35-40 VM.
-* Pour optimiser les performances et la gestion, prenez en compte les systèmes de fichiers détenus par les invités, tels que les systèmes de fichiers NFS/SMB gérés par les invités pour les applications exigeantes en E/S telles que les bases de données.
+* Pour les volumes Azure NetApp Files avec des fonctionnalités réseau standard, ExpressRoute est pris en charge. Lorsqu'il est activé, le raccourci envoie directement le trafic réseau aux volumes Azure NetApp Files, en contournant la passerelle pour fournir une bande passante plus élevée et une latence plus faible.
 
 
 |===
@@ -297,7 +278,7 @@ La réorganisation des volumes et les modifications dynamiques des niveaux de se
 
  a| 
 * La modification des volumes et la fonctionnalité de niveau de service dynamique permettent d'optimiser les coûts en dimensionnant les charges de travail prévisibles et ainsi d'éviter le surprovisionnement.
-* Pendant la prévisualisation publique, VAAI n'est pas activé.
+* VAAI n'est pas activé.
 
 
 |===

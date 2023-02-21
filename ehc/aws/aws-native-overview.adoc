@@ -34,9 +34,10 @@ NOTE: Cette solution est également disponible auprès de VMware. Veuillez visit
 
 == Options de connectivité
 
-Cette section décrit l'architecture de connectivité de haut niveau et les étapes nécessaires à la mise en œuvre de la solution pour étendre le stockage dans un cluster SDDC sans ajouter d'hôtes supplémentaires.
 
-Amazon FSX pour NetApp ONTAP est un service entièrement géré qui offre un stockage de fichiers extrêmement fiable, évolutif, haute performance et riche en fonctionnalités basé sur le système de fichiers populaire NetApp ONTAP. Amazon FSX pour NetApp ONTAP (plusieurs zones de disponibilité) utilise une adresse IP flottante qui permet de basculer le trafic NAS en cas de défaillance au niveau de la zone de disponibilité. Cette adresse IP se trouve en dehors de l'espace d'adresse VPC CIDR et ne peut donc pas être acheminée vers le SDDC via l'ENI. Par conséquent, VMware Transit Connect doit être utilisé pour se connecter à l'adresse IP flottante de l'interface NAS.
+NOTE: VMware Cloud sur AWS prend en charge les déploiements FSX pour ONTAP à plusieurs zones de disponibilité et même zone d'accès.
+
+Cette section décrit l'architecture de connectivité de haut niveau et les étapes nécessaires à la mise en œuvre de la solution pour étendre le stockage dans un cluster SDDC sans ajouter d'hôtes supplémentaires.
 
 image:fsx-nfs-image1.png["Erreur : image graphique manquante"]
 
