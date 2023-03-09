@@ -19,7 +19,7 @@ Le déploiement de clusters Anthos sur VMware inclut plusieurs composants :
 
 Le graphique suivant décrit un déploiement Anthos-clusters-sur-VMware.
 
-image:a-w-n_anthos_vm_architecture.png["Erreur : image graphique manquante"]
+image:a-w-n_anthos_controlplanev2_vm_architecture.png["Erreur : image graphique manquante"]
 
 
 
@@ -59,19 +59,6 @@ VMware vSphere offre les fonctionnalités suivantes :
 
 Google Cloud demande régulièrement la validation à jour des plateformes de serveurs de nos partenaires à l'aide des nouvelles versions de Anthos dans le cadre de leur programme de partenaires pour la plateforme Anthos. Vous trouverez une liste des plates-formes serveur actuellement validées et des versions prises en charge par Anthos https://cloud.google.com/anthos/docs/resources/partner-platforms["ici"^].
 
-Le tableau suivant contient des plateformes de serveur qui ont été testées par les ingénieurs partenaires NetApp et NetApp pour la validation des clusters Anthos sur les déploiements VMware. Cela inclut des solutions telles que le https://www.netapp.com/data-storage/flexpod/documentation/["NetApp FlexPod"^] Avec des serveurs Cisco UCS et le https://docs.netapp.com/us-en/hci/["NetApp HCI"^] plateforme d'infrastructure de cloud hybride.
-
-|===
-
-
-| Fabricant | Marque | Modèle 
-
-
-| Cisco | UCS | B200 M5 
-
-
-| NetApp | HCI | C410 
-|===
 
 
 === Système d'exploitation
@@ -81,13 +68,12 @@ Les clusters Anthos sur VMware peuvent être déployés dans les environnements 
 Le tableau suivant contient une liste des versions vSphere utilisées par NetApp et ses partenaires pour valider la solution.
 
 |===
+
+
 | Système d'exploitation | Relâchez | Versions Anthos 
 
 
-| VMware vSphere | 6.7U3 | 1.11 
-
-
-| VMware vSphere | 7,0U3 | 1.11 
+| VMware vSphere | 7,0U3 | 1.14 
 |===
 
 
@@ -98,16 +84,16 @@ Pour terminer le déploiement de Anthos avec NetApp comme solution entièrement 
 Le tableau suivant fournit des informations sur ces composants d'infrastructure supplémentaires.
 
 |===
-| Fabricant | Nom du matériel | Modèle 
+| Fabricant | Composant matériel 
 
 
-| Mellanox | N° DE SÉRIE | 2010 
+| Mellanox | commutateur (réseau de données) 
 
 
-| NetApp | AFF | A250 
+| Cisco | commutateur (réseau de gestion) 
 
 
-| NetApp | HCI | S410 
+| NetApp | Système de stockage AFF 
 |===
 
 
@@ -116,26 +102,19 @@ Le tableau suivant fournit des informations sur ces composants d'infrastructure 
 Le tableau suivant comprend une liste des versions de logiciel déployées dans l'environnement de validation.
 
 |===
+
+
 | Fabricant | Nom du logiciel | Version 
 
 
-| Cisco | UCS | 4.1(3f) 
+| NetApp | ONTAP | 9.12.1 
 
 
-| NetApp | Elément | 12 
-
-
-| NetApp | HCI | 1.8 
-
-
-| NetApp | ONTAP | 9.9.1 
-
-
-| NetApp | Astra Trident | 22.04 
+| NetApp | Astra Trident | 23.01 
 |===
-Lors de la validation de la plateforme Anthos Ready effectuée par NetApp, l'environnement de laboratoire a été conçu à partir du diagramme suivant. Nous avons ainsi pu tester plusieurs clusters utilisateurs déployés avec plusieurs systèmes de stockage NetApp et systèmes back-end.
+Pendant la validation de la plateforme Anthos Ready effectuée par NetApp, l'environnement de laboratoire a été conçu sur la base du diagramme suivant, qui nous a permis de tester plusieurs scénarios à l'aide de différents systèmes back-end de stockage NetApp ONTAP.
 
-image:a-w-n_anthos_vmware_validation.png["Erreur : image graphique manquante"]
+image:a-w-n_Anthos-1.14-vsphere7_validation.png["Erreur : image graphique manquante"]
 
 
 
