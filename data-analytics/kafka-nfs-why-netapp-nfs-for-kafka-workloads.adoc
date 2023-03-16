@@ -1,0 +1,311 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/kafka-nfs-why-netapp-nfs-for-kafka-workloads.html 
+keywords: cpu utilization, broker recovery, architecture, testing methodology, observation, das, nfs 
+summary: 'Maintenant qu"il existe une solution au problème du renommage dans le stockage NFS avec Kafka, vous pouvez créer des déploiements fiables qui exploitent le stockage NetApp ONTAP pour votre charge de travail Kafka. Non seulement cette configuration réduit considérablement la surcharge opérationnelle, mais elle offre également les avantages suivants à vos clusters Kafka.' 
+---
+= Pourquoi choisir NetApp NFS pour les charges de travail Kafka ?
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:kafka-nfs-functional-validation-silly-rename-fix.html["Précédent : validation fonctionnelle - changement de nom de fichier."]
+
+[role="lead"]
+Maintenant qu'il existe une solution au problème du renommage dans le stockage NFS avec Kafka, vous pouvez créer des déploiements fiables qui exploitent le stockage NetApp ONTAP pour votre charge de travail Kafka. Non seulement cette configuration réduit considérablement la surcharge opérationnelle, mais elle offre également les avantages suivants à vos clusters Kafka :
+
+* *Utilisation réduite du CPU sur les courtiers Kafka* l'utilisation du stockage NetApp ONTAP désagrégée sépare les opérations d'E/S du disque du courtier et réduit ainsi l'empreinte du processeur.
+* *Temps de restauration du courtier plus rapide.* comme le stockage ONTAP NetApp désagrégée est partagé entre les nœuds du courtier Kafka, une nouvelle instance de calcul peut remplacer un mauvais courtier à tout moment et en beaucoup moins de temps qu'avec les déploiements Kafka classiques, sans reconstruire les données.
+* *Efficacité du stockage.* comme la couche de stockage de l'application est maintenant provisionnée via NetApp ONTAP, les clients peuvent bénéficier de tous les avantages de l'efficacité du stockage fournie avec ONTAP, tels que la compression, la déduplication et la compaction des données à la volée.
+
+
+Ces avantages ont été testés et validés dans des scénarios de test que nous aborderons en détail dans cette section.
+
+
+
+== Réduction de l'utilisation du processeur sur le courtier Kafka
+
+Nous avons découvert que l'utilisation globale du processeur était inférieure à celle de son homologue DAS lorsque nous exécutions des charges de travail similaires sur deux clusters Kafka à spermatozoïdes identiques dans leurs spécifications techniques, mais dont les technologies de stockage différaient. Non seulement l'utilisation globale du processeur est inférieure lorsque le cluster Kafka utilise le stockage ONTAP, mais l'augmentation de l'utilisation du CPU s'est avérée plus modérée que dans un cluster Kafka basé sur DAS.
+
+
+
+=== Installation architecturale
+
+Le tableau suivant présente la configuration environnementale utilisée pour démontrer la réduction de l'utilisation du processeur.
+
+|===
+| Composant de plate-forme | Configuration de l'environnement 
+
+
+| Outil de banc d'essai Kafka 3.2.3 : OpenMessaging  a| 
+* 3 x zookeepers – t2.small
+* 3 serveurs de broker – i3en.2xlarge
+* 1 x Grafana – c5n.2xlarge
+* 4 x Producteur/consommateur -- c5n.2xlarge
+
+
+
+
+| Système d'exploitation sur tous les nœuds | RHEL 8.7 ou version ultérieure 
+
+
+| Instance NetApp Cloud Volumes ONTAP | Instance à un seul nœud – M5.2xLarge 
+|===
+
+
+=== Outil d'évaluation
+
+L'outil d'analyse comparative utilisé dans ce cas d'essai est le https://openmessaging.cloud/["OpenMessaging"^] structure. OpenMessaging est indépendant du langage et du fournisseur ; il fournit des directives sectorielles pour la finance, le commerce électronique, l'IoT et le Big Data ; il aide également à développer des applications de messagerie et de diffusion en continu sur des systèmes et plates-formes hétérogènes. La figure suivante illustre l'interaction des clients OpenMessaging avec un cluster Kafka.
+
+image:kafka-nfs-image8.png["Cette image illustre l'interaction des clients OpenMessaging avec un cluster Kafka."]
+
+* *Compute.* nous avons utilisé un cluster Kafka à trois nœuds avec un ensemble de zoogardien à trois nœuds fonctionnant sur des serveurs dédiés. Chaque courtier disposait de deux points de montage NFSv4.1 sur un seul volume de l'instance NetApp CVO via une LIF dédiée.
+* *Contrôle.* nous avons utilisé deux nœuds pour une combinaison Prometheus-Grafana. Pour la génération des charges de travail, nous disposons d'un cluster séparé à trois nœuds qui peut produire et consommer à partir de ce cluster Kafka.
+* *Stockage* nous avons utilisé une instance NetApp Cloud Volumes ONTAP à un seul nœud avec six volumes GP2 AWS EBS de 250 Go montés sur l'instance. Ces volumes ont ensuite été exposés au cluster Kafka en tant que six volumes NFSv4.1 via des LIF dédiées.
+* *Configuration.* les deux éléments configurables dans ce cas de test étaient les courtiers Kafka et les charges de travail OpenMessaging.
++
+** *Broker config.* les spécifications suivantes ont été sélectionnées pour les courtiers Kafka. Nous avons utilisé un facteur de réplication de 3 pour toutes les mesures, comme indiqué ci-dessous.
+
+
+
+
+image:kafka-nfs-image9.png["Cette image décrit les spécifications sélectionnées pour les courtiers Kafka."]
+
+* *OpenMessaging benchmark (OMB) configuration de la charge de travail.* les spécifications suivantes ont été fournies. Nous avons spécifié un taux d'apporteur cible, mis en surbrillance ci-dessous.
+
+
+image:kafka-nfs-image10.png["Cette image illustre les spécifications sélectionnées pour la configuration de la charge de travail du banc d'essai OpenMessaging."]
+
+
+
+=== Méthodologie de test
+
+. Deux grappes similaires ont été créées, chacune ayant son propre ensemble de essaims de grappes de benchmarking.
++
+** *Cluster 1.* cluster Kafka basé sur NFS.
+** *Cluster 2.* cluster Kafka à base de DAS.
+
+
+. À l'aide d'une commande OpenMessaging, des charges de travail similaires ont été déclenchées sur chaque cluster.
++
+....
+sudo bin/benchmark --drivers driver-kafka/kafka-group-all.yaml workloads/1-topic-100-partitions-1kb.yaml
+....
+. La configuration du débit de production a été augmentée en quatre itérations et l'utilisation du processeur a été enregistrée avec Grafana. Le taux de production a été défini sur les niveaux suivants :
++
+** 10,000
+** 40,000
+** 80,000
+** 100,000
+
+
+
+
+
+
+=== Observation
+
+L'utilisation du stockage NFS NetApp avec Kafka présente deux avantages principaux :
+
+* *Vous pouvez réduire l'utilisation du processeur de près d'un tiers.* l'utilisation globale du processeur sous des charges de travail similaires a été plus faible pour NFS que pour les SSD DAS ; les économies vont de 5 % pour des taux de production inférieurs à 32 % pour des taux de production plus élevés.
+* *Une diminution de trois fois de la dérive de l'utilisation du CPU à des taux de production plus élevés.* comme prévu, il y a eu une dérive à la hausse de l'augmentation de l'utilisation du CPU au fur et à mesure que les taux de production ont été augmentés. Cependant, le taux d'utilisation du CPU sur les courtiers Kafka qui utilisent le DAS est passé de 31 % pour le taux de production inférieur à 70 % pour le taux de production supérieur, soit une augmentation de 39 %. Cependant, avec un système de stockage NFS back-end, l'utilisation du processeur est passée de 26 à 38 %, soit une augmentation de 12 %.
+
+
+image:kafka-nfs-image11.png["Ce graphique illustre le comportement d'un cluster DAS."]
+
+image:kafka-nfs-image12.png["Ce graphique illustre le comportement d'un cluster basé sur NFS."]
+
+De plus, avec 100,000 messages, le DAS affiche une plus grande utilisation du CPU qu'un cluster NFS.
+
+image:kafka-nfs-image13.png["Ce graphique illustre le comportement d'un cluster DAS à 100,000 messages."]
+
+image:kafka-nfs-image14.png["Ce graphique illustre le comportement d'un cluster NFS à 100,000 messages."]
+
+
+
+== Une restauration plus rapide des courtiers
+
+Nous avons découvert que les courtiers Kafka accélèrent la restauration lorsqu'ils utilisent un stockage NetApp NFS partagé. Lorsqu'un courtier tombe en panne dans un cluster Kafka, ce courtier peut être remplacé par un courtier sain avec le même ID de courtier. Lors de l'exécution de ce test, nous avons constaté que, dans le cas d'un cluster Kafka basé sur DAS, le cluster reconstruit les données sur un nouveau courtier en état de fonctionnement, ce qui prend du temps. Dans le cas d'un cluster Kafka basé sur NetApp NFS, le courtier qui remplace le système continue à lire les données à partir du précédent répertoire de journaux et restaure beaucoup plus rapidement.
+
+
+
+=== Installation architecturale
+
+Le tableau suivant présente la configuration environnementale d'un cluster Kafka utilisant un NAS.
+
+|===
+| Composant de plate-forme | Configuration de l'environnement 
+
+
+| Kafka 3.2.3  a| 
+* 3 x zookeepers – t2.small
+* 3 serveurs de broker – i3en.2xlarge
+* 1 x Grafana – c5n.2xlarge
+* 4 x producteur/consommateur -- c5n.2xlarge
+* 1 nœud Kafka de sauvegarde – i3en.2xlarge
+
+
+
+
+| Système d'exploitation sur tous les nœuds | RHEL8.7 ou version ultérieure 
+
+
+| Instance NetApp Cloud Volumes ONTAP | Instance à un seul nœud – M5.2xLarge 
+|===
+La figure suivante illustre l'architecture d'un cluster Kafka basé sur NAS.
+
+image:kafka-nfs-image8.png["Cette figure illustre l'architecture d'un cluster Kafka basé sur NAS."]
+
+* *Compute.* un cluster Kafka à trois nœuds avec un ensemble de zoogardien à trois nœuds fonctionnant sur des serveurs dédiés. Chaque courtier dispose de deux points de montage NFS sur un seul volume de l'instance NetApp CVO via une LIF dédiée.
+* *Contrôle.* deux nœuds pour une combinaison Prometheus-Grafana. Pour la génération des charges de travail, nous utilisons un cluster séparé à trois nœuds qui peut produire et consommer sur ce cluster Kafka.
+* *Stockage* instance NetApp Cloud Volumes ONTAP à un seul nœud avec six volumes GP2 AWS EBS de 250 Go montés sur l'instance. Ces volumes sont ensuite exposés au cluster Kafka en tant que six volumes NFS via des LIF dédiées.
+* *Configuration Broker.* dans ce cas de test, un élément configurable est un courtier Kafka. Les spécifications suivantes ont été sélectionnées pour les courtiers Kafka. Le `replica.lag.time.mx.ms` Est défini sur une valeur élevée car cela détermine la vitesse à laquelle un nœud particulier est extrait de la liste ISR. Lorsque vous basculez entre les nœuds défectueux et les nœuds sains, vous ne voulez pas que cet ID de courtier soit exclu de la liste ISR.
+
+
+image:kafka-nfs-image15.png["Cette image présente les spécifications choisies pour les courtiers Kafka."]
+
+
+
+=== Méthodologie de test
+
+. Deux clusters similaires ont été créés :
++
+** Cluster courant basé sur EC2.
+** Cluster NetApp NFS confluent.
+
+
+. Un nœud Kafka de secours a été créé avec une configuration identique à celle des nœuds du cluster Kafka d'origine.
+. Sur chacun des clusters, un sujet d'exemple a été créé et environ 110 Go de données ont été remplis sur chacun des courtiers.
++
+** *Cluster basé sur EC2.* Un répertoire de données de courtier Kafka est mappé sur `/mnt/data-2` (Dans la figure suivante, Broker-1 du cluster 1 [terminal gauche]).
+** *Cluster NetApp NFS* Un répertoire de données Kafka Broker est monté sur un point NFS `/mnt/data` (Dans la figure suivante, Broker-1 du cluster2 [terminal droit]).
++
+image:kafka-nfs-image16.png["Cette image montre deux écrans de terminal."]
+
+
+
+. Dans chacun des clusters, Broker-1 a été arrêté pour déclencher un processus de restauration de courtier en échec.
+. Après la fin du courtier, l'adresse IP du courtier a été attribuée comme adresse IP secondaire au courtier en attente. Cette opération était nécessaire car un courtier d'un cluster Kafka est identifié par ce qui suit :
++
+** *Adresse IP.* attribuée en réaffectant l'adresse IP du courtier en échec au courtier en attente.
+** *ID du courtier.* il a été configuré dans le courtier en attente `server.properties`.
+
+
+. Lors de l'attribution de l'adresse IP, le service Kafka a été démarré sur le courtier en veille.
+. Au bout d'un moment, les journaux du serveur ont été extraits pour vérifier le temps nécessaire à la création des données sur le nœud de remplacement du cluster.
+
+
+
+
+=== Observation
+
+La restauration du courtier Kafka était presque neuf fois plus rapide. Le temps nécessaire à la restauration d'un nœud de courtier en échec s'est avéré considérablement plus rapide lors de l'utilisation du stockage partagé NetApp NFS que lors de l'utilisation de disques SSD DAS dans un cluster Kafka. Pour 1 To de données topic, le temps de restauration d'un cluster DAS était de 48 minutes, contre moins de 5 minutes pour un cluster Kafka basé sur NetApp-NFS.
+
+Nous avons constaté que la reconstruction des 110 Go de données sur le nouveau nœud intermédiaire du cluster basé sur EC2 a pris 10 minutes, alors que la restauration s'est effectuée en 3 minutes. Nous avons également observé dans les journaux que les décalages consommateur pour les partitions pour EC2 étaient 0, tandis que, sur le cluster NFS, les décalages consommateur étaient récupérés auprès du précédent courtier.
+
+....
+[2022-10-31 09:39:17,747] INFO [LogLoader partition=test-topic-51R3EWs-0000-55, dir=/mnt/kafka-data/broker2] Reloading from producer snapshot and rebuilding producer state from offset 583999 (kafka.log.UnifiedLog$)
+[2022-10-31 08:55:55,170] INFO [LogLoader partition=test-topic-qbVsEZg-0000-8, dir=/mnt/data-1] Loading producer state till offset 0 with message format version 2 (kafka.log.UnifiedLog$)
+....
+
+
+==== Cluster basé sur DAS
+
+. Le nœud de sauvegarde a démarré à 08:55:53,730.
++
+image:kafka-nfs-image17.png["Cette image affiche la sortie du journal pour un cluster basé sur DAS."]
+
+. Le processus de reconstruction des données s'est terminé à 09:05:24,860. Le traitement de 110 Go de données a nécessité environ 10 minutes.
++
+image:kafka-nfs-image18.png["Cette image affiche la sortie du journal pour un cluster basé sur DAS."]
+
+
+
+
+
+==== Cluster basé sur NFS
+
+. Le nœud de sauvegarde a été démarré à 09:39:17,213. L'entrée du journal de démarrage est mise en surbrillance ci-dessous.
++
+image:kafka-nfs-image19.png["Cette image affiche la sortie du journal pour un cluster basé sur NFS."]
+
+. Le processus de reconstruction des données s'est terminé à 09:42:29,115. Le traitement de 110 Go de données a nécessité environ 3 minutes.
++
+image:kafka-nfs-image20.png["Cette image affiche la sortie du journal pour un cluster basé sur NFS."]
+
++
+Le test a été répété pour les courtiers contenant environ 1 To de données, ce qui a pris environ 48 minutes pour le DAS et 3 minutes pour le NFS. Les résultats sont présentés dans le graphique suivant.
+
++
+image:kafka-nfs-image21.png["Ce graphique indique le temps nécessaire à la restauration du courtier en fonction de la quantité de données chargées sur le courtier pour un cluster basé sur DAS ou NFS."]
+
+
+
+
+
+== Efficacité du stockage
+
+Comme la couche de stockage du cluster Kafka a été provisionnée via NetApp ONTAP, nous avons toutes les capacités d'efficacité du stockage de ONTAP. Ce test a été effectué en générant une quantité importante de données sur un cluster Kafka avec stockage NFS provisionné sur Cloud Volumes ONTAP. Nous avons pu constater qu'il y avait une réduction d'espace importante grâce aux fonctionnalités ONTAP.
+
+
+
+=== Installation architecturale
+
+Le tableau suivant présente la configuration environnementale d'un cluster Kafka utilisant un NAS.
+
+|===
+| Composant de plate-forme | Configuration de l'environnement 
+
+
+| Kafka 3.2.3  a| 
+* 3 x zookeepers – t2.small
+* 3 serveurs de broker – i3en.2xlarge
+* 1 x Grafana – c5n.2xlarge
+* 4 x producteur/consommateur -- c5n.2xlarge *
+
+
+
+
+| Système d'exploitation sur tous les nœuds | RHEL8.7 ou version ultérieure 
+
+
+| Instance NetApp Cloud Volumes ONTAP | Instance à un seul nœud – M5.2xLarge 
+|===
+La figure suivante illustre l'architecture d'un cluster Kafka basé sur NAS.
+
+image:kafka-nfs-image8.png["Cette figure illustre l'architecture d'un cluster Kafka basé sur NAS."]
+
+* *Compute.* nous avons utilisé un cluster Kafka à trois nœuds avec un ensemble de zoogardien à trois nœuds fonctionnant sur des serveurs dédiés. Chaque courtier disposait de deux points de montage NFS sur un seul volume de l'instance NetApp CVO via une LIF dédiée.
+* *Contrôle.* nous avons utilisé deux nœuds pour une combinaison Prometheus-Grafana. Pour la génération des charges de travail, nous avons utilisé un cluster séparé à trois nœuds qui était capable de produire et de consommer sur ce cluster Kafka.
+* *Stockage* nous avons utilisé une instance NetApp Cloud Volumes ONTAP à un seul nœud avec six volumes GP2 AWS EBS de 250 Go montés sur l'instance. Ces volumes ont ensuite été exposés au cluster Kafka en tant que six volumes NFS via des LIF dédiées.
+* *Configuration.* les éléments configurables dans ce cas de test étaient les courtiers Kafka.
+
+
+La compression a été désactivée à l’extrémité du producteur, permettant ainsi aux producteurs de générer un rendement élevé. À la place, l'efficacité du stockage était gérée par la couche de calcul.
+
+
+
+=== Méthodologie de test
+
+. Un cluster Kafka a été provisionné avec les spécifications mentionnées ci-dessus.
+. Sur le cluster, environ 350 Go de données ont été produites à l'aide de l'outil d'analyse comparative OpenMessaging.
+. Une fois la charge de travail terminée, les statistiques d'efficacité du stockage ont été collectées à l'aide de ONTAP System Manager et de l'interface de ligne de commandes.
+
+
+
+
+=== Observation
+
+Concernant les données générées à l'aide de l'outil OMB, nous avons constaté des économies d'espace d'environ 33 % avec un ratio d'efficacité du stockage de 1.70:1. Comme le montrent les figures suivantes, l'espace logique utilisé par les données produites était de 420,3 Go et l'espace physique utilisé pour les données était de 281,7 Go.
+
+image:kafka-nfs-image22.png["Cette image illustre les économies d'espace réalisées dans VMDISK."]
+
+image:kafka-nfs-image23.png["Capture d'écran"]
+
+image:kafka-nfs-image24.png["Capture d'écran"]
+
+link:kafka-nfs-performance-overview-and-validation-in-aws.html["Ensuite, présentation des performances et validation dans AWS."]
