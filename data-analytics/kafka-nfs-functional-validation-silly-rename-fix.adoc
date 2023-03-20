@@ -63,6 +63,12 @@ Les propriétés par défaut de Kafka ont été choisies pour tous les serveurs.
 
 == Méthodologie de test
 
+. Mise à jour `-is-preserve-unlink-enabled true` pour le volume kafka, comme suit :
++
+....
+aws-shantanclastrecall-aws::*> volume create -vserver kafka_svm -volume kafka_fg_vol01 -aggregate kafka_aggr -size 3500GB -state online -policy kafka_policy -security-style unix -unix-permissions 0777 -junction-path /kafka_fg_vol01 -type RW -is-preserve-unlink-enabled true
+[Job 32] Job succeeded: Successful
+....
 . Deux clusters Kafka similaires ont été créés à la différence suivante :
 +
 ** *Cluster 1.* le serveur backend NFS v4.1 exécutant ONTAP version 9.12.1 prêt pour la production était hébergé par une instance NetApp CVO. RHEL 8.7/RHEL 9.1 ont été installés sur les courtiers.
