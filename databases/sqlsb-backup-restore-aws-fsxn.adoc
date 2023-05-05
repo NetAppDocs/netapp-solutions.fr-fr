@@ -1,0 +1,621 @@
+---
+sidebar: sidebar 
+permalink: databases/sqlsb-backup-and-restore-aws-fsxn.html 
+keywords: SQL server, SQL, backup, recover, AWS, aws, sql 
+summary:  
+---
+= Tr-4951 : sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Auteur(s) : Niyaz Mohammed, Carine Ngwekwe - Ingénierie de solutions NetApp
+
+Ce document présente les étapes nécessaires à la sauvegarde et à la restauration de Microsoft SQL Server sur AWS FSX pour ONTAP avec SnapCenter. Cela comprend les informations suivantes :
+
+* Configuration NetApp SnapCenter
+* Opérations de sauvegarde SnapCenter
+* Opération de sauvegarde pour une base de données FCI
+* Opération de sauvegarde pour plusieurs bases de données
+* Restauration et reprise
+
+
+
+
+== Configuration SnapCenter
+
+Les étapes suivantes doivent être effectuées pour la configuration SnapCenter et la protection des ressources Microsoft SQL Server. Chacune des étapes suivantes est détaillée dans les sections suivantes.
+
+. Configurez les informations d'identification sysadmin pour l'utilisateur de sauvegarde et de restauration SQL Server.
+. Configurer les paramètres de stockage. Fournir des informations d'identification de gestion Amazon Web Services (AWS) pour accéder à Amazon FSX for NetApp ONTAP Storage Virtual machines (SVM) à partir de SnapCenter.
+. Ajoutez un hôte SQL Server à SnapCenter. Déployez et installez les plug-ins SnapCenter requis.
+. Configurez des règles. Définissez le type de l'opération de sauvegarde, la conservation et la réplication de sauvegarde Snapshot facultative.
+. Configurez et protégez la base de données Microsoft SQL Server.
+
+
+
+
+== Interface utilisateur SnapCenter récemment installée
+
+Configurez les informations d'identification pour la sauvegarde SQL Server et restaurez l'utilisateur avec les droits sysadmin.
+
+image:sqlsb-aws-image1.png["Erreur : image graphique manquante"]
+
+NetApp recommande d'utiliser le contrôle d'accès basé sur des rôles (RBAC) pour déléguer la protection et la gestion des données à des utilisateurs individuels sur les hôtes SnapCenter et Windows. L'utilisateur doit avoir accès au serveur SQL qui héberge la base de données. Pour plusieurs hôtes, le nom d'utilisateur et le mot de passe doivent être identiques sur les différents hôtes. De plus, pour permettre à SnapCenter de déployer le plug-in requis sur les hôtes SQL Server, vous devez enregistrer les informations de domaine pour SnapCenter afin de valider vos informations d'identification et vos hôtes.
+
+Développez les sections suivantes pour voir les instructions détaillées sur la façon d'effectuer chaque étape.
+
+.Ajoutez les informations d'identification
+[%collapsible]
+====
+Accédez à *Paramètres*, sélectionnez *informations d'identification*, puis cliquez sur (*+*).
+
+image:sqlsb-aws-image2.png["Erreur : image graphique manquante"]
+
+Le nouvel utilisateur doit disposer de droits d'administrateur sur l'hôte SQL Server.
+
+image:sqlsb-aws-image3.png["Erreur : image graphique manquante"]
+
+====
+.Configurer le stockage
+[%collapsible]
+====
+Pour configurer le stockage dans SnapCenter, procédez comme suit :
+
+. Dans l'interface utilisateur SnapCenter, sélectionnez *systèmes de stockage*. Il existe deux types de stockage : *ONTAP SVM* et *ONTAP Cluster*. Par défaut le type de stockage est *SVM ONTAP*.
+. Cliquez sur (*+*) pour ajouter les informations relatives au système de stockage.
++
+image:sqlsb-aws-image4.png["Erreur : image graphique manquante"]
+
+. Fournir le noeud final *FSX pour la gestion ONTAP*.
++
+image:sqlsb-aws-image5.png["Erreur : image graphique manquante"]
+
+. La SVM est maintenant configurée dans SnapCenter.
++
+image:sqlsb-aws-image6.png["Erreur : image graphique manquante"]
+
+
+
+====
+.Ajoutez un hôte SQL Server à SnapCenter
+[%collapsible]
+====
+Pour ajouter un hôte SQL Server, procédez comme suit :
+
+. Dans l'onglet hôte, cliquez sur (*+*) pour ajouter l'hôte Microsoft SQL Server.
++
+image:sqlsb-aws-image7.png["Erreur : image graphique manquante"]
+
+. Indiquez le nom de domaine complet (FQDN) ou l'adresse IP de l'hôte distant.
++
+
+NOTE: Les informations d'identification sont renseignées par défaut.
+
+. Sélectionnez l'option pour Microsoft Windows et Microsoft SQL Server, puis soumettez.
++
+image:sqlsb-aws-image8.png["Erreur : image graphique manquante"]
+
+
+
+Les packages SQL Server sont installés.
+
+image:sqlsb-aws-image9.png["Erreur : image graphique manquante"]
+
+. Une fois l'installation terminée, accédez à l'onglet *ressource* pour vérifier si tous les volumes iSCSI FSX pour ONTAP sont présents.
++
+image:sqlsb-aws-image10.png["Erreur : image graphique manquante"]
+
+
+
+====
+.Configurer le répertoire du journal
+[%collapsible]
+====
+Pour configurer un répertoire de journaux hôte, procédez comme suit :
+
+. Cochez la case. Un nouvel onglet s'ouvre.
++
+image:sqlsb-aws-image11.png["Erreur : image graphique manquante"]
+
+. Cliquez sur le lien *configure log Directory*.
++
+image:sqlsb-aws-image12.png["Erreur : image graphique manquante"]
+
+. Sélectionnez le lecteur pour le répertoire du journal de l'hôte et le répertoire du journal de l'instance FCI. Cliquez sur *Enregistrer*. Répétez le même processus pour le second nœud du cluster. Fermez la fenêtre.
++
+image:sqlsb-aws-image13.png["Erreur : image graphique manquante"]
+
+
+
+L'hôte est maintenant en cours d'exécution.
+
+image:sqlsb-aws-image14.png["Erreur : image graphique manquante"]
+
+. Dans l'onglet *Resources*, nous avons tous les serveurs et les bases de données.
++
+image:sqlsb-aws-image15.png["Erreur : image graphique manquante"]
+
+
+
+====
+
+
+== Configurer une stratégie de sauvegarde
+
+Une règle de sauvegarde est un ensemble de règles qui régissent la gestion, la planification et la conservation des sauvegardes. Il vous aide à connaître le type et la fréquence des sauvegardes en fonction des SLA de votre entreprise.
+
+Développez les sections suivantes pour voir les instructions détaillées sur la façon d'effectuer chaque étape.
+
+.Configurer l'opération de sauvegarde pour une base de données FCI
+[%collapsible]
+====
+Pour configurer une règle de sauvegarde pour une base de données FCI, procédez comme suit :
+
+. Accédez à *Paramètres* et sélectionnez *politiques* en haut à gauche. Cliquez ensuite sur *Nouveau*.
++
+image:sqlsb-aws-image16.png["Erreur : image graphique manquante"]
+
+. Entrez le nom de la stratégie et une description. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image17.png["Erreur : image graphique manquante"]
+
+. Sélectionnez *sauvegarde complète* comme type de sauvegarde.
++
+image:sqlsb-aws-image18.png["Erreur : image graphique manquante"]
+
+. Sélectionnez la fréquence du planning (basée sur le SLA de la société). Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image19.png["Erreur : image graphique manquante"]
+
+. Configurez les paramètres de rétention pour la sauvegarde.
++
+image:sqlsb-aws-image20.png["Erreur : image graphique manquante"]
+
+. Configurez les options de réplication.
++
+image:sqlsb-aws-image21.png["Erreur : image graphique manquante"]
+
+. Spécifiez un script d'exécution à exécuter avant et après l'exécution d'une tâche de sauvegarde (le cas échéant).
++
+image:sqlsb-aws-image22.png["Erreur : image graphique manquante"]
+
+. Exécutez la vérification en fonction du planning de sauvegarde.
++
+image:sqlsb-aws-image23.png["Erreur : image graphique manquante"]
+
+. La page *Résumé* fournit des détails sur la stratégie de sauvegarde. Toutes les erreurs peuvent être corrigées ici.
++
+image:sqlsb-aws-image24.png["Erreur : image graphique manquante"]
+
+
+
+====
+
+
+== Configurer et protéger la base de données du serveur MSSQL
+
+. Configurez la date de début et la date d'expiration de la règle de sauvegarde.
++
+image:sqlsb-aws-image25.png["Erreur : image graphique manquante"]
+
+. Définissez la planification de la sauvegarde. Pour ce faire, cliquez sur (*+*) pour configurer une planification. Entrez la *Date de début* et *expire le* date. Définissez l'heure en fonction du SLA de la société.
++
+image:sqlsb-aws-image26.png["Erreur : image graphique manquante"]
+
+. Configurer le serveur de vérification. Dans le menu déroulant, sélectionnez le serveur.
++
+image:sqlsb-aws-image27.png["Erreur : image graphique manquante"]
+
+. Confirmez le planning configuré en cliquant sur le signe plus et confirmez.
+. Fournir des informations pour la notification par e-mail. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image28.png["Erreur : image graphique manquante"]
+
+
+
+Le résumé de la règle de sauvegarde pour la base de données SQL Server est maintenant configuré.
+
+image:sqlsb-aws-image29.png["Erreur : image graphique manquante"]
+
+
+
+== Opérations de sauvegarde SnapCenter
+
+Pour créer des sauvegardes SQL Server à la demande, procédez comme suit :
+
+. Dans la vue *ressource*, sélectionnez la ressource et sélectionnez *Sauvegarder maintenant*.
++
+image:sqlsb-aws-image30.png["Erreur : image graphique manquante"]
+
+. Dans la boîte de dialogue *Backup*, cliquez sur *Backup*.
++
+image:sqlsb-aws-image31.png["Erreur : image graphique manquante"]
+
+. Un écran de confirmation s'affiche. Cliquez sur *Oui* pour confirmer.
++
+image:sqlsb-aws-image32.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Surveiller la tâche de sauvegarde
+
+. Dans l'onglet *Monitor*, cliquez sur le travail et sélectionnez *Détails* à droite pour afficher les travaux.
++
+image:sqlsb-aws-image33.png["Erreur : image graphique manquante"]
+
++
+image:sqlsb-aws-image34.png["Erreur : image graphique manquante"]
+
+
+
+Une fois la sauvegarde terminée, une nouvelle entrée s'affiche dans la vue topologie.
+
+
+
+== Opération de sauvegarde pour plusieurs bases de données
+
+Pour configurer une stratégie de sauvegarde pour plusieurs bases de données SQL Server, créez des stratégies de groupe de ressources en procédant comme suit :
+
+. Dans l'onglet *Resources* du menu *View*, passez à un groupe de ressources à l'aide du menu déroulant.
++
+image:sqlsb-aws-image35.png["Erreur : image graphique manquante"]
+
+. Cliquez sur (*+*) pour un nouveau groupe de ressources.
++
+image:sqlsb-aws-image36.png["Erreur : image graphique manquante"]
+
+. Indiquez un nom et une étiquette. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image37.png["Erreur : image graphique manquante"]
+
+. Ajouter des ressources au groupe de ressources :
++
+** *Hôte.* sélectionnez le serveur dans le menu déroulant qui héberge la base de données.
+** *Type de ressource.* dans le menu déroulant, sélectionnez *base de données*.
+** *Instance SQL Server.* sélectionnez le serveur.
++
+image:sqlsb-aws-image38.png["Erreur : image graphique manquante"]
+
++
+La fonction *option* sélection automatique de toutes les ressources du même volume de stockage* est sélectionnée par défaut. Désactivez l'option et sélectionnez uniquement les bases de données à ajouter au groupe de ressources, cliquez sur la flèche à ajouter et cliquez sur *Suivant*.
+
++
+image:sqlsb-aws-image39.png["Erreur : image graphique manquante"]
+
+
+
+. Sur les stratégies, cliquez sur (*+*).
++
+image:sqlsb-aws-image40.png["Erreur : image graphique manquante"]
+
+. Entrez le nom de la stratégie du groupe de ressources.
++
+image:sqlsb-aws-image41.png["Erreur : image graphique manquante"]
+
+. Sélectionnez *sauvegarde complète* et la fréquence de programmation en fonction du SLA de votre société.
++
+image:sqlsb-aws-image42.png["Erreur : image graphique manquante"]
+
+. Configurez les paramètres de rétention.
++
+image:sqlsb-aws-image43.png["Erreur : image graphique manquante"]
+
+. Configurez les options de réplication.
++
+image:sqlsb-aws-image44.png["Erreur : image graphique manquante"]
+
+. Configurez les scripts à exécuter avant d'effectuer une sauvegarde. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image45.png["Erreur : image graphique manquante"]
+
+. Confirmez la vérification pour les plannings de sauvegarde suivants.
++
+image:sqlsb-aws-image46.png["Erreur : image graphique manquante"]
+
+. Sur la page *Résumé*, vérifiez les informations, puis cliquez sur *Terminer*.
++
+image:sqlsb-aws-image47.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Configurez et protégez plusieurs bases de données SQL Server
+
+. Cliquez sur le signe (*+*) pour configurer la date de début et la date d'expiration.
++
+image:sqlsb-aws-image48.png["Erreur : image graphique manquante"]
+
+. Réglez l'heure.
++
+image:sqlsb-aws-image49.png["Erreur : image graphique manquante"]
+
++
+image:sqlsb-aws-image50.png["Erreur : image graphique manquante"]
+
+. Dans l'onglet *Vérification*, sélectionnez le serveur, configurez la planification et cliquez sur *Suivant*.
++
+image:sqlsb-aws-image51.png["Erreur : image graphique manquante"]
+
+. Configurer les notifications pour envoyer un e-mail.
++
+image:sqlsb-aws-image52.png["Erreur : image graphique manquante"]
+
+
+
+La règle est maintenant configurée pour la sauvegarde de plusieurs bases de données SQL Server.
+
+image:sqlsb-aws-image53.png["Erreur : image graphique manquante"]
+
+
+
+== Déclenchement d'une sauvegarde à la demande pour plusieurs bases de données SQL Server
+
+. Dans l'onglet *ressource*, sélectionnez vue. Dans le menu déroulant, sélectionnez *Groupe de ressources*.
++
+image:sqlsb-aws-image54.png["Erreur : image graphique manquante"]
+
+. Sélectionnez le nom du groupe de ressources.
+. Cliquez sur *Sauvegarder maintenant* en haut à droite.
++
+image:sqlsb-aws-image55.png["Erreur : image graphique manquante"]
+
+. Une nouvelle fenêtre s'ouvre. Cochez la case *vérifier après la sauvegarde*, puis cliquez sur Sauvegarder.
++
+image:sqlsb-aws-image56.png["Erreur : image graphique manquante"]
+
+. Un message de confirmation est affiché. Cliquez sur *Oui*.
++
+image:sqlsb-aws-image57.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Surveiller les tâches de sauvegarde de bases de données multiples
+
+Dans la barre de navigation de gauche, cliquez sur *Monitor*, sélectionnez la tâche de sauvegarde, puis cliquez sur *Details* pour afficher la progression de la tâche.
+
+image:sqlsb-aws-image58.png["Erreur : image graphique manquante"]
+
+Cliquez sur l'onglet *ressource* pour voir le temps nécessaire à la sauvegarde.
+
+image:sqlsb-aws-image59.png["Erreur : image graphique manquante"]
+
+
+
+== Sauvegarde du journal de transactions pour la sauvegarde de plusieurs bases de données
+
+SnapCenter prend en charge les modèles de récupération complets, « bulked logged » et « simple ». Le mode de restauration simple ne prend pas en charge la sauvegarde des journaux transactionnels.
+
+Pour effectuer une sauvegarde du journal de transactions, procédez comme suit :
+
+. Dans l'onglet *Ressources*, changez le menu Affichage de *base de données* à *Groupe de ressources*.
++
+image:sqlsb-aws-image60.png["Erreur : image graphique manquante"]
+
+. Sélectionnez la stratégie de sauvegarde du groupe de ressources créée.
+. Sélectionnez *Modifier le groupe de ressources* dans le coin supérieur droit.
++
+image:sqlsb-aws-image61.png["Erreur : image graphique manquante"]
+
+. La section *Name* utilise par défaut le nom et la balise de la stratégie de sauvegarde. Cliquez sur *Suivant*.
++
+L'onglet *Resources* met en évidence les bases vers lesquelles la règle de sauvegarde de transaction doit être configurée.
+
++
+image:sqlsb-aws-image62.png["Erreur : image graphique manquante"]
+
+. Entrez le nom de la stratégie.
++
+image:sqlsb-aws-image63.png["Erreur : image graphique manquante"]
+
+. Sélectionnez les options de sauvegarde SQL Server.
+. Sélectionnez log backup.
+. Définissez la fréquence de planification en fonction du RTO de votre entreprise. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image64.png["Erreur : image graphique manquante"]
+
+. Configurez les paramètres de conservation des sauvegardes du journal. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image65.png["Erreur : image graphique manquante"]
+
+. (Facultatif) configurez les options de réplication.
++
+image:sqlsb-aws-image66.png["Erreur : image graphique manquante"]
+
+. (Facultatif) configurez tous les scripts à exécuter avant d'exécuter une tâche de sauvegarde.
++
+image:sqlsb-aws-image67.png["Erreur : image graphique manquante"]
+
+. (Facultatif) configurez la vérification de sauvegarde.
++
+image:sqlsb-aws-image68.png["Erreur : image graphique manquante"]
+
+. Sur la page *Résumé*, cliquez sur *Terminer*.
++
+image:sqlsb-aws-image69.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Configurer et protéger plusieurs bases de données MSSQL Server
+
+. Cliquez sur la stratégie de sauvegarde du journal de transactions nouvellement créée.
++
+image:sqlsb-aws-image70.png["Erreur : image graphique manquante"]
+
+. Définissez la date *de début* et la date *d'expiration le*.
+. Entrez la fréquence de la règle de sauvegarde des journaux en fonction du SLA, du RTP et du RPO. Cliquez sur OK.
++
+image:sqlsb-aws-image71.png["Erreur : image graphique manquante"]
+
+. Vous pouvez afficher les deux règles. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image72.png["Erreur : image graphique manquante"]
+
+. Configurer le serveur de vérification.
++
+image:sqlsb-aws-image73.png["Erreur : image graphique manquante"]
+
+. Configurer la notification par e-mail.
++
+image:sqlsb-aws-image74.png["Erreur : image graphique manquante"]
+
+. Sur la page *Résumé*, cliquez sur *Terminer*.
++
+image:sqlsb-aws-image75.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Déclenchement d'une sauvegarde du journal de transactions à la demande pour plusieurs bases de données SQL Server
+
+Pour déclencher une sauvegarde à la demande du journal transactionnel pour plusieurs bases de données SQL Server, procédez comme suit :
+
+. Sur la page de stratégie nouvellement créée, sélectionnez *Sauvegarder maintenant* en haut à droite de la page.
++
+image:sqlsb-aws-image76.png["Erreur : image graphique manquante"]
+
+. Dans la fenêtre contextuelle de l'onglet *Stratégie*, sélectionnez le menu déroulant, sélectionnez la règle de sauvegarde et configurez la sauvegarde du journal de transactions.
++
+image:sqlsb-aws-image77.png["Erreur : image graphique manquante"]
+
+. Cliquez sur *Backup*. Une nouvelle fenêtre s'affiche.
+. Cliquez sur *Oui* pour confirmer la stratégie de sauvegarde.
++
+image:sqlsb-aws-image78.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Contrôle
+
+Accédez à l'onglet *Monitoring* et surveillez la progression de la tâche de sauvegarde.
+
+image:sqlsb-aws-image79.png["Erreur : image graphique manquante"]
+
+
+
+== Restauration et reprise
+
+Reportez-vous aux conditions préalables suivantes nécessaires à la restauration d'une base de données SQL Server dans SnapCenter.
+
+* L'instance cible doit être en ligne et en cours d'exécution avant la fin d'une tâche de restauration.
+* Les opérations SnapCenter planifiées pour s'exécuter sur la base de données SQL Server doivent être désactivées, y compris les tâches planifiées sur les serveurs de gestion à distance ou de vérification à distance.
+* Si vous restaurez des sauvegardes de répertoires de journaux personnalisés sur un autre hôte, la version SnapCenter du serveur SnapCenter et de l'hôte de plug-ins doit être identique.
+* Vous pouvez restaurer la base de données système sur un autre hôte.
+* SnapCenter peut restaurer une base de données dans un cluster Windows sans mettre le groupe de clusters SQL Server hors ligne.
+
+
+
+
+== Restauration des tables supprimées d'une base de données SQL Server à un point dans le temps
+
+Pour restaurer une base de données SQL Server à un point dans le temps, procédez comme suit :
+
+. La capture d'écran suivante montre l'état initial de la base de données SQL Server avant les tables supprimées.
++
+image:sqlsb-aws-image80.png["Erreur : image graphique manquante"]
+
++
+La capture d'écran montre que 20 lignes ont été supprimées du tableau.
+
++
+image:sqlsb-aws-image81.png["Erreur : image graphique manquante"]
+
+. Connectez-vous au serveur SnapCenter. Dans l'onglet *Resources*, sélectionnez la base de données.
++
+image:sqlsb-aws-image82.png["Erreur : image graphique manquante"]
+
+. Sélectionnez la sauvegarde la plus récente.
+. Sur la droite, sélectionnez *Restaurer*.
++
+image:sqlsb-aws-image83.png["Erreur : image graphique manquante"]
+
+. Une nouvelle fenêtre s'affiche. Sélectionnez l'option *Restaurer*.
+. Restaurez la base de données sur le même hôte que celui sur lequel la sauvegarde a été créée. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image84.png["Erreur : image graphique manquante"]
+
+. Pour le *Type de récupération*, sélectionnez *toutes les sauvegardes de journaux*. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image85.png["Erreur : image graphique manquante"]
+
++
+image:sqlsb-aws-image86.png["Erreur : image graphique manquante"]
+
+
+
+*Options de pré- restauration :*
+
+. Sélectionnez l'option *Ecraser la base de données avec le même nom pendant la restauration*. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image87.png["Erreur : image graphique manquante"]
+
+
+
+*Options de post-restauration :*
+
+. Sélectionnez l'option *opérationnel, mais indisponible pour restaurer des journaux de transactions supplémentaires*. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image88.png["Erreur : image graphique manquante"]
+
+. Indiquez les paramètres de messagerie. Cliquez sur *Suivant*.
++
+image:sqlsb-aws-image89.png["Erreur : image graphique manquante"]
+
+. Sur la page *Résumé*, cliquez sur *Terminer*.
++
+image:sqlsb-aws-image90.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Suivi de la progression de la restauration
+
+. Dans l'onglet *Monitoring*, cliquez sur les détails de la tâche de restauration pour afficher la progression de la tâche de restauration.
++
+image:sqlsb-aws-image91.png["Erreur : image graphique manquante"]
+
+. Restaurez les détails de la tâche.
++
+image:sqlsb-aws-image92.png["Erreur : image graphique manquante"]
+
+. Retour à l'hôte SQL Server > base de données > table présents.
++
+image:sqlsb-aws-image93.png["Erreur : image graphique manquante"]
+
+
+
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur les informations données dans ce livre blanc, consultez ces documents et/ou sites web :
+
+* https://www.netapp.com/pdf.html?item=/media/12400-tr4714pdf.pdf["Tr-4714 : guide des meilleures pratiques pour Microsoft SQL Server avec NetApp SnapCenter"^]
++
+https://www.netapp.com/pdf.html?item=/media/12400-tr4714pdf.pdf["https://www.netapp.com/pdf.html?item=/media/12400-tr4714pdf.pdf"^]
+
+* https://docs.netapp.com/us-en/snapcenter-45/protect-scsql/concept_requirements_for_restoring_a_database.html["Conditions requises pour restaurer une base de données"^]
++
+https://docs.netapp.com/us-en/snapcenter-45/protect-scsql/concept_requirements_for_restoring_a_database.html["https://docs.netapp.com/us-en/snapcenter-45/protect-scsql/concept_requirements_for_restoring_a_database.html"^]
+
+* Présentation des cycles de vie des bases de données clonées
++
+https://library.netapp.com/ecmdocs/ECMP1217281/html/GUID-4631AFF4-64FE-4190-931E-690FCADA5963.html["https://library.netapp.com/ecmdocs/ECMP1217281/html/GUID-4631AFF4-64FE-4190-931E-690FCADA5963.html"^]
+
+

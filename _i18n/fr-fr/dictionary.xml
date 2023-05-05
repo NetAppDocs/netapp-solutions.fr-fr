@@ -18124,4 +18124,268 @@
   <block id="1e0561f6acd458eaa1243b2cd1f781e1" category="inline-link">Prise en charge de VMware Cloud sur AWS. Considérations et limitations</block>
   <block id="2d57bbd81ef9a580a0f2d6b36c8d86c2" category="list-text"><block ref="2d57bbd81ef9a580a0f2d6b36c8d86c2" category="inline-link-rx"></block></block>
   <block id="25dbf1b5193ae9eff63687c18c19e6f5" category="paragraph">Ce document explique en détail comment déployer une solution de systèmes de fichiers parallèles StorNext avec les systèmes de stockage NetApp E-Series. Cette solution englobe les baies 100 % Flash NetApp EF280, la baie NVMe 100 % Flash NetApp EF300, la baie NVMe 100 % Flash EF600 de NetApp et le système hybride NetApp E5760. Il offre une caractérisation des performances basée sur le banc d'essai Frametest, un outil largement utilisé pour les tests dans l'industrie des médias et du divertissement.</block>
+  <block id="e48febb9ce9511ad6a07eb2feefcf987" category="doc">Tr-4951 : sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP</block>
+  <block id="89801e66cf61a843ac015db626c0ecde" category="paragraph">Auteur(s) : Niyaz Mohammed, Carine Ngwekwe - Ingénierie de solutions NetApp</block>
+  <block id="a5ddf739ea634e933770ce212cd12b29" category="paragraph">Ce document présente les étapes nécessaires à la sauvegarde et à la restauration de Microsoft SQL Server sur AWS FSX pour ONTAP avec SnapCenter. Cela comprend les informations suivantes :</block>
+  <block id="5bf8a1308ebd487796bd4db12222cf4a" category="list-text">Configuration NetApp SnapCenter</block>
+  <block id="ecc57313124902e4c42227ae61bb9bf1" category="list-text">Opérations de sauvegarde SnapCenter</block>
+  <block id="d939d79ed61dbf23169c4f7badcc1788" category="list-text">Opération de sauvegarde pour une base de données FCI</block>
+  <block id="cb9f91cd2f1ab77ae604d05be34c3d59" category="list-text">Opération de sauvegarde pour plusieurs bases de données</block>
+  <block id="6be8f3086a30e59e908d53eb620b51dd" category="list-text">Restauration et reprise</block>
+  <block id="9fa83b367c23a5d2579b5aebdddebe77" category="section-title">Configuration SnapCenter</block>
+  <block id="f979bf3f98ebe58fd55555efea856e3f" category="paragraph">Les étapes suivantes doivent être effectuées pour la configuration SnapCenter et la protection des ressources Microsoft SQL Server. Chacune des étapes suivantes est détaillée dans les sections suivantes.</block>
+  <block id="7c1e7491c7e3588e56a0b05940cc2840" category="list-text">Configurez les informations d'identification sysadmin pour l'utilisateur de sauvegarde et de restauration SQL Server.</block>
+  <block id="d6442b5b8ad78236b2966fc5c1191c1e" category="list-text">Configurer les paramètres de stockage. Fournir des informations d'identification de gestion Amazon Web Services (AWS) pour accéder à Amazon FSX for NetApp ONTAP Storage Virtual machines (SVM) à partir de SnapCenter.</block>
+  <block id="bf1e7185f6bb09e0f2b1527acbbb47df" category="list-text">Ajoutez un hôte SQL Server à SnapCenter. Déployez et installez les plug-ins SnapCenter requis.</block>
+  <block id="1e5b163165e28d2c04a5c2cc25406fa0" category="list-text">Configurez des règles. Définissez le type de l'opération de sauvegarde, la conservation et la réplication de sauvegarde Snapshot facultative.</block>
+  <block id="7839511c8247bb78354925ce2771284a" category="list-text">Configurez et protégez la base de données Microsoft SQL Server.</block>
+  <block id="1719e3b1afdebd05d1f71b0881a7083c" category="section-title">Interface utilisateur SnapCenter récemment installée</block>
+  <block id="97504cb249856d98431bd413caeb43ce" category="paragraph">Configurez les informations d'identification pour la sauvegarde SQL Server et restaurez l'utilisateur avec les droits sysadmin.</block>
+  <block id="cdff526b5e5a4339e5ad188cb61b446f" category="paragraph"><block ref="cdff526b5e5a4339e5ad188cb61b446f" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1a8b4eaab7153d620e4be3372cee492d" category="paragraph">NetApp recommande d'utiliser le contrôle d'accès basé sur des rôles (RBAC) pour déléguer la protection et la gestion des données à des utilisateurs individuels sur les hôtes SnapCenter et Windows. L'utilisateur doit avoir accès au serveur SQL qui héberge la base de données. Pour plusieurs hôtes, le nom d'utilisateur et le mot de passe doivent être identiques sur les différents hôtes. De plus, pour permettre à SnapCenter de déployer le plug-in requis sur les hôtes SQL Server, vous devez enregistrer les informations de domaine pour SnapCenter afin de valider vos informations d'identification et vos hôtes.</block>
+  <block id="2f5eb1bcad8467d8b1a3a761e7a52e7c" category="paragraph">Développez les sections suivantes pour voir les instructions détaillées sur la façon d'effectuer chaque étape.</block>
+  <block id="36bc52aaebad43ec3e49ed9a0efacd43" category="example-title">Ajoutez les informations d'identification</block>
+  <block id="994e670ad871a1a1a8968ef47fce1bd2" category="paragraph">Accédez à *Paramètres*, sélectionnez *informations d'identification*, puis cliquez sur (*+*).</block>
+  <block id="9816a3711fba5a6da62899f4fa6ce522" category="paragraph"><block ref="9816a3711fba5a6da62899f4fa6ce522" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6ef34a5260859bfffb6bf580955ffb1e" category="paragraph">Le nouvel utilisateur doit disposer de droits d'administrateur sur l'hôte SQL Server.</block>
+  <block id="bcd04483b0b1e054777058931ef7d117" category="paragraph"><block ref="bcd04483b0b1e054777058931ef7d117" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d25223f4065ca21361aff2e7cdc61203" category="example-title">Configurer le stockage</block>
+  <block id="8d4520cc707d4607fe5abe132aecdbf2" category="paragraph">Pour configurer le stockage dans SnapCenter, procédez comme suit :</block>
+  <block id="17b1ba0b70ebf5f6fcfd2f39e760ac1c" category="list-text">Dans l'interface utilisateur SnapCenter, sélectionnez *systèmes de stockage*. Il existe deux types de stockage : *ONTAP SVM* et *ONTAP Cluster*. Par défaut le type de stockage est *SVM ONTAP*.</block>
+  <block id="84bf89b0b19fc811dad7c11f9b65802e" category="list-text">Cliquez sur (*+*) pour ajouter les informations relatives au système de stockage.</block>
+  <block id="09710a8bb6b2b53186f42bcfb4cdf2d7" category="paragraph"><block ref="09710a8bb6b2b53186f42bcfb4cdf2d7" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="517cf06d127b73ca2104c46eedc40e4e" category="list-text">Fournir le noeud final *FSX pour la gestion ONTAP*.</block>
+  <block id="ecbf2692688ddd1d8cffae4eb2adae87" category="paragraph"><block ref="ecbf2692688ddd1d8cffae4eb2adae87" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4c99ac5cbe66f4968da17288cff14037" category="list-text">La SVM est maintenant configurée dans SnapCenter.</block>
+  <block id="193ab9cc10d32956324c73a0aad32ece" category="paragraph"><block ref="193ab9cc10d32956324c73a0aad32ece" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="9f4cf5450244ae3361ec7b130b139860" category="example-title">Ajoutez un hôte SQL Server à SnapCenter</block>
+  <block id="865ea603dd93a3a23cc7e80825b29624" category="paragraph">Pour ajouter un hôte SQL Server, procédez comme suit :</block>
+  <block id="e14bea01dc3a10ca47f216a08f68fa85" category="list-text">Dans l'onglet hôte, cliquez sur (*+*) pour ajouter l'hôte Microsoft SQL Server.</block>
+  <block id="f2a1bec0c1120023662a8abe57c12c35" category="paragraph"><block ref="f2a1bec0c1120023662a8abe57c12c35" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="0c802780a0f54f5e4f22e25de9fa33be" category="list-text">Indiquez le nom de domaine complet (FQDN) ou l'adresse IP de l'hôte distant.</block>
+  <block id="fb62a23910339f3168b6b89b4e0f77b7" category="admonition">Les informations d'identification sont renseignées par défaut.</block>
+  <block id="65d9345f77faaa3bf7bb8031bb92f814" category="list-text">Sélectionnez l'option pour Microsoft Windows et Microsoft SQL Server, puis soumettez.</block>
+  <block id="42a8898b70e0495a43f4df86d0f689cd" category="paragraph"><block ref="42a8898b70e0495a43f4df86d0f689cd" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="53b2d796e625fe393f84e48a5c6c6e91" category="paragraph">Les packages SQL Server sont installés.</block>
+  <block id="b7778c4b2da8a542de9529435e8ec22a" category="paragraph"><block ref="b7778c4b2da8a542de9529435e8ec22a" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="af3617c8e674a62860e153751b1b62d8" category="list-text">Une fois l'installation terminée, accédez à l'onglet *ressource* pour vérifier si tous les volumes iSCSI FSX pour ONTAP sont présents.</block>
+  <block id="c919f693c37c2d168175e649e14c3293" category="paragraph"><block ref="c919f693c37c2d168175e649e14c3293" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="3b83af25a71030e8f59b11202c70c1a4" category="example-title">Configurer le répertoire du journal</block>
+  <block id="144931b7282f9d86fce2e97aa69aa046" category="paragraph">Pour configurer un répertoire de journaux hôte, procédez comme suit :</block>
+  <block id="089f0c00b86bab7c6ce3e455e39b4111" category="list-text">Cochez la case. Un nouvel onglet s'ouvre.</block>
+  <block id="a4ce6f0dbf75e4ef516f57614792a907" category="paragraph"><block ref="a4ce6f0dbf75e4ef516f57614792a907" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="57fab4c72318fea3bba8b3c321098ab3" category="list-text">Cliquez sur le lien *configure log Directory*.</block>
+  <block id="d6c8cb16951a3c787db9f20c0fb09057" category="paragraph"><block ref="d6c8cb16951a3c787db9f20c0fb09057" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1b06cca5c441f86e0c4ad342dc4949c5" category="list-text">Sélectionnez le lecteur pour le répertoire du journal de l'hôte et le répertoire du journal de l'instance FCI. Cliquez sur *Enregistrer*. Répétez le même processus pour le second nœud du cluster. Fermez la fenêtre.</block>
+  <block id="24519841c3d33e14f5bb7d209d673a35" category="paragraph"><block ref="24519841c3d33e14f5bb7d209d673a35" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4c36dc3499eaa7955922477da928c37d" category="paragraph">L'hôte est maintenant en cours d'exécution.</block>
+  <block id="820630e9a1c808068eda3661f49042cf" category="paragraph"><block ref="820630e9a1c808068eda3661f49042cf" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="21ff17f2a463836d33f1c25b922e2aad" category="list-text">Dans l'onglet *Resources*, nous avons tous les serveurs et les bases de données.</block>
+  <block id="076c245e9e02588c21d76bd30de179dd" category="paragraph"><block ref="076c245e9e02588c21d76bd30de179dd" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="43e2457547c492c6001e30b828b6540e" category="section-title">Configurer une stratégie de sauvegarde</block>
+  <block id="febe42e6f9b7fb03483725eb94b7dc4f" category="paragraph">Une règle de sauvegarde est un ensemble de règles qui régissent la gestion, la planification et la conservation des sauvegardes. Il vous aide à connaître le type et la fréquence des sauvegardes en fonction des SLA de votre entreprise.</block>
+  <block id="e28ebacaa4299d5022a9ce52d607c076" category="example-title">Configurer l'opération de sauvegarde pour une base de données FCI</block>
+  <block id="41cc72961a6c592ec36223498c3bd705" category="paragraph">Pour configurer une règle de sauvegarde pour une base de données FCI, procédez comme suit :</block>
+  <block id="55e9263abc7e93fbc1274424af911693" category="list-text">Accédez à *Paramètres* et sélectionnez *politiques* en haut à gauche. Cliquez ensuite sur *Nouveau*.</block>
+  <block id="adf5449547fda2e595556e9d231a2066" category="paragraph"><block ref="adf5449547fda2e595556e9d231a2066" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="00f0ce22eac68a6bd05a1b0f221c4870" category="list-text">Entrez le nom de la stratégie et une description. Cliquez sur *Suivant*.</block>
+  <block id="f2eb0a484f9105201d7b6af1e010db00" category="paragraph"><block ref="f2eb0a484f9105201d7b6af1e010db00" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="55efa7fad4afc963d783654da41300bf" category="list-text">Sélectionnez *sauvegarde complète* comme type de sauvegarde.</block>
+  <block id="23b0ad9ad1f66315e2659ed3b39e490e" category="paragraph"><block ref="23b0ad9ad1f66315e2659ed3b39e490e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="8270c99b48ebbc3928233b0365c4aeef" category="list-text">Sélectionnez la fréquence du planning (basée sur le SLA de la société). Cliquez sur *Suivant*.</block>
+  <block id="24207525bc0e567d54fbd4c12e87169e" category="paragraph"><block ref="24207525bc0e567d54fbd4c12e87169e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="de3ec07218c2ba18d85a3130b6583520" category="list-text">Configurez les paramètres de rétention pour la sauvegarde.</block>
+  <block id="b05832e4c7bab22b79bc5802800a0dab" category="paragraph"><block ref="b05832e4c7bab22b79bc5802800a0dab" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="8e0b22898b3d80ad22f4aec2ecdb63d6" category="list-text">Configurez les options de réplication.</block>
+  <block id="14b05e91fa711b3a9719853be184206c" category="paragraph"><block ref="14b05e91fa711b3a9719853be184206c" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="44ea4d24c42b8fec22a7b9816f31e892" category="list-text">Spécifiez un script d'exécution à exécuter avant et après l'exécution d'une tâche de sauvegarde (le cas échéant).</block>
+  <block id="eac922e5175c542119573b500882c077" category="paragraph"><block ref="eac922e5175c542119573b500882c077" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="3b94cb3e0f4abcd010f6711fe214e35a" category="list-text">Exécutez la vérification en fonction du planning de sauvegarde.</block>
+  <block id="4608b019002a2c4ec256372aa8480a1a" category="paragraph"><block ref="4608b019002a2c4ec256372aa8480a1a" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="cbfa414efc5d445675fd9077ba0c56b3" category="list-text">La page *Résumé* fournit des détails sur la stratégie de sauvegarde. Toutes les erreurs peuvent être corrigées ici.</block>
+  <block id="b8b8dbdb6cb7e67fa35e47b550da474f" category="paragraph"><block ref="b8b8dbdb6cb7e67fa35e47b550da474f" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="e8e93df919756b105bc83306d032d098" category="section-title">Configurer et protéger la base de données du serveur MSSQL</block>
+  <block id="27db30e5a59f8be2fcb99cf63599a91c" category="list-text">Configurez la date de début et la date d'expiration de la règle de sauvegarde.</block>
+  <block id="34dd0aa3564bb913360badbaaaa83faa" category="paragraph"><block ref="34dd0aa3564bb913360badbaaaa83faa" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="db43ab486fbd21378315f50453a84170" category="list-text">Définissez la planification de la sauvegarde. Pour ce faire, cliquez sur (*+*) pour configurer une planification. Entrez la *Date de début* et *expire le* date. Définissez l'heure en fonction du SLA de la société.</block>
+  <block id="f27c76657d54395e925b36cbee1be886" category="paragraph"><block ref="f27c76657d54395e925b36cbee1be886" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="cae5bd999deab910421c886467a77f95" category="list-text">Configurer le serveur de vérification. Dans le menu déroulant, sélectionnez le serveur.</block>
+  <block id="1984132ea5425099c6b2573e487c3814" category="paragraph"><block ref="1984132ea5425099c6b2573e487c3814" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="eafe5ed3ae193bf0df0699f63047967c" category="list-text">Confirmez le planning configuré en cliquant sur le signe plus et confirmez.</block>
+  <block id="acbb9c633debb26a3e087f175b289654" category="list-text">Fournir des informations pour la notification par e-mail. Cliquez sur *Suivant*.</block>
+  <block id="6da5c045f179e9f4b7f9a93a743e59bb" category="paragraph"><block ref="6da5c045f179e9f4b7f9a93a743e59bb" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="12c3e31e09364bc821b8b38bfe3fa90b" category="paragraph">Le résumé de la règle de sauvegarde pour la base de données SQL Server est maintenant configuré.</block>
+  <block id="2da07f989d7b3e93f17cf4dc6237a9ff" category="paragraph"><block ref="2da07f989d7b3e93f17cf4dc6237a9ff" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="f93a0490c2398c42ac8bc4c8027da25b" category="paragraph">Pour créer des sauvegardes SQL Server à la demande, procédez comme suit :</block>
+  <block id="a27b159fa260ee860202b1a37efb3a24" category="list-text">Dans la vue *ressource*, sélectionnez la ressource et sélectionnez *Sauvegarder maintenant*.</block>
+  <block id="1d8d5b0070c26adc7cbd7d50e2ad9bd4" category="paragraph"><block ref="1d8d5b0070c26adc7cbd7d50e2ad9bd4" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="e8ebbd547f5d127b496961a116deba1b" category="list-text">Dans la boîte de dialogue *Backup*, cliquez sur *Backup*.</block>
+  <block id="ec9b7af4f9e32bbcc3462f3f0651d17e" category="paragraph"><block ref="ec9b7af4f9e32bbcc3462f3f0651d17e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="28a70f29b174bb67f6ba18c34afe8917" category="list-text">Un écran de confirmation s'affiche. Cliquez sur *Oui* pour confirmer.</block>
+  <block id="aa3b467bd6d728ef126ee24085996989" category="paragraph"><block ref="aa3b467bd6d728ef126ee24085996989" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6f8452076484ec284c5858e0a7826acc" category="section-title">Surveiller la tâche de sauvegarde</block>
+  <block id="3c171063c0a7e42fe17578dc53e1a362" category="list-text">Dans l'onglet *Monitor*, cliquez sur le travail et sélectionnez *Détails* à droite pour afficher les travaux.</block>
+  <block id="0a5505b752196a5d3967276a8e020bec" category="paragraph"><block ref="0a5505b752196a5d3967276a8e020bec" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="a78488fda38cb0f6c33d06d8774309cb" category="paragraph"><block ref="a78488fda38cb0f6c33d06d8774309cb" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="187d97d7f4855a2e10ce27f378db96dd" category="paragraph">Une fois la sauvegarde terminée, une nouvelle entrée s'affiche dans la vue topologie.</block>
+  <block id="134678acd20d853075ff197c7c9c3fcb" category="paragraph">Pour configurer une stratégie de sauvegarde pour plusieurs bases de données SQL Server, créez des stratégies de groupe de ressources en procédant comme suit :</block>
+  <block id="95fea20057274bffe889a463c6617053" category="list-text">Dans l'onglet *Resources* du menu *View*, passez à un groupe de ressources à l'aide du menu déroulant.</block>
+  <block id="5179400c083eea1a5c874c9ced10a4f3" category="paragraph"><block ref="5179400c083eea1a5c874c9ced10a4f3" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="3d30ce7f1b8370331622f388e31ba9fd" category="list-text">Cliquez sur (*+*) pour un nouveau groupe de ressources.</block>
+  <block id="29b5c325b4a3721982a139efeaa22354" category="paragraph"><block ref="29b5c325b4a3721982a139efeaa22354" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2267ba30d8bc4b2cb24be81ba224b9a0" category="list-text">Indiquez un nom et une étiquette. Cliquez sur *Suivant*.</block>
+  <block id="49a74a15bbe124a186a4b3154b4d2b61" category="paragraph"><block ref="49a74a15bbe124a186a4b3154b4d2b61" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="71128d86107d5d3be141764b52ec6e0a" category="list-text">Ajouter des ressources au groupe de ressources :</block>
+  <block id="6938eb21ffd3468679899baee35fc02c" category="list-text">*Hôte.* sélectionnez le serveur dans le menu déroulant qui héberge la base de données.</block>
+  <block id="d9cab3ec910c4d091f194a6fbe1ce649" category="list-text">*Type de ressource.* dans le menu déroulant, sélectionnez *base de données*.</block>
+  <block id="9d00adb9ff02c740bad1655a08befbc8" category="list-text">*Instance SQL Server.* sélectionnez le serveur.</block>
+  <block id="e5b057829741e7d66ccb84dd34659d15" category="paragraph"><block ref="e5b057829741e7d66ccb84dd34659d15" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="52cbd1487d8eb5aca62ae227f26154cd" category="paragraph">La fonction *option* sélection automatique de toutes les ressources du même volume de stockage* est sélectionnée par défaut. Désactivez l'option et sélectionnez uniquement les bases de données à ajouter au groupe de ressources, cliquez sur la flèche à ajouter et cliquez sur *Suivant*.</block>
+  <block id="a390f1ac44166070ca9168d6db494a3c" category="paragraph"><block ref="a390f1ac44166070ca9168d6db494a3c" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4bc914d30c298d5a1be5b17d60f91d32" category="list-text">Sur les stratégies, cliquez sur (*+*).</block>
+  <block id="c8012ccb0cf9aea5ab3d75c5946839bc" category="paragraph"><block ref="c8012ccb0cf9aea5ab3d75c5946839bc" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="0503c62843919fd6d77d98333ddc0d46" category="list-text">Entrez le nom de la stratégie du groupe de ressources.</block>
+  <block id="773774cec41f86cf7c812856bb5532f4" category="paragraph"><block ref="773774cec41f86cf7c812856bb5532f4" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="84c7b78e63b4d35a0da59b9c1547859f" category="list-text">Sélectionnez *sauvegarde complète* et la fréquence de programmation en fonction du SLA de votre société.</block>
+  <block id="439033b0e525dcfb01f503bce465bab7" category="paragraph"><block ref="439033b0e525dcfb01f503bce465bab7" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="c3d3f39805e6cab1e0c8e41e3a8045d4" category="list-text">Configurez les paramètres de rétention.</block>
+  <block id="b33d774bbfed75c94879fc316e7bcd21" category="paragraph"><block ref="b33d774bbfed75c94879fc316e7bcd21" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="0d3b49aed2989d78ff906ce8d5d3dd65" category="paragraph"><block ref="0d3b49aed2989d78ff906ce8d5d3dd65" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="b438cf4e498dc0e4f65b8cf167949153" category="list-text">Configurez les scripts à exécuter avant d'effectuer une sauvegarde. Cliquez sur *Suivant*.</block>
+  <block id="cf4f12ed143c80bc6af35a01c1fe98be" category="paragraph"><block ref="cf4f12ed143c80bc6af35a01c1fe98be" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6504e635a92d1b0a8c52749c309ce7f6" category="list-text">Confirmez la vérification pour les plannings de sauvegarde suivants.</block>
+  <block id="30f1d3b33a552e64394acbb9a8039813" category="paragraph"><block ref="30f1d3b33a552e64394acbb9a8039813" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="06919ef230a779cfc26a7b40e58c155f" category="list-text">Sur la page *Résumé*, vérifiez les informations, puis cliquez sur *Terminer*.</block>
+  <block id="6ec4de8e33fceb0e3382dbba9a3e7fef" category="paragraph"><block ref="6ec4de8e33fceb0e3382dbba9a3e7fef" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="03db038251d30409b163cac10e15fb64" category="section-title">Configurez et protégez plusieurs bases de données SQL Server</block>
+  <block id="60d1f006544fc2635c785f35a2bb75fa" category="list-text">Cliquez sur le signe (*+*) pour configurer la date de début et la date d'expiration.</block>
+  <block id="90a0be0d18aa1385f7d629b041ec3586" category="paragraph"><block ref="90a0be0d18aa1385f7d629b041ec3586" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1709dfd12096305753ee7705ead06515" category="list-text">Réglez l'heure.</block>
+  <block id="abce8a42e2fe798102907c89873652ff" category="paragraph"><block ref="abce8a42e2fe798102907c89873652ff" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="34af8b580bd3f78a0594fd1a6ed33f72" category="paragraph"><block ref="34af8b580bd3f78a0594fd1a6ed33f72" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d1dc4c7af7fe0f51e864695931afcc5d" category="list-text">Dans l'onglet *Vérification*, sélectionnez le serveur, configurez la planification et cliquez sur *Suivant*.</block>
+  <block id="0a04449841d608c1b828876aade9dd57" category="paragraph"><block ref="0a04449841d608c1b828876aade9dd57" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="b91c4ea39a59e7c5891197a3b275c62c" category="list-text">Configurer les notifications pour envoyer un e-mail.</block>
+  <block id="c9d11c4594f1660f0438901255de824c" category="paragraph"><block ref="c9d11c4594f1660f0438901255de824c" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="017b37b38c310ea0d90dccec6f86d049" category="paragraph">La règle est maintenant configurée pour la sauvegarde de plusieurs bases de données SQL Server.</block>
+  <block id="7a6908a4518e7d0a99f7991bcede071d" category="paragraph"><block ref="7a6908a4518e7d0a99f7991bcede071d" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="86b13e5f17a2bd60ebf403962a656abb" category="section-title">Déclenchement d'une sauvegarde à la demande pour plusieurs bases de données SQL Server</block>
+  <block id="f7dde35cb7209b4eae92eb8ec9dbe3ea" category="list-text">Dans l'onglet *ressource*, sélectionnez vue. Dans le menu déroulant, sélectionnez *Groupe de ressources*.</block>
+  <block id="9179022dda578f3bced2dd96da8c87ff" category="paragraph"><block ref="9179022dda578f3bced2dd96da8c87ff" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="fdbf213e9f1bcad7fef14029eb9b537b" category="list-text">Sélectionnez le nom du groupe de ressources.</block>
+  <block id="1ac4dec59e8f8197fb29b8bfa0237d91" category="list-text">Cliquez sur *Sauvegarder maintenant* en haut à droite.</block>
+  <block id="1cecf31da10780e2d39609c010d3df62" category="paragraph"><block ref="1cecf31da10780e2d39609c010d3df62" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d29aeb4de3166648265a417a3ebdfa8d" category="list-text">Une nouvelle fenêtre s'ouvre. Cochez la case *vérifier après la sauvegarde*, puis cliquez sur Sauvegarder.</block>
+  <block id="9e877656fc311f532df6e62273e160d5" category="paragraph"><block ref="9e877656fc311f532df6e62273e160d5" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1b01a18ba54b03ab361195cda9e11a04" category="list-text">Un message de confirmation est affiché. Cliquez sur *Oui*.</block>
+  <block id="06ec3c59d97a4c7d9984adda2108135e" category="paragraph"><block ref="06ec3c59d97a4c7d9984adda2108135e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2c39edf183648c1d5db4f2c93fb4eb28" category="section-title">Surveiller les tâches de sauvegarde de bases de données multiples</block>
+  <block id="1010c73c274c132c818aa34d45372dd5" category="paragraph">Dans la barre de navigation de gauche, cliquez sur *Monitor*, sélectionnez la tâche de sauvegarde, puis cliquez sur *Details* pour afficher la progression de la tâche.</block>
+  <block id="50d14527999ad5610803d042f0537b0b" category="paragraph"><block ref="50d14527999ad5610803d042f0537b0b" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="cf2af39d79fe9b75d3b016a40a1cb886" category="paragraph">Cliquez sur l'onglet *ressource* pour voir le temps nécessaire à la sauvegarde.</block>
+  <block id="e1aa3da997feec6419955ef32aa87bdc" category="paragraph"><block ref="e1aa3da997feec6419955ef32aa87bdc" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="b702b14abe98f98e647cd791bcb90f8d" category="section-title">Sauvegarde du journal de transactions pour la sauvegarde de plusieurs bases de données</block>
+  <block id="26d8c1709e6a02cee73b16f5c2acf6dc" category="paragraph">SnapCenter prend en charge les modèles de récupération complets, « bulked logged » et « simple ». Le mode de restauration simple ne prend pas en charge la sauvegarde des journaux transactionnels.</block>
+  <block id="a60ccf2e4a30da040f5a49732187a6b7" category="paragraph">Pour effectuer une sauvegarde du journal de transactions, procédez comme suit :</block>
+  <block id="be7235e7e6dc252e8daebedf54c3b6c7" category="list-text">Dans l'onglet *Ressources*, changez le menu Affichage de *base de données* à *Groupe de ressources*.</block>
+  <block id="e0fa4309d306e577eb4ee7fae977e8ec" category="paragraph"><block ref="e0fa4309d306e577eb4ee7fae977e8ec" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="c48d8cc9d4f748c135f5b4812c1d7412" category="list-text">Sélectionnez la stratégie de sauvegarde du groupe de ressources créée.</block>
+  <block id="f38bbe0d9131c48ea9ee602675754140" category="list-text">Sélectionnez *Modifier le groupe de ressources* dans le coin supérieur droit.</block>
+  <block id="2c49b9da12e1f8828a27c12785ae9fc3" category="paragraph"><block ref="2c49b9da12e1f8828a27c12785ae9fc3" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6d4b5ab9594400df9f8e77cbab0abea7" category="list-text">La section *Name* utilise par défaut le nom et la balise de la stratégie de sauvegarde. Cliquez sur *Suivant*.</block>
+  <block id="9a35ea0c782dad0d67865885d193f274" category="paragraph">L'onglet *Resources* met en évidence les bases vers lesquelles la règle de sauvegarde de transaction doit être configurée.</block>
+  <block id="11b8d03d27b3abc5c6b6e021930b3e9e" category="paragraph"><block ref="11b8d03d27b3abc5c6b6e021930b3e9e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6daf111fad11fdef17162a8f8bf18b9c" category="list-text">Entrez le nom de la stratégie.</block>
+  <block id="22f2c4c423feb263d1b0200d62e77858" category="paragraph"><block ref="22f2c4c423feb263d1b0200d62e77858" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="7f993771df9dbe7cf6b38a0f84b409d7" category="list-text">Sélectionnez les options de sauvegarde SQL Server.</block>
+  <block id="ac47af84d5357e6141e59c1659b4ffb1" category="list-text">Sélectionnez log backup.</block>
+  <block id="1cf75fb83a264d296888dbfc66c1e24c" category="list-text">Définissez la fréquence de planification en fonction du RTO de votre entreprise. Cliquez sur *Suivant*.</block>
+  <block id="3da946d8c357e8d3ba7d9dee6d9c48fc" category="paragraph"><block ref="3da946d8c357e8d3ba7d9dee6d9c48fc" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="a6a1a00356a0947050a129ae89c585c9" category="list-text">Configurez les paramètres de conservation des sauvegardes du journal. Cliquez sur *Suivant*.</block>
+  <block id="eca8085a550a32e2ea75af78dde57b58" category="paragraph"><block ref="eca8085a550a32e2ea75af78dde57b58" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="46caf3d6b884d110f60cf7f4937e7519" category="list-text">(Facultatif) configurez les options de réplication.</block>
+  <block id="6e942622a4fc392b1c732fcb6128144f" category="paragraph"><block ref="6e942622a4fc392b1c732fcb6128144f" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="a1a4bc0234ce8dfcbb64e7eeee67fad6" category="list-text">(Facultatif) configurez tous les scripts à exécuter avant d'exécuter une tâche de sauvegarde.</block>
+  <block id="b1537af3c8af0a513d927136e6069e69" category="paragraph"><block ref="b1537af3c8af0a513d927136e6069e69" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="ec35f0f916d59604b82ba19007187115" category="list-text">(Facultatif) configurez la vérification de sauvegarde.</block>
+  <block id="a5b416c5101ea80de98741569ba40ad8" category="paragraph"><block ref="a5b416c5101ea80de98741569ba40ad8" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4a7ecfa93fa04065caa7a2ead6d3d113" category="list-text">Sur la page *Résumé*, cliquez sur *Terminer*.</block>
+  <block id="85f4218eb49261c9a10c3ae757a7673e" category="paragraph"><block ref="85f4218eb49261c9a10c3ae757a7673e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="21c62f698c67203ca218e38cedd9fd4a" category="section-title">Configurer et protéger plusieurs bases de données MSSQL Server</block>
+  <block id="851434acbe50444b77cc093290088e54" category="list-text">Cliquez sur la stratégie de sauvegarde du journal de transactions nouvellement créée.</block>
+  <block id="aab3313d777fdf9a008349b1c52a3b38" category="paragraph"><block ref="aab3313d777fdf9a008349b1c52a3b38" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="8dc5a42c40277ce2884bea86757d8dda" category="list-text">Définissez la date *de début* et la date *d'expiration le*.</block>
+  <block id="2137cef28d44fe16621167c38bd398e5" category="list-text">Entrez la fréquence de la règle de sauvegarde des journaux en fonction du SLA, du RTP et du RPO. Cliquez sur OK.</block>
+  <block id="699cfd55473b1a08a3afc68cdd6c0bc0" category="paragraph"><block ref="699cfd55473b1a08a3afc68cdd6c0bc0" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="eef345e42eb1ff7b7177a232bb1d1247" category="list-text">Vous pouvez afficher les deux règles. Cliquez sur *Suivant*.</block>
+  <block id="f0f5bc22b5d1f8a0d6c00b4127875d56" category="paragraph"><block ref="f0f5bc22b5d1f8a0d6c00b4127875d56" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="0d3d450b94383f42a06333f58c0ffb5a" category="list-text">Configurer le serveur de vérification.</block>
+  <block id="df8d18ae668699fdea57fa8103444b04" category="paragraph"><block ref="df8d18ae668699fdea57fa8103444b04" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="9b705cea4d9eb8b1497ffce97bfe3609" category="list-text">Configurer la notification par e-mail.</block>
+  <block id="46e4cfc3ee8ac0fcf4621b3b601fae9e" category="paragraph"><block ref="46e4cfc3ee8ac0fcf4621b3b601fae9e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="722243257c592026b8405ff352c17887" category="paragraph"><block ref="722243257c592026b8405ff352c17887" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1ea4baaafde2e79cfcd31d97b84b1a12" category="section-title">Déclenchement d'une sauvegarde du journal de transactions à la demande pour plusieurs bases de données SQL Server</block>
+  <block id="a75cd7342eb195ccea0a0f5ef399cb13" category="paragraph">Pour déclencher une sauvegarde à la demande du journal transactionnel pour plusieurs bases de données SQL Server, procédez comme suit :</block>
+  <block id="f790ac7cb18962dff9c720679845e234" category="list-text">Sur la page de stratégie nouvellement créée, sélectionnez *Sauvegarder maintenant* en haut à droite de la page.</block>
+  <block id="44991ec351e06a97a765cfca75d312af" category="paragraph"><block ref="44991ec351e06a97a765cfca75d312af" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1552095f0c2d2521f14458e1899ee71b" category="list-text">Dans la fenêtre contextuelle de l'onglet *Stratégie*, sélectionnez le menu déroulant, sélectionnez la règle de sauvegarde et configurez la sauvegarde du journal de transactions.</block>
+  <block id="5baef8fc5a836fc8dce7a8277d0ebc84" category="paragraph"><block ref="5baef8fc5a836fc8dce7a8277d0ebc84" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="b0df35ef9b242c9f422a4cc2e1784903" category="list-text">Cliquez sur *Backup*. Une nouvelle fenêtre s'affiche.</block>
+  <block id="b16f685ee226b95caaad151608f96a19" category="list-text">Cliquez sur *Oui* pour confirmer la stratégie de sauvegarde.</block>
+  <block id="a8f620ad18e6f3f85da2b7be0f178e00" category="paragraph"><block ref="a8f620ad18e6f3f85da2b7be0f178e00" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d0ccd5722bd3156105a495a57a9fcc19" category="paragraph">Accédez à l'onglet *Monitoring* et surveillez la progression de la tâche de sauvegarde.</block>
+  <block id="1a289d2ae0641f0084f363bc4bf29ed2" category="paragraph"><block ref="1a289d2ae0641f0084f363bc4bf29ed2" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="a4a58eef11580db01b6b09289a7975b6" category="paragraph">Reportez-vous aux conditions préalables suivantes nécessaires à la restauration d'une base de données SQL Server dans SnapCenter.</block>
+  <block id="7ddc4eb994d251e5502d17ee020d88ad" category="list-text">L'instance cible doit être en ligne et en cours d'exécution avant la fin d'une tâche de restauration.</block>
+  <block id="4c5a871f473eb2bc6ade24dc7c9abda4" category="list-text">Les opérations SnapCenter planifiées pour s'exécuter sur la base de données SQL Server doivent être désactivées, y compris les tâches planifiées sur les serveurs de gestion à distance ou de vérification à distance.</block>
+  <block id="542e99a23c6a8ebaa0cc7df2db932223" category="list-text">Si vous restaurez des sauvegardes de répertoires de journaux personnalisés sur un autre hôte, la version SnapCenter du serveur SnapCenter et de l'hôte de plug-ins doit être identique.</block>
+  <block id="81ec57bf05a69240771c922d647a651c" category="list-text">Vous pouvez restaurer la base de données système sur un autre hôte.</block>
+  <block id="ec5b173df4b3313050ca64425e06f516" category="list-text">SnapCenter peut restaurer une base de données dans un cluster Windows sans mettre le groupe de clusters SQL Server hors ligne.</block>
+  <block id="042d132354b0d48ad24ee674bebdb6af" category="section-title">Restauration des tables supprimées d'une base de données SQL Server à un point dans le temps</block>
+  <block id="4b4968094e7a3d8c79f9bc8caa8b22e4" category="paragraph">Pour restaurer une base de données SQL Server à un point dans le temps, procédez comme suit :</block>
+  <block id="6df13174e00d0f623a406e9148d1548c" category="list-text">La capture d'écran suivante montre l'état initial de la base de données SQL Server avant les tables supprimées.</block>
+  <block id="dbc2a72710499aa1cf69652093b3b999" category="paragraph"><block ref="dbc2a72710499aa1cf69652093b3b999" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d61cd88cd62206db3a9f9cab1565d3ad" category="paragraph">La capture d'écran montre que 20 lignes ont été supprimées du tableau.</block>
+  <block id="515d7eb17c3e413f271bddce4ba5f6bd" category="paragraph"><block ref="515d7eb17c3e413f271bddce4ba5f6bd" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2d3c565402042673af1d4898a8ff52a9" category="list-text">Connectez-vous au serveur SnapCenter. Dans l'onglet *Resources*, sélectionnez la base de données.</block>
+  <block id="4863869b2ef5500a5ca305ffb9127ade" category="paragraph"><block ref="4863869b2ef5500a5ca305ffb9127ade" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="a69269402d35f0cccddfd918911a97d9" category="list-text">Sélectionnez la sauvegarde la plus récente.</block>
+  <block id="583e868d2c26244722b015fea16af076" category="list-text">Sur la droite, sélectionnez *Restaurer*.</block>
+  <block id="6b153885f2f75c1ff541921d0081d74b" category="paragraph"><block ref="6b153885f2f75c1ff541921d0081d74b" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="39435af0deb93996df3394c1b2036fd8" category="list-text">Une nouvelle fenêtre s'affiche. Sélectionnez l'option *Restaurer*.</block>
+  <block id="d7020dd530a8bef5050168b840079b00" category="list-text">Restaurez la base de données sur le même hôte que celui sur lequel la sauvegarde a été créée. Cliquez sur *Suivant*.</block>
+  <block id="5a718f24061d92ae97e1314ea8cb5fde" category="paragraph"><block ref="5a718f24061d92ae97e1314ea8cb5fde" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="503e2d366ad9c17a4f549670670ad33e" category="list-text">Pour le *Type de récupération*, sélectionnez *toutes les sauvegardes de journaux*. Cliquez sur *Suivant*.</block>
+  <block id="979629b8cf5823b370da8e731560f8cb" category="paragraph"><block ref="979629b8cf5823b370da8e731560f8cb" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="68a3564e8eebf683090a9b209db57831" category="paragraph"><block ref="68a3564e8eebf683090a9b209db57831" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="e63cae13f4b41b3fe8c7e3fec3319f06" category="paragraph">*Options de pré- restauration :*</block>
+  <block id="de181095a646159b289fbcdbcf419e7b" category="list-text">Sélectionnez l'option *Ecraser la base de données avec le même nom pendant la restauration*. Cliquez sur *Suivant*.</block>
+  <block id="ad55b8f82ca21417dc4da683b1de0924" category="paragraph"><block ref="ad55b8f82ca21417dc4da683b1de0924" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="6ed71c6a01179057b2d9bf0077204c6b" category="paragraph">*Options de post-restauration :*</block>
+  <block id="9cfc344a514e0de0c6b807382b26c075" category="list-text">Sélectionnez l'option *opérationnel, mais indisponible pour restaurer des journaux de transactions supplémentaires*. Cliquez sur *Suivant*.</block>
+  <block id="3ca7aa8d51b34a6dc37b4a42b98be1fe" category="paragraph"><block ref="3ca7aa8d51b34a6dc37b4a42b98be1fe" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="8420a5fc7b326a91c636b314aa454ec6" category="list-text">Indiquez les paramètres de messagerie. Cliquez sur *Suivant*.</block>
+  <block id="735c30c428c3e84050f483061752691e" category="paragraph"><block ref="735c30c428c3e84050f483061752691e" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="8778317b34992e7e7c0354762cf0db9f" category="paragraph"><block ref="8778317b34992e7e7c0354762cf0db9f" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4506debb4b8eeba79855725078a52afb" category="section-title">Suivi de la progression de la restauration</block>
+  <block id="9aff1c679025b15fa483f8f730686633" category="list-text">Dans l'onglet *Monitoring*, cliquez sur les détails de la tâche de restauration pour afficher la progression de la tâche de restauration.</block>
+  <block id="1e062bc4b91bf77257da0f6d3b81e64d" category="paragraph"><block ref="1e062bc4b91bf77257da0f6d3b81e64d" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="d2f265e204d2aa866e88f009e207aa68" category="list-text">Restaurez les détails de la tâche.</block>
+  <block id="1a50192540a2e763a60070967a8a04fd" category="paragraph"><block ref="1a50192540a2e763a60070967a8a04fd" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="3c5d988b8258420ba376fd703ae323bd" category="list-text">Retour à l'hôte SQL Server &gt; base de données &gt; table présents.</block>
+  <block id="f3048bb52b66a41d7be00e28a6eaf957" category="paragraph"><block ref="f3048bb52b66a41d7be00e28a6eaf957" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="425103b894468ffe6015f984f2683d74" category="inline-link">Tr-4714 : guide des meilleures pratiques pour Microsoft SQL Server avec NetApp SnapCenter</block>
+  <block id="9c42feba6d2410200720e2ceda752e13" category="list-text"><block ref="9c42feba6d2410200720e2ceda752e13" category="inline-link-rx"></block></block>
+  <block id="ee50ef71e7fa5dbc3292cb856c5f8ee5" category="inline-link"><block ref="ee50ef71e7fa5dbc3292cb856c5f8ee5" category="inline-link-rx"></block></block>
+  <block id="822d30d1b5bfcb219aa830739d5b89a0" category="paragraph"><block ref="822d30d1b5bfcb219aa830739d5b89a0" category="inline-link-rx"></block></block>
+  <block id="818095849ac39056a1077a0f3a155684" category="inline-link">Conditions requises pour restaurer une base de données</block>
+  <block id="0305a2a48c225d49081b5bccd776b23d" category="list-text"><block ref="0305a2a48c225d49081b5bccd776b23d" category="inline-link-rx"></block></block>
+  <block id="9f413d2e154ecad28af03b6125df6837" category="inline-link"><block ref="9f413d2e154ecad28af03b6125df6837" category="inline-link-rx"></block></block>
+  <block id="98c7a90e9f834e61987ed9dd4072a0f3" category="paragraph"><block ref="98c7a90e9f834e61987ed9dd4072a0f3" category="inline-link-rx"></block></block>
+  <block id="9b256b378583dbf8a4aea7e4d96460ff" category="list-text">Présentation des cycles de vie des bases de données clonées</block>
+  <block id="a35c63f82a8b880dd7d77b8868394548" category="inline-link"><block ref="a35c63f82a8b880dd7d77b8868394548" category="inline-link-rx"></block></block>
+  <block id="622d6fd30919e1009adf5b3b6a9b61c4" category="paragraph"><block ref="622d6fd30919e1009adf5b3b6a9b61c4" category="inline-link-rx"></block></block>
+  <block id="3a20c678f6addcc9b8fec17f91c8cfa4" category="cell">05/05/2023</block>
+  <block id="957df08ed5fbb9ca926ca88b2c974f4f" category="cell">Nouveau rapport technique TR-4951 : sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP</block>
+  <block id="d5ae477fb23aecff7256445ae91344bc" category="sidebar">Sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP</block>
 </blocks>
