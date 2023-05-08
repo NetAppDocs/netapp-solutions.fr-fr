@@ -17448,7 +17448,6 @@
   <block id="11f86864c5928690c88625e77eb1a480" category="list-text">À partir de la console AWS EC2, déployez les clusters haute disponibilité de stockage Amazon FSX pour ONTAP afin d'héberger les volumes de base de données Oracle. Si vous ne connaissez pas le déploiement du stockage FSX, reportez-vous à la documentation <block ref="17d8b312d287f0afd6f44b3f25c4f20b" category="inline-link-macro-rx"></block> pour obtenir des instructions détaillées.</block>
   <block id="dd303169f721e79331b3683ddafddcc1" category="list-text">Les étapes 2 et 3 peuvent être effectuées à l'aide du kit d'outils d'automatisation Terraform suivant, qui crée une instance EC2 nommée<block ref="460dc55b5ffb0266f2c889b06ee73344" prefix=" " category="inline-code"></block> Et un système de fichiers FSX nommé<block ref="8cbb7b3050d3c3aa08a529f429bc4555" prefix=" " category="inline-code"></block>. Lisez attentivement les instructions et modifiez les variables en fonction de votre environnement avant de les exécuter.</block>
   <block id="62ee860e3d0c08c6573d2e328543e8de" category="section-title">Configuration du noyau de l'instance EC2</block>
-  <block id="39fb43106d288435c8737acd0c5b18ba" category="paragraph">Une fois les prérequis provisionnés, connectez-vous à l'instance EC2 en tant qu'utilisateur root pour configurer le noyau Linux pour l'installation d'Oracle.</block>
   <block id="5a8cdca62a149c76be848350ba5cbfd0" category="list-text">Créez un répertoire de transfert<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> et définissez le<block ref="f1c1592588411002af340cbaedd6fc33" prefix=" " category="inline-code"></block> permission.</block>
   <block id="e252f38e51fe6c121fdf68268f7365b7" category="list-text">Téléchargez et placez les fichiers d'installation binaires Oracle et les autres fichiers rpm requis sur le système<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> répertoire.</block>
   <block id="2463a0e4e0f5e0cae480165d25c3d218" category="paragraph">Voir la liste suivante des fichiers d'installation à indiquer dans<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> Sur l'instance EC2.</block>
@@ -17472,7 +17471,6 @@
   <block id="f7b4c2e912a168f005ed7cc2b4799c08" category="list-text">Modifiez l'utilisateur oracle pour ajouter ASM en tant que groupe secondaire (l'utilisateur oracle doit avoir été créé après l'installation du RPM de préinstallation d'Oracle).</block>
   <block id="8d3a75a7cdef66372dcf58e6278bba70" category="list-text">Redémarrez l'instance EC2.</block>
   <block id="64014fc61a9016f43a5537d6da141cc1" category="section-title">Provisionnez et mappez les volumes et les LUN de base de données sur l'hôte d'instance EC2</block>
-  <block id="44d3f8c485fe8f9d96289b7bb283f99c" category="paragraph">Provisionnez trois volumes à partir de la console FSX pour héberger les fichiers binaires, de données et de journaux de la base de données Oracle.</block>
   <block id="c848cfd9c04d86e7b9919e11add79f6c" category="list-text">Connectez-vous au cluster FSX via SSH en tant qu'utilisateur fsxadmin.</block>
   <block id="eff24d82c422927b06fd0cacd430b653" category="list-text">Exécutez la commande suivante pour créer un volume pour le binaire Oracle.</block>
   <block id="569cffa50e6428a06bffa2e19d12e0e3" category="list-text">Exécutez la commande suivante pour créer un volume pour les données Oracle.</block>
@@ -17486,7 +17484,6 @@
   <block id="3208f25d37711dd9ffc43d93ada2a3cc" category="paragraph">Cela devrait revenir :</block>
   <block id="35c1914e41e83f92dd8779f5708f3224" category="section-title">Configuration du stockage de la base de données</block>
   <block id="47d78479fc855bd2f99f02fb94118789" category="paragraph">Importez et configurez maintenant le stockage FSX pour l'infrastructure réseau Oracle et l'installation de la base de données sur l'hôte d'instance EC2.</block>
-  <block id="d4d6ba977b18ebe6448e464802298bbf" category="list-text">Connectez-vous à l'instance EC2 via SSH en tant qu'utilisateur ec2. Ensuite, modifiez votre clé SSH et votre adresse IP d'instance EC2.</block>
   <block id="a7939166c08e8ac6da1530309825a401" category="list-text">Découvrez les terminaux iSCSI FSX en utilisant l'une ou l'autre des adresses IP iSCSI du SVM. Ensuite, passez à l'adresse de portail spécifique à votre environnement.</block>
   <block id="1bc103d13645d8a07f4a05f2eee064f8" category="list-text">Établissez des sessions iSCSI en vous connectant à chaque cible.</block>
   <block id="fc5113f60b8b0390133d7abda7290515" category="paragraph">Le résultat attendu de la commande est :</block>
@@ -17530,17 +17527,11 @@
   <block id="e4dae708382daa7f76913b9e5b686a1c" category="list-text">Préparer un<block ref="77d9f4d56c58834c8dacf6d0cb94e085" prefix=" " category="inline-code"></block> pour une installation silencieuse et placez le fichier rsp dans le<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> répertoire. Le fichier rsp doit couvrir les sections A, B et G avec les informations suivantes :</block>
   <block id="72eab9d7fc33889fd5bf6a85943c4e4a" category="list-text">Connectez-vous à l'instance EC2 en tant qu'utilisateur root et définissez-la<block ref="e1f651debac4f720c13ae930ff3ca14a" prefix=" " category="inline-code"></block> et<block ref="456a3c82b7208b5c2a000597b1330564" prefix=" " category="inline-code"></block>.</block>
   <block id="d134d418859128801ec294cd10bcbd8e" category="list-text">Provisionnement des périphériques de disque pour une utilisation avec le pilote de filtre Oracle ASM.</block>
-  <block id="8826276fbf00e07d49f72479d3b0da2b" category="list-text">Changer la propriété des périphériques en<block ref="ab3d4d3deefe8df93125b9c71378718c" prefix=" " category="inline-code"></block>.</block>
   <block id="3e6c5f0c8e9c1310879c66839bb0f8d5" category="list-text">Installer<block ref="a27b4e2b8f4a0b0419894dfeac36419e" prefix=" " category="inline-code"></block>.</block>
   <block id="cfdbf231484c64b98bc4f3569cd7b324" category="list-text">Non défini<block ref="c0c2c8394b04a929ffc60091aa1f72ca" prefix=" " category="inline-code"></block>.</block>
   <block id="9817d9ff96af960709b8094b73294545" category="list-text">Connectez-vous à l'instance EC2 en tant qu'utilisateur Oracle et extrayez le correctif dans<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> dossier.</block>
-  <block id="971a0a45b8dae69114b7ad2a60cb7f96" category="list-text">En tant qu'utilisateur Oracle, lancez<block ref="30c950549715985c6b7c7cd6990d0f4b" prefix=" " category="inline-code"></block> pour l'installation de l'infrastructure de grille.</block>
   <block id="5de6732dda1e7bccbd8e8b367ad248dd" category="paragraph">Ignorer les avertissements concernant les groupes incorrects pour l'infrastructure de grille. Nous utilisons un seul utilisateur Oracle pour gérer le redémarrage d'Oracle, ce qui est attendu.</block>
-  <block id="306b4d4b77c54aeb5cbfcd36749043f5" category="list-text">En tant qu'utilisateur root, exécutez le(s) script(s) suivant(s) :</block>
   <block id="7dff0a250c79eafa071ee2d5713b7123" category="list-text">En tant qu'utilisateur Oracle, exécutez la commande suivante pour terminer la configuration :</block>
-  <block id="ecbea27c1b60fd5cd72a96184d8d2bef" category="list-text">Si vous avez reçu le message « [INS-43080] certains assistants de configuration ont échoué, ont été annulés ou ignorés », exécutez la commande suivante en tant qu'utilisateur oracle pour vérifier si la ressource du groupe de disques DE DONNÉES a été créée.</block>
-  <block id="02521e82deae97953ff19793ad44493b" category="list-text">Si le groupe de disques DE DONNÉES n'a pas été créé, rechargez le multipathd en tant qu'utilisateur root.</block>
-  <block id="e8c5b866f6d35a070a878d3abb75cf8d" category="list-text">En tant qu'utilisateur oracle, créez un groupe de disques DE DONNÉES s'il n'a pas été créé lors de l'installation du grid.</block>
   <block id="3f2a67de0c5824d878c62c0bc347e09b" category="list-text">En tant qu'utilisateur Oracle, créez le groupe de disques DES JOURNAUX.</block>
   <block id="f71fbb7ff86224d636aac5f9bb42f27d" category="list-text">En tant qu'utilisateur Oracle, validez les services GRID après l'installation de la configuration.</block>
   <block id="f9ba171dd47a8cef31bac8aa17eeb44d" category="list-text">État du pilote du filtre Valiate ASM.</block>
@@ -17553,11 +17544,6 @@
   <block id="d86c0eec890e4216540c2b834f6339f5" category="list-text">A partir de DB Home, réviser<block ref="ef8657f0a0a00af93ba7f1c8885339ca" prefix=" " category="inline-code"></block>, et décommenter et remplacer<block ref="bb7738211dd8eb3dbadf4cc63ae8eb8a" prefix=" " category="inline-code"></block> avec<block ref="b2affc1a941fe7e5e65933911250249c" prefix=" " category="inline-code"></block>.</block>
   <block id="95233719931805924ded9cd671e036df" category="list-text">À partir du<block ref="d66a510d21988f96fd9c018f6843c729" prefix=" " category="inline-code"></block> Décompressez le correctif DB 19.18 RU.</block>
   <block id="0181cf4258f052eaf2d48f78cd4fed7b" category="list-text">Préparez le fichier rsp d'installation silencieuse DB dans<block ref="2d9ffa0a3db25b02bcd0091245449764" prefix=" " category="inline-code"></block> répertoire avec les valeurs suivantes :</block>
-  <block id="0838265859443cbbcdfc0834fb13e402" category="list-text">Exécuter l'installation silencieuse de la base de données logicielle uniquement.</block>
-  <block id="4c3b15e92dacacd38d6f1d3174ad1e9f" category="list-text">Exécutez le<block ref="08030ad08b2b991d61b424afd8828758" prefix=" " category="inline-code"></block> script après l'installation du logiciel uniquement.</block>
-  <block id="67bee4155203a684288d87caec62ca7e" category="list-text">Créer le<block ref="c170c347c737b82ad62c48db1f7bff3c" prefix=" " category="inline-code"></block> fichier avec les entrées suivantes :</block>
-  <block id="6ffd5c1d97bca346a601eadabda25b0d" category="list-text">Création de base de données de lancement avec dbca.</block>
-  <block id="0bdb291c3f45b8d3e9cd39da181febb1" category="list-text">Valider les services Oracle Restart HA après la création de la base de données.</block>
   <block id="05472424b7ce7bd118009f6cde3a0614" category="list-text">Définissez l'utilisateur Oracle<block ref="9e0037ad71166970bde5f910189cc94a" prefix=" " category="inline-code"></block>.</block>
   <block id="cadaa91ab9001028d3a153b4325f10a5" category="list-text">Ajouter les entrées suivantes :</block>
   <block id="ab5f5bab123b3441fc9c838b46ff1150" category="list-text">Valider le CDB/PDB créé.</block>
@@ -18388,4 +18374,17 @@
   <block id="3a20c678f6addcc9b8fec17f91c8cfa4" category="cell">05/05/2023</block>
   <block id="957df08ed5fbb9ca926ca88b2c974f4f" category="cell">Nouveau rapport technique TR-4951 : sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP</block>
   <block id="d5ae477fb23aecff7256445ae91344bc" category="sidebar">Sauvegarde et restauration pour Microsoft SQL Server sur AWS FSX pour ONTAP</block>
+  <block id="0f7a8130eb652cd33a4fa9cdefc41cc6" category="admonition">Assurez-vous d'avoir alloué au moins 50G dans le volume racine de l'instance EC2 afin de disposer d'un espace suffisant pour préparer les fichiers d'installation Oracle.</block>
+  <block id="f352a88dccea452ec98375dda0311257" category="paragraph">Une fois les prérequis provisionnés, connectez-vous à l'instance EC2 en tant qu'utilisateur ec2 et faites-le à l'utilisateur root pour configurer le noyau Linux pour l'installation d'Oracle.</block>
+  <block id="35e176617d52dd956b8015d8ca19c32d" category="paragraph">Provisionnez trois volumes à partir de la ligne de commande en vous connectant au cluster FSX via ssh en tant qu'utilisateur fsxadmin avec l'IP de gestion de cluster FSX pour héberger les fichiers binaires, de données et de journaux de la base de données Oracle.</block>
+  <block id="aa218771b85a8ecc41cc249ba90ea5f8" category="list-text">Connectez-vous à l'instance EC2 via SSH en tant qu'utilisateur ec2 avec votre clé SSH et votre adresse IP d'instance EC2.</block>
+  <block id="71d434c6aec8c195bc1cd610cf2aadf7" category="list-text">Redémarrez l'hôte d'instance EC2.</block>
+  <block id="5fa683f35265bf7469d9de8c3afc1f42" category="list-text">Depuis GRID home /u01/app/oracle/product/19.0.0/grid et en tant qu'utilisateur oracle, lancez<block ref="30c950549715985c6b7c7cd6990d0f4b" prefix=" " category="inline-code"></block> pour l'installation de l'infrastructure de grille.</block>
+  <block id="26f36488ec442bab2ba0cda087d435eb" category="list-text">En tant qu'utilisateur root, exécutez le(s) script(s) suivant(s) :</block>
+  <block id="ada113db66e2b1b6ed982918830cd12e" category="list-text">En tant qu'utilisateur root, rechargez le multipathd.</block>
+  <block id="bdae34f2df30f19488bd87890188b905" category="list-text">Depuis db1 home /u01/app/oracle/product/19.0.0/db1, exécutez l'installation silencieuse de la base de données logicielle uniquement.</block>
+  <block id="f9db0d5335309d4958e09e8149d7de4d" category="list-text">En tant qu'utilisateur root, exécutez le<block ref="08030ad08b2b991d61b424afd8828758" prefix=" " category="inline-code"></block> script après l'installation du logiciel uniquement.</block>
+  <block id="2bba715ff3b85da75ce86da55f5d9173" category="list-text">En tant qu'utilisateur Oracle, créez le<block ref="c170c347c737b82ad62c48db1f7bff3c" prefix=" " category="inline-code"></block> fichier avec les entrées suivantes :</block>
+  <block id="c96739fe831515243fc940e9ee867ea3" category="list-text">En tant qu'utilisateur Oracle, lancer la création de la base de données avec dbca.</block>
+  <block id="2a00dbe4c39e81805212ab123d0995df" category="list-text">En tant qu'utilisateur Oracle, valider les services Oracle Restart HA après la création de la base de données.</block>
 </blocks>
