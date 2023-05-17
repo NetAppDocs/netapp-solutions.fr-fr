@@ -57,7 +57,7 @@ Les systèmes ONTAP source et destination doivent se trouver dans des réseaux q
 Les étapes suivantes sont requises pour la configuration des relations SnapMirror entre un système ONTAP sur site et FSX ONTAP :
 
 
-NOTE: Reportez-vous à la https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/ONTAPGuide.pdf["FSX pour ONTAP – Guide de l'utilisateur ONTAP"^] Pour plus d'informations sur la création de relations SnapMirror avec FSX.
+NOTE: Reportez-vous à la https://["FSX pour ONTAP – Guide de l'utilisateur ONTAP"^] Pour plus d'informations sur la création de relations SnapMirror avec FSX.
 
 .Enregistrer les interfaces logiques intercluster source et destination
 [%collapsible]
@@ -160,7 +160,7 @@ L'exemple suivant montre une étiquette SnapMirror présente sur tous les snapsh
 
 image:dr-vmc-aws-image17.png["Erreur : image graphique manquante"]
 
-Pour plus d'informations sur la création de stratégies SnapCenter pour une base de données SQL Server, reportez-vous au https://docs.netapp.com/us-en/snapcenter/protect-scsql/task_create_backup_policies_for_sql_server_databases.html["Documentation SnapCenter"^].
+Pour plus d'informations sur la création de stratégies SnapCenter pour une base de données SQL Server, reportez-vous au https://["Documentation SnapCenter"^].
 
 Vous devez d'abord créer une règle SnapMirror avec des règles qui imposent le nombre de copies Snapshot à conserver.
 
@@ -226,9 +226,9 @@ FSx-Dest::> volume create -vserver DestSVM -volume DestVolName -aggregate DestAg
 ====
 Cette solution utilise NetApp SnapCenter pour effectuer des sauvegardes cohérentes au niveau des applications de bases de données SQL Server et Oracle. Associé à Veeam Backup & Replication pour la sauvegarde des VMDK de machines virtuelles, cette solution assure une reprise après incident complète pour les data centers sur site et dans le cloud.
 
-Le logiciel SnapCenter est disponible sur le site du support NetApp et peut être installé sur les systèmes Microsoft Windows résidant dans un domaine ou un groupe de travail. Un guide de planification détaillé et des instructions d'installation sont disponibles sur le https://docs.netapp.com/us-en/snapcenter/install/install_workflow.html["Centre de documentation NetApp"^].
+Le logiciel SnapCenter est disponible sur le site du support NetApp et peut être installé sur les systèmes Microsoft Windows résidant dans un domaine ou un groupe de travail. Un guide de planification détaillé et des instructions d'installation sont disponibles sur le https://["Centre de documentation NetApp"^].
 
-Le logiciel SnapCenter est disponible à l'adresse https://mysupport.netapp.com["ce lien"^].
+Le logiciel SnapCenter est disponible à l'adresse https://["ce lien"^].
 
 Une fois installé, vous pouvez accéder à la console SnapCenter à partir d'un navigateur Web en utilisant _\https://Virtual_Cluster_IP_or_FQDN:8146_.
 
@@ -254,7 +254,7 @@ image:dr-vmc-aws-image20.png["Erreur : image graphique manquante"]
 
 
 
-Pour plus d'informations sur l'ajout de systèmes de stockage à SnapCenter, reportez-vous à la documentation à l'adresse https://docs.netapp.com/us-en/snapcenter/install/task_add_storage_systems.html["ce lien"^].
+Pour plus d'informations sur l'ajout de systèmes de stockage à SnapCenter, reportez-vous à la documentation à l'adresse https://["ce lien"^].
 
 ====
 .Ajouter des hôtes à SnapCenter
@@ -283,9 +283,9 @@ Vous pouvez accéder aux stratégies dans la section Paramètres du client Web S
 
 image:dr-vmc-aws-image23.png["Erreur : image graphique manquante"]
 
-Pour obtenir des informations complètes sur la création de stratégies pour les sauvegardes SQL Server, reportez-vous à la section https://docs.netapp.com/us-en/snapcenter/protect-scsql/task_create_backup_policies_for_sql_server_databases.html["Documentation SnapCenter"^].
+Pour obtenir des informations complètes sur la création de stratégies pour les sauvegardes SQL Server, reportez-vous à la section https://["Documentation SnapCenter"^].
 
-Pour obtenir des informations complètes sur la création de stratégies pour les sauvegardes Oracle, reportez-vous au https://docs.netapp.com/us-en/snapcenter/protect-sco/task_create_backup_policies_for_oracle_database.html["Documentation SnapCenter"^].
+Pour obtenir des informations complètes sur la création de stratégies pour les sauvegardes Oracle, reportez-vous au https://["Documentation SnapCenter"^].
 
 *Notes:*
 
@@ -312,16 +312,16 @@ image:dr-vmc-aws-image25.png["Erreur : image graphique manquante"]
 
 La documentation SnapCenter fournit des informations détaillées sur la création de groupes de ressources pour les bases de données SQL Server et Oracle.
 
-Pour la sauvegarde des ressources SQL, suivez https://docs.netapp.com/us-en/snapcenter/protect-scsql/task_back_up_sql_resources.html["ce lien"^].
+Pour la sauvegarde des ressources SQL, suivez https://["ce lien"^].
 
-Pour la sauvegarde des ressources Oracle, suivez https://docs.netapp.com/us-en/snapcenter/protect-sco/task_back_up_oracle_resources.html["ce lien"^].
+Pour la sauvegarde des ressources Oracle, suivez https://["ce lien"^].
 
 ====
 
 
 === Déploiement et configuration de Veeam Backup Server
 
-Le logiciel Veeam Backup & Replication est utilisé dans la solution pour sauvegarder nos machines virtuelles d'applications et archiver une copie des sauvegardes dans un compartiment Amazon S3 à l'aide d'un référentiel de sauvegarde scale-out Veeam. Veeam est déployé sur un serveur Windows dans cette solution. Pour des conseils spécifiques sur le déploiement de Veeam, reportez-vous au https://www.veeam.com/documentation-guides-datasheets.html["Documentation technique sur le centre d'assistance Veeam"^].
+Le logiciel Veeam Backup & Replication est utilisé dans la solution pour sauvegarder nos machines virtuelles d'applications et archiver une copie des sauvegardes dans un compartiment Amazon S3 à l'aide d'un référentiel de sauvegarde scale-out Veeam. Veeam est déployé sur un serveur Windows dans cette solution. Pour des conseils spécifiques sur le déploiement de Veeam, reportez-vous au https://["Documentation technique sur le centre d'assistance Veeam"^].
 
 .Configurez un référentiel de sauvegarde scale-out Veeam
 [%collapsible]
@@ -364,7 +364,7 @@ image:dr-vmc-aws-image30.png["Erreur : image graphique manquante"]
 +
 image:dr-vmc-aws-image31.png["Erreur : image graphique manquante"]
 
-. Suivez toutes les étapes de l'Assistant Nouveau référentiel de sauvegarde pour créer le référentiel. Pour plus d'informations sur la création des référentiels de sauvegarde Veeam, consultez le https://www.veeam.com/documentation-guides-datasheets.html["Documentation Veeam"^].
+. Suivez toutes les étapes de l'Assistant Nouveau référentiel de sauvegarde pour créer le référentiel. Pour plus d'informations sur la création des référentiels de sauvegarde Veeam, consultez le https://["Documentation Veeam"^].
 +
 image:dr-vmc-aws-image32.png["Erreur : image graphique manquante"]
 
@@ -419,7 +419,7 @@ image:dr-vmc-aws-image39.png["Erreur : image graphique manquante"]
 .Création des tâches de référentiel de sauvegarde scale-out
 [%collapsible]
 =====
-La dernière étape de configuration de Veeam consiste à créer des tâches de sauvegarde en utilisant le SOBR nouvellement créé comme destination de sauvegarde. La création de travaux de sauvegarde fait partie intégrante du répertoire de tout administrateur de stockage et nous ne abordons pas les étapes détaillées ici. Pour plus d'informations sur la création de tâches de sauvegarde dans Veeam, consultez le https://www.veeam.com/documentation-guides-datasheets.html["Documentation technique du centre d'aide Veeam"^].
+La dernière étape de configuration de Veeam consiste à créer des tâches de sauvegarde en utilisant le SOBR nouvellement créé comme destination de sauvegarde. La création de travaux de sauvegarde fait partie intégrante du répertoire de tout administrateur de stockage et nous ne abordons pas les étapes détaillées ici. Pour plus d'informations sur la création de tâches de sauvegarde dans Veeam, consultez le https://["Documentation technique du centre d'aide Veeam"^].
 
 =====
 ====
@@ -430,13 +430,13 @@ La dernière étape de configuration de Veeam consiste à créer des tâches de 
 Pour effectuer un basculement des VM applicatives et des volumes de base de données vers les services VMware Cloud volumes exécutés dans AWS, vous devez installer et configurer une instance en cours d'exécution de SnapCenter Server et Veeam Backup and Replication Server. Une fois le basculement terminé, vous devez également configurer ces outils pour reprendre les opérations de sauvegarde normales jusqu'à ce que la restauration du data Center sur site soit planifiée et exécutée.
 
 .Déploiement d'un serveur Windows SnapCenter secondaire
-[%collapsible]
+[#deploy-secondary-snapcenter%collapsible]
 ====
 Le serveur SnapCenter est déployé dans le SDDC VMware Cloud ou installé sur une instance EC2 résidant dans un VPC avec une connectivité réseau vers l'environnement VMware Cloud.
 
-Le logiciel SnapCenter est disponible sur le site du support NetApp et peut être installé sur les systèmes Microsoft Windows résidant dans un domaine ou un groupe de travail. Un guide de planification détaillé et des instructions d'installation sont disponibles sur le https://docs.netapp.com/us-en/snapcenter/install/install_workflow.html["Centre de documentation NetApp"^].
+Le logiciel SnapCenter est disponible sur le site du support NetApp et peut être installé sur les systèmes Microsoft Windows résidant dans un domaine ou un groupe de travail. Un guide de planification détaillé et des instructions d'installation sont disponibles sur le https://["Centre de documentation NetApp"^].
 
-Le logiciel SnapCenter est disponible sur la page https://mysupport.netapp.com["ce lien"^].
+Le logiciel SnapCenter est disponible sur la page https://["ce lien"^].
 
 ====
 .Configurez le serveur SnapCenter secondaire
@@ -457,9 +457,9 @@ Pour plus d'informations sur ces étapes, reportez-vous à la section à link:aw
 
 ====
 .Déploiement du serveur de sauvegarde et de réplication Veeam secondaire
-[%collapsible]
+[#deploy-secondary-veeam%collapsible]
 ====
-Vous pouvez installer le serveur Veeam Backup & Replication sur un serveur Windows dans le cloud VMware sur AWS ou sur une instance EC2. Pour obtenir des conseils détaillés sur la mise en œuvre, reportez-vous au https://www.veeam.com/documentation-guides-datasheets.html["Documentation technique du centre d'aide Veeam"^].
+Vous pouvez installer le serveur Veeam Backup & Replication sur un serveur Windows dans le cloud VMware sur AWS ou sur une instance EC2. Pour obtenir des conseils détaillés sur la mise en œuvre, reportez-vous au https://["Documentation technique du centre d'aide Veeam"^].
 
 ====
 .Configuration du serveur Veeam Backup etamp secondaire ; Replication Server
@@ -475,14 +475,14 @@ Pour effectuer ce processus, les éléments suivants doivent être effectués :
 . Après la restauration de la machine virtuelle, établir de nouvelles tâches de sauvegarde afin de protéger les machines virtuelles SQL et Oracle.
 
 
-Pour plus d'informations sur la restauration des VM à l'aide de Veeam, reportez-vous à la section link:aws-guest-dr-restore-veeam-full.html["Restauration des VM applications avec Veeam Full Restore"].
+Pour plus d'informations sur la restauration des VM à l'aide de Veeam, reportez-vous à la section link:#restore-veeam-full["Restauration des VM applications avec Veeam Full Restore"].
 
 ====
 
 
 === Sauvegarde des bases de données SnapCenter pour la reprise après incident
 
-SnapCenter permet la sauvegarde et la récupération de sa base de données MySQL sous-jacente et des données de configuration afin de restaurer le serveur SnapCenter en cas d'incident. Pour notre solution, nous avons restauré la base de données et la configuration d'SnapCenter sur une instance EC2 AWS résidant sur notre VPC. Pour plus d'informations sur cette étape, reportez-vous à la section https://docs.netapp.com/us-en/snapcenter/sc-automation/rest_api_workflows_disaster_recovery_of_snapcenter_server.html["ce lien"^].
+SnapCenter permet la sauvegarde et la récupération de sa base de données MySQL sous-jacente et des données de configuration afin de restaurer le serveur SnapCenter en cas d'incident. Pour notre solution, nous avons restauré la base de données et la configuration d'SnapCenter sur une instance EC2 AWS résidant sur notre VPC. Pour plus d'informations sur cette étape, reportez-vous à la section https://["ce lien"^].
 
 .Conditions préalables à la sauvegarde SnapCenter
 [%collapsible]
@@ -497,7 +497,7 @@ Les prérequis suivants sont requis pour la sauvegarde SnapCenter :
 
 ====
 .Récapitulatif du processus de sauvegarde et de restauration SnapCenter
-[%collapsible]
+[#snapcenter-backup-and-restore-process-summary%collapsible]
 ====
 * Créez un volume sur le système ONTAP sur site pour héberger les fichiers de base de données de sauvegarde et de configuration.
 * Configurer une relation SnapMirror entre le site et FSX/CVO.
@@ -515,7 +515,7 @@ Les prérequis suivants sont requis pour la sauvegarde SnapCenter :
 .Sauvegarder la base de données et la configuration de SnapCenter
 [%collapsible]
 ====
-SnapCenter fournit une interface client Web pour l'exécution des commandes de l'API REST. Pour plus d'informations sur l'accès aux API REST via swagger, consultez la documentation SnapCenter à l'adresse https://docs.netapp.com/us-en/snapcenter/sc-automation/overview_rest_apis.html["ce lien"^].
+SnapCenter fournit une interface client Web pour l'exécution des commandes de l'API REST. Pour plus d'informations sur l'accès aux API REST via swagger, consultez la documentation SnapCenter à l'adresse https://["ce lien"^].
 
 .Connectez-vous à swagger et obtenez le jeton d'autorisation
 [%collapsible]
@@ -755,7 +755,7 @@ Le processus suivant explique comment restaurer un serveur SQL dans VMware Cloud
 Les prérequis suivants sont supposés être terminés pour poursuivre les étapes de restauration :
 
 . La machine virtuelle Windows Server a été restaurée dans le SDDC VMware Cloud à l'aide de Veeam Full Restore.
-. Un serveur SnapCenter secondaire a été établi et la restauration et la configuration de la base de données SnapCenter ont été effectuées en suivant les étapes décrites dans la section link:aws-guest-dr-snapcenter-db-backup.html#snapcenter-backup-and-restore-process-summary["Récapitulatif du processus de sauvegarde et de restauration SnapCenter."]
+. Un serveur SnapCenter secondaire a été établi et la restauration et la configuration de la base de données SnapCenter ont été effectuées en suivant les étapes décrites dans la section link:#snapcenter-backup-and-restore-process-summary["Récapitulatif du processus de sauvegarde et de restauration SnapCenter."]
 
 
 .VM : configuration post-restauration pour SQL Server VM
@@ -870,7 +870,7 @@ Le processus suivant explique comment restaurer les données d'application Oracl
 Pour continuer les étapes de récupération, suivez les conditions préalables suivantes :
 
 . La machine virtuelle du serveur Oracle Linux a été restaurée dans le SDDC VMware Cloud à l'aide de Veeam Full Restore.
-. Un serveur SnapCenter secondaire a été établi et la base de données SnapCenter et les fichiers de configuration ont été restaurés à l'aide des étapes décrites dans cette section link:aws-guest-dr-snapcenter-db-backup.html#snapcenter-backup-and-restore-process-summary["Récapitulatif du processus de sauvegarde et de restauration SnapCenter."]
+. Un serveur SnapCenter secondaire a été établi et la base de données SnapCenter et les fichiers de configuration ont été restaurés à l'aide des étapes décrites dans cette section link:#snapcenter-backup-and-restore-process-summary["Récapitulatif du processus de sauvegarde et de restauration SnapCenter."]
 
 
 .Configurer FSX pour la restauration Oracle – interrompre la relation SnapMirror
@@ -966,9 +966,9 @@ Pour en savoir plus sur les informations données dans ce livre blanc, consultez
 
 * Liens vers la documentation de la solution
 +
-https://docs.netapp.com/us-en/netapp-solutions/ehc/index.html["Multicloud hybride NetApp avec les solutions VMware"]
+https://["Multicloud hybride NetApp avec les solutions VMware"]
 
 +
-https://docs.netapp.com/us-en/netapp-solutions/index.html["Les solutions NetApp"]
+https://["Les solutions NetApp"]
 
 

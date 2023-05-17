@@ -39,11 +39,11 @@ Kubectl -n default-tenant apply -f <your yaml file>
 
 == Relier un volume NetApp au bloc-notes Jupyter
 
-Iguazio propose plusieurs services gérés afin de fournir aux data Scientists une pile complète pour le développement et le déploiement d'applications d'IA/ML. Pour en savoir plus sur ces composants, consultez le https://www.iguazio.com/docs/intro/latest-release/ecosystem/app-services/["Iguazio Présentation des services et outils d'application"^].
+Iguazio propose plusieurs services gérés afin de fournir aux data Scientists une pile complète pour le développement et le déploiement d'applications d'IA/ML. Pour en savoir plus sur ces composants, consultez le https://["Iguazio Présentation des services et outils d'application"^].
 
 Jupyter Notebook est l'un des services gérés. Chaque développeur a son propre déploiement d'un conteneur d'ordinateur portable avec les ressources dont il a besoin pour le développement. Pour leur donner accès à NetApp Cloud Volume, vous pouvez attribuer le volume à leur container et à leur allocation des ressources, exécuter les paramètres des utilisateurs et des variables d'environnement pour les demandes de volume persistant. Cette image présente.
 
-Pour une configuration sur site, vous pouvez vous reporter à https://www.netapp.com/us/media/tr-4798.pdf["TR-4798"^] Vous configurez Trident pour activer les fonctionnalités de gestion des données de NetApp ONTAP, comme l'exécution de copies Snapshot de vos données ou un modèle pour le contrôle des versions. Ajoutez la ligne suivante dans votre fichier de configuration back-end Trident pour rendre les répertoires Snapshot visibles :
+Pour une configuration sur site, vous pouvez vous reporter à https://["TR-4798"^] Vous configurez Trident pour activer les fonctionnalités de gestion des données de NetApp ONTAP, comme l'exécution de copies Snapshot de vos données ou un modèle pour le contrôle des versions. Ajoutez la ligne suivante dans votre fichier de configuration back-end Trident pour rendre les répertoires Snapshot visibles :
 
 ....
 {
@@ -53,7 +53,7 @@ Pour une configuration sur site, vous pouvez vous reporter à https://www.netapp
     }
 }
 ....
-Vous devez créer un fichier de configuration back-end Trident au format JSON, puis exécuter la commande suivante https://netapp-trident.readthedocs.io/en/stable-v18.07/kubernetes/operations/tasks/backends.html["Commande Trident"^] pour la référencer :
+Vous devez créer un fichier de configuration back-end Trident au format JSON, puis exécuter la commande suivante https://["Commande Trident"^] pour la référencer :
 
 ....
 tridentctl create backend -f <backend-file>

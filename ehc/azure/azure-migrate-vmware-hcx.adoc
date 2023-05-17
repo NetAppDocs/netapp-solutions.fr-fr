@@ -48,16 +48,16 @@ Cette liste fournit les étapes générales nécessaires pour installer et confi
 .Prérequis
 [%collapsible]
 ====
-Avant de commencer, assurez-vous que les conditions préalables suivantes sont remplies. Pour plus d'informations, reportez-vous à ce document https://docs.microsoft.com/en-us/azure/azure-vmware/configure-vmware-hcx["lien"^]. Une fois les prérequis, y compris la connectivité, mis en place, configurez et activez HCX en générant la clé de licence à partir du portail de solutions Azure VMware. Une fois le programme d'installation OVA téléchargé, procédez au processus d'installation comme décrit ci-dessous.
+Avant de commencer, assurez-vous que les conditions préalables suivantes sont remplies. Pour plus d'informations, reportez-vous à ce document https://["lien"^]. Une fois les prérequis, y compris la connectivité, mis en place, configurez et activez HCX en générant la clé de licence à partir du portail de solutions Azure VMware. Une fois le programme d'installation OVA téléchargé, procédez au processus d'installation comme décrit ci-dessous.
 
 
 NOTE: HCX Advanced est l'option par défaut et VMware HCX Enterprise Edition est également disponible via un ticket d'assistance et pris en charge sans frais supplémentaires.
 
-* Utilisez un SDDC (Software-Defined Data Center) ou créez un cloud privé avec la solution Azure VMware https://docs.netapp.com/us-en/netapp-solutions/ehc/azure/azure-setup.html["Lien NetApp"^] ou ceci https://docs.microsoft.com/en-us/azure/azure-vmware/deploy-azure-vmware-solution?tabs=azure-portal["Lien Microsoft"^].
-* La migration des VM et des données associées depuis le data Center sur site compatible VMware vSphere nécessite une connectivité réseau du data Center vers l'environnement SDDC. Avant de migrer des workloads, https://docs.microsoft.com/en-us/azure/azure-vmware/tutorial-expressroute-global-reach-private-cloud["Configurez une connexion VPN site à site ou une connexion à portée globale express"^] entre l'environnement sur site et le cloud privé respectif.
+* Utilisez un SDDC (Software-Defined Data Center) ou créez un cloud privé avec la solution Azure VMware https://["Lien NetApp"^] ou ceci https://["Lien Microsoft"^].
+* La migration des VM et des données associées depuis le data Center sur site compatible VMware vSphere nécessite une connectivité réseau du data Center vers l'environnement SDDC. Avant de migrer des workloads, https://["Configurez une connexion VPN site à site ou une connexion à portée globale express"^] entre l'environnement sur site et le cloud privé respectif.
 * Le chemin du réseau depuis l'environnement VMware vCenter Server sur site vers le cloud privé Azure VMware solution doit prendre en charge la migration des machines virtuelles à l'aide de vMotion.
-* Assurez-vous que le nécessaire https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-A631101E-8564-4173-8442-1D294B731CEB.html["règles et ports de pare-feu"^] Sont autorisées pour le trafic vMotion entre vCenter Server sur site et SDDC vCenter. Dans le cloud privé, le routage sur le réseau vMotion est configuré par défaut.
-* Le volume NFS Azure NetApp Files doit être monté en tant que datastore dans Azure VMware solution. Suivez les étapes décrites dans ce document https://learn.microsoft.com/en-us/azure/azure-vmware/attach-azure-netapp-files-to-azure-vmware-solution-hosts?tabs=azure-portal["lien"^] Connexion de datastores Azure NetApp Files aux hôtes Azure VMware Solutions
+* Assurez-vous que le nécessaire https://["règles et ports de pare-feu"^] Sont autorisées pour le trafic vMotion entre vCenter Server sur site et SDDC vCenter. Dans le cloud privé, le routage sur le réseau vMotion est configuré par défaut.
+* Le volume NFS Azure NetApp Files doit être monté en tant que datastore dans Azure VMware solution. Suivez les étapes décrites dans ce document https://["lien"^] Connexion de datastores Azure NetApp Files aux hôtes Azure VMware Solutions
 
 
 ====
@@ -132,7 +132,7 @@ NOTE: Mettez l'appliance virtuelle sous tension manuellement.
 
 
 
-Pour des instructions détaillées, reportez-vous à la https://docs.vmware.com/en/VMware-HCX/services/user-guide/GUID-BFD7E194-CFE5-4259-B74B-991B26A51758.html["Guide de l'utilisateur VMware HCX"^].
+Pour des instructions détaillées, reportez-vous à la https://["Guide de l'utilisateur VMware HCX"^].
 
 ====
 .Étape 3 : activez le connecteur HCX avec la clé de licence
@@ -149,7 +149,7 @@ image:anfd-hcx-image7.png["Capture d'écran pour l'ajout de clés HCX."]
 
 NOTE: Une clé distincte est requise pour chaque connecteur HCX sur site déployé.
 
-. Connectez-vous au gestionnaire VMware HCX sur site à l'adresse https://hcxmanagerIP:9443["https://hcxmanagerIP:9443"^] utilisation des informations d'identification administrateur.
+. Connectez-vous au gestionnaire VMware HCX sur site à l'adresse https://["https://hcxmanagerIP:9443"^] utilisation des informations d'identification administrateur.
 +
 
 NOTE: Utiliser le mot de passe défini lors du déploiement de l'OVA.
@@ -259,7 +259,7 @@ image:anfd-hcx-image15.png["Capture d'écran du processus terminé sur la page v
 ====
 Les charges de travail peuvent être migrées dans un sens bidirectionnel entre les SDDC sur site et Azure à l'aide de différentes technologies de migration VMware HCX. Les machines virtuelles peuvent être déplacées vers et depuis des entités activées par VMware HCX à l'aide de plusieurs technologies de migration telles que la migration en bloc HCX, HCX vMotion, la migration à froid HCX, l'option vMotion par réplication assistée par HCX (disponible avec l'édition Enterprise de HCX) et la migration assistée par système d'exploitation HCX (disponible avec l'édition Enterprise de HCX).
 
-Pour en savoir plus sur les différents mécanismes de migration HCX, voir https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-8A31731C-AA28-4714-9C23-D9E924DBB666.html["Types de migration VMware HCX"^].
+Pour en savoir plus sur les différents mécanismes de migration HCX, voir https://["Types de migration VMware HCX"^].
 
 *Migration groupée*
 
@@ -291,7 +291,7 @@ image:anfd-hcx-image19.png["Erreur : image graphique manquante"]
 
 
 
-Pour plus d'informations sur les différentes options de migration et sur la façon de migrer des workloads du site vers la solution VMware Azure via HCX, consultez https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-14D48C15-3D75-485B-850F-C5FCB96B5637.html["Guide de l'utilisateur VMware HCX"^].
+Pour plus d'informations sur les différentes options de migration et sur la façon de migrer des workloads du site vers la solution VMware Azure via HCX, consultez https://["Guide de l'utilisateur VMware HCX"^].
 
 Pour en savoir plus sur ce processus, n'hésitez pas à suivre la vidéo de présentation détaillée :
 
@@ -335,14 +335,14 @@ Pour en savoir plus sur les informations fournies dans ce document, visitez nos 
 
 * Documentation sur la solution Azure VMware
 +
-https://docs.microsoft.com/en-us/azure/azure-vmware/["https://docs.microsoft.com/en-us/azure/azure-vmware/"^]
+https://["https://docs.microsoft.com/en-us/azure/azure-vmware/"^]
 
 * Documentation Azure NetApp Files
 +
-https://docs.microsoft.com/en-us/azure/azure-netapp-files/["https://docs.microsoft.com/en-us/azure/azure-netapp-files/"^]
+https://["https://docs.microsoft.com/en-us/azure/azure-netapp-files/"^]
 
 * Guide de l'utilisateur VMware HCX
 +
-https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-BFD7E194-CFE5-4259-B74B-991B26A51758.html["https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-BFD7E194-CFE5-4259-B74B-991B26A51758.html"^]
+https://["https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-BFD7E194-CFE5-4259-B74B-991B26A51758.html"^]
 
 

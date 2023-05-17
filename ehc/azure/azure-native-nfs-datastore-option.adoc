@@ -18,7 +18,7 @@ La prise en charge des datastores NFS a été introduite avec ESXi version 3 dan
 
 L'exécution de vSphere sur NFS est une option largement adoptée pour les déploiements de virtualisation sur site, car elle offre de solides performances et une stabilité accrue. Si votre data Center sur site dispose d'un stockage NAS important, il est recommandé de déployer une solution Azure VMware SDDC dans Azure avec les datastores Azure NetApp pour relever les défis de capacité et de performance.
 
-Azure NetApp Files repose sur le logiciel de gestion des données NetApp ONTAP à haute disponibilité du secteur. Les services Microsoft Azure sont regroupés en trois catégories : fondamentaux, principaux et spécialisés. Azure NetApp Files est dans la catégorie spécialisée et est pris en charge par le matériel déjà déployé dans de nombreuses régions. Grâce à la haute disponibilité intégrée, Azure NetApp Files protège vos données de la plupart des pannes et vous offre un SLA de pointe https://azure.microsoft.com/support/legal/sla/netapp/v1_1/["99.99 %"^] continuité.
+Azure NetApp Files repose sur le logiciel de gestion des données NetApp ONTAP à haute disponibilité du secteur. Les services Microsoft Azure sont regroupés en trois catégories : fondamentaux, principaux et spécialisés. Azure NetApp Files est dans la catégorie spécialisée et est pris en charge par le matériel déjà déployé dans de nombreuses régions. Grâce à la haute disponibilité intégrée, Azure NetApp Files protège vos données de la plupart des pannes et vous offre un SLA de pointe https://["99.99 %"^] continuité.
 
 Avant l'introduction de la fonctionnalité de data stores Azure NetApp Files, l'évolutivité horizontale pour les clients qui prévoient de héberger des charges de travail hautes performances et exigeantes en stockage nécessitait l'extension du système de calcul et du stockage.
 
@@ -148,12 +148,12 @@ az extension add --name vmware
 .Création et montage de volumes Azure NetApp Files
 [%collapsible]
 ====
-. Connectez-vous au portail Azure et accédez à Azure NetApp Files. Vérifiez l'accès au service Azure NetApp Files et enregistrez le fournisseur de ressources Azure NetApp Files à l'aide du `az provider register` `--namespace Microsoft.NetApp –wait` commande. Une fois enregistré, créez un compte NetApp. Se reporter à ceci https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-create-netapp-account["lien"^] pour des étapes détaillées.
+. Connectez-vous au portail Azure et accédez à Azure NetApp Files. Vérifiez l'accès au service Azure NetApp Files et enregistrez le fournisseur de ressources Azure NetApp Files à l'aide du `az provider register` `--namespace Microsoft.NetApp –wait` commande. Une fois enregistré, créez un compte NetApp. Se reporter à ceci https://["lien"^] pour des étapes détaillées.
 
 
 image:vmware-dr-image2.png["Erreur : image graphique manquante"]
 
-. Une fois le compte NetApp créé, configurez des pools de capacité avec le niveau et la taille de service requis. Pour plus d'informations, reportez-vous à ce document https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-set-up-capacity-pool["lien"^].
+. Une fois le compte NetApp créé, configurez des pools de capacité avec le niveau et la taille de service requis. Pour plus d'informations, reportez-vous à ce document https://["lien"^].
 
 
 image:vmware-dr-image3.png["Erreur : image graphique manquante"]
@@ -168,7 +168,7 @@ image:vmware-dr-image3.png["Erreur : image graphique manquante"]
 
 
 |===
-. Configurez un sous-réseau délégué pour Azure NetApp Files et spécifiez ce sous-réseau lors de la création de volumes. Pour connaître les étapes détaillées de création d'un sous-réseau délégué, reportez-vous à ce document https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-delegate-subnet["lien"^].
+. Configurez un sous-réseau délégué pour Azure NetApp Files et spécifiez ce sous-réseau lors de la création de volumes. Pour connaître les étapes détaillées de création d'un sous-réseau délégué, reportez-vous à ce document https://["lien"^].
 . Ajoutez un volume NFS pour le datastore à l'aide du serveur lame volumes sous le serveur lame Capacity pools.
 
 
@@ -228,7 +228,7 @@ Azure NetApp Files prend en charge trois niveaux de services : standard (16 Mbit
 
 image:vmware-dr-image6.png["Erreur : image graphique manquante"]
 
-Pour plus d'informations, voir https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-service-levels["Niveaux de service pour Azure NetApp Files"^].
+Pour plus d'informations, voir https://["Niveaux de service pour Azure NetApp Files"^].
 
 Se reporter à ceci link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-benchmarks-azure-vmware-solution["Lien Microsoft"] pour obtenir des bancs d'essai de performances détaillés et utilisables lors d'un exercice de dimensionnement.
 

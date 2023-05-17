@@ -18,14 +18,14 @@ link:ncvs-gc-data-encryption-at-rest.html["Précédent : chiffrement des donnée
 [role="lead"]
 Cloud Volumes Service expose plusieurs ports TCP pour servir les partages NFS et SMB :
 
-* https://cloud.google.com/architecture/partners/netapp-cloud-volumes/security-considerations?hl=en_US["Ports requis pour l'accès NFS"^]
-* https://cloud.google.com/architecture/partners/netapp-cloud-volumes/security-considerations?hl=en_US["Ports requis pour l'accès SMB"^]
+* https://["Ports requis pour l'accès NFS"^]
+* https://["Ports requis pour l'accès SMB"^]
 
 
-En outre, SMB, NFS avec LDAP, y compris Kerberos, et des configurations à double protocole requièrent l'accès à un domaine Windows Active Directory. Les connexions Active Directory doivent être de https://cloud.google.com/architecture/partners/netapp-cloud-volumes/creating-smb-volumes?hl=en_US["configuré"^] par région. Les contrôleurs de domaine (DC) Active Directory sont identifiés à l'aide de https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/7fcdce70-5205-44d6-9c3a-260e616a2f04["Découverte de data Center basée sur DNS"^] Utilisation des serveurs DNS spécifiés. Tous les DCS renvoyés sont utilisés. La liste des DCS admissibles peut être limitée en spécifiant un site Active Directory.
+En outre, SMB, NFS avec LDAP, y compris Kerberos, et des configurations à double protocole requièrent l'accès à un domaine Windows Active Directory. Les connexions Active Directory doivent être de https://["configuré"^] par région. Les contrôleurs de domaine (DC) Active Directory sont identifiés à l'aide de https://["Découverte de data Center basée sur DNS"^] Utilisation des serveurs DNS spécifiés. Tous les DCS renvoyés sont utilisés. La liste des DCS admissibles peut être limitée en spécifiant un site Active Directory.
 
-Cloud Volumes Service atteint son niveau avec les adresses IP de la plage CIDR allouée à l' `gcloud compute address` commande pendant https://cloud.google.com/architecture/partners/netapp-cloud-volumes/setting-up-private-services-access?hl=en_US["Intégration de la Cloud Volumes Service"^]. Vous pouvez utiliser ce CIDR comme adresses source pour configurer les pare-feu entrants sur vos contrôleurs de domaine Active Directory.
+Cloud Volumes Service atteint son niveau avec les adresses IP de la plage CIDR allouée à l' `gcloud compute address` commande pendant https://["Intégration de la Cloud Volumes Service"^]. Vous pouvez utiliser ce CIDR comme adresses source pour configurer les pare-feu entrants sur vos contrôleurs de domaine Active Directory.
 
-Les contrôleurs de domaine Active Directory doivent https://cloud.google.com/architecture/partners/netapp-cloud-volumes/security-considerations?hl=en_US["Exposer les ports aux rapports CIDR Cloud Volumes Service comme indiqué ici"^].
+Les contrôleurs de domaine Active Directory doivent https://["Exposer les ports aux rapports CIDR Cloud Volumes Service comme indiqué ici"^].
 
 link:ncvs-gc-nas-protocols_overview.html["Next : présentation des protocoles NAS."]

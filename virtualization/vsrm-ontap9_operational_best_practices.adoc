@@ -32,7 +32,7 @@ NetApp ONTAP 9 peut être configuré de manière à supprimer automatiquement le
 ....
 snap autodelete modify –volume -commitment try
 ....
-La taille automatique du volume doit être définie sur `grow` Pour les volumes contenant les datastores SAN et `grow_shrink` Pour les datastores NFS. Reportez-vous à la https://docs.netapp.com/ontap-9/index.jsp?topic=%2Fcom.netapp.doc.dot-cm-cmpr-910%2Fvolume__autosize.html["Centre de documentation ONTAP 9"^] pour la syntaxe spécifique.
+La taille automatique du volume doit être définie sur `grow` Pour les volumes contenant les datastores SAN et `grow_shrink` Pour les datastores NFS. Reportez-vous à la https://["Centre de documentation ONTAP 9"^] pour la syntaxe spécifique.
 
 
 
@@ -122,11 +122,11 @@ Il y a plusieurs autres considérations lorsqu'il s'agit de basculer sur un site
 
 Vous devrez peut-être résoudre ce problème en tenant compte des différences de réseau entre les sites. Certains environnements peuvent utiliser les mêmes adresses IP réseau à la fois sur le site primaire et sur le site de reprise après incident. Cette fonctionnalité est appelée VLAN (Virtual LAN) étendu ou configuration réseau étendu. Dans d'autres environnements, il est parfois nécessaire d'utiliser différentes adresses IP réseau (par exemple, sur différents VLAN) sur le site primaire par rapport au site de reprise.
 
-VMware offre plusieurs moyens de résoudre ce problème. Pour la première, des technologies de virtualisation de réseau comme VMware NSX-T Data Center extraient la pile réseau des couches 2 à 7 de l'environnement d'exploitation, afin d'offrir des solutions plus portables. Pour en savoir plus sur les options NSX-T avec SRM https://docs.vmware.com/en/Site-Recovery-Manager/8.4/com.vmware.srm.admin.doc/GUID-89402F1B-1AFB-42CD-B7D5-9535AF32435D.html["ici"^].
+VMware offre plusieurs moyens de résoudre ce problème. Pour la première, des technologies de virtualisation de réseau comme VMware NSX-T Data Center extraient la pile réseau des couches 2 à 7 de l'environnement d'exploitation, afin d'offrir des solutions plus portables. Pour en savoir plus sur les options NSX-T avec SRM https://["ici"^].
 
 SRM vous permet également de modifier la configuration réseau d'une machine virtuelle lors de sa restauration. Cette reconfiguration inclut des paramètres tels que les adresses IP, l'adresse de passerelle et les paramètres du serveur DNS. Différents paramètres réseau, qui sont appliqués aux machines virtuelles individuelles lors de leur restauration, peuvent être spécifiés dans les paramètres de propriété d'une machine virtuelle dans le plan de reprise.
 
-Pour configurer SRM de façon à appliquer différents paramètres réseau à plusieurs machines virtuelles sans devoir modifier les propriétés de chacune d'entre elles dans le plan de reprise, VMware fournit un outil appelé dr-ip-customizer. Pour plus d’informations sur l’utilisation de cet utilitaire, reportez-vous à la documentation de VMware https://docs.vmware.com/en/Site-Recovery-Manager/8.4/com.vmware.srm.admin.doc/GUID-2B7E2B25-2B82-4BC4-876B-2FE0A3D71B84.html["ici"^].
+Pour configurer SRM de façon à appliquer différents paramètres réseau à plusieurs machines virtuelles sans devoir modifier les propriétés de chacune d'entre elles dans le plan de reprise, VMware fournit un outil appelé dr-ip-customizer. Pour plus d’informations sur l’utilisation de cet utilitaire, reportez-vous à la documentation de VMware https://["ici"^].
 
 
 

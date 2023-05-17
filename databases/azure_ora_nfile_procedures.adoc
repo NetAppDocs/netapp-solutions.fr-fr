@@ -242,10 +242,7 @@ echo "export PATH=\$PATH:\$ORACLE_HOME/bin" >> /home/azacsnap/.bash_profile
 [source, cli]
 ----
 sudo su - azacsnap
-----
-+
-[source, cli]
-----
+
 mkstore -wrl $TNS_ADMIN/.oracle_wallet/ -create
 ----
 . Ajoutez les informations d'identification de la chaîne de connexion à Oracle Wallet. Dans l'exemple de commande suivant, AZACSLAP est le ConnectString à utiliser par AzAcSnap, azacsnap est l'utilisateur Oracle Database, et AzPasswd1 est le mot de passe de la base de données de l'utilisateur Oracle. Vous êtes à nouveau invité à saisir le mot de passe du porte-monnaie.
@@ -279,20 +276,24 @@ WALLET_LOCATION=(
 sqlplus /@AZACSNAP as SYSBACKUP
 ----
 +
-La sortie attendue de la commande : [azacsnap@acao-ora01 ~]$ sqlplus /@AZACCSNAP en tant que SYSBACKUP
+Le résultat attendu de la commande :
 
 +
-SQL*plus: Version 19.0.0.0.0 - production le jeu septembre 8 18:02:07 2022 version 19.8.0.0.0
+[listing]
+----
+[azacsnap@acao-ora01 ~]$ sqlplus /@AZACSNAP as SYSBACKUP
 
-+
-Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Sep 8 18:02:07 2022
+Version 19.8.0.0.0
 
-+
-Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
 
-+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.8.0.0.0
+
 SQL>
-
+----
 
 
 
@@ -323,8 +324,21 @@ az ad sp create-for-rbac --name "AzAcSnap" --role Contributor --scopes /subscrip
 Résultat attendu :
 
 +
-{ "ClientID": "00aa000a-aaaa-0000-00a0-00aa000aaa0a", "clientSecret": "00aa000a-aaaaa-0000-00a0-00aa000aaa0a", "abeineptionId": "00aa000a-aaa0-0000-0000-ingaA0-in00aa00aa00a00a00a-U00a00a00a00a-U00a00a00a00a-U00a00a00a00a00a00a00a", "una00a00a00a00a00a00a00a00a00a "https://login.microsoftonline.com"[], "ResourceManagerEndpointUrl": "https://management.azure.com/"[], "ActiveDirectoryGraphResourceId": "https://graph.windows.net/"[], "SqlManagementEndpointUrl": "https://management.core.windows.net:8443/"[], "GalleryEndpointUrl": "https://gallery.azure.com/"[], "Gestion EndpointUrl": "https://management.core.windows.net/"[]}
-
+[listing]
+----
+{
+  "clientId": "00aa000a-aaaa-0000-00a0-00aa000aaa0a",
+  "clientSecret": "00aa000a-aaaa-0000-00a0-00aa000aaa0a",
+  "subscriptionId": "00aa000a-aaaa-0000-00a0-00aa000aaa0a",
+  "tenantId": "00aa000a-aaaa-0000-00a0-00aa000aaa0a",
+  "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
+  "resourceManagerEndpointUrl": "https://management.azure.com/",
+  "activeDirectoryGraphResourceId": "https://graph.windows.net/",
+  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
+  "galleryEndpointUrl": "https://gallery.azure.com/",
+  "managementEndpointUrl": "https://management.core.windows.net/"
+}
+----
 . Coupez et collez le contenu de sortie dans un fichier appelé `oracle.json` Stocké dans le répertoire bin de l'utilisateur Linux azacsnap et sécurisez le fichier avec les autorisations système appropriées.
 
 
@@ -359,26 +373,45 @@ azacsnap -c configure –-configuration new
 Résultat attendu avec trois volumes Oracle :
 
 +
-[Azacsnap@acao-ora01 bin]$ azacsnap -c configure --configuration nouveau fichier de configuration Ajouter un commentaire au fichier de configuration (entrée vide pour quitter ajout de commentaires) : Oracle snapshot bkup Ajouter un commentaire au fichier de configuration (entrée vide pour quitter l'ajout de commentaires) : entrez le type de base de données à ajouter, 'hana', 'oracle' ou 'no database' (no exit)
+[listing]
+----
+[azacsnap@acao-ora01 bin]$ azacsnap -c configure --configuration new
+Building new config file
+Add comment to config file (blank entry to exit adding comments): Oracle snapshot bkup
+Add comment to config file (blank entry to exit adding comments):
+Enter the database type to add, 'hana', 'oracle', or 'exit' (for no database): oracle
 
-+
-==== Ajouter les détails de la base de données Oracle ==== SID de la base de données Oracle (par exemple CDB1) : adresse du serveur de base de données ORATST (nom d'hôte ou adresse IP) : 172.30.137.142 chaîne de connexion Oracle (par exemple /@AZACSLAP) : /@AZACSLNAP
+=== Add Oracle Database details ===
+Oracle Database SID (e.g. CDB1): ORATST
+Database Server's Address (hostname or IP address): 172.30.137.142
+Oracle connect string (e.g. /@AZACSNAP): /@AZACSNAP
 
-+
-==== Détails du stockage Azure NetApp Files === utilisez-vous Azure NetApp Files pour la base de données ? (y/n) [n] : y -- volumes DE DONNÉES l'application est-elle placée dans un état cohérent avant qu'il ne s'agit de snapshot --- Ajouter une ressource Azure NetApp Files à la section de volume DE DONNÉES de la configuration de la base de données ? (y/n) [n] : y ID de ressource de volume de stockage Azure NetApp Files complet (par exemple /souscriptions/.../resourceGroups/.../baladers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /souscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/Authentication providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u01 ID de fichier principal de service ou de fichier de base de ressources https://...):[] oracle.json Ajouter une ressource Azure NetApp Files à la section Volume DE DONNÉES de la configuration de la base de données ? (y/n) [n] : y ID de ressource de volume de stockage Azure NetApp Files complet (par exemple /souscriptions/.../resourceGroups/.../baladers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /souscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/Authentication providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u02 ID de fichier principal de service ou de fichier de base de ressources https://...):[] oracle.json Ajouter une ressource Azure NetApp Files à la section Volume DE DONNÉES de la configuration de la base de données ? (y/n) [n] : n --- LES AUTRES volumes sont des copies Snapshot immédiatement sans préparer d'application pour snapshot --- Ajouter une ressource Azure NetApp Files à UNE autre section de volume de la configuration de la base de données ? (y/n) [n] : y ID de ressource de volume de stockage Azure NetApp Files complet (par exemple /souscriptions/.../resourceGroups/.../baladers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /souscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/Authentication providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u03 ID de fichier principal de service ou de fichier de base de ressources https://...):[] oracle.json Ajouter une ressource Azure NetApp Files à UNE autre section Volume de la configuration de la base de données ? (o/n) [n] : n
+=== Azure NetApp Files Storage details ===
+Are you using Azure NetApp Files for the database? (y/n) [n]: y
+--- DATA Volumes have the Application put into a consistent state before they are snapshot ---
+Add Azure NetApp Files resource to DATA Volume section of Database configuration? (y/n) [n]: y
+Full Azure NetApp Files Storage Volume Resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /subscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u01
+Service Principal Authentication filename or Azure Key Vault Resource ID (e.g. auth-file.json or https://...): oracle.json
+Add Azure NetApp Files resource to DATA Volume section of Database configuration? (y/n) [n]: y
+Full Azure NetApp Files Storage Volume Resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /subscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u02
+Service Principal Authentication filename or Azure Key Vault Resource ID (e.g. auth-file.json or https://...): oracle.json
+Add Azure NetApp Files resource to DATA Volume section of Database configuration? (y/n) [n]: n
+--- OTHER Volumes are snapshot immediately without preparing any application for snapshot ---
+Add Azure NetApp Files resource to OTHER Volume section of Database configuration? (y/n) [n]: y
+Full Azure NetApp Files Storage Volume Resource ID (e.g. /subscriptions/.../resourceGroups/.../providers/Microsoft.NetApp/netAppAccounts/.../capacityPools/Premium/volumes/...): /subscriptions/0efa2dfb-917c-4497-b56a-b3f4eadb8111/resourceGroups/ANFAVSRG/providers/Microsoft.NetApp/netAppAccounts/ANFAVSAcct/capacityPools/CapPool/volumes/acao-ora01-u03
+Service Principal Authentication filename or Azure Key Vault Resource ID (e.g. auth-file.json or https://...): oracle.json
+Add Azure NetApp Files resource to OTHER Volume section of Database configuration? (y/n) [n]: n
 
-+
-==== Détails du disque géré Azure === utilisez-vous des disques gérés Azure pour la base de données ? (o/n) [n] : n
+=== Azure Managed Disk details ===
+Are you using Azure Managed Disks for the database? (y/n) [n]: n
 
-+
-===== grande instance Azure (bare Metal) Détails du stockage === utilisez-vous Azure grande instance (bare Metal) pour la base de données ? (o/n) [n] : n
+=== Azure Large Instance (Bare Metal) Storage details ===
+Are you using Azure Large Instance (Bare Metal) for the database? (y/n) [n]: n
 
-+
-Entrez le type de base de données à ajouter, 'hana', 'oracle' ou 'exit' (sans base de données) : exit
+Enter the database type to add, 'hana', 'oracle', or 'exit' (for no database): exit
 
-+
-Modification de la configuration terminée, écriture de la sortie dans 'azacsnap.json'.
-
+Editing configuration complete, writing output to 'azacsnap.json'.
+----
 . En tant qu'utilisateur azacsnap Linux, exécutez la commande azacsnap test pour une sauvegarde Oracle.
 +
 [source, cli]
@@ -390,8 +423,15 @@ azacsnap -c test --test oracle --configfile azacsnap.json
 Résultat attendu :
 
 +
-[Azacsnap@acao-ora01 bin]$ azacsnap -c test --test oracle --configfile azacsnap.json DÉBUT : processus de test démarré pour Oracle COMMENCE : tests Oracle DB RÉUSSI : connectivité à Oracle DB version 1908000000 FIN : processus de test complet pour Oracle [azacao-ora01 bin]
-
+[listing]
+----
+[azacsnap@acao-ora01 bin]$ azacsnap -c test --test oracle --configfile azacsnap.json
+BEGIN : Test process started for 'oracle'
+BEGIN : Oracle DB tests
+PASSED: Successful connectivity to Oracle DB version 1908000000
+END   : Test process complete for 'oracle'
+[azacsnap@acao-ora01 bin]$
+----
 . Exécutez votre première sauvegarde snapshot.
 +
 [source, cli]

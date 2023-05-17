@@ -17,7 +17,7 @@ summary: Cette section décrit les différents points à prendre en compte lorsq
 
 == Performances des VM
 
-Il est important de choisir la bonne taille de machine virtuelle pour obtenir des performances optimales d'une base de données relationnelle dans le cloud public. Microsoft recommande de continuer à utiliser les mêmes options d'ajustement des performances de base de données que celles applicables à SQL Server dans des environnements de serveurs sur site. Utiliser https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-memory["optimisé pour la mémoire"^] Tailles des machines virtuelles pour optimiser les performances des charges de travail SQL Server. Collectez les données de performances du déploiement existant pour identifier l'utilisation de la mémoire RAM et de l'UC tout en choisissant les instances appropriées. La plupart des déploiements choisissent une série D, E ou M.
+Il est important de choisir la bonne taille de machine virtuelle pour obtenir des performances optimales d'une base de données relationnelle dans le cloud public. Microsoft recommande de continuer à utiliser les mêmes options d'ajustement des performances de base de données que celles applicables à SQL Server dans des environnements de serveurs sur site. Utiliser https://["optimisé pour la mémoire"^] Tailles des machines virtuelles pour optimiser les performances des charges de travail SQL Server. Collectez les données de performances du déploiement existant pour identifier l'utilisation de la mémoire RAM et de l'UC tout en choisissant les instances appropriées. La plupart des déploiements choisissent une série D, E ou M.
 
 *Notes:*
 
@@ -29,7 +29,7 @@ Il est important de choisir la bonne taille de machine virtuelle pour obtenir de
 
 == Redondance des machines virtuelles
 
-Pour augmenter la redondance et la haute disponibilité, les machines virtuelles SQL Server doivent être identiques https://docs.microsoft.com/en-us/azure/virtual-machines/availability-set-overview["ensemble de disponibilité"^] ou différent https://docs.microsoft.com/en-us/azure/availability-zones/az-overview["zones de disponibilité"^]. Lorsque vous créez des VM Azure, vous devez choisir entre configurer des ensembles de disponibilité et des zones de disponibilité ; une VM Azure ne peut pas participer aux deux.
+Pour augmenter la redondance et la haute disponibilité, les machines virtuelles SQL Server doivent être identiques https://["ensemble de disponibilité"^] ou différent https://["zones de disponibilité"^]. Lorsque vous créez des VM Azure, vous devez choisir entre configurer des ensembles de disponibilité et des zones de disponibilité ; une VM Azure ne peut pas participer aux deux.
 
 
 
@@ -46,7 +46,7 @@ Microsoft SQL Server peut être déployé avec un partage de fichiers SMB comme 
 
 NOTE: Le stockage de partage de fichiers pour les bases de données SQL Server doit prendre en charge la propriété disponible en continu. Cela permet un accès ininterrompu aux données de partage de fichiers.
 
-Azure NetApp Files fournit un stockage de fichiers haute performance pour répondre à toutes les charges de travail exigeantes et réduit le coût total de possession SQL Server par rapport aux solutions de stockage bloc. Avec le stockage en mode bloc, les machines virtuelles ont imposé des limites en termes d'E/S et de bande passante pour les opérations sur disques ; les seules limites en bande passante réseau sont appliquées à Azure NetApp Files. En d'autres termes, aucune limite d'E/S au niveau des VM n'est appliquée à la Azure NetApp Files. Sans ces limites d'E/S, SQL Server exécuté sur des machines virtuelles plus petites connectées à Azure NetApp Files peut exécuter aussi bien que SQL Server sur des machines virtuelles plus importantes. Azure NetApp Files réduit les coûts de déploiement de SQL Server en réduisant les coûts de licence du calcul et des logiciels. Pour obtenir une analyse détaillée des coûts et des performances lors du déploiement de Azure NetApp Files pour SQL Server, consultez le https://docs.microsoft.com/en-us/azure/azure-netapp-files/solutions-benefits-azure-netapp-files-sql-server["Avantages liés au déploiement de Azure NetApp Files pour SQL Server"^].
+Azure NetApp Files fournit un stockage de fichiers haute performance pour répondre à toutes les charges de travail exigeantes et réduit le coût total de possession SQL Server par rapport aux solutions de stockage bloc. Avec le stockage en mode bloc, les machines virtuelles ont imposé des limites en termes d'E/S et de bande passante pour les opérations sur disques ; les seules limites en bande passante réseau sont appliquées à Azure NetApp Files. En d'autres termes, aucune limite d'E/S au niveau des VM n'est appliquée à la Azure NetApp Files. Sans ces limites d'E/S, SQL Server exécuté sur des machines virtuelles plus petites connectées à Azure NetApp Files peut exécuter aussi bien que SQL Server sur des machines virtuelles plus importantes. Azure NetApp Files réduit les coûts de déploiement de SQL Server en réduisant les coûts de licence du calcul et des logiciels. Pour obtenir une analyse détaillée des coûts et des performances lors du déploiement de Azure NetApp Files pour SQL Server, consultez le https://["Avantages liés au déploiement de Azure NetApp Files pour SQL Server"^].
 
 
 
@@ -61,8 +61,8 @@ Azure NetApp Files for SQL Server offre les avantages suivants :
 
 *Notes:*
 
-* Pour augmenter la redondance et la haute disponibilité, les machines virtuelles SQL Server doivent être identiques https://docs.microsoft.com/en-us/azure/virtual-machines/availability-set-overview["ensemble de disponibilité"^] ou dans un autre https://docs.microsoft.com/en-us/azure/availability-zones/az-overview["zones de disponibilité"^]. Tenez compte des exigences de chemin de fichier si des fichiers de données définis par l'utilisateur sont nécessaires ; dans ce cas, sélectionnez FCI SQL sur AOAG SQL.
-* Le chemin UNC suivant est pris en charge : file:///\\ANFSMB-b4ca.anf.test\SQLDB%20and%20\\ANFSMB-b4ca.anf.test\SQLDB\["\\ANFSMB-b4ca.anf.test\SQLDB et \\ANFSMB-b4ca.anf.test\SQLDB\"^].
+* Pour augmenter la redondance et la haute disponibilité, les machines virtuelles SQL Server doivent être identiques https://["ensemble de disponibilité"^] ou dans un autre https://["zones de disponibilité"^]. Tenez compte des exigences de chemin de fichier si des fichiers de données définis par l'utilisateur sont nécessaires ; dans ce cas, sélectionnez FCI SQL sur AOAG SQL.
+* Le chemin UNC suivant est pris en charge : file://["\\ANFSMB-b4ca.anf.test\SQLDB et \\ANFSMB-b4ca.anf.test\SQLDB\"^].
 * Le chemin UNC de bouclage n'est pas pris en charge.
 * Pour le dimensionnement, utilisez les données historiques de votre environnement sur site. Pour les charges de travail OLTP, faites correspondre les IOPS cibles aux exigences de performance en utilisant des charges de travail aux heures moyennes et de pointe, ainsi que les compteurs de performances en lecture/s des disques et en écriture/sec. Pour les charges de travail d'entrepôt de données et de création de rapports, faites correspondre le débit cible en utilisant des charges de travail aux heures moyennes et de pointe, ainsi que les octets en lecture/s et les octets d'écriture sur disque/s. Les valeurs moyennes peuvent être utilisées conjointement avec les fonctions de reformatage de volume.
 
@@ -71,14 +71,14 @@ Azure NetApp Files for SQL Server offre les avantages suivants :
 
 == Créer des partages disponibles en continu
 
-Créer des partages disponibles en continu via le portail Azure ou l'interface de ligne de commande Azure Dans le portail, sélectionnez l'option Activer la propriété disponibilité continue. Pour l'interface de ligne de commande Azure, spécifiez le partage en tant que partage disponible en continu à l'aide de la `az netappfiles volume create with the smb-continuously-avl` option définie sur `$True`. Pour en savoir plus sur la création d'un nouveau volume à disponibilité continue, voir https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-create-volumes-smb["Créer un partage disponible en continu"^].
+Créer des partages disponibles en continu via le portail Azure ou l'interface de ligne de commande Azure Dans le portail, sélectionnez l'option Activer la propriété disponibilité continue. Pour l'interface de ligne de commande Azure, spécifiez le partage en tant que partage disponible en continu à l'aide de la `az netappfiles volume create with the smb-continuously-avl` option définie sur `$True`. Pour en savoir plus sur la création d'un nouveau volume à disponibilité continue, voir https://["Créer un partage disponible en continu"^].
 
 *Notes:*
 
 * Activez la disponibilité sans interruption pour le volume SMB comme illustré dans l'image suivante.
 * Si un compte de domaine non administrateur est utilisé, assurez-vous que le compte dispose du privilège de sécurité requis.
 * Définissez les autorisations appropriées au niveau du partage et les autorisations appropriées au niveau du fichier.
-* Une propriété disponible en continu ne peut pas être activée sur les volumes SMB existants. Utilisez la technologie NetApp Snapshot pour convertir un volume existant en partage disponible en continu. Pour plus d'informations, voir https://docs.microsoft.com/en-us/azure/azure-netapp-files/convert-smb-continuous-availability["Conversion des volumes SMB existants pour utiliser la disponibilité continue"^].
+* Une propriété disponible en continu ne peut pas être activée sur les volumes SMB existants. Utilisez la technologie NetApp Snapshot pour convertir un volume existant en partage disponible en continu. Pour plus d'informations, voir https://["Conversion des volumes SMB existants pour utiliser la disponibilité continue"^].
 
 
 image:sql-srv-anf_image1.png["Erreur : image graphique manquante"]
@@ -94,7 +94,7 @@ Azure NetApp Files prend en charge trois niveaux de services : standard (16 Mbit
 * La qualité de service (QoS) de type (automatique ou manuelle) du pool de capacité
 
 
-Pour plus d'informations, voir https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-service-levels["Niveaux de service pour Azure NetApp Files"^].
+Pour plus d'informations, voir https://["Niveaux de service pour Azure NetApp Files"^].
 
 image:sql-srv-anf_image2.png["Erreur : image graphique manquante"]
 
@@ -102,7 +102,7 @@ image:sql-srv-anf_image2.png["Erreur : image graphique manquante"]
 
 == Validation des performances
 
-Comme pour tout déploiement, le test des machines virtuelles et du stockage est crucial. Pour la validation du stockage, des outils tels que HammerDB, Apploader, le https://github.com/NetApp/SQL_Storage_Benchmark["Outil de banc d'essai du stockage SQL Server (SB)"^], Ou tout script personnalisé ou FIO avec le mélange de lecture/écriture approprié doit être utilisé. N'oubliez pas cependant que la plupart des charges de travail SQL Server, y compris les charges de travail OLTP occupées, sont proches de 80 à 90 % en lecture et de 10 à 20 % en écriture.
+Comme pour tout déploiement, le test des machines virtuelles et du stockage est crucial. Pour la validation du stockage, des outils tels que HammerDB, Apploader, le https://["Outil de banc d'essai du stockage SQL Server (SB)"^], Ou tout script personnalisé ou FIO avec le mélange de lecture/écriture approprié doit être utilisé. N'oubliez pas cependant que la plupart des charges de travail SQL Server, y compris les charges de travail OLTP occupées, sont proches de 80 à 90 % en lecture et de 10 à 20 % en écriture.
 
 Pour démontrer les performances, un test rapide a été effectué sur un volume en utilisant des niveaux de service premium. Dans ce test, la taille du volume a été augmentée de 100 Go à 2 To à la volée sans interrompre l'accès aux applications et sans aucune migration de données.
 

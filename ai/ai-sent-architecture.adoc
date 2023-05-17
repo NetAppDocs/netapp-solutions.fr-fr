@@ -32,7 +32,7 @@ Le kit NetApp DataOps est une bibliothèque Python qui simplifie la tâche des d
 
 Le schéma suivant illustre l'architecture de la solution. Il existe trois catégories d'environnement principales : le cloud, le cœur et la périphérie. Chacune des catégories peut être géographiquement dispersée. Dans le cloud, par exemple, des magasins d'objets peuvent contenir des fichiers audio dans des compartiments dans différentes régions, tandis que le cœur peut contenir des data centers liés par l'intermédiaire d'un réseau ultra-rapide ou de NetApp Cloud Sync. Les nœuds périphériques indiquent les plates-formes de travail quotidiennes de chaque agent humain, où des microphones et des outils de tableau de bord interactifs sont disponibles pour visualiser le sentiment et collecter des données audio à partir de conversations avec les clients.
 
-Dans les data centers accélérés par GPU, les entreprises peuvent utiliser NVIDIA https://docs.nvidia.com/deeplearning/riva/user-guide/docs/index.html["RIVA"^] Framework pour créer des applications d'IA conversationnelles, vers lesquelles le https://developer.nvidia.com/tao["Tao Toolkit"^] Se connecte pour le finetuning de modèles et le recyclage à l'aide de techniques d'apprentissage par transfert de L. Ces workflows et applications de calcul sont optimisés par le https://github.com/NetApp/netapp-dataops-toolkit["Kit NetApp DataOps"^], Fournir les meilleures fonctionnalités de gestion des données qu'ONTAP offre. Ce kit permet aux équipes de gestion de données d'entreprise de créer rapidement des prototypes de modèles avec des données structurées et non structurées associées, à l'aide de snapshots et de clones pour la traçabilité, la gestion des versions, les tests A/B, ce qui assure la sécurité et la gouvernance et la conformité réglementaire. Voir la section link:ai-sent-design-considerations.html#storage-design["Design du stockage"] pour en savoir plus.
+Dans les data centers accélérés par GPU, les entreprises peuvent utiliser NVIDIA https://["RIVA"^] Framework pour créer des applications d'IA conversationnelles, vers lesquelles le https://["Tao Toolkit"^] Se connecte pour le finetuning de modèles et le recyclage à l'aide de techniques d'apprentissage par transfert de L. Ces workflows et applications de calcul sont optimisés par le https://["Kit NetApp DataOps"^], Fournir les meilleures fonctionnalités de gestion des données qu'ONTAP offre. Ce kit permet aux équipes de gestion de données d'entreprise de créer rapidement des prototypes de modèles avec des données structurées et non structurées associées, à l'aide de snapshots et de clones pour la traçabilité, la gestion des versions, les tests A/B, ce qui assure la sécurité et la gouvernance et la conformité réglementaire. Voir la section link:ai-sent-design-considerations.html#storage-design["Design du stockage"] pour en savoir plus.
 
 Cette solution présente les étapes détaillées du traitement des fichiers audio, de l'entraînement des modèles NLP, de l'apprentissage par transfert et de la gestion des données. Le pipeline de bout en bout qui en résulte génère un résumé des sentiments qui s'affiche en temps réel sur les tableaux de bord des agents du support humain.
 
@@ -109,7 +109,7 @@ ONTAP 9.9, la dernière génération de logiciel de gestion du stockage de NetAp
 
 ==== NetApp Cloud Sync
 
-https://docs.netapp.com/us-en/occm/concept_cloud_sync.html["Cloud Sync"^] Est un service NetApp permettant une synchronisation rapide et sécurisée des données, qui vous permet de transférer des fichiers entre des partages de fichiers NFS ou SMB sur site vers l'une des cibles suivantes :
+https://["Cloud Sync"^] Est un service NetApp permettant une synchronisation rapide et sécurisée des données, qui vous permet de transférer des fichiers entre des partages de fichiers NFS ou SMB sur site vers l'une des cibles suivantes :
 
 * NetApp StorageGRID
 * NetApp ONTAP S3
@@ -128,7 +128,7 @@ Cloud Sync déplace les fichiers là où vous en avez besoin, rapidement et de f
 
 ==== NetApp StorageGRID
 
-La suite de stockage objet Software-defined de StorageGRID prend en charge de nombreux cas d'utilisation de manière transparente dans les environnements multiclouds publics, privés et hybrides. Grâce à des innovations de pointe, NetApp StorageGRID stocke, sécurise, protège et préserve les données non structurées à une utilisation polyvalente, y compris la gestion automatisée du cycle de vie sur de longues périodes. Pour plus d'informations, reportez-vous à la section https://www.netapp.com/data-storage/storagegrid/documentation/["NetApp StorageGRID"^] le site.
+La suite de stockage objet Software-defined de StorageGRID prend en charge de nombreux cas d'utilisation de manière transparente dans les environnements multiclouds publics, privés et hybrides. Grâce à des innovations de pointe, NetApp StorageGRID stocke, sécurise, protège et préserve les données non structurées à une utilisation polyvalente, y compris la gestion automatisée du cycle de vie sur de longues périodes. Pour plus d'informations, reportez-vous à la section https://["NetApp StorageGRID"^] le site.
 
 
 
@@ -243,6 +243,6 @@ Pour l'analyse des sentiments, la sortie du texte de la reconnaissance vocale au
 
 image:ai-sent-image8.png["Erreur : image graphique manquante"]
 
-Un pipeline similaire est utilisé à la fois pour l'analyse de la parole au texte et de l'opinion dans la boîte à outils TAO. La différence majeure réside dans l'utilisation d'étiquettes nécessaires au réglage précis des modèles. Le pipeline TAT Toolkit commence par le traitement des fichiers de données. Puis les modèles pré-entraînés (provenant du https://ngc.nvidia.com/catalog["Catalogue NVIDIA NGC"^]) sont affinée à l'aide des données du centre de support. Les modèles optimisés sont évalués en fonction des metrics de performance correspondants. S'ils sont plus performants que les modèles pré-entraînés, ils sont déployés sur le serveur RIVA.
+Un pipeline similaire est utilisé à la fois pour l'analyse de la parole au texte et de l'opinion dans la boîte à outils TAO. La différence majeure réside dans l'utilisation d'étiquettes nécessaires au réglage précis des modèles. Le pipeline TAT Toolkit commence par le traitement des fichiers de données. Puis les modèles pré-entraînés (provenant du https://["Catalogue NVIDIA NGC"^]) sont affinée à l'aide des données du centre de support. Les modèles optimisés sont évalués en fonction des metrics de performance correspondants. S'ils sont plus performants que les modèles pré-entraînés, ils sont déployés sur le serveur RIVA.
 
 link:ai-sent-design-considerations.html["Suivant : considérations de conception."]
