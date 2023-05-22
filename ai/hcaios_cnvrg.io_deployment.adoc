@@ -64,7 +64,7 @@ cnvrg-app-69fbb9df98-6xrgf              1/1     Running     0          2m cnvrg-
 
 == Computer Vision Model Training with ResNet50 and the thorax X-ray Dataset
 
-Le système d'exploitation cesnvrg.io ai a été déployé sur une configuration Kubernetes sur une architecture NetApp ONTAP ai optimisée par le système NVIDIA DGX. Pour la validation, nous avons utilisé le jeu de données de radiographie du thorax NIH composé d'images déidentifiées des radiographies pulmonaires. Les images étaient au format PNG. Les données ont été fournies par le Centre clinique des NIH et sont disponibles par l'intermédiaire du https://["Site de téléchargement NIH"^]. Nous avons utilisé un échantillon de 250 Go de données comportant 627, 615 images dans 15 classes.
+Le système d'exploitation cesnvrg.io ai a été déployé sur une configuration Kubernetes sur une architecture NetApp ONTAP ai optimisée par le système NVIDIA DGX. Pour la validation, nous avons utilisé le jeu de données de radiographie du thorax NIH composé d'images déidentifiées des radiographies pulmonaires. Les images étaient au format PNG. Les données ont été fournies par le Centre clinique des NIH et sont disponibles par l'intermédiaire du https://nihcc.app.box.com/v/ChestXray-NIHCC["Site de téléchargement NIH"^]. Nous avons utilisé un échantillon de 250 Go de données comportant 627, 615 images dans 15 classes.
 
 Le dataset a été téléchargé sur la plateforme cnvrg et a été mis en cache sur une exportation NFS depuis le système de stockage NetApp AFF A800.
 
@@ -84,7 +84,7 @@ Pour charger des données sur la plateforme cnvrg, vous pouvez utiliser l'interf
 
 Pour télécharger des données, procédez comme suit :
 
-. Téléchargez le https://["CLI cnvrg"^].
+. Téléchargez le https://app.cnvrg.io/docs/cli/install.html["CLI cnvrg"^].
 . accédez au répertoire des rayons x.
 . Initialisez le dataset dans la plate-forme à l'aide du `cnvrg data init` commande.
 . Télécharger tout le contenu du répertoire vers le data Lake central avec le `cnvrg data sync` Commande.une fois les données chargées dans le magasin d'objets central (StorageGRID, S3 ou autres), vous pouvez naviguer à l'aide de l'interface graphique. La figure suivante montre un fichier PNG d'image de fibrose radiologique thoracique chargé. De plus, cnvrg version les données afin que tout modèle que vous construisez puisse être reproduit à la version des données.

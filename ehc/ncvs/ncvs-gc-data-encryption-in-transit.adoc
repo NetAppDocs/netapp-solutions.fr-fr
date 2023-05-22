@@ -22,11 +22,11 @@ Les données en transit peuvent être chiffrées au niveau de la couche de proto
 
 == Réseau Google Cloud
 
-Google Cloud chiffre le trafic au niveau du réseau comme décrit à la section https://["Chiffrement en transit"^] Dans la documentation Google. Comme indiqué dans la section « architecture de services Cloud volumes », Cloud Volumes Service est fourni à partir d'un projet de production PSA contrôlé par NetApp.
+Google Cloud chiffre le trafic au niveau du réseau comme décrit à la section https://cloud.google.com/security/encryption-in-transit["Chiffrement en transit"^] Dans la documentation Google. Comme indiqué dans la section « architecture de services Cloud volumes », Cloud Volumes Service est fourni à partir d'un projet de production PSA contrôlé par NetApp.
 
 Dans le cas de CVS-SW, le locataire exécute les machines virtuelles Google pour fournir le service. Le trafic entre les VM utilisateur et les machines virtuelles Cloud Volumes Service est automatiquement chiffré par Google.
 
-Bien que le chemin d'accès aux données de CVS-Performance ne soit pas intégralement chiffré sur la couche réseau, NetApp et Google utilisent une combinaison https://["De cryptage IEEE 802.1AE (MACSec)"^], https://["encapsulation"^] (Chiffrement des données) et des réseaux physiquement restreints pour protéger les données en transit entre le type de service Cloud Volumes Service CVS-Performance et Google Cloud.
+Bien que le chemin d'accès aux données de CVS-Performance ne soit pas intégralement chiffré sur la couche réseau, NetApp et Google utilisent une combinaison https://1.ieee802.org/security/802-1ae/["De cryptage IEEE 802.1AE (MACSec)"^], https://datatracker.ietf.org/doc/html/rfc2003["encapsulation"^] (Chiffrement des données) et des réseaux physiquement restreints pour protéger les données en transit entre le type de service Cloud Volumes Service CVS-Performance et Google Cloud.
 
 
 
@@ -38,7 +38,7 @@ Les protocoles NAS NFS et SMB fournissent un chiffrement de transport en option 
 
 === Chiffrement SMB
 
-https://["Chiffrement SMB"^] Offre un cryptage de bout en bout des données SMB et protège les données contre les occurrences de réseaux non fiables. Vous pouvez activer le cryptage à la fois pour la connexion de données client/serveur (uniquement disponible pour les clients compatibles SMB3.x) et pour l'authentification du contrôleur serveur/domaine.
+https://docs.microsoft.com/en-us/windows-server/storage/file-server/smb-security["Chiffrement SMB"^] Offre un cryptage de bout en bout des données SMB et protège les données contre les occurrences de réseaux non fiables. Vous pouvez activer le cryptage à la fois pour la connexion de données client/serveur (uniquement disponible pour les clients compatibles SMB3.x) et pour l'authentification du contrôleur serveur/domaine.
 
 Lorsque le cryptage SMB est activé, les clients qui ne prennent pas en charge le cryptage ne peuvent pas accéder au partage.
 
@@ -48,13 +48,13 @@ Cloud Volumes Service prend en charge le chiffrement de sécurité RC4-HMAC, AES
 
 === Kerberos NFSv4.1
 
-Pour NFSv4.1, CVS-Performance propose l'authentification Kerberos, comme décrit dans https://["RFC7530"^]. Vous pouvez activer Kerberos par volume.
+Pour NFSv4.1, CVS-Performance propose l'authentification Kerberos, comme décrit dans https://datatracker.ietf.org/doc/html/rfc7530["RFC7530"^]. Vous pouvez activer Kerberos par volume.
 
 Le type de chiffrement le plus puissant actuellement disponible pour Kerberos est AES-256-CTS-HMAC-SHA1. NetApp Cloud Volumes Service prend en charge AES-256-CTS-HMAC-SHA1, AES-128-CTS-HMAC-SHA1, DES3 et DES pour NFS. Il prend également en charge ARCFOUR-HMAC (RC4) pour le trafic CIFS/SMB, mais pas pour NFS.
 
 Kerberos propose trois niveaux de sécurité différents pour les montages NFS qui offrent des options de sécurité Kerberos.
 
-Selon RedHat https://["Options de montage courantes"^] documentation :
+Selon RedHat https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/storage_administration_guide/s1-nfs-client-config-options["Options de montage courantes"^] documentation :
 
 ....
 sec=krb5 uses Kerberos V5 instead of local UNIX UIDs and GIDs to authenticate users.

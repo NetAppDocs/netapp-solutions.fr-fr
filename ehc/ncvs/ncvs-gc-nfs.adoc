@@ -56,7 +56,7 @@ NOTE: Lors de l'utilisation de NFSv4.1, l'utilisateur root peut s'afficher comme
 
 Sous Linux, le compte racine a accès à toutes les commandes, fichiers et dossiers d'un système de fichiers Linux. En raison de la puissance de ce compte, les bonnes pratiques en matière de sécurité exigent souvent que l'utilisateur root soit désactivé ou restreint d'une façon ou d'une autre. Dans les exportations NFS, la puissance dont dispose un utilisateur root sur les fichiers et les dossiers peut être contrôlée dans Cloud Volumes Service au moyen de règles et de stratégies d'exportation et d'un concept appelé « squash racine ».
 
-Le scaling racine garantit que l'utilisateur root accédant à un montage NFS est écrasé à l'utilisateur numérique anonyme 65534 (voir la section «<<L'utilisateur anonyme>>”) et n'est actuellement disponible que lors de l'utilisation de CVS-Performance en sélectionnant Désactivé pour l'accès racine lors de la création de règles d'export. Si l'utilisateur root est écrasé par l'utilisateur anonyme, il n'a plus accès à exécuter CHown ou https://["commandes setuid/setgid (le bit collant)"^] Sur les fichiers ou dossiers du montage NFS, et les fichiers ou dossiers créés par l'utilisateur root affichent l'UID d'anon comme propriétaire/groupe. En outre, les ACL NFSv4 ne peuvent pas être modifiés par l'utilisateur root. Cependant, l'utilisateur root a toujours accès aux fichiers chmod et supprimés pour lesquels il n'a pas d'autorisations explicites. Si vous souhaitez limiter l'accès aux autorisations de fichier et de dossier d'un utilisateur root, envisagez d'utiliser un volume avec des listes de contrôle d'accès NTFS, créant un utilisateur Windows nommé `root`, et application des autorisations souhaitées aux fichiers ou dossiers.
+Le scaling racine garantit que l'utilisateur root accédant à un montage NFS est écrasé à l'utilisateur numérique anonyme 65534 (voir la section «<<L'utilisateur anonyme>>”) et n'est actuellement disponible que lors de l'utilisation de CVS-Performance en sélectionnant Désactivé pour l'accès racine lors de la création de règles d'export. Si l'utilisateur root est écrasé par l'utilisateur anonyme, il n'a plus accès à exécuter CHown ou https://en.wikipedia.org/wiki/Setuid["commandes setuid/setgid (le bit collant)"^] Sur les fichiers ou dossiers du montage NFS, et les fichiers ou dossiers créés par l'utilisateur root affichent l'UID d'anon comme propriétaire/groupe. En outre, les ACL NFSv4 ne peuvent pas être modifiés par l'utilisateur root. Cependant, l'utilisateur root a toujours accès aux fichiers chmod et supprimés pour lesquels il n'a pas d'autorisations explicites. Si vous souhaitez limiter l'accès aux autorisations de fichier et de dossier d'un utilisateur root, envisagez d'utiliser un volume avec des listes de contrôle d'accès NTFS, créant un utilisateur Windows nommé `root`, et application des autorisations souhaitées aux fichiers ou dossiers.
 
 
 
@@ -111,7 +111,7 @@ Les autorisations bits du mode couvrent uniquement le propriétaire, le groupe e
 
 Ces deux méthodes nécessitent une connexion LDAP pour la gestion des identités UNIX et des informations utilisateur et groupe UNIX valides (voir la section link:ncvs-gc-other-nas-infrastructure-service-dependencies.html#ldap["« LDAP »"]) Et ne sont disponibles qu'avec des instances CVS-Performance. Pour utiliser des volumes de style de sécurité NTFS avec le protocole NFS, vous devez utiliser le protocole double (SMB et NFS v3) ou le double protocole (SMB et NFS v4.1), même si aucune connexion SMB n'est établie. Pour utiliser les listes de contrôle d'accès NFSv4.1 avec montages NFSv3, vous devez sélectionner `Both (NFSv3/NFSv4.1)` comme type de protocole.
 
-Les bits standard en mode UNIX ne fournissent pas le même niveau de granularité dans les autorisations que les ACL NTFS ou NFSv4.x fournissent. Le tableau suivant compare la granularité des autorisations entre les bits en mode NFS v3 et les ACL NFSv4.1. Pour plus d'informations sur les listes de contrôle d'accès NFSv4.1, voir https://["Nfs4_acl - listes de contrôle d'accès NFSv4"^].
+Les bits standard en mode UNIX ne fournissent pas le même niveau de granularité dans les autorisations que les ACL NTFS ou NFSv4.x fournissent. Le tableau suivant compare la granularité des autorisations entre les bits en mode NFS v3 et les ACL NFSv4.1. Pour plus d'informations sur les listes de contrôle d'accès NFSv4.1, voir https://linux.die.net/man/5/nfs4_acl["Nfs4_acl - listes de contrôle d'accès NFSv4"^].
 
 |===
 | Bits de mode NFSv3 | Listes de contrôle d'accès NFSv4.1 
@@ -139,7 +139,7 @@ Autorisations * lecture-données (fichiers) / répertoire-liste (répertoires) *
 |===
 Enfin, l'appartenance au groupe NFS (dans NFSv3 et NFSV4.x) est limitée à un maximum par défaut de 16 pour AUTH_SYS selon les limites de paquets RPC. NFS Kerberos fournit jusqu'à 32 groupes et les ACL NFSv4 suppriment la limite par le biais de listes de contrôle d'accès granulaires des utilisateurs et des groupes (jusqu'à 1024 entrées par ACE).
 
-En outre, Cloud Volumes Service offre une prise en charge étendue des groupes pour étendre le nombre maximal de groupes pris en charge jusqu'à 32. Pour ce faire, une connexion LDAP à un serveur LDAP qui contient des identités d'utilisateur et de groupe UNIX valides est nécessaire. Pour plus d'informations sur cette configuration, reportez-vous à la section https://["Création et gestion des volumes NFS"^] Dans la documentation Google.
+En outre, Cloud Volumes Service offre une prise en charge étendue des groupes pour étendre le nombre maximal de groupes pris en charge jusqu'à 32. Pour ce faire, une connexion LDAP à un serveur LDAP qui contient des identités d'utilisateur et de groupe UNIX valides est nécessaire. Pour plus d'informations sur cette configuration, reportez-vous à la section https://cloud.google.com/architecture/partners/netapp-cloud-volumes/creating-nfs-volumes?hl=en_US["Création et gestion des volumes NFS"^] Dans la documentation Google.
 
 
 
@@ -220,7 +220,7 @@ Un descripteur de sécurité se compose d'une liste de contrôle d'accès (SACL)
 
 Si un niveau de base `chmod` Est exécuté sur un fichier ou un dossier avec les ACL NFSv4.1 définies, les listes de contrôle d'accès utilisateur et groupe existantes sont conservées, mais le PROPRIÉTAIRE par défaut@, GROUPE@, EVERYONE@ ACL sont modifiés.
 
-Un client utilisant des listes de contrôle d’accès NFSv4.1 peut définir et afficher des listes de contrôle d’accès pour les fichiers et les répertoires du système. Lorsqu'un nouveau fichier ou sous-répertoire est créé dans un répertoire comportant une liste de contrôle d'accès, cet objet hérite de tous les ACE de la liste de contrôle d'accès qui ont été marqués avec le nom approprié http://["indicateurs d'héritage"^].
+Un client utilisant des listes de contrôle d’accès NFSv4.1 peut définir et afficher des listes de contrôle d’accès pour les fichiers et les répertoires du système. Lorsqu'un nouveau fichier ou sous-répertoire est créé dans un répertoire comportant une liste de contrôle d'accès, cet objet hérite de tous les ACE de la liste de contrôle d'accès qui ont été marqués avec le nom approprié http://linux.die.net/man/5/nfs4_acl["indicateurs d'héritage"^].
 
 Si un fichier ou un répertoire possède une liste de contrôle d'accès NFSv4.1, cette liste de contrôle d'accès est utilisée pour contrôler l'accès, quel que soit le protocole utilisé pour accéder au fichier ou au répertoire.
 
@@ -238,15 +238,15 @@ Lorsqu'un fichier ou un répertoire est créé à la suite d'une requête NFSv4,
 
 === Autorisations ACE
 
-Les autorisations de listes de contrôle d'accès NFSv4.1 utilisent une série de valeurs de lettres majuscules et minuscules (par exemple `rxtncy`) pour contrôler l'accès. Pour plus d'informations sur ces valeurs de lettre, reportez-vous à la section https://["COMMENT : utiliser NFSv4 ACL"^].
+Les autorisations de listes de contrôle d'accès NFSv4.1 utilisent une série de valeurs de lettres majuscules et minuscules (par exemple `rxtncy`) pour contrôler l'accès. Pour plus d'informations sur ces valeurs de lettre, reportez-vous à la section https://www.osc.edu/book/export/html/4523["COMMENT : utiliser NFSv4 ACL"^].
 
 
 
 === Comportement ACL NFSv4.1 avec umask et héritage ACL
 
-http://["Les ACL NFSv4 permettent d'offrir l'héritage ACL"^]. L'héritage ACL signifie que les fichiers ou les dossiers créés sous des objets avec des listes de contrôle d'accès NFSv4.1 peuvent hériter des listes de contrôle d'accès basées sur la configuration du http://["Indicateur d'héritage ACL"^].
+http://linux.die.net/man/5/nfs4_acl["Les ACL NFSv4 permettent d'offrir l'héritage ACL"^]. L'héritage ACL signifie que les fichiers ou les dossiers créés sous des objets avec des listes de contrôle d'accès NFSv4.1 peuvent hériter des listes de contrôle d'accès basées sur la configuration du http://linux.die.net/man/5/nfs4_acl["Indicateur d'héritage ACL"^].
 
-https://["Umask"^] permet de contrôler le niveau d'autorisation auquel les fichiers et dossiers sont créés dans un répertoire sans interaction avec l'administrateur. Par défaut, Cloud Volumes Service permet à umask de remplacer les listes de contrôle d'accès héritées, ce qui est le comportement attendu selon https://["RFC 5661"^].
+https://man7.org/linux/man-pages/man2/umask.2.html["Umask"^] permet de contrôler le niveau d'autorisation auquel les fichiers et dossiers sont créés dans un répertoire sans interaction avec l'administrateur. Par défaut, Cloud Volumes Service permet à umask de remplacer les listes de contrôle d'accès héritées, ce qui est le comportement attendu selon https://datatracker.ietf.org/doc/html/rfc5661["RFC 5661"^].
 
 
 
@@ -262,7 +262,7 @@ L'exemple précédent suit les directives de format ACL de :
 ....
 type:flags:principal:permissions
 ....
-Un type de `A` signifie « autoriser ». Les indicateurs hériter ne sont pas définis dans ce cas, car le principal n'est pas un groupe et n'inclut pas l'héritage. De plus, comme l'ACE n'est pas une entrée D'AUDIT, il n'est pas nécessaire de définir les indicateurs d'audit. Pour plus d'informations sur les listes de contrôle d'accès NFSv4.1, voir http://["http://linux.die.net/man/5/nfs4_acl"^].
+Un type de `A` signifie « autoriser ». Les indicateurs hériter ne sont pas définis dans ce cas, car le principal n'est pas un groupe et n'inclut pas l'héritage. De plus, comme l'ACE n'est pas une entrée D'AUDIT, il n'est pas nécessaire de définir les indicateurs d'audit. Pour plus d'informations sur les listes de contrôle d'accès NFSv4.1, voir http://linux.die.net/man/5/nfs4_acl["http://linux.die.net/man/5/nfs4_acl"^].
 
 Si la liste de contrôle d’accès NFSv4.1 n’est pas définie correctement (ou si une chaîne de nom ne peut pas être résolue par le client et le serveur), la liste de contrôle d’accès peut ne pas se comporter comme prévu, ou si la modification de la liste de contrôle d’accès échoue à s’appliquer et générer une erreur.
 
@@ -428,7 +428,7 @@ Dans presque tous les cas, si vous voyez `nobody` Dans les listes d'utilisateurs
 
 Si vous utilisez NFSv4.1, un mappage de chaîne de nom a lieu lors des opérations NFS, comme décrit précédemment.
 
-En plus de l'utilisation `/var/log/messages` Pour trouver un problème avec les ID NFSv4, vous pouvez utiliser le https://["nfsidmap -l"^] Commande sur le client NFS pour afficher les noms d'utilisateur qui sont correctement mappés au domaine NFSv4.
+En plus de l'utilisation `/var/log/messages` Pour trouver un problème avec les ID NFSv4, vous pouvez utiliser le https://man7.org/linux/man-pages/man5/nfsidmap.5.html["nfsidmap -l"^] Commande sur le client NFS pour afficher les noms d'utilisateur qui sont correctement mappés au domaine NFSv4.
 
 Par exemple, ceci est la sortie de la commande après un utilisateur qui peut être trouvé par le client et que Cloud Volumes Service accède à un montage NFSv4.x :
 

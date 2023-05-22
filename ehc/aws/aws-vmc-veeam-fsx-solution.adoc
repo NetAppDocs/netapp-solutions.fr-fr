@@ -78,7 +78,7 @@ L'objectif de cette solution est de démontrer la protection des données des ma
 
 . Machines virtuelles de bases de données Oracle avec VMDK et données d'application résidant sur FSX pour les datastores NFS ONTAP.
 . Machines virtuelles de serveurs de fichiers Linux et Windows avec VMDK résidant sur les datastores NFS FSX pour ONTAP.
-. Veeam requiert des ports TCP spécifiques pour la communication entre les serveurs et les composants de l'environnement de sauvegarde. Sur les composants de l'infrastructure de sauvegarde Veeam, les règles de pare-feu requises sont automatiquement créées. Pour obtenir la liste complète des ports réseau requis, reportez-vous à la section ports du https://["Guide de l'utilisateur Veeam Backup and Replication pour VMware vSphere"].
+. Veeam requiert des ports TCP spécifiques pour la communication entre les serveurs et les composants de l'environnement de sauvegarde. Sur les composants de l'infrastructure de sauvegarde Veeam, les règles de pare-feu requises sont automatiquement créées. Pour obtenir la liste complète des ports réseau requis, reportez-vous à la section ports du https://helpcenter.veeam.com/docs/backup/vsphere/used_ports.html?zoom_highlight=network+ports&ver=120["Guide de l'utilisateur Veeam Backup and Replication pour VMware vSphere"].
 
 
 ====
@@ -114,11 +114,11 @@ Cette solution contient des instructions détaillées pour le déploiement et la
 
 Nous allons passer en revue FSX pour la création de système de fichiers ONTAP, le montage de volumes iSCSI à utiliser comme référentiels de sauvegarde, la création et l'exécution de tâches de sauvegarde, et les restaurations de machines virtuelles et de bases de données.
 
-Pour plus d'informations sur FSX pour NetApp ONTAP, reportez-vous au https://["Guide de l'utilisateur de FSX pour ONTAP"^].
+Pour plus d'informations sur FSX pour NetApp ONTAP, reportez-vous au https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["Guide de l'utilisateur de FSX pour ONTAP"^].
 
-Pour plus d'informations sur Veeam Backup and Replication, reportez-vous au https://["Documentation technique du centre d'aide Veeam"^] le site.
+Pour plus d'informations sur Veeam Backup and Replication, reportez-vous au https://www.veeam.com/documentation-guides-datasheets.html?productId=8&version=product%3A8%2F221["Documentation technique du centre d'aide Veeam"^] le site.
 
-Pour connaître les points à prendre en compte et les limites lors de l'utilisation de Veeam Backup and Replication avec VMware Cloud on AWS, reportez-vous à la section https://["Support de VMware Cloud sur AWS et de VMware Cloud sur Dell EMC. Considérations et limitations"].
+Pour connaître les points à prendre en compte et les limites lors de l'utilisation de Veeam Backup and Replication avec VMware Cloud on AWS, reportez-vous à la section https://www.veeam.com/kb2414["Support de VMware Cloud sur AWS et de VMware Cloud sur Dell EMC. Considérations et limitations"].
 
 
 
@@ -128,11 +128,11 @@ Un serveur proxy Veeam est un composant du logiciel Veeam Backup & Replication q
 
 Lors du choix d'une conception de serveur proxy Veeam, il est important de tenir compte du nombre de tâches simultanées et du mode de transport ou du type d'accès au stockage souhaité.
 
-Pour le dimensionnement du nombre de serveurs proxy et pour connaître la configuration système requise, reportez-vous au https://["Guide des meilleures pratiques Veeam VMware vSphere"].
+Pour le dimensionnement du nombre de serveurs proxy et pour connaître la configuration système requise, reportez-vous au https://bp.veeam.com/vbr/2_Design_Structures/D_Veeam_Components/D_backup_proxies/vmware_proxies.html["Guide des meilleures pratiques Veeam VMware vSphere"].
 
 Veeam Data Mover est un composant du serveur proxy Veeam et utilise un mode de transport comme méthode pour obtenir les données VM de la source et les transférer vers la cible. Le mode de transport est spécifié lors de la configuration de la tâche de sauvegarde. Il est possible d'augmenter l'efficacité des sauvegardes à partir des datastores NFS en utilisant un accès direct au stockage.
 
-Pour plus d'informations sur les modes de transport, reportez-vous au https://["Guide de l'utilisateur Veeam Backup and Replication pour VMware vSphere"].
+Pour plus d'informations sur les modes de transport, reportez-vous au https://helpcenter.veeam.com/docs/backup/vsphere/transport_modes.html?ver=120["Guide de l'utilisateur Veeam Backup and Replication pour VMware vSphere"].
 
 L'étape suivante porte sur le déploiement de Veeam Proxy Server sur une machine virtuelle Windows dans le SDDC VMware Cloud.
 
@@ -214,7 +214,7 @@ Créez et configurez les LUN iSCSI sur FSX pour ONTAP et montez sur les serveurs
 NOTE: La création d'une LUN iSCSI sur FSX pour ONTAP est un processus en plusieurs étapes. La première étape de la création des volumes peut être effectuée dans la console Amazon FSX ou avec l'interface de ligne de commande NetApp ONTAP.
 
 
-NOTE: Pour plus d'informations sur l'utilisation de FSX pour ONTAP, consultez le https://["Guide de l'utilisateur de FSX pour ONTAP"^].
+NOTE: Pour plus d'informations sur l'utilisation de FSX pour ONTAP, consultez le https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["Guide de l'utilisateur de FSX pour ONTAP"^].
 
 . Depuis l'interface de ligne de commandes de NetApp ONTAP, créer les volumes initiaux à l'aide de la commande suivante :
 +
@@ -282,7 +282,7 @@ image::aws-vmc-veeam-16.png[Choisissez Monter le serveur]
 
 === Configurer les tâches de sauvegarde Veeam
 
-Les tâches de sauvegarde doivent être créées à l'aide des référentiels de sauvegarde de la section précédente. La création de tâches de sauvegarde fait partie intégrante du répertoire des administrateurs de stockage et ne couvre pas toutes les étapes. Pour plus d'informations sur la création de tâches de sauvegarde dans Veeam, consultez le https://["Documentation technique du centre d'aide Veeam"^].
+Les tâches de sauvegarde doivent être créées à l'aide des référentiels de sauvegarde de la section précédente. La création de tâches de sauvegarde fait partie intégrante du répertoire des administrateurs de stockage et ne couvre pas toutes les étapes. Pour plus d'informations sur la création de tâches de sauvegarde dans Veeam, consultez le https://www.veeam.com/documentation-guides-datasheets.html?productId=8&version=product%3A8%2F221["Documentation technique du centre d'aide Veeam"^].
 
 Dans cette solution, des tâches de sauvegarde distinctes ont été créées pour :
 
@@ -313,7 +313,7 @@ image::aws-vmc-veeam-18.png[Règle de conservation à long terme]
 
 Une restauration complète avec Veeam constitue la première étape de la restauration d'une application. Nous avons confirmé que des restaurations complètes de nos machines virtuelles sous tension et que tous les services s'exécutaient normalement.
 
-La restauration des serveurs fait partie intégrante du répertoire des administrateurs de stockage et nous ne couvrons pas toutes les étapes. Pour plus d'informations sur les restaurations complètes dans Veeam, reportez-vous au https://["Documentation technique du centre d'aide Veeam"^].
+La restauration des serveurs fait partie intégrante du répertoire des administrateurs de stockage et nous ne couvrons pas toutes les étapes. Pour plus d'informations sur les restaurations complètes dans Veeam, reportez-vous au https://www.veeam.com/documentation-guides-datasheets.html?productId=8&version=product%3A8%2F221["Documentation technique du centre d'aide Veeam"^].
 
 
 
@@ -358,7 +358,7 @@ image::aws-vmc-veeam-24.png[surveillez le processus de restauration sql server]
 
 
 ====
-Pour plus d'informations sur les opérations de restauration SQL Server avec Veeam Explorer, reportez-vous à la section Microsoft SQL Server du https://["Guide de l'utilisateur de Veeam Explorers"].
+Pour plus d'informations sur les opérations de restauration SQL Server avec Veeam Explorer, reportez-vous à la section Microsoft SQL Server du https://helpcenter.veeam.com/docs/backup/explorers/vesql_user_guide.html?ver=120["Guide de l'utilisateur de Veeam Explorers"].
 
 
 
@@ -366,7 +366,7 @@ Pour plus d'informations sur les opérations de restauration SQL Server avec Vee
 
 Veeam Explorer for Oracle Database offre la possibilité d'effectuer une restauration standard de base de données Oracle ou une restauration ininterrompue à l'aide d'Instant Recovery. Il prend également en charge les bases de données de publication pour un accès et une restauration rapides des bases de données Data Guard, ainsi que des restaurations à partir de sauvegardes RMAN.
 
-Pour plus d'informations sur les opérations de restauration de bases de données Oracle avec Veeam Explorer, reportez-vous à la section Oracle du https://["Guide de l'utilisateur de Veeam Explorers"].
+Pour plus d'informations sur les opérations de restauration de bases de données Oracle avec Veeam Explorer, reportez-vous à la section Oracle du https://helpcenter.veeam.com/docs/backup/explorers/veor_user_guide.html?ver=120["Guide de l'utilisateur de Veeam Explorers"].
 
 .Restaurez la base de données Oracle avec Veeam Explorer
 [%collapsible]
@@ -457,7 +457,7 @@ Le cas d'utilisation présenté dans cette documentation est axé sur les techno
 
 Pour en savoir plus sur les technologies présentées dans cette solution, consultez les informations complémentaires suivantes.
 
-* https://["Guide de l'utilisateur de FSX pour ONTAP"^]
-* https://["Documentation technique du centre d'aide Veeam"^]
-* https://["Prise en charge de VMware Cloud sur AWS. Considérations et limitations"]
+* https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["Guide de l'utilisateur de FSX pour ONTAP"^]
+* https://www.veeam.com/documentation-guides-datasheets.html?productId=8&version=product%3A8%2F221["Documentation technique du centre d'aide Veeam"^]
+* https://www.veeam.com/kb2414["Prise en charge de VMware Cloud sur AWS. Considérations et limitations"]
 

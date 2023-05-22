@@ -59,7 +59,7 @@ Pour les comptes de machine Kerberos NFS, les réinitialisations de mot de passe
 
 == Ports réseau à utiliser avec LDAP et Kerberos
 
-Lorsque vous utilisez LDAP et Kerberos, vous devez déterminer les ports réseau utilisés par ces services. La liste complète des ports utilisés par Cloud Volumes Service se trouve dans le https://["Documentation Cloud Volumes Service sur les considérations de sécurité"^].
+Lorsque vous utilisez LDAP et Kerberos, vous devez déterminer les ports réseau utilisés par ces services. La liste complète des ports utilisés par Cloud Volumes Service se trouve dans le https://cloud.google.com/architecture/partners/netapp-cloud-volumes/security-considerations?hl=en_US["Documentation Cloud Volumes Service sur les considérations de sécurité"^].
 
 
 
@@ -67,9 +67,9 @@ Lorsque vous utilisez LDAP et Kerberos, vous devez déterminer les ports réseau
 
 Cloud Volumes Service agit comme un client LDAP et utilise des requêtes de recherche LDAP standard pour les recherches utilisateur et de groupe pour les identités UNIX. LDAP est nécessaire si vous avez l'intention d'utiliser des utilisateurs et des groupes en dehors des utilisateurs standard par défaut fournis par Cloud Volumes Service. LDAP est également nécessaire si vous prévoyez d'utiliser NFS Kerberos avec des principes utilisateur (tels que user1@domain.com). Actuellement, seul LDAP utilisant Microsoft Active Directory est pris en charge.
 
-Pour utiliser Active Directory en tant que serveur LDAP UNIX, vous devez renseigner les attributs UNIX nécessaires pour les utilisateurs et groupes que vous souhaitez utiliser pour les identités UNIX. Cloud Volumes Service utilise un modèle de schéma LDAP par défaut qui interroge les attributs sur la base https://["RFC-2307-bis"^]. Par conséquent, le tableau suivant montre les attributs Active Directory minimum requis pour remplir pour les utilisateurs et les groupes et pour quels attributs sont utilisés.
+Pour utiliser Active Directory en tant que serveur LDAP UNIX, vous devez renseigner les attributs UNIX nécessaires pour les utilisateurs et groupes que vous souhaitez utiliser pour les identités UNIX. Cloud Volumes Service utilise un modèle de schéma LDAP par défaut qui interroge les attributs sur la base https://tools.ietf.org/id/draft-howard-rfc2307bis-01.txt["RFC-2307-bis"^]. Par conséquent, le tableau suivant montre les attributs Active Directory minimum requis pour remplir pour les utilisateurs et les groupes et pour quels attributs sont utilisés.
 
-Pour plus d'informations sur la définition des attributs LDAP dans Active Directory, reportez-vous à la section https://["Gestion de l'accès double protocole."^]
+Pour plus d'informations sur la définition des attributs LDAP dans Active Directory, reportez-vous à la section https://cloud.google.com/architecture/partners/netapp-cloud-volumes/managing-dual-protocol-access["Gestion de l'accès double protocole."^]
 
 |===
 | Attribut | Ce qu'il fait 
@@ -305,7 +305,7 @@ TEXT
 
 === Liaison de canal LDAP
 
-En raison d'une vulnérabilité avec les contrôleurs de domaine Windows Active Directory, https://["Avis de sécurité de Microsoft ADV190023"^] Modifie la façon dont le DCS autorise les liaisons LDAP.
+En raison d'une vulnérabilité avec les contrôleurs de domaine Windows Active Directory, https://msrc.microsoft.com/update-guide/vulnerability/ADV190023["Avis de sécurité de Microsoft ADV190023"^] Modifie la façon dont le DCS autorise les liaisons LDAP.
 
 L'impact pour Cloud Volumes Service est le même que pour tous les clients LDAP. Cloud Volumes Service ne prend actuellement pas en charge la liaison de canaux. Étant donné que Cloud Volumes Service prend en charge la signature LDAP par défaut via la négociation, la liaison du canal LDAP ne doit pas poser problème. Si vous rencontrez des problèmes de liaison avec LDAP alors que la liaison des canaux est activée, suivez les étapes de correction décrites dans ADV190023 pour permettre aux liaisons LDAP à partir de Cloud Volumes Service de réussir.
 
@@ -313,13 +313,13 @@ L'impact pour Cloud Volumes Service est le même que pour tous les clients LDAP.
 
 == DNS
 
-Active Directory et Kerberos ont tous deux des dépendances sur DNS pour la résolution du nom d'hôte à IP/IP vers le nom d'hôte. Le DNS requiert l'ouverture du port 53. Cloud Volumes Service n'apporte aucune modification aux enregistrements DNS et ne prend actuellement en charge l'utilisation de https://["DNS dynamique"^] sur les interfaces réseau.
+Active Directory et Kerberos ont tous deux des dépendances sur DNS pour la résolution du nom d'hôte à IP/IP vers le nom d'hôte. Le DNS requiert l'ouverture du port 53. Cloud Volumes Service n'apporte aucune modification aux enregistrements DNS et ne prend actuellement en charge l'utilisation de https://support.google.com/domains/answer/6147083?hl=en["DNS dynamique"^] sur les interfaces réseau.
 
-Vous pouvez configurer Active Directory DNS pour limiter les serveurs qui peuvent mettre à jour les enregistrements DNS. Pour plus d'informations, voir https://["Un DNS Windows sécurisé"^].
+Vous pouvez configurer Active Directory DNS pour limiter les serveurs qui peuvent mettre à jour les enregistrements DNS. Pour plus d'informations, voir https://docs.microsoft.com/en-us/learn/modules/secure-windows-server-domain-name-system/["Un DNS Windows sécurisé"^].
 
 Notez que les ressources d'un projet Google utilisent par défaut Google Cloud DNS, qui n'est pas connecté à Active Directory DNS. Les clients utilisant le DNS du cloud ne peuvent pas résoudre les chemins UNC renvoyés par Cloud Volumes Service. Les clients Windows joints au domaine Active Directory sont configurés pour utiliser Active Directory DNS et peuvent résoudre de tels chemins UNC.
 
-Pour joindre un client à Active Directory, vous devez configurer sa configuration DNS pour utiliser Active Directory DNS. Vous pouvez également configurer Cloud DNS pour transférer les demandes vers Active Directory DNS. Voir https://["Pourquoi mon client ne parvient-il pas à résoudre le nom NetBIOS du SMB ?"^]pour en savoir plus.
+Pour joindre un client à Active Directory, vous devez configurer sa configuration DNS pour utiliser Active Directory DNS. Vous pouvez également configurer Cloud DNS pour transférer les demandes vers Active Directory DNS. Voir https://cloud.google.com/architecture/partners/netapp-cloud-volumes/faqs-netapp["Pourquoi mon client ne parvient-il pas à résoudre le nom NetBIOS du SMB ?"^]pour en savoir plus.
 
 
 NOTE: Cloud Volumes Service ne prend pas actuellement en charge les requêtes DNSSEC et DNS sont exécutées en texte clair.

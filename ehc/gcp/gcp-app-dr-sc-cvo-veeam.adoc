@@ -72,11 +72,11 @@ NOTE: Plusieurs options de connexion des data centers sur site à Google Cloud s
 .Configurez CVO pour Google Cloud et répliquez les volumes dans CVO
 [%collapsible]
 ====
-La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
+La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-guest.html["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
 image:dr-cvo-gcve-image2.png["Erreur : image graphique manquante"]
 
-Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à la section https://["Configurez la réplication avec SnapCenter"]
+Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à la section https://docs.netapp.com/us-en/netapp-solutions/ehc/aws/aws-guest-dr-overview.html#config-snapmirror["Configurez la réplication avec SnapCenter"]
 
 video::dr-cvo-gcve-video2.mp4[Review of SQL VM protection with SnapCenter]
 ====
@@ -87,7 +87,7 @@ Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont 
 
 Cloud Volumes ONTAP peut être déployé sur n'importe quel VPC et GCVE doit disposer d'une connexion privée à ce VPC pour que la VM se connecte aux LUN iSCSI.
 
-Pour configurer GCVE SDDC, voir https://["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
+Pour configurer GCVE SDDC, voir https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
 
 Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, commencez à configurer Veeam pour automatiser la restauration des workloads sur site vers GCVE (machines virtuelles avec VMDK d'application et VM avec stockage « Guest ») en utilisant la fonctionnalité de réplication Veeam et en utilisant SnapMirror pour les copies de volumes d'application vers Cloud Volumes ONTAP.
 
@@ -95,13 +95,13 @@ Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, com
 .Installer les composants Veeam
 [%collapsible]
 ====
-Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d'utilisation, nul besoin de déployer un magasin d'objets pour Veeam et le référentiel scale-out non plus requis.https://["Se référer à la documentation Veeam pour la procédure d'installation"]
+Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d'utilisation, nul besoin de déployer un magasin d'objets pour Veeam et le référentiel scale-out non plus requis.https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html["Se référer à la documentation Veeam pour la procédure d'installation"]
 
 ====
 .Configuration de la réplication de machine virtuelle avec Veeam
 [%collapsible]
 ====
-VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. https://["Configuration de la tâche de réplication de VM vSphere"] À l'étape traitement invité de l'assistant, sélectionnez Désactiver le traitement de l'application, car nous utilisons SnapCenter pour la sauvegarde et la restauration intégrant la cohérence applicative.
+VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. https://helpcenter.veeam.com/docs/backup/qsg_vsphere/replication_job.html["Configuration de la tâche de réplication de VM vSphere"] À l'étape traitement invité de l'assistant, sélectionnez Désactiver le traitement de l'application, car nous utilisons SnapCenter pour la sauvegarde et la restauration intégrant la cohérence applicative.
 
 video::dr-cvo-gcve-video1.mp4[Veeam Replication Job of SQL VM]
 ====

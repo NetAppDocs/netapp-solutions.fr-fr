@@ -59,7 +59,9 @@ Vérifiez le link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/performance.
 
 == Configuration NFS
 
-Linux, le système d'exploitation le plus courant, comprend des fonctionnalités NFS natives. Oracle propose le client NFS direct (dNFS) intégré en mode natif dans Oracle. Oracle a pris en charge NFSv3 pendant plus de 20 ans, et NFSv4 est pris en charge par Oracle 12.1.0.2 et versions ultérieures. Le déploiement automatisé d'Oracle à l'aide du kit d'automatisation NetApp configure automatiquement dNFS sur NFSv3.
+Linux, le système d'exploitation le plus courant, comprend des fonctionnalités NFS natives. Oracle propose le client NFS direct (dNFS) intégré en mode natif dans Oracle. Oracle prend en charge NFSv3 depuis plus de 20 ans. DNFS est pris en charge avec NFSv3 dans toutes les versions d'Oracle. NFSv4 est pris en charge avec tous les systèmes d'exploitation conformes à la norme NFSv4. La prise en charge de dNFS pour NFSv4 nécessite Oracle 12.1.0.2 ou version supérieure. NFSv4.1 requiert une prise en charge de systèmes d'exploitation spécifiques. Consultez la matrice d'interopérabilité NetApp (IMT) pour connaître les systèmes d'exploitation pris en charge. La prise en charge de dNFS pour NFSv4.1 requiert Oracle version 19.3.0.0 ou supérieure.
+
+Le déploiement automatisé d'Oracle à l'aide du kit d'automatisation NetApp configure automatiquement dNFS sur NFSv3.
 
 Autres facteurs à prendre en compte :
 
@@ -79,7 +81,7 @@ image:aws_ora_fsx_ec2_nfs_01.PNG["Erreur : image graphique manquante"]
 
 
 
-NOTE: Avant d'utiliser dNFS, vérifiez que les correctifs décrits dans Oracle Doc 1495104.1 sont installés. À partir d'Oracle 12c, dNFS prend en charge NFS v3, NFS V4 et NFS v4.1. Conformément à la politique de support de NetApp, les versions 3 et 4 sont prises en charge pour tous les clients. Cependant, au moment de la rédaction de ce rapport, NFS v4.1 n'était pas pris en charge pour une utilisation avec Oracle dNFS.
+NOTE: Avant d'utiliser dNFS, vérifiez que les correctifs décrits dans Oracle Doc 1495104.1 sont installés. La matrice de support NetApp pour NFSv3 et NFSv4 n'inclut pas de systèmes d'exploitation spécifiques. Tous les systèmes d'exploitation conformes à la RFC sont pris en charge. Lors d'une recherche dans la prise en charge en ligne de IMT pour NFSv3 ou NFSv4, ne sélectionnez pas de système d'exploitation spécifique, car aucune correspondance ne sera affichée. Tous les systèmes d'exploitation sont implicitement pris en charge par la politique générale.
 
 
 

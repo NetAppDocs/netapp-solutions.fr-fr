@@ -1,0 +1,65 @@
+---
+sidebar: sidebar 
+permalink: rhhc/rhhc-overview.html 
+keywords: NetApp Solutions, hybrid cloud, container workloads, containers, Red Hat OpenShift, RedHat OpenShift, VMware, ROSA, ACC, Astra Control Center, Advanced Cluster Management, ACM, Hub Cluster 
+summary:  
+---
+= Solutions multicloud hybrides NetApp pour les workloads de conteneurs Red Hat OpenShift
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Présentation
+
+NetApp constate une augmentation significative des clients qui modernisent leurs applications d'entreprise existantes et créent de nouvelles applications à l'aide de conteneurs et de plateformes d'orchestration basées sur Kubernetes. Nous avons adopté Red Hat OpenShift Container Platform comme bon nombre de nos clients.
+
+Alors que les clients sont de plus en plus nombreux à adopter des conteneurs dans leur entreprise, NetApp est parfaitement positionné pour répondre aux besoins de stockage persistant de leurs applications avec état et aux besoins de gestion des données classiques, tels que la protection, la sécurité et la migration des données. Toutefois, ces besoins sont satisfaits à l'aide de stratégies, d'outils et de méthodes différents.
+
+**Les options de stockage basées sur NetApp ONTAP** sont énumérées ci-dessous et offrent sécurité, protection des données, fiabilité et flexibilité pour les conteneurs et les déploiements Kubernetes.
+
+* Stockage autogéré sur site :
++
+** Stockage FAS (Fabric Attached Storage), baies FAS 100 % Flash (AFF), baies SAN ASA (All SAN Array) et ONTAP Select
+
+
+* Stockage géré par un fournisseur sur site :
++
+** NetApp Keystone fournit une solution de stockage en tant que service (STaaS)
+
+
+* Stockage autogéré dans le cloud :
++
+** NetApp Cloud volumes ONTAP (CVO) fournit un stockage autogéré dans les hyperscalers
+
+
+* Stockage géré par un fournisseur dans le cloud :
++
+** Cloud Volumes Service pour Google Cloud (CVS), Azure NetApp Files (ANF) et Amazon FSX pour NetApp ONTAP offrent un stockage entièrement géré dans les hyperscalers
+
+
+
+
+image:rhhc-ontap-features.png[""]
+
+**NetApp BlueXP** vous permet de gérer l'ensemble de vos ressources de stockage et de données à partir d'un seul plan de contrôle/interface.
+
+Vous pouvez utiliser BlueXP pour créer et gérer du stockage cloud (par exemple, Cloud Volumes ONTAP et Azure NetApp Files), déplacer, protéger et analyser les données, et contrôler de nombreux systèmes de stockage sur site et en périphérie.
+
+**NetApp Astra Trident** est un orchestrateur de stockage conforme à CSI qui permet de consommer rapidement et facilement du stockage persistant grâce à plusieurs options de stockage NetApp mentionnées ci-dessus. Il s'agit d'un logiciel open source géré et pris en charge par NetApp.
+
+image:rhhc-trident-features.png[""]
+
+Les workloads de conteneurs stratégiques requièrent bien plus que de simples volumes persistants. Leurs exigences de gestion des données requièrent également la protection et la migration des objets kubernetes applicatifs.
+
+
+NOTE: Les données d'application incluent des objets kubernetes en plus des données utilisateur. Voici quelques exemples : - Objets kubernetes tels que les pods Specs, les PVC, les déploiements, les services - objets de configuration personnalisés tels que les cartes de configuration et les secrets - données persistantes telles que les copies Snapshot, les sauvegardes, les clones - ressources personnalisées telles que CRS et CRD
+
+**NetApp Astra Control**, disponible en tant que logiciel entièrement géré et autogéré, assure l'orchestration pour une gestion robuste des données d'application. Reportez-vous à la link:https://docs.netapp.com/us-en/astra-family/["Documentation Astra"] Pour en savoir plus sur la gamme de produits Astra.
+
+Cette documentation de référence apporte la validation de la migration et de la protection des applications basées sur des conteneurs, déployées sur une plateforme de conteneurs RedHat OpenShift à l'aide de NetApp Astra Control Center. En outre, la solution fournit des détails généraux sur le déploiement et l'utilisation de Red Hat Advanced Cluster Management (ACM) pour la gestion des plateformes de conteneurs. Ce document détaille également les modalités d'intégration du stockage NetApp avec les plateformes de conteneurs Red Hat OpenShift à l'aide d'Astra Trident CSI Provisioner. ASTRA Control Center est déployé sur le cluster Hub et est utilisé pour gérer les applications de conteneur et leur cycle de vie de stockage persistant. Enfin, il fournit une solution de réplication, de basculement et de retour arrière pour les workloads de conteneurs sur des clusters Red Hat OpenShift gérés dans AWS (ROSA) utilisant Amazon FSX pour NetApp ONTAP (FSxN) en tant que stockage persistant.

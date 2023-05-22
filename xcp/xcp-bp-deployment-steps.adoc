@@ -57,10 +57,10 @@ Le tableau suivant fournit les détails du banc d'essai utilisé pour ce déploi
 
 == Étapes de déploiement - NAS
 
-Pour déployer NetApp XCP pour le transfert de données, installez d'abord et activez le logiciel XCP sur l'emplacement de destination. Vous pouvez consulter les détails dans le https://["Guide de l'utilisateur de NetApp XCP"^]. Pour ce faire, procédez comme suit :
+Pour déployer NetApp XCP pour le transfert de données, installez d'abord et activez le logiciel XCP sur l'emplacement de destination. Vous pouvez consulter les détails dans le https://mysupport.netapp.com/documentation/productlibrary/index.html?productID=63064["Guide de l'utilisateur de NetApp XCP"^]. Pour ce faire, procédez comme suit :
 
 . Respectez les conditions préalables décrites dans la section link:xcp-bp-netapp-xcp-overview.html#prerequisites-for-xcp["« Conditions préalables pour XCP »."]
-. Téléchargez le logiciel XCP à partir du https://["Page NetApp XCP (téléchargements)"^].
+. Téléchargez le logiciel XCP à partir du https://mysupport.netapp.com/site/products/all/details/netapp-xcp/downloads-tab["Page NetApp XCP (téléchargements)"^].
 . Copiez les fichiers tar XCP téléchargés sur le serveur XCP.
 +
 ....
@@ -71,7 +71,7 @@ Pour déployer NetApp XCP pour le transfert de données, installez d'abord et ac
 ....
 [root@mastr-53 src]# tar -zxvf NETAPP_XCP_1.6.1.tgz
 ....
-. Téléchargez la licence sur https://["https://xcp.netapp.com/license/xcp.xwic"^] Et copiez vers le serveur XCP.
+. Téléchargez la licence sur https://xcp.netapp.com/license/xcp.xwic%20["https://xcp.netapp.com/license/xcp.xwic"^] Et copiez vers le serveur XCP.
 . Activez la licence.
 +
 ....
@@ -224,12 +224,12 @@ STATUS      : PASSED
 ....
 
 
-La documentation XCP fournit plusieurs options (avec des exemples) pour le `scan`, `copy`, `sync`, et `verify` exploitation. Pour plus d'informations, reportez-vous à la section https://["Guide de l'utilisateur de NetApp XCP"^].
+La documentation XCP fournit plusieurs options (avec des exemples) pour le `scan`, `copy`, `sync`, et `verify` exploitation. Pour plus d'informations, reportez-vous à la section https://mysupport.netapp.com/documentation/productlibrary/index.html?productID=63064["Guide de l'utilisateur de NetApp XCP"^].
 
 
 NOTE: Les clients Windows doivent copier les données à l'aide des listes de contrôle d'accès (ACL). NetApp recommande d'utiliser la commande `xcp copy -acl -fallbackuser\<username> -fallbackgroup\<username or groupname> <source> <destination>`. Pour des performances maximales, en tenant compte du volume source contenant des données SMB avec une liste de contrôle d'accès et des données accessibles aussi bien par NFS que SMB, la cible doit être un volume NTFS. À l'aide de XCP (version NFS), copiez les données du serveur Linux et exécutez la synchronisation XCP (version SMB) avec le `-acl` et `-nodata` Options du serveur Windows pour copier les ACL des données source vers les données SMB cibles.
 
-Pour obtenir des instructions détaillées, reportez-vous à la section https://["Configuration de la stratégie de gestion des journaux d'audit et de sécurité"^].
+Pour obtenir des instructions détaillées, reportez-vous à la section https://helpcenter.netwrix.com/NA/Configure_IT_Infrastructure/Accounts/DCA_Manage_Auditing_Security_Log.html["Configuration de la stratégie de gestion des journaux d'audit et de sécurité"^].
 
 
 

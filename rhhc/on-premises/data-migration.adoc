@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: rhhc/on-premises/data-migration.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP 
+summary:  
+---
+= Migration des données à l'aide d'Astra Control Center
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../../media/
+
+
+[role="lead"]
+Cette page présente les options de migration des données pour les workloads de conteneurs sur des clusters Red Hat OpenShift avec Astra Control Center (ACC).
+
+Les applications Kubernetes doivent souvent être déplacées d'un environnement à un autre. Pour migrer une application et ses données persistantes, il est possible d'utiliser NetApp ACC.
+
+
+
+== Migration des données entre différents environnements Kubernetes
+
+ACC prend en charge plusieurs versions de Kubernetes, notamment Google Anthos, Red Hat OpenShift, Tanzu Kubernetes Grid, Rancher Kubernetes Engine, Kubernetes en amont, etc Pour plus d'informations, reportez-vous à la section link:https://docs.netapp.com/us-en/astra-control-center/get-started/requirements.html#supported-host-cluster-kubernetes-environments["ici"].
+
+Pour migrer une application d'un cluster à un autre, vous pouvez utiliser l'une des fonctions suivantes d'ACC :
+
+* ** réplication **
+* ** sauvegarde et restauration **
+* ** clone **
+
+
+Reportez-vous à la link:../data-protection["section sur la protection des données"] pour les options **réplication et sauvegarde et restauration**. Reportez-vous à link:https://docs.netapp.com/us-en/astra-control-center/use/clone-apps.html["ici"] pour plus de détails sur **clonage**.
+
+
+NOTE: La fonctionnalité de réplication Astra n'est prise en charge qu'avec le plug-in Trident Container Storage interface (CSI). Cependant, la réplication n'est pas prise en charge par les pilotes NAS-Economy et san-Economy.
+
+
+
+=== Réplication des données à l'aide d'ACC
+
+image:rhhc-onprem-dp-rep.png["Réplication Astra Control Center"]

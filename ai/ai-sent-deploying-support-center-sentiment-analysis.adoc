@@ -31,7 +31,7 @@ Pour effectuer le déploiement, procédez comme suit :
 
 == Kit NetApp DataOps : analyse des sentiments des centres de support
 
-Pour utiliser le https://["Kit NetApp DataOps"^], effectuez les opérations suivantes :
+Pour utiliser le https://github.com/NetApp/netapp-dataops-toolkit["Kit NetApp DataOps"^], effectuez les opérations suivantes :
 
 . PIP installer la boîte à outils.
 +
@@ -49,7 +49,7 @@ netapp_dataops_cli.py config
 
 == Configuration NGC : analyse du sentiment du centre de support
 
-Pour configurer https://["NVIDIA NGC"^], effectuez les opérations suivantes :
+Pour configurer https://ngc.nvidia.com/setup/installers/cli["NVIDIA NGC"^], effectuez les opérations suivantes :
 
 . Télécharger le contrôleur NGC.
 +
@@ -68,13 +68,13 @@ ngc config set
 ....
 
 
-Pour les systèmes d'exploitation qui ne sont pas basés sur Linux, rendez-vous sur https://["ici"^].
+Pour les systèmes d'exploitation qui ne sont pas basés sur Linux, rendez-vous sur https://ngc.nvidia.com/setup/installers/cli["ici"^].
 
 
 
 == Serveur NVIDIA RIVA : analyse des sentiments des centres de support
 
-Pour configurer https://["NVIDIA RIVA"^], effectuez les opérations suivantes :
+Pour configurer https://docs.nvidia.com/deeplearning/riva/user-guide/docs/quick-start-guide.html["NVIDIA RIVA"^], effectuez les opérations suivantes :
 
 . Téléchargez les fichiers RIVA de NGC.
 +
@@ -84,12 +84,12 @@ ngc registry resource download-version nvidia/riva/riva_quickstart:1.4.0-beta
 . Initialiser LA configuration RIVA (`riva_init.sh`).
 . Démarrez LE serveur RIVA (`riva_start.sh`).
 . Démarrez le client RIVA (`riva_start_client.sh`).
-. Dans le client RIVA, installez la bibliothèque de traitement audio ( https://["FFMPEG"^])
+. Dans le client RIVA, installez la bibliothèque de traitement audio ( https://ffmpeg.org/download.html["FFMPEG"^])
 +
 ....
 apt-get install ffmpeg
 ....
-. Démarrez le https://["Jupyter"^] serveur.
+. Démarrez le https://jupyter-server.readthedocs.io/en/latest/["Jupyter"^] serveur.
 . Exécutez le bloc-notes RIVA Inférence Pipeline.
 
 
@@ -99,14 +99,14 @@ apt-get install ffmpeg
 
 Pour configurer la boîte à outils NVIDIA TAO, procédez comme suit :
 
-. Préparez et activez un https://["virtualisé"^] Pour la boîte à outils TAO.
-. Installer le https://["packages requis"^].
+. Préparez et activez un https://docs.python.org/3/library/venv.html["virtualisé"^] Pour la boîte à outils TAO.
+. Installer le https://docs.nvidia.com/tao/tao-toolkit/text/tao_toolkit_quick_start_guide.html["packages requis"^].
 . Tirez manuellement l'image utilisée pendant l'entraînement et le réglage précis.
 +
 ....
 docker pull nvcr.io/nvidia/tao/tao-toolkit-pyt:v3.21.08-py3
 ....
-. Démarrez le https://["Jupyter"^] serveur.
+. Démarrez le https://jupyter-server.readthedocs.io/en/latest/["Jupyter"^] serveur.
 . Exécutez l'ordinateur portable TAT Fine Tuning.
 
 
@@ -114,7 +114,7 @@ docker pull nvcr.io/nvidia/tao/tao-toolkit-pyt:v3.21.08-py3
 
 == Exporter des modèles TAO vers RIVA : prendre en charge l'analyse des sentiments des centres de support
 
-À utiliser https://["Modèles TAO Toolkit à RIVA"^], effectuez les opérations suivantes :
+À utiliser https://docs.nvidia.com/tao/tao-toolkit/text/riva_tao_integration.html["Modèles TAO Toolkit à RIVA"^], effectuez les opérations suivantes :
 
 . Enregistrez des modèles dans le portable TAT Fine Tuning.
 . Copier des modèles entraînés TAO dans le répertoire de modèle RIVA.
