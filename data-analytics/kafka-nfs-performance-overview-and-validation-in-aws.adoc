@@ -370,4 +370,237 @@ Vérifiez le débit de stockage lorsque vous effectuez une évaluation du débit
 
 image:kafka-nfs-image31.png["Ce graphique présente les performances en termes de latence, d'IOPS et de débit."]
 
+
+
+== Apache Kafka dans AWS FSxN
+
+
+
+=== Présentation
+
+NFS (Network File System) est un système de fichiers réseau largement utilisé pour stocker de grandes quantités de données. Dans la plupart des entreprises, les données sont de plus en plus générées par des applications de streaming telles qu'Apache Kafka. Ces charges de travail nécessitent une évolutivité, une faible latence et une architecture d'ingestion robuste des données dotée de fonctionnalités de stockage modernes. Pour activer l'analytique en temps réel et fournir des informations exploitables, une infrastructure bien conçue et haute performance est nécessaire.
+
+Par conception, Kafka fonctionne avec un système de fichiers conforme POSIX et s'appuie sur le système de fichiers pour traiter les opérations de fichiers. Cependant, lors du stockage des données sur un système de fichiers NFSv3, le client NFS du courtier Kafka peut interpréter les opérations de fichiers différemment d'un système de fichiers local tel que XFS ou Ext4. Le renommage NFS entraîne une défaillance des courtiers Kafka lors de l'extension des clusters et de la réaffectation des partitions, ce qui en est un exemple courant. Pour faire face à ce défi, NetApp a mis à jour le client Linux NFS open-source avec des modifications désormais généralement disponibles dans RHEL8.7, RHEL9.1, et prises en charge à partir de la version actuelle de FSX for ONTAP, ONTAP 9.12.1.
+
+Amazon FSX pour NetApp ONTAP fournit un système de fichiers NFS entièrement géré, évolutif et haute performance dans le cloud. Les données Kafka sur FSX pour NetApp peuvent être évolutives afin de traiter d'importants volumes de données et d'assurer la tolérance aux pannes. NFS assure la gestion centralisée du stockage et la protection des données pour les datasets stratégiques et sensibles.
+
+Ces améliorations permettent aux clients AWS d'exploiter FSX for ONTAP lors de l'exécution des workloads Kafka sur les services de calcul AWS. Ces avantages sont les suivants :
+* Réduction de l'utilisation du CPU pour réduire le temps d'attente d'E/S.
+* Délai de récupération du courtier Kafka plus rapide
+* Fiabilité et efficacité
+* Évolutivité et performances
+* Disponibilité de la zone de disponibilité multiple
+* Protection des données
+
+
+
+=== Présentation des performances et validation dans AWS FSxN
+
+Un cluster Kafka avec la couche de stockage montée sur NetApp NFS a été testé sur les performances dans AWS FSxN. Les exemples de benchmarking sont décrits dans les sections suivantes.
+
+
+
+==== Kafka dans AWS FSxN (actif passif)
+
+Un cluster Kafka avec AWS FSxN a été testé sur banc d'essai pour les performances dans le cloud AWS. Cette analyse comparative est décrite dans les sections suivantes.
+
+
+
+==== Installation architecturale
+
+Le tableau suivant présente la configuration environnementale d'un cluster Kafka à l'aide d'AWS FSxN.
+
+|===
+| Composant de plate-forme | Configuration de l'environnement 
+
+
+| Kafka 3.2.3  a| 
+* 3 x zookeepers – t2.small
+* 3 serveurs de broker – i3en.2xlarge
+* 1 x Grafana – c5n.2xlarge
+* 4 x producteur/consommateur -- c5n.2xlarge *
+
+
+
+
+| Système d'exploitation sur tous les nœuds | RHEL8.6 
+
+
+| FSxN AWS | Instance passive active avec débit de 4 Go/s et 160000 IPS 
+|===
+
+
+==== Configuration NetApp FSxN
+
+. Pour nos premiers tests, nous avons créé un système de fichiers FSX pour NetApp ONTAP avec 2 To et 40000 000 IOPS pour un débit de 2 Go/s.
+. Dans FSX for NetApp ONTAP, le nombre maximal d'iops possible pour un système de fichiers à débit de 2 Go/s dans notre région de test (États-Unis-est-1) est de 80,000 000 iops. les iops maximales totales pour un système de fichiers FSX for NetApp ONTAP sont de 160,000 000 iops, ce qui requiert un déploiement à un débit de 4 Go/s, comme nous le montrerons plus loin dans ce document
++
+....
+[root@ip-172-31-33-69 ~]# aws fsx create-file-system --region us-east-2  --storage-capacity 2048 --subnet-ids <desired subnet 1> subnet-<desired subnet 2> --file-system-type ONTAP --ontap-configuration DeploymentType=MULTI_AZ_HA_1,ThroughputCapacity=2048,PreferredSubnetId=<desired primary subnet>,FsxAdminPassword=<new password>,DiskIopsConfiguration="{Mode=USER_PROVISIONED,Iops=40000"}
+....
++
+Vous trouverez la syntaxe détaillée de la ligne de commande de FSX « create-file-system » ici : https://docs.aws.amazon.com/cli/latest/reference/fsx/create-file-system.html[]
+Par exemple, vous pouvez spécifier une clé KMS spécifique par opposition à la clé principale FSX par défaut utilisée lorsqu'aucune clé KMS n'est spécifiée.
+
+. Attendez que le statut « cycle de vie » passe à « DISPONIBLE » dans votre retour JSON après avoir décrit votre système de fichiers comme suit :
++
+....
+[root@ip-172-31-33-69 ~]# aws fsx describe-file-systems  --region us-east-1 --file-system-ids fs-02ff04bab5ce01c7c
+....
+. Le mot de passe pour fsxadmin est le mot de passe configuré lors de la création initiale du système de fichiers.
+. Validez les informations d'identification en vous connectant à FsxN via fsxadmin
++
+....
+[root@ip-172-31-33-69 ~]# ssh fsxadmin@198.19.250.244
+The authenticity of host '198.19.250.244 (198.19.250.244)' can't be established.
+ED25519 key fingerprint is SHA256:mgCyRXJfWRc2d/jOjFbMBsUcYOWjxoIky0ltHvVDL/Y.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '198.19.250.244' (ED25519) to the list of known hosts.
+(fsxadmin@198.19.250.244) Password:
+
+This is your first recorded login.
+....
+. Créez la machine virtuelle de stockage sur le FSxN
++
+....
+[root@ip-172-31-33-69 ~]# aws fsx --region us-east-1 create-storage-virtual-machine --name svmkafkatest --file-system-id fs-02ff04bab5ce01c7c
+....
+. Connectez-vous en SSH au système de fichiers FSX for NetApp ONTAP que vous venez de créer et créez des volumes dans la machine virtuelle de stockage à l'aide de l'exemple de commande ci-dessous. De la même manière, nous créons 6 volumes pour cette validation. En fonction de notre validation, vous devez conserver le composant par défaut (8) ou moins de composants pour améliorer les performances de kafka.
++
+....
+FsxId02ff04bab5ce01c7c::*> volume create -volume kafkafsxN1 -state online -policy default -unix-permissions ---rwxr-xr-x -junction-active true -type RW -snapshot-policy none  -junction-path /kafkafsxN1 -aggr-list aggr1
+....
+. Étendez la taille du volume à 2 To et montez sur le chemin de jonction.
++
+....
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN1 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN1" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN2 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN2" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN3 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN3" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN4 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN4" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN5 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN5" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume size -volume kafkafsxN6 -new-size +2TB
+vol size: Volume "svmkafkatest:kafkafsxN6" size set to 2.10t.
+
+FsxId02ff04bab5ce01c7c::*> volume show -vserver svmkafkatest -volume *
+Vserver   Volume       Aggregate    State      Type       Size  Available Used%
+--------- ------------ ------------ ---------- ---- ---------- ---------- -----
+svmkafkatest
+          kafkafsxN1   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          kafkafsxN2   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          kafkafsxN3   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          kafkafsxN4   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          kafkafsxN5   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          kafkafsxN6   -            online     RW       2.10TB     1.99TB    0%
+svmkafkatest
+          svmkafkatest_root
+                       aggr1        online     RW          1GB    968.1MB    0%
+7 entries were displayed.
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN1 -junction-path /kafkafsxN1
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN2 -junction-path /kafkafsxN2
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN3 -junction-path /kafkafsxN3
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN4 -junction-path /kafkafsxN4
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN5 -junction-path /kafkafsxN5
+
+FsxId02ff04bab5ce01c7c::*> volume mount -volume kafkafsxN6 -junction-path /kafkafsxN6
+....
+. Nous étendons la capacité de débit FSxN de 2 Go/s à 4 Go/s et les IOPS à 160000
++
+....
+[root@ip-172-31-33-69 ~]# aws fsx update-file-system --region us-east-1  --storage-capacity 5120 --ontap-configuration 'ThroughputCapacity=4096,DiskIopsConfiguration={Mode=USER_PROVISIONED,Iops=160000}' --file-system-id fs-02ff04bab5ce01c7c
+....
++
+Vous trouverez la syntaxe détaillée de la ligne de commande du système de fichiers « update-file-system » de FSX ici :
+https://docs.aws.amazon.com/cli/latest/reference/fsx/update-file-system.html[]
+
+. Les volumes FSxN sont montés avec nconnect et les opions par défaut dans les courtiers kafkar
++
+image:aws-fsx-kafka-arch1.png["Cette image montre l'architecture d'un cluster Kafka à base de FSxN."]
+
++
+** Calcul. Nous avons utilisé un cluster Kafka à trois nœuds avec un ensemble de zoocontrôle à trois nœuds qui s'exécute sur des serveurs dédiés. Chaque courtier disposait de six points de montage NFS sur six volumes de l'instance FSxN.
+** Contrôle. Nous avons utilisé deux nœuds pour une combinaison Prometheus-Grafana. Pour la génération des charges de travail, nous avons utilisé un cluster séparé à trois nœuds qui était capable de produire et de consommer sur ce cluster Kafka.
+** Stockage. Nous avons utilisé un FSxN avec six volumes de 1 To montés. Le volume a ensuite été exporté vers le courtier Kafka avec un montage NFS.
+
+
+
+
+
+
+==== Configurations de test OpenMessage.
+
+Nous avons utilisé la même configuration pour NetApp Cloud volumes ONTAP et les détails sont là -
+https://docs.netapp.com/us-en/netapp-solutions/data-analytics/kafka-nfs-performance-overview-and-validation-in-aws.html#architectural-setup[]
+
+
+
+==== Méthodologie de test
+
+. Un cluster Kafka a été provisionné selon la spécification décrite ci-dessus à l'aide d'un système téraforme et ansible. Terraform est utilisé pour créer l'infrastructure à l'aide d'instances AWS pour le cluster Kafka et ansible pour y construire le cluster Kafka.
+. Une charge de travail OMB a été déclenchée avec la configuration de la charge de travail décrite ci-dessus et le pilote Sync.
++
+....
+sudo bin/benchmark –drivers driver-kafka/kafka-sync.yaml workloads/1-topic-100-partitions-1kb.yaml
+....
+. Une autre charge de travail a été déclenchée avec le pilote de débit avec la même configuration de charge de travail.
++
+....
+sudo bin/benchmark –drivers driver-kafka/kafka-throughput.yaml workloads/1-topic-100-partitions-1kb.yaml
+....
+
+
+
+
+==== Observation
+
+Deux types de pilotes différents ont été utilisés pour générer des charges de travail afin de tester les performances d'une instance Kafka fonctionnant sur NFS. La différence entre les pilotes est la propriété log flush.
+
+Pour un facteur de réplication kafka 1 et FSxN :
+
+* Débit total généré de manière cohérente par le pilote de synchronisation : environ 3218 Mbit/s et performances maximales d'environ 3652 Mbit/s.
+* Débit total généré de manière cohérente par le pilote de débit : environ 3679 Mbit/s et performances de pointe d'environ 3908 Mbit/s.
+
+
+Pour kafka avec facteur de réplication 3 et FSxN :
+
+* Débit total généré de manière cohérente par le pilote de synchronisation : environ 1252 Mbit/s et performances maximales d'environ 1382 Mbit/s.
+* Débit total généré de manière cohérente par le pilote de débit : environ 1218 Mbit/s et performances de pointe d'environ 1328 Mbit/s.
+
+
+Dans le facteur de réplication Kafka 3, l'opération de lecture et d'écriture s'est produite trois fois sur FSxN. Dans le facteur de réplication Kafka 1, l'opération de lecture et d'écriture est une fois sur le FSxN. Dans les deux validations, nous avons donc pu atteindre le débit maximal de 4 Go/s.
+
+Le pilote de synchronisation peut générer un débit constant lorsque les journaux sont immédiatement transmis au disque, tandis que le pilote de débit génère des pics de débit lorsque les journaux sont validés sur le disque en bloc.
+
+Ces valeurs de débit sont générées pour la configuration AWS appropriée. Pour des besoins de performances plus élevés, il est possible de renforcer l'évolutivité des types d'instances et de les ajuster davantage pour obtenir un meilleur débit. Le débit total ou le taux total est la combinaison du taux de production et du taux de consommation.
+
+image:aws-fsxn-performance-rf-1-rf-3.png["Cette image montre les performances de kafka avec RF1 et RF3"]
+
+Le tableau ci-dessous présente les performances FSxn de 2 Go/s et de 4 Go/s pour le facteur de réplication kafka 3. Le facteur de réplication 3 effectue l'opération de lecture et d'écriture trois fois sur le stockage FSxN. Le débit total du pilote de débit est de 881 Mo/s, ce qui permet de lire et d'écrire kafka à environ 2.64 Go/s sur le système de fichiers FSxN de 2 Go/s. le débit total du pilote de débit est de 1328 Mo/s, ce qui permet de lire et d'écrire kafka à environ 3.98 Go/s. Les performances de Kafka sont linéaires et évolutives en fonction du débit FSxN.
+
+image:aws-fsxn-2gb-4gb-scale.png["Cette image montre les performances d'évolutivité horizontale de 2 Go/s et 4 Go/s."]
+
+Le tableau ci-dessous présente les performances entre une instance EC2 et FSxN (facteur de réplication Kafka : 3)
+
+image:aws-fsxn-ec2-fsxn-comparition.png["Cette image montre la comparaison des performances d'EC2 par rapport à FSxN dans RF3."]
+
 link:kafka-nfs-performance-overview-and-validation-with-aff-on-premises.html["Ensuite, présentation des performances et validation avec AFF sur site."]
