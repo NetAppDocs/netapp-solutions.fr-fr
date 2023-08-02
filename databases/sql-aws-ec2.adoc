@@ -72,7 +72,10 @@ Consultez également les meilleures pratiques NetApp pour les environnements SQL
 ====
 Avec FSX ONTAP, l'acquisition de stockage est la tâche la plus simple et peut être effectuée en mettant à jour le système de fichiers. Ce processus simple permet d'optimiser les coûts et les performances dynamiques en fonction des besoins. Il permet également d'équilibrer la charge de travail SQL et constitue un excellent atout pour le provisionnement fin. Le provisionnement fin FSX ONTAP est conçu pour présenter un stockage logique plus important aux instances EC2 qui exécutent SQL Server que ce qui est provisionné dans le système de fichiers. De cette façon, il n'est pas nécessaire d'allouer de l'espace de stockage en amont, puisque celui-ci est alloué dynamiquement à chaque volume ou LUN à mesure que les données sont écrites. Dans la plupart des configurations, de l'espace libre est également libéré lorsque les données du volume ou de la LUN sont supprimées (et ne sont pas conservées par les copies Snapshot). Le tableau suivant fournit des paramètres de configuration pour l'allocation dynamique du stockage.
 
+[cols="40%, 60%"]
 |===
+
+
 | Réglage | Configuration 
 
 
@@ -304,6 +307,7 @@ NetApp SnapCenter est un logiciel de protection des données nouvelle générati
 ====
 Le tableau suivant répertorie la configuration minimale requise pour installer le serveur SnapCenter et le plug-in sur Microsoft Windows Server.
 
+[cols="50%, 50%"]
 |===
 | Composants | Conditions requises 
 
@@ -345,6 +349,7 @@ Espace minimum pour l'installation : 10 GO d'espace minimum pour le référentie
 
 
 |===
+Pour plus d'informations, reportez-vous à la section link:https://docs.netapp.com/us-en/snapcenter/install/reference_space_and_sizing_requirements.html["besoins en termes d'espace et de dimensionnement"].
 Pour plus d'informations, reportez-vous à la section link:https://docs.netapp.com/us-en/snapcenter/install/reference_space_and_sizing_requirements.html["besoins en termes d'espace et de dimensionnement"].
 
 Pour la compatibilité de la version, voir https://mysupport.netapp.com/matrix/["Matrice d'interopérabilité NetApp"^].
@@ -434,6 +439,8 @@ Vous êtes désormais prêt à effectuer des opérations de sauvegarde, de resta
 Après avoir placé la base de données et les fichiers journaux sur les LUN ONTAP FSX, SnapCenter peut être utilisé pour sauvegarder les bases de données. Les processus suivants sont utilisés pour créer une sauvegarde complète.
 
 |===
+
+
 | Et des meilleures pratiques 
 
 
@@ -467,6 +474,8 @@ image:sql-awsec2-image23.png["Erreur : image graphique manquante"]
 
 
 |===
+
+
 | Et des meilleures pratiques 
 
 
@@ -515,6 +524,8 @@ Le fait d'exécuter les trois tâches de sauvegarde en parallèle permet de sauv
 Outre la sauvegarde complète, NetApp recommande de configurer une sauvegarde du journal des transactions pour les bases de données critiques. Assurez-vous que la propriété de base de données est définie sur le modèle de récupération complète.
 
 |===
+
+
 | Et des meilleures pratiques 
 
 
@@ -580,7 +591,7 @@ image:sql-awsec2-image27.png["Erreur : image graphique manquante"]
 ====
 Pour en savoir plus sur ce processus, regardez la vidéo suivante :
 
-
+video::27f28284-433d-4273-8748-b01200fb3cd7[panopto,width=360]
 
 
 == Annexes

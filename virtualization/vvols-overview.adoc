@@ -30,25 +30,17 @@ En 2012, NetApp a commencé à travailler avec VMware pour prendre en charge les
 
 Plusieurs composants doivent être pris en compte :
 
+[cols="20%, 80%"]
 |===
 
 
-| *VASA Provider* 
+| *VASA Provider* | Il s'agit du composant logiciel qui gère la communication entre VMware vSphere et le système de stockage. Pour ONTAP, le fournisseur VASA s'exécute dans une appliance connue sous le nom d'outils ONTAP pour VMware vSphere (outils ONTAP pour, par exemple). Les outils ONTAP incluent également un plug-in vCenter, un adaptateur de réplication du stockage (SRA) pour VMware site Recovery Manager et un serveur d'API REST pour vous permettre de créer votre propre automatisation. Une fois les outils ONTAP configurés et enregistrés dans vCenter, il est désormais peu nécessaire d'interagir directement avec le système ONTAP, puisque la quasi-totalité de vos besoins en stockage peut être gérée directement depuis l'interface utilisateur vCenter ou via l'automatisation de l'API REST. 
 
 
-| Il s'agit du composant logiciel qui gère la communication entre VMware vSphere et le système de stockage. Pour ONTAP, le fournisseur VASA s'exécute dans une appliance connue sous le nom d'outils ONTAP pour VMware vSphere (outils ONTAP pour, par exemple). Les outils ONTAP incluent également un plug-in vCenter, un adaptateur de réplication du stockage (SRA) pour VMware site Recovery Manager et un serveur d'API REST pour vous permettre de créer votre propre automatisation. Une fois les outils ONTAP configurés et enregistrés dans vCenter, il est désormais peu nécessaire d'interagir directement avec le système ONTAP, puisque la quasi-totalité de vos besoins en stockage peut être gérée directement depuis l'interface utilisateur vCenter ou via l'automatisation de l'API REST. 
+| *Point de terminaison de protocole (PE)* | Le terminal de protocole est un proxy pour les E/S entre les hôtes ESXi et le datastore vVols. Le fournisseur ONTAP VASA les crée automatiquement, soit une LUN de point de terminaison de protocole (4 Mo) par volume FlexVol^®^ du datastore vVols, soit un point de montage NFS par interface NFS (LIF) sur le nœud de stockage hébergeant un volume FlexVol dans le datastore. L'hôte ESXi monte ces terminaux de protocole directement plutôt que des LUN vVol individuelles et des fichiers de disque virtuel. Il n'est pas nécessaire de gérer les terminaux PE lorsqu'ils sont créés, montés, démontés et supprimés automatiquement par le fournisseur VASA, avec les groupes d'interfaces ou les règles d'exportation nécessaires. 
 
 
-| *Point de terminaison de protocole (PE)* 
-
-
-| Le terminal de protocole est un proxy pour les E/S entre les hôtes ESXi et le datastore vVols. Le fournisseur ONTAP VASA les crée automatiquement, soit une LUN de point de terminaison de protocole (4 Mo) par volume FlexVol^®^ du datastore vVols, soit un point de montage NFS par interface NFS (LIF) sur le nœud de stockage hébergeant un volume FlexVol dans le datastore. L'hôte ESXi monte ces terminaux de protocole directement plutôt que des LUN vVol individuelles et des fichiers de disque virtuel. Il n'est pas nécessaire de gérer les terminaux PE lorsqu'ils sont créés, montés, démontés et supprimés automatiquement par le fournisseur VASA, avec les groupes d'interfaces ou les règles d'exportation nécessaires. 
-
-
-| *Point de terminaison de protocole virtuel (VPE)* 
-
-
- a| 
+| *Point de terminaison de protocole virtuel (VPE)*  a| 
 Nouveauté de vSphere 8, lorsque NVMe over Fabrics (NVMe-of) avec vVols, le concept de terminal de protocole n'est plus pertinent dans ONTAP. Au lieu de cela, un PE virtuel est instancié automatiquement par l'hôte ESXi pour chaque groupe ANA dès que la première machine virtuelle est sous tension. ONTAP crée automatiquement des groupes ANA pour chaque volume FlexVol utilisé par le datastore.
 
 Autre avantage de NVMe-of pour les vVols : aucune demande de liaison n'est requise du fournisseur VASA. À la place, l'hôte ESXi gère en interne la fonctionnalité de liaison vVol basée sur le VPE. Cela réduit les risques d'impact d'une tempête de liaison vVol sur le service.
@@ -57,16 +49,10 @@ Pour plus d'informations, voir https://docs.vmware.com/en/VMware-vSphere/8.0/vsp
 
 
 
-| *Datastore de volume virtuel* 
+| *Datastore de volume virtuel* | Le datastore de volume virtuel est une représentation de datastore logique d'un conteneur vVols créée et gérée par un fournisseur VASA. Le conteneur représente un pool de capacité de stockage provisionné à partir des systèmes de stockage gérés par le fournisseur VASA. Les outils ONTAP prennent en charge l'allocation de plusieurs volumes FlexVol (appelés « volumes de sauvegarde ») à un datastore vVols unique. Ces datastores vVols peuvent couvrir plusieurs nœuds dans un cluster ONTAP, combinant des systèmes Flash et hybrides ayant des fonctionnalités différentes. L'administrateur peut créer de nouveaux volumes FlexVol à l'aide de l'assistant de provisionnement ou de l'API REST, ou sélectionner des volumes FlexVol précréés pour la sauvegarde du stockage, le cas échéant. 
 
 
-| Le datastore de volume virtuel est une représentation de datastore logique d'un conteneur vVols créée et gérée par un fournisseur VASA. Le conteneur représente un pool de capacité de stockage provisionné à partir des systèmes de stockage gérés par le fournisseur VASA. Les outils ONTAP prennent en charge l'allocation de plusieurs volumes FlexVol (appelés « volumes de sauvegarde ») à un datastore vVols unique. Ces datastores vVols peuvent couvrir plusieurs nœuds dans un cluster ONTAP, combinant des systèmes Flash et hybrides ayant des fonctionnalités différentes. L'administrateur peut créer de nouveaux volumes FlexVol à l'aide de l'assistant de provisionnement ou de l'API REST, ou sélectionner des volumes FlexVol précréés pour la sauvegarde du stockage, le cas échéant. 
-
-
-| *Volumes virtuels (vVols)* 
-
-
-| VVols sont les fichiers et disques de machines virtuelles réellement stockés dans le datastore vVols. L'utilisation du terme vVol (singulier) fait référence à un fichier, une LUN ou un espace de nom spécifique unique. ONTAP crée des namespaces NVMe, des LUN ou des fichiers en fonction du protocole utilisé par le datastore. Il existe plusieurs types distincts de vVols : les plus courants sont Config (fichiers de métadonnées), Data (disque virtuel ou VMDK) et Swap (créé lorsque la machine virtuelle est sous tension). Les vVols protégées par le chiffrement de machines virtuelles VMware seront de type autre. Le chiffrement des machines virtuelles VMware ne doit pas être confondu avec le chiffrement du volume ou de l'agrégat ONTAP. 
+| *Volumes virtuels (vVols)* | VVols sont les fichiers et disques de machines virtuelles réellement stockés dans le datastore vVols. L'utilisation du terme vVol (singulier) fait référence à un fichier, une LUN ou un espace de nom spécifique unique. ONTAP crée des namespaces NVMe, des LUN ou des fichiers en fonction du protocole utilisé par le datastore. Il existe plusieurs types distincts de vVols : les plus courants sont Config (fichiers de métadonnées), Data (disque virtuel ou VMDK) et Swap (créé lorsque la machine virtuelle est sous tension). Les vVols protégées par le chiffrement de machines virtuelles VMware seront de type autre. Le chiffrement des machines virtuelles VMware ne doit pas être confondu avec le chiffrement du volume ou de l'agrégat ONTAP. 
 |===
 
 
@@ -76,19 +62,14 @@ Avec VMware vSphere APIs for Storage Awareness (VASA), un administrateur de serv
 
 Il existe deux éléments :
 
+[cols="20%, 80%"]
 |===
 
 
-| *Profil de capacité de stockage (SCP)* 
+| *Profil de capacité de stockage (SCP)* | Un profil de capacité de stockage (SCP) est un modèle de stockage qui permet à l'administrateur vCenter de définir les fonctionnalités de stockage dont ils ont besoin sans avoir à comprendre comment gérer ces fonctionnalités dans ONTAP. En adoptant une approche de type modèle, il permet à l'administrateur de fournir facilement des services de stockage de manière cohérente et prévisible. Les fonctionnalités décrites dans un SCP incluent les performances, le protocole, l'efficacité du stockage et d'autres fonctionnalités. Les fonctionnalités spécifiques varient selon la version. Leur création s'est effectuée à l'aide du menu ONTAP Tools for VMware vSphere de l'interface utilisateur vCenter. Vous pouvez également utiliser des API REST pour créer des SCP. Elles peuvent être créées manuellement en sélectionnant des fonctionnalités individuelles ou générées automatiquement à partir de datastores existants (traditionnels). 
 
 
-| Un profil de capacité de stockage (SCP) est un modèle de stockage qui permet à l'administrateur vCenter de définir les fonctionnalités de stockage dont ils ont besoin sans avoir à comprendre comment gérer ces fonctionnalités dans ONTAP. En adoptant une approche de type modèle, il permet à l'administrateur de fournir facilement des services de stockage de manière cohérente et prévisible. Les fonctionnalités décrites dans un SCP incluent les performances, le protocole, l'efficacité du stockage et d'autres fonctionnalités. Les fonctionnalités spécifiques varient selon la version. Leur création s'est effectuée à l'aide du menu ONTAP Tools for VMware vSphere de l'interface utilisateur vCenter. Vous pouvez également utiliser des API REST pour créer des SCP. Elles peuvent être créées manuellement en sélectionnant des fonctionnalités individuelles ou générées automatiquement à partir de datastores existants (traditionnels). 
-
-
-| *Stratégie de stockage VM* 
-
-
-| Les règles de stockage de serveur virtuel sont créées dans vCenter sous stratégies et profils. Pour les vVols, créez un jeu de règles à l'aide de règles provenant du fournisseur de type de stockage NetApp vVols. Les outils ONTAP offrent une approche simplifiée en vous permettant de sélectionner simplement un SCP plutôt que de vous obliger à spécifier des règles individuelles. 
+| *Stratégie de stockage VM* | Les règles de stockage de serveur virtuel sont créées dans vCenter sous stratégies et profils. Pour les vVols, créez un jeu de règles à l'aide de règles provenant du fournisseur de type de stockage NetApp vVols. Les outils ONTAP offrent une approche simplifiée en vous permettant de sélectionner simplement un SCP plutôt que de vous obliger à spécifier des règles individuelles. 
 |===
 Comme mentionné ci-dessus, l'utilisation des règles peut aider à rationaliser le provisionnement d'un volume. Il suffit de sélectionner une règle appropriée, et le fournisseur VASA affiche les datastores vVols qui prennent en charge cette règle et place le vVol dans un volume FlexVol individuel conforme (Figure 1).
 
