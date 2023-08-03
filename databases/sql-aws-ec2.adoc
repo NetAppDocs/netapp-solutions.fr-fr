@@ -144,15 +144,18 @@ Pour créer des volumes et des LUN pour SQL Server, procédez comme suit :
 
 . Ouvrez la console Amazon FSX à l'adresse https://console.aws.amazon.com/fsx/[]
 . Créez un système de fichiers Amazon FSX pour NetApp ONTAP à l'aide de l'option de création standard sous méthode de création. Cela vous permet de définir les informations d'identification FSxadmin et vsadmin.
-+
+
+
 image:sql-awsec2-image1.png["Erreur : image graphique manquante"]
 
 . Spécifiez le mot de passe de fsxadmin.
-+
+
+
 image:sql-awsec2-image2.png["Erreur : image graphique manquante"]
 
 . Préciser le mot de passe des SVM.
-+
+
+
 image:sql-awsec2-image3.png["Erreur : image graphique manquante"]
 
 . Créez des volumes en suivant l'étape indiquée dans https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-volumes.html["Création d'un volume sur FSX pour NetApp ONTAP"^].
@@ -167,7 +170,8 @@ image:sql-awsec2-image3.png["Erreur : image graphique manquante"]
 
 
 . Utiliser la commande SSH suivante pour créer des volumes :
-+
+
+
 ....
 Vol create -vserver svm001 -volume vol_awssqlprod01_data -aggregate aggr1 -size 800GB -state online -tiering-policy snapshot-only -percent-snapshot-space 0 -autosize-mode grow -snapshot-policy none -security-style ntfs -aggregate aggr1
 volume modify -vserver svm001 -volume vol_awssqlprod01_data -fractional-reserve 0
@@ -175,81 +179,87 @@ volume modify -vserver svm001 -volume vol_awssqlprod01_data -space-mgmt-try-firs
 volume snapshot autodelete modify -vserver svm001 -volume vol_awssqlprod01_data -delete-order oldest_first
 ....
 . Démarrez le service iSCSI avec PowerShell à l'aide de privilèges élevés dans Windows Server.
-+
+
+
 ....
 Start-service -Name msiscsi
 Set-Service -Name msiscsi -StartupType Automatic
 ....
 . Installez Multipath-IO avec PowerShell à l'aide de privilèges élevés dans les serveurs Windows.
-+
+
+
 ....
  Install-WindowsFeature -name Multipath-IO -Restart
 ....
 . Recherchez le nom de l'initiateur Windows avec PowerShell en utilisant des privilèges élevés dans Windows Server.
-+
+
+
 ....
 Get-InitiatorPort | select NodeAddress
 ....
-+
 image:sql-awsec2-image4.png["Erreur : image graphique manquante"]
 
 . Connectez-vous à des machines virtuelles de stockage (SVM) à l'aide de putty et créez un iGroup.
-+
+
+
 ....
 igroup create -igroup igrp_ws2019sql1 -protocol iscsi -ostype windows -initiator iqn.1991-05.com.microsoft:ws2019-sql1.contoso.net
 ....
 . Utilisez la commande SSH suivante pour créer des LUN :
-+
+
+
 ....
 lun create -path /vol/vol_awssqlprod01_data/lun_awssqlprod01_data -size 700GB -ostype windows_2008 -space-reserve enabled -space-allocation enabled lun create -path /vol/vol_awssqlprod01_log/lun_awssqlprod01_log -size 100GB -ostype windows_2008 -space-reserve enabled -space-allocation enabled
 ....
-+
 image:sql-awsec2-image5.png["Erreur : image graphique manquante"]
 
 . Pour obtenir un alignement des E/S avec le schéma de partitionnement du système d'exploitation, utilisez Windows_2008 comme type de LUN recommandé. Reportez-vous à https://docs.netapp.com/us-en/ontap/san-admin/io-misalignments-properly-aligned-luns-concept.html["ici"^] pour plus d'informations.
 . Utilisez la commande SSH suivante sur le groupe initiateur mappé sur les LUN que vous venez de créer.
-+
+
+
 ....
 lun show
 lun map -path /vol/vol_awssqlprod01_data/lun_awssqlprod01_data -igroup igrp_awssqlprod01lun map -path /vol/vol_awssqlprod01_log/lun_awssqlprod01_log -igroup igrp_awssqlprod01
 ....
-+
 image:sql-awsec2-image6.png["Erreur : image graphique manquante"]
 
 . Pour un disque partagé qui utilise le cluster de basculement Windows, exécutez une commande SSH pour mapper le même LUN au groupe initiateur appartenant à tous les serveurs qui participent au cluster de basculement Windows.
 . Connectez Windows Server à un SVM avec une cible iSCSI. Recherchez l'adresse IP cible sur le portail AWS.
-+
+
+
 image:sql-awsec2-image7.png["Erreur : image graphique manquante"]
 
 . Dans Server Manager et le menu Outils, sélectionnez l'initiateur iSCSI. Sélectionnez l'onglet découverte, puis Discover Portal. Indiquez l'adresse IP iSCSI de l'étape précédente et sélectionnez Avancé. Dans le menu local adapter, sélectionnez Microsoft iSCSI Initiator. Dans IP de l'initiateur, sélectionnez l'adresse IP du serveur. Puis sélectionnez OK pour fermer toutes les fenêtres.
-+
+
+
 image:sql-awsec2-image8.png["Erreur : image graphique manquante"]
 
 . Répétez l'étape 12 pour la deuxième IP iSCSI depuis le SVM.
 . Sélectionnez l'onglet *cibles*, sélectionnez *connexion*, puis *Activer muti-path*.
-+
+
+
 image:sql-awsec2-image9.png["Erreur : image graphique manquante"]
 
 . Pour obtenir les meilleures performances, ajoutez d'autres sessions. NetApp recommande la création de cinq sessions iSCSI. Sélectionnez *Propriétés *> *Ajouter session *> *Avancé* et répétez l'étape 12.
-+
+
+
 ....
 $TargetPortals = ('10.2.1.167', '10.2.2.12')
 foreach ($TargetPortal in $TargetPortals) {New-IscsiTargetPortal -TargetPortalAddress $TargetPortal}
 ....
-+
 image:sql-awsec2-image10.png["Erreur : image graphique manquante"]
 
 +
 *Meilleures pratiques*
 
 +
-** Configurez cinq sessions iSCSI par interface cible pour des performances optimales.
-** Configurez une règle de séquence périodique pour obtenir les meilleures performances iSCSI globales.
-** Assurez-vous que la taille de l'unité d'allocation est définie sur 64 Ko pour les partitions lors du formatage des LUN
-
+* Configurez cinq sessions iSCSI par interface cible pour des performances optimales.
+* Configurez une règle de rotation pour les meilleures performances iSCSI globales.
+* Assurez-vous que la taille de l'unité d'allocation est de 64 Ko pour les partitions lors du formatage des LUN
 
 . Exécutez la commande PowerShell suivante pour vous assurer que la session iSCSI est persistante.
-+
+
+
 ....
 $targets = Get-IscsiTarget
 foreach ($target in $targets)
@@ -257,28 +267,26 @@ foreach ($target in $targets)
 Connect-IscsiTarget -IsMultipathEnabled $true -NodeAddress $target.NodeAddress -IsPersistent $true
 }
 ....
-+
 image:sql-awsec2-image11.png["Erreur : image graphique manquante"]
 
 . Initialiser les disques avec la commande PowerShell suivante.
-+
+
+
 ....
 $disks = Get-Disk | where PartitionStyle -eq raw
 foreach ($disk in $disks) {Initialize-Disk $disk.Number}
 ....
-+
 image:sql-awsec2-image12.png["Erreur : image graphique manquante"]
 
 . Exécutez les commandes Créer une partition et formater un disque avec PowerShell.
-+
+
+
 ....
 New-Partition -DiskNumber 1 -DriveLetter F -UseMaximumSize
 Format-Volume -DriveLetter F -FileSystem NTFS -AllocationUnitSize 65536
 New-Partition -DiskNumber 2 -DriveLetter G -UseMaximumSize
 Format-Volume -DriveLetter G -FileSystem NTFS -AllocationUnitSize 65536
 ....
-
-
 Vous pouvez automatiser la création de volumes et de LUN à l'aide du script PowerShell de l'Annexe B. Des LUN peuvent également être créés à l'aide de SnapCenter.
 
 ====
@@ -379,18 +387,19 @@ Suivez le https://docs.netapp.com/us-en/snapcenter/install/task_install_the_snap
 Après l'installation de SnapCenter, procédez comme suit pour le configurer.
 
 . Pour configurer les informations d'identification, sélectionnez *Paramètres* > *Nouveau*, puis saisissez les informations d'identification.
-+
+
+
 image:sql-awsec2-image14.png["Erreur : image graphique manquante"]
 
 . Ajoutez le système de stockage en sélectionnant systèmes de stockage > Nouveau et fournissez les informations FSX appropriées pour le stockage ONTAP.
-+
+
+
 image:sql-awsec2-image15.png["Erreur : image graphique manquante"]
 
 . Ajoutez des hôtes en sélectionnant *hosts* > *Add*, puis fournissez les informations sur l'hôte. SnapCenter installe automatiquement le plug-in Windows et SQL Server. Ce processus peut prendre un certain temps.
-+
+
+
 image:sql-awsec2-image16.png["Erreur : image graphique manquante"]
-
-
 
 Une fois tous les plug-ins installés, vous devez configurer le répertoire des journaux. Il s'agit de l'emplacement où réside la sauvegarde du journal de transactions. Vous pouvez configurer le répertoire des journaux en sélectionnant l'hôte, puis en sélectionnant configurer le répertoire des journaux.
 
@@ -428,28 +437,31 @@ Après avoir placé la base de données et les fichiers journaux sur les LUN ONT
 * Utilisez un groupe de ressources pour une configuration de sauvegarde pour l'optimisation des snapshots et le nombre de tâches à gérer.
 +
 .. Sélectionnez *Ressources*, puis *Microsoft SQL Server *dans le menu déroulant en haut à gauche. Sélectionnez *Actualiser les ressources*.
-+
+
+
+
+
 image:sql-awsec2-image19.png["Erreur : image graphique manquante"]
 
-.. Sélectionnez la base de données à sauvegarder, puis sélectionnez *Suivant* et (*+*) pour ajouter la stratégie si elle n'a pas été créée. Suivez la *Nouvelle stratégie de sauvegarde SQL Server* pour créer une nouvelle stratégie.
-+
+. Sélectionnez la base de données à sauvegarder, puis sélectionnez *Suivant* et (**) pour ajouter la stratégie si elle n'a pas été créée. Suivez la *Nouvelle stratégie de sauvegarde SQL Server* pour créer une nouvelle stratégie.
+
+
 image:sql-awsec2-image20.png["Erreur : image graphique manquante"]
 
-.. Sélectionnez le serveur de vérification si nécessaire. Ce serveur est le serveur sur lequel SnapCenter exécute DBCC CHECKDB après la création d'une sauvegarde complète. Cliquez sur *Suivant* pour la notification, puis sélectionnez *Résumé* pour la révision. Après vérification, cliquez sur *Terminer*.
-+
+. Sélectionnez le serveur de vérification si nécessaire. Ce serveur est le serveur sur lequel SnapCenter exécute DBCC CHECKDB après la création d'une sauvegarde complète. Cliquez sur *Suivant* pour la notification, puis sélectionnez *Résumé* pour la révision. Après vérification, cliquez sur *Terminer*.
+
+
 image:sql-awsec2-image21.png["Erreur : image graphique manquante"]
 
-.. Cliquez sur *Sauvegarder maintenant* pour tester la sauvegarde. Dans les fenêtres contextuelles, sélectionnez *Backup*.
-+
+. Cliquez sur *Sauvegarder maintenant* pour tester la sauvegarde. Dans les fenêtres contextuelles, sélectionnez *Backup*.
+
+
 image:sql-awsec2-image22.png["Erreur : image graphique manquante"]
 
-.. Sélectionnez *Monitor* pour vérifier que la sauvegarde est terminée.
-+
+. Sélectionnez *Monitor* pour vérifier que la sauvegarde est terminée.
+
+
 image:sql-awsec2-image23.png["Erreur : image graphique manquante"]
-
-
-
-
 
 *Meilleures pratiques*
 
@@ -466,16 +478,16 @@ L'un des principaux avantages de l'utilisation de FSX ONTAP avec SQL Server sur 
 Procédez comme suit pour restaurer une base de données individuelle vers un point dans le temps ou jusqu'à la minute avec SnapCenter.
 
 . Sélectionnez Ressources, puis sélectionnez la base de données que vous souhaitez restaurer.
-+
+
+
 image:sql-awsec2-image24.png["Erreur : image graphique manquante"]
 
 . Sélectionnez le nom de sauvegarde à partir duquel la base de données doit être restaurée, puis sélectionnez Restaurer.
 . Suivez les fenêtres contextuelles *Restore* pour restaurer la base de données.
 . Sélectionnez *Monitor* pour vérifier que le processus de restauration a réussi.
-+
+
+
 image:sql-awsec2-image25.png["Erreur : image graphique manquante"]
-
-
 
 ====
 .Considérations relatives à une instance avec un grand nombre de bases de données de toute taille
@@ -543,21 +555,22 @@ L'étape suivante sert à cloner les bases de données vers la nouvelle instance
 . Sélectionnez ressource > Afficher l'instance, puis Actualiser la ressource.
 . Sélectionnez Ressources, puis la base de données à cloner.
 . Sélectionnez le nom de sauvegarde à cloner, puis sélectionnez Cloner.
-+
+
+
 image:sql-awsec2-image26.png["Erreur : image graphique manquante"]
 
 . Suivez les instructions de clonage à partir de la sauvegarde en fournissant la nouvelle instance SQL Server sur EC2 et le nom d'instance pour terminer le processus de clonage.
 . Sélectionnez Monitor pour vous assurer que le clonage est terminé.
-+
+
+
 image:sql-awsec2-image27.png["Erreur : image graphique manquante"]
-
-
 
 =====
 ====
 Pour en savoir plus sur ce processus, regardez la vidéo suivante :
 
-video::27f28284-433d-4273-8748-b01200fb3cd7[panopto,width=360]
+.Clonez les bases de données dans la nouvelle instance SQL Server qui s'exécute sur EC2
+video::27f28284-433d-4273-8748-b01200fb3cd7[panopto]
 
 
 == Annexes
@@ -581,7 +594,8 @@ Le script suivant est utilisé pour provisionner des volumes et des LUN et égal
 * `_EnableMPIO.ps1`
 
 
-....
+[source, shell]
+----
 Function Install_MPIO_ssh {
     $hostname = $env:COMPUTERNAME
     $hostname = $hostname.Replace('-','_')
@@ -604,10 +618,12 @@ Function Install_MPIO_ssh {
 }
 Install_MPIO_ssh
 Remove-Item -Path $MyInvocation.MyCommand.Source
-....
+----
 * `_CreateDisks.ps1`
 
 
+[listing]
+----
 ....
 #Enable MPIO and Start iSCSI Service
 Function PrepISCSI {
@@ -687,6 +703,7 @@ Create_Partition_Format_Disks
 UnregisterTask
 Remove-Item -Path $MyInvocation.MyCommand.Source
 ....
+----
 Exécutez le fichier `EnableMPIO.ps1` le premier et le second script s'exécute automatiquement après le redémarrage du serveur. Ces scripts PowerShell peuvent être supprimés après leur exécution en raison de l'accès des informations d'identification au SVM.
 
 ====
@@ -695,31 +712,36 @@ Exécutez le fichier `EnableMPIO.ps1` le premier et le second script s'exécute 
 == Où trouver des informations complémentaires
 
 * Amazon FSX pour NetApp ONTAP
-+
+
+
 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html"^]
 
 * Mise en route de FSX pour NetApp ONTAP
-+
+
+
 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started.html["https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started.html"^]
 
 * Présentation de l'interface SnapCenter
-+
+
+
 https://www.youtube.com/watch?v=lVEBF4kV6Ag&t=0s["https://www.youtube.com/watch?v=lVEBF4kV6Ag&t=0s"^]
 
 * Parcourir les options du volet de navigation SnapCenter
-+
+
+
 https://www.youtube.com/watch?v=_lDKt-koySQ["https://www.youtube.com/watch?v=_lDKt-koySQ"^]
 
 * Configuration du plug-in SnapCenter 4.0 pour SQL Server
-+
+
+
 https://www.youtube.com/watch?v=MopbUFSdHKE["https://www.youtube.com/watch?v=MopbUFSdHKE"^]
 
 * Comment sauvegarder et restaurer des bases de données à l'aide de SnapCenter avec le plug-in SQL Server
-+
+
+
 https://www.youtube.com/watch?v=K343qPD5_Ys["https://www.youtube.com/watch?v=K343qPD5_Ys"^]
 
 * Comment cloner une base de données à l'aide de SnapCenter avec le plug-in SQL Server
-+
+
+
 https://www.youtube.com/watch?v=ogEc4DkGv1E["https://www.youtube.com/watch?v=ogEc4DkGv1E"^]
-
-
