@@ -104,50 +104,20 @@ Pour plus d'informations sur le plug-in SnapCenter pour les API REST VMware vSph
 
 Les bonnes pratiques suivantes peuvent vous aider à tirer le meilleur parti de votre déploiement SnapCenter.
 
-|===
-
-
- a| 
-* SCV prend en charge les rôles RBAC vCenter Server et ONTAP RBAC et inclut des rôles vCenter prédéfinis qui sont automatiquement créés pour vous lorsque le plug-in est enregistré. Vous pouvez en savoir plus sur les types de RBAC pris en charge https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_types_of_rbac_for_snapcenter_users.html["ici."]
+. SCV prend en charge les rôles RBAC vCenter Server et ONTAP RBAC et inclut des rôles vCenter prédéfinis qui sont automatiquement créés pour vous lorsque le plug-in est enregistré. Vous pouvez en savoir plus sur les types de RBAC pris en charge https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_types_of_rbac_for_snapcenter_users.html["ici."]
 +
 ** Utilisez l'interface utilisateur de vCenter pour attribuer l'accès au compte le moins privilégié à l'aide des rôles prédéfinis décrits https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_predefined_roles_packaged_with_snapcenter.html["ici"].
 ** Si vous utilisez SCV avec le serveur SnapCenter, vous devez attribuer le rôle _SnapCenter_Admin_.
 ** ONTAP RBAC fait référence au compte utilisateur utilisé pour ajouter et gérer les systèmes de stockage utilisés par SCV. ONTAP RBAC ne s'applique pas aux sauvegardes basées sur vVols. En savoir plus sur ONTAP RBAC et SCV https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_ontap_rbac_features_in_snapcenter.html["ici"].
 
 
+. Répliquez vos jeux de données de sauvegarde sur un second système à l'aide de SnapMirror pour créer des répliques complètes des volumes source. Comme mentionné précédemment, vous pouvez également utiliser des règles de copie miroir pour la conservation à long terme des données de sauvegarde, indépendamment des paramètres de conservation des snapshots du volume source. Les deux mécanismes sont pris en charge avec vVols.
+. Étant donné que SCV requiert également les outils ONTAP pour la fonctionnalité VMware vSphere for vVols, vérifiez toujours la compatibilité des versions avec l'outil IMT (Interoperability Matrix Tool) de NetApp
+. Si vous utilisez la réplication vVols avec VMware SRM, tenez compte de vos objectifs RPO et de votre planification de sauvegarde
+. Concevez vos règles de sauvegarde avec des paramètres de conservation qui répondent aux objectifs de point de restauration (RPO) définis par votre entreprise.
+. Configurez les paramètres de notification de vos groupes de ressources pour qu'ils soient informés de l'état lors de l'exécution des sauvegardes (voir la figure 10 ci-dessous).
 
 
-
-
- a| 
-* Répliquez vos jeux de données de sauvegarde sur un second système à l'aide de SnapMirror pour créer des répliques complètes des volumes source. Comme mentionné précédemment, vous pouvez également utiliser des règles de copie miroir pour la conservation à long terme des données de sauvegarde, indépendamment des paramètres de conservation des snapshots du volume source. Les deux mécanismes sont pris en charge avec vVols.
-
-
-
-
- a| 
-* Étant donné que SCV requiert également les outils ONTAP pour la fonctionnalité VMware vSphere for vVols, vérifiez toujours la compatibilité des versions avec l'outil IMT (Interoperability Matrix Tool) de NetApp
-
-
-
-
- a| 
-* Si vous utilisez la réplication vVols avec VMware SRM, tenez compte de vos objectifs RPO et de votre planification de sauvegarde
-
-
-
-
- a| 
-* Concevez vos règles de sauvegarde avec des paramètres de conservation qui répondent aux objectifs de point de restauration (RPO) définis par votre entreprise.
-
-
-
-
- a| 
-* Configurez les paramètres de notification de vos groupes de ressources pour qu'ils soient informés de l'état lors de l'exécution des sauvegardes (voir la figure 10 ci-dessous).
-
-
-|===
 
 
 === Options de notification de groupe de ressources

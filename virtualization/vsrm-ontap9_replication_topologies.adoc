@@ -24,12 +24,11 @@ Une seule machine virtuelle ne peut pas héberger de données (Virtual machine D
 * Un SVM peut contrôler les LUN et les volumes répartis sur plusieurs nœuds dans un cluster.
 
 
-|===
-| Meilleure pratique 
+*Meilleure pratique*
+
+. Pour déterminer la prise en charge, conservez cette règle à l'esprit : pour protéger une machine virtuelle via SRM et NetApp SRA, tous les composants de la machine virtuelle doivent exister sur un seul SVM. Cette règle s'applique aussi bien au site protégé que au site de reprise.
 
 
-| Pour déterminer la prise en charge, conservez cette règle à l'esprit : pour protéger une machine virtuelle via SRM et NetApp SRA, tous les composants de la machine virtuelle doivent exister sur un seul SVM. Cette règle s'applique aussi bien au site protégé que au site de reprise. 
-|===
 
 
 == Dispositions SnapMirror prises en charge
@@ -93,12 +92,11 @@ Un volume source peut être créé dans une configuration en cascade, dans laque
 
 Pour connaître les dernières informations concernant SnapMirror et SnapVault pour ONTAP 9, consultez https://www.netapp.com/media/17229-tr4015.pdf?v=127202175503P["Tr-4015 Guide des meilleures pratiques en matière de configuration de SnapMirror pour ONTAP 9."^]
 
-|===
-| Meilleure pratique 
+*Meilleure pratique*
+
+. Si SnapVault et SRM sont utilisés dans le même environnement, NetApp recommande d'utiliser une configuration SnapMirror vers SnapVault en cascade dans laquelle les sauvegardes SnapVault sont normalement exécutées à partir de la destination SnapMirror sur le site de reprise après incident. En cas d'incident, cette configuration rend le site principal inaccessible. Le fait de conserver la destination SnapVault sur le site de reprise permet de reconfigurer les sauvegardes SnapVault après le basculement, de sorte que les sauvegardes SnapVault puissent continuer sur le site de reprise.
 
 
-| Si SnapVault et SRM sont utilisés dans le même environnement, NetApp recommande d'utiliser une configuration SnapMirror vers SnapVault en cascade dans laquelle les sauvegardes SnapVault sont normalement exécutées à partir de la destination SnapMirror sur le site de reprise après incident. En cas d'incident, cette configuration rend le site principal inaccessible. Le fait de conserver la destination SnapVault sur le site de reprise permet de reconfigurer les sauvegardes SnapVault après le basculement, de sorte que les sauvegardes SnapVault puissent continuer sur le site de reprise. 
-|===
 Dans un environnement VMware, chaque datastore dispose d'un identifiant unique universel (UUID) et chaque machine virtuelle possède un ID d'objet géré unique (MOID). Ces identifiants ne sont pas gérés par SRM lors du basculement ou de la restauration. Étant donné que les UID et les MOID de machine virtuelle ne sont pas maintenus lors du basculement par SRM, toutes les applications qui dépendent de ces ID doivent être reconfigurées après le basculement SRM. NetApp Active IQ Unified Manager, qui coordonne la réplication SnapVault avec l'environnement vSphere, est un exemple d'application.
 
 La figure suivante décrit une configuration SnapMirror vers SnapVault en cascade. Si la destination SnapVault se trouve sur le site de reprise après incident ou sur un site tertiaire non affecté par une panne sur le site primaire, l'environnement peut être reconfiguré afin de permettre la continuité des sauvegardes après le basculement.
@@ -125,9 +123,7 @@ Grâce à la prise en charge des protocoles SAN (FC, FCoE et iSCSI), ONTAP 9 pro
 
 VMware SRM et NetApp SRA prennent en charge l'utilisation du protocole FC sur un site et le protocole iSCSI sur l'autre site. Il ne prend pas en charge la combinaison de datastores FC et de datastores iSCSI dans le même hôte ESXi ou d'hôtes différents dans le même cluster. Cette configuration n'est pas prise en charge avec SRM car, pendant le basculement SRM ou le basculement de test, SRM inclut tous les initiateurs FC et iSCSI des hôtes ESXi dans la demande.
 
-|===
-| Meilleure pratique 
+*Meilleure pratique*
 
+. SRM et SRA prennent en charge les protocoles FC et iSCSI mixtes entre les sites protégés et de reprise. Cependant, chaque site ne doit pas être configuré avec un seul protocole, FC ou iSCSI, et non avec les deux protocoles sur le même site. Si il est nécessaire de configurer les protocoles FC et iSCSI sur le même site, NetApp recommande que certains hôtes utilisent iSCSI et d'autres hôtes utilisent FC. Dans ce cas, NetApp recommande également de configurer les mappages de ressources SRM de sorte que les VM soient configurés pour basculer vers un groupe d'hôtes ou un autre.
 
-| SRM et SRA prennent en charge les protocoles FC et iSCSI mixtes entre les sites protégés et de reprise. Cependant, chaque site ne doit pas être configuré avec un seul protocole, FC ou iSCSI, et non avec les deux protocoles sur le même site. Si il est nécessaire de configurer les protocoles FC et iSCSI sur le même site, NetApp recommande que certains hôtes utilisent iSCSI et d'autres hôtes utilisent FC. Dans ce cas, NetApp recommande également de configurer les mappages de ressources SRM de sorte que les VM soient configurés pour basculer vers un groupe d'hôtes ou un autre. 
-|===

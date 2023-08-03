@@ -123,17 +123,13 @@ NOTE: Les copies Snapshot utilisées pour créer des volumes FlexClone ne sont p
 
 NOTE: Le surengagement du stockage doit être soigneusement étudié et géré pour une application stratégique, telle que SQL Server, pour laquelle la moindre panne ne peut être tolérée. Dans un tel cas de figure, il est préférable de surveiller les tendances en matière de consommation du stockage afin de déterminer le degré acceptable, le cas échéant, de surallocation.
 
-|===
-| Et des meilleures pratiques 
+*Meilleures pratiques*
+
+. Pour optimiser les performances de stockage, provisionnez une capacité du système de fichiers jusqu'à 1,35 fois supérieure à la taille totale de l'utilisation des bases de données.
+. Une surveillance adéquate accompagnée d'un plan d'action efficace est nécessaire lors de l'utilisation du provisionnement fin afin d'éviter l'interruption des applications.
+. Veillez à définir des alertes CloudWatch et d'autres outils de surveillance afin que les utilisateurs soient contactés suffisamment de temps pour réagir lorsque le stockage est rempli.
 
 
- a| 
-* Pour optimiser les performances de stockage, provisionnez une capacité du système de fichiers jusqu'à 1,35 fois supérieure à la taille totale de l'utilisation des bases de données.
-* Une surveillance adéquate accompagnée d'un plan d'action efficace est nécessaire lors de l'utilisation du provisionnement fin afin d'éviter l'interruption des applications.
-* Veillez à définir des alertes CloudWatch et d'autres outils de surveillance afin que les utilisateurs soient contactés suffisamment de temps pour réagir lorsque le stockage est rempli.
-
-
-|===
 ====
 
 
@@ -161,20 +157,15 @@ image:sql-awsec2-image3.png["Erreur : image graphique manquante"]
 
 . Créez des volumes en suivant l'étape indiquée dans https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-volumes.html["Création d'un volume sur FSX pour NetApp ONTAP"^].
 +
-|===
+*Meilleures pratiques*
 
-
-| Et des meilleures pratiques 
-
-
- a| 
++
 ** Désactivez les planifications de stockage Snapshot et les règles de conservation. Utilisez plutôt NetApp SnapCenter pour coordonner les copies Snapshot des volumes de données et de journaux SQL Server.
 ** Configurez des bases de données sur des LUN individuelles sur des volumes distincts pour exploiter la fonctionnalité de restauration rapide et granulaire.
 ** Placez les fichiers de données utilisateur (.mdf) sur des volumes distincts car ils sont des workloads de lecture/écriture aléatoires. Il est courant de créer des sauvegardes du journal de transactions plus fréquemment que les sauvegardes de bases de données. Pour cette raison, placez les fichiers journaux de transactions (.ldf) sur un volume distinct des fichiers de données afin que des planifications de sauvegarde indépendantes puissent être créées pour chacun d'entre eux. Cette séparation isole également les E/S d'écriture séquentielle des fichiers journaux des E/S de lecture/écriture aléatoires des fichiers de données et améliore considérablement les performances de SQL Server.
 ** Tempdb est une base de données système utilisée par Microsoft SQL Server comme espace de travail temporaire, en particulier pour les opérations DBCC CHECKDB exigeantes en E/S. Placez donc cette base de données sur un volume dédié. Dans les grands environnements dans lesquels le nombre de volumes est un défi, vous pouvez consolider tempdb en un nombre réduit de volumes et le stocker dans le même volume que les autres bases de données système après une planification minutieuse. La protection des données pour tempdb n'est pas une priorité élevée car cette base de données est recréée chaque fois que Microsoft SQL Server est redémarré.
 
 
-|===
 . Utiliser la commande SSH suivante pour créer des volumes :
 +
 ....
@@ -249,17 +240,14 @@ foreach ($TargetPortal in $TargetPortals) {New-IscsiTargetPortal -TargetPortalAd
 image:sql-awsec2-image10.png["Erreur : image graphique manquante"]
 
 +
-|===
-| Et des meilleures pratiques 
+*Meilleures pratiques*
 
-
- a| 
++
 ** Configurez cinq sessions iSCSI par interface cible pour des performances optimales.
 ** Configurez une règle de séquence périodique pour obtenir les meilleures performances iSCSI globales.
 ** Assurez-vous que la taille de l'unité d'allocation est définie sur 64 Ko pour les partitions lors du formatage des LUN
 
 
-|===
 . Exécutez la commande PowerShell suivante pour vous assurer que la session iSCSI est persistante.
 +
 ....
@@ -350,7 +338,6 @@ Espace minimum pour l'installation : 10 GO d'espace minimum pour le référentie
 
 |===
 Pour plus d'informations, reportez-vous à la section link:https://docs.netapp.com/us-en/snapcenter/install/reference_space_and_sizing_requirements.html["besoins en termes d'espace et de dimensionnement"].
-Pour plus d'informations, reportez-vous à la section link:https://docs.netapp.com/us-en/snapcenter/install/reference_space_and_sizing_requirements.html["besoins en termes d'espace et de dimensionnement"].
 
 Pour la compatibilité de la version, voir https://mysupport.netapp.com/matrix/["Matrice d'interopérabilité NetApp"^].
 
@@ -362,20 +349,16 @@ La figure suivante décrit quelques facteurs à prendre en compte lors de la cr�
 
 image:sql-awsec2-image13.png["Erreur : image graphique manquante"]
 
-|===
-| Et des meilleures pratiques 
+*Meilleures pratiques*
+
+. Placez les bases de données sur un volume distinct lorsque les requêtes sont exigeantes en E/S ou dans une base de données volumineuse (500 Go ou plus) pour une restauration plus rapide. Ce volume doit également être sauvegardé par des travaux distincts.
+. Consolider les bases de données de petite à moyenne taille qui sont moins critiques ou présentent moins de besoins en E/S sur un seul volume. La sauvegarde d'un nombre élevé de bases de données résidant sur un même volume entraîne un nombre réduit de copies Snapshot à conserver. Il est également recommandé de consolider les instances de Microsoft SQL Server de manière à utiliser les mêmes volumes pour contrôler le nombre de copies Snapshot de sauvegarde effectuées.
+. Créez des LUN pour stocker les fichiers de texte et les fichiers associés à la diffusion en continu de fichiers.
+. Attribuez des LUN distinctes par hôte pour stocker les sauvegardes des journaux Microsoft SQL Server.
+. Les bases de données système qui stockent les métadonnées du serveur de base de données et les détails des tâches ne sont pas fréquemment mis à jour. Placez les bases de données système/tempdb dans des unités ou des LUN distinctes. Ne placez pas les bases de données système dans le même volume que les bases de données utilisateur. Les bases de données utilisateur ont une stratégie de sauvegarde différente et la fréquence de sauvegarde des bases de données utilisateur n'est pas la même pour les bases de données système.
+. Pour l'installation de Microsoft SQL Server Availability Group, placez les fichiers de données et de journaux des répliques dans une structure de dossiers identique sur tous les nœuds.
 
 
- a| 
-* Placez les bases de données sur un volume distinct lorsque les requêtes sont exigeantes en E/S ou dans une base de données volumineuse (500 Go ou plus) pour une restauration plus rapide. Ce volume doit également être sauvegardé par des travaux distincts.
-* Consolider les bases de données de petite à moyenne taille qui sont moins critiques ou présentent moins de besoins en E/S sur un seul volume. La sauvegarde d'un nombre élevé de bases de données résidant sur un même volume entraîne un nombre réduit de copies Snapshot à conserver. Il est également recommandé de consolider les instances de Microsoft SQL Server de manière à utiliser les mêmes volumes pour contrôler le nombre de copies Snapshot de sauvegarde effectuées.
-* Créez des LUN pour stocker les fichiers de texte et les fichiers associés à la diffusion en continu de fichiers.
-* Attribuez des LUN distinctes par hôte pour stocker les sauvegardes des journaux Microsoft SQL Server.
-* Les bases de données système qui stockent les métadonnées du serveur de base de données et les détails des tâches ne sont pas fréquemment mis à jour. Placez les bases de données système/tempdb dans des unités ou des LUN distinctes. Ne placez pas les bases de données système dans le même volume que les bases de données utilisateur. Les bases de données utilisateur ont une stratégie de sauvegarde différente et la fréquence de sauvegarde des bases de données utilisateur n'est pas la même pour les bases de données système.
-* Pour l'installation de Microsoft SQL Server Availability Group, placez les fichiers de données et de journaux des répliques dans une structure de dossiers identique sur tous les nœuds.
-
-
-|===
 En plus de l'avantage de performances de séparer la disposition de la base de données utilisateur en différents volumes, la base de données affecte également de façon significative le temps nécessaire à la sauvegarde et à la restauration. La présence de volumes séparés pour les données et les fichiers journaux améliore considérablement la durée de restauration par rapport à un volume hébergeant plusieurs fichiers de données utilisateur. De même, les bases de données utilisateur équipées d'applications exigeantes en E/S peuvent augmenter le temps de sauvegarde. Une explication plus détaillée des pratiques de sauvegarde et de restauration est fournie plus loin dans ce document.
 
 
@@ -438,53 +421,42 @@ Vous êtes désormais prêt à effectuer des opérations de sauvegarde, de resta
 ====
 Après avoir placé la base de données et les fichiers journaux sur les LUN ONTAP FSX, SnapCenter peut être utilisé pour sauvegarder les bases de données. Les processus suivants sont utilisés pour créer une sauvegarde complète.
 
-|===
+*Meilleures pratiques*
 
-
-| Et des meilleures pratiques 
-
-
- a| 
 * En termes SnapCenter, l'objectif RPO est d'être identifié comme la fréquence de sauvegarde. Par exemple, la fréquence à laquelle vous souhaitez planifier la sauvegarde de manière à réduire la perte de données à quelques minutes seulement. SnapCenter vous permet de planifier des sauvegardes toutes les cinq minutes. Cependant, il peut arriver qu'une sauvegarde ne s'effectue pas dans les cinq minutes suivant les pics de transaction ou lorsque le taux de changement de données est plus important dans le temps imparti. L'une des meilleures pratiques est de planifier des sauvegardes fréquentes du journal des transactions au lieu de sauvegardes complètes.
 * Il existe de nombreuses approches pour gérer les objectifs RPO et RTO. Une autre alternative à cette approche de sauvegarde consiste à définir des règles de sauvegarde distinctes pour les données et les journaux, avec des intervalles différents. Par exemple, à partir de SnapCenter, planifiez les sauvegardes des journaux par intervalles de 15 minutes et les sauvegardes de données par intervalles de 6 heures.
 * Utilisez un groupe de ressources pour une configuration de sauvegarde pour l'optimisation des snapshots et le nombre de tâches à gérer.
-
-
-|===
-. Sélectionnez *Ressources*, puis *Microsoft SQL Server *dans le menu déroulant en haut à gauche. Sélectionnez *Actualiser les ressources*.
++
+.. Sélectionnez *Ressources*, puis *Microsoft SQL Server *dans le menu déroulant en haut à gauche. Sélectionnez *Actualiser les ressources*.
 +
 image:sql-awsec2-image19.png["Erreur : image graphique manquante"]
 
-. Sélectionnez la base de données à sauvegarder, puis sélectionnez *Suivant* et (*+*) pour ajouter la stratégie si elle n'a pas été créée. Suivez la *Nouvelle stratégie de sauvegarde SQL Server* pour créer une nouvelle stratégie.
+.. Sélectionnez la base de données à sauvegarder, puis sélectionnez *Suivant* et (*+*) pour ajouter la stratégie si elle n'a pas été créée. Suivez la *Nouvelle stratégie de sauvegarde SQL Server* pour créer une nouvelle stratégie.
 +
 image:sql-awsec2-image20.png["Erreur : image graphique manquante"]
 
-. Sélectionnez le serveur de vérification si nécessaire. Ce serveur est le serveur sur lequel SnapCenter exécute DBCC CHECKDB après la création d'une sauvegarde complète. Cliquez sur *Suivant* pour la notification, puis sélectionnez *Résumé* pour la révision. Après vérification, cliquez sur *Terminer*.
+.. Sélectionnez le serveur de vérification si nécessaire. Ce serveur est le serveur sur lequel SnapCenter exécute DBCC CHECKDB après la création d'une sauvegarde complète. Cliquez sur *Suivant* pour la notification, puis sélectionnez *Résumé* pour la révision. Après vérification, cliquez sur *Terminer*.
 +
 image:sql-awsec2-image21.png["Erreur : image graphique manquante"]
 
-. Cliquez sur *Sauvegarder maintenant* pour tester la sauvegarde. Dans les fenêtres contextuelles, sélectionnez *Backup*.
+.. Cliquez sur *Sauvegarder maintenant* pour tester la sauvegarde. Dans les fenêtres contextuelles, sélectionnez *Backup*.
 +
 image:sql-awsec2-image22.png["Erreur : image graphique manquante"]
 
-. Sélectionnez *Monitor* pour vérifier que la sauvegarde est terminée.
+.. Sélectionnez *Monitor* pour vérifier que la sauvegarde est terminée.
 +
 image:sql-awsec2-image23.png["Erreur : image graphique manquante"]
 
 
 
-|===
 
 
-| Et des meilleures pratiques 
+*Meilleures pratiques*
 
-
- a| 
 * Sauvegardez la sauvegarde du journal de transactions à partir de SnapCenter afin que SnapCenter puisse lire tous les fichiers de sauvegarde et les restaurer automatiquement par séquence lors du processus de restauration.
 * Si des produits tiers sont utilisés pour la sauvegarde, sélectionnez Copy backup dans SnapCenter pour éviter les problèmes de séquence de journaux et testez la fonctionnalité de restauration avant de passer en production.
 
 
-|===
 ====
 .Restaurez la base de données avec SnapCenter
 [%collapsible]
@@ -523,25 +495,19 @@ Le fait d'exécuter les trois tâches de sauvegarde en parallèle permet de sauv
 
 Outre la sauvegarde complète, NetApp recommande de configurer une sauvegarde du journal des transactions pour les bases de données critiques. Assurez-vous que la propriété de base de données est définie sur le modèle de récupération complète.
 
-|===
+*Meilleures pratiques*
+
+. N'incluez pas la base de données tempdb dans une sauvegarde car les données qu'elle contient sont temporaires. Placez tempdb sur une LUN ou un partage SMB situé dans un volume de système de stockage dans lequel les copies Snapshot ne seront pas créées.
+. Une instance Microsoft SQL Server avec une application exigeante en E/S élevée doit être isolée dans une autre tâche de sauvegarde afin de réduire la durée totale des sauvegardes pour d'autres ressources.
+. Limitez le jeu de bases de données à sauvegarder simultanément à environ 100 et échelonnez le jeu de sauvegardes de base de données restant pour éviter un processus simultané.
+. Utilisez le nom d'instance Microsoft SQL Server dans le groupe de ressources au lieu de plusieurs bases de données car chaque fois que de nouvelles bases de données sont créées dans une instance Microsoft SQL Server, SnapCenter considère automatiquement une nouvelle base de données pour la sauvegarde.
+. Si vous modifiez la configuration de la base de données, par exemple si vous remplacez le modèle de restauration de la base de données par un modèle de restauration complet, effectuez immédiatement une sauvegarde pour permettre des opérations de restauration en moins d'une minute.
+. SnapCenter ne peut pas restaurer les sauvegardes du journal de transactions créées en dehors de SnapCenter.
+. Lors du clonage de volumes FlexVol, assurez-vous de disposer d'un espace suffisant pour les métadonnées du clone.
+. Lors de la restauration des bases de données, assurez-vous que l'espace disponible sur le volume est suffisant.
+. Créez une stratégie distincte pour gérer et sauvegarder les bases de données système au moins une fois par semaine.
 
 
-| Et des meilleures pratiques 
-
-
- a| 
-* N'incluez pas la base de données tempdb dans une sauvegarde car les données qu'elle contient sont temporaires. Placez tempdb sur une LUN ou un partage SMB situé dans un volume de système de stockage dans lequel les copies Snapshot ne seront pas créées.
-* Une instance Microsoft SQL Server avec une application exigeante en E/S élevée doit être isolée dans une autre tâche de sauvegarde afin de réduire la durée totale des sauvegardes pour d'autres ressources.
-* Limitez le jeu de bases de données à sauvegarder simultanément à environ 100 et échelonnez le jeu de sauvegardes de base de données restant pour éviter un processus simultané.
-* Utilisez le nom d'instance Microsoft SQL Server dans le groupe de ressources au lieu de plusieurs bases de données car chaque fois que de nouvelles bases de données sont créées dans une instance Microsoft SQL Server, SnapCenter considère automatiquement une nouvelle base de données pour la sauvegarde.
-* Si vous modifiez la configuration de la base de données, par exemple si vous remplacez le modèle de restauration de la base de données par un modèle de restauration complet, effectuez immédiatement une sauvegarde pour permettre des opérations de restauration en moins d'une minute.
-* SnapCenter ne peut pas restaurer les sauvegardes du journal de transactions créées en dehors de SnapCenter.
-* Lors du clonage de volumes FlexVol, assurez-vous de disposer d'un espace suffisant pour les métadonnées du clone.
-* Lors de la restauration des bases de données, assurez-vous que l'espace disponible sur le volume est suffisant.
-* Créez une stratégie distincte pour gérer et sauvegarder les bases de données système au moins une fois par semaine.
-
-
-|===
 ====
 .Clonage de bases de données avec SnapCenter
 [%collapsible]

@@ -62,15 +62,12 @@ Avec VMware vSphere APIs for Storage Awareness (VASA), un administrateur de serv
 
 Il existe deux éléments :
 
-[cols="20%, 80%"]
-|===
+. *Profil de capacité de stockage (SCP)*
+Un profil de capacité de stockage (SCP) est un modèle de stockage qui permet à l'administrateur vCenter de définir les fonctionnalités de stockage dont ils ont besoin sans avoir à comprendre comment gérer ces fonctionnalités dans ONTAP. En adoptant une approche de type modèle, il permet à l'administrateur de fournir facilement des services de stockage de manière cohérente et prévisible. Les fonctionnalités décrites dans un SCP incluent les performances, le protocole, l'efficacité du stockage et d'autres fonctionnalités. Les fonctionnalités spécifiques varient selon la version. Leur création s'est effectuée à l'aide du menu ONTAP Tools for VMware vSphere de l'interface utilisateur vCenter. Vous pouvez également utiliser des API REST pour créer des SCP. Elles peuvent être créées manuellement en sélectionnant des fonctionnalités individuelles ou générées automatiquement à partir de datastores existants (traditionnels).
+. *Stratégie de stockage VM*
+Les règles de stockage de serveur virtuel sont créées dans vCenter sous stratégies et profils. Pour les vVols, créez un jeu de règles à l'aide de règles provenant du fournisseur de type de stockage NetApp vVols. Les outils ONTAP offrent une approche simplifiée en vous permettant de sélectionner simplement un SCP plutôt que de vous obliger à spécifier des règles individuelles.
 
 
-| *Profil de capacité de stockage (SCP)* | Un profil de capacité de stockage (SCP) est un modèle de stockage qui permet à l'administrateur vCenter de définir les fonctionnalités de stockage dont ils ont besoin sans avoir à comprendre comment gérer ces fonctionnalités dans ONTAP. En adoptant une approche de type modèle, il permet à l'administrateur de fournir facilement des services de stockage de manière cohérente et prévisible. Les fonctionnalités décrites dans un SCP incluent les performances, le protocole, l'efficacité du stockage et d'autres fonctionnalités. Les fonctionnalités spécifiques varient selon la version. Leur création s'est effectuée à l'aide du menu ONTAP Tools for VMware vSphere de l'interface utilisateur vCenter. Vous pouvez également utiliser des API REST pour créer des SCP. Elles peuvent être créées manuellement en sélectionnant des fonctionnalités individuelles ou générées automatiquement à partir de datastores existants (traditionnels). 
-
-
-| *Stratégie de stockage VM* | Les règles de stockage de serveur virtuel sont créées dans vCenter sous stratégies et profils. Pour les vVols, créez un jeu de règles à l'aide de règles provenant du fournisseur de type de stockage NetApp vVols. Les outils ONTAP offrent une approche simplifiée en vous permettant de sélectionner simplement un SCP plutôt que de vous obliger à spécifier des règles individuelles. 
-|===
 Comme mentionné ci-dessus, l'utilisation des règles peut aider à rationaliser le provisionnement d'un volume. Il suffit de sélectionner une règle appropriée, et le fournisseur VASA affiche les datastores vVols qui prennent en charge cette règle et place le vVol dans un volume FlexVol individuel conforme (Figure 1).
 
 

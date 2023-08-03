@@ -67,6 +67,7 @@ NetApp a simplifié les fonctionnalités et le mappage à partir de VASA Provide
 
 === Fonctionnalités de stockage par version des outils ONTAP
 
+[cols="25%, 25%, 25%, 25%"]
 |===
 | *Capacité SCP* | *Valeurs de capacité* | *Version prise en charge* | *Notes* 
 
@@ -74,16 +75,16 @@ NetApp a simplifié les fonctionnalités et le mappage à partir de VASA Provide
 | *Compression* | Oui, non, non | Tout | Obligatoire pour AFF en 7.2 et versions ultérieures. 
 
 
-| *Déduplication* | Oui, non, non | Tout | M andatrice pour AFF en 7.2 et plus tard. 
+| *Déduplication* | Oui, non, non | Tout | Obligatoire pour AFF en 7.2 et versions ultérieures. 
 
 
-| *Cryptage* | Oui, non, non | 7.2 et versions ultérieures | Sélectionne/crée un volume FlexVol chiffré. Licence ONTAP requise. 
+| *Cryptage* | Oui, non, non | 7.2 et versions ultérieures | Sélectionne ou crée un volume FlexVol chiffré. Licence ONTAP requise. 
 
 
 | *IOPS max* | <number> | 7.1 et plus tard, mais différences | Répertorié sous QoS Policy Group pour 7.2 et les versions ultérieures. Pour plus d'informations, reportez-vous au Tableau 4. 
 
 
-| *Personnalité* | A FF, FAS | 7.2 et versions ultérieures | FAS inclut également d'autres systèmes non AFF, tels que ONTAP Select. AFF inclut ASA. 
+| *Personnalité* | AFF, FAS | 7.2 et versions ultérieures | FAS inclut également d'autres systèmes non AFF, tels que ONTAP Select. AFF inclut ASA. 
 
 
 | *Protocole* | NFS, NFS 4.1, iSCSI, FCP, NVMe/FC, Tous | 7.1 et versions antérieures, 9.10 et ultérieures | 7.2-9.8 est effectivement « tout ». Depuis 9.10, où NFS 4.1 et NVMe/FC ont été ajoutés à la liste d'origine. 
@@ -92,7 +93,7 @@ NetApp a simplifié les fonctionnalités et le mappage à partir de VASA Provide
 | *Réserve d'espace (provisionnement fin)* | Fin, épais, (tous) | Toutes, sauf les différences | Appelé provisionnement fin en 7.1 et versions antérieures, qui permettait également de valoriser n'importe quel système. Appelé Réserve d'espace en 7.2. Toutes les versions prennent par défaut la valeur Thin. 
 
 
-| *Politique de hiérarchisation* | Tous, aucun, instantané, Auto | 7.2 et versions ultérieures | Utilisé pour FabricPool^®^ – nécessite AFF ou ASA avec ONTAP 9.4 ou version ultérieure. Seul Snapshot est recommandé, à moins d'utiliser une solution S3 sur site telle que NetApp StorageGRID. 
+| *Politique de hiérarchisation* | Tous, aucun, instantané, Auto | 7.2 et versions ultérieures | Utilisé pour FabricPool ; requiert AFF ou ASA avec ONTAP 9.4 ou version ultérieure. Seul Snapshot est recommandé, à moins d'utiliser une solution S3 sur site telle que NetApp StorageGRID. 
 |===
 
 
