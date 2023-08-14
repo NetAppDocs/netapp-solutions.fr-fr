@@ -27,8 +27,7 @@ Cette section décrit les étapes requises pour préparer et déployer Oracle19c
 === Téléchargez Oracle19c repo
 
 . Depuis votre contrôleur ansible, exécutez la commande suivante :
-
-
++
 [source, cli]
 ----
 git clone https://github.com/NetApp-Automation/na_oracle19c_deploy.git
@@ -124,7 +123,7 @@ host_datastores_nfs:
 
 Le `vars.yml` Le fichier consolide toutes les variables spécifiques à l'environnement (ONTAP, Linux ou Oracle) pour le déploiement Oracle.
 
-* Modifiez et copiez les variables de la section VARS et collez ces variables dans votre `vars.yml` fichier.
+. Modifiez et copiez les variables de la section VARS et collez ces variables dans votre `vars.yml` fichier.
 
 
 [source, shell]
@@ -151,7 +150,6 @@ nodes:
  - "AFF-01"
  - "AFF-02"
 
-
 #Storage VLANs
 #Add additional rows for vlans as necessary
 storage_vlans:
@@ -168,18 +166,19 @@ data_aggregates:
 #SVM name
 svm_name: "ora_svm"
 
-
 # SVM Management LIF Details
 svm_mgmt_details:
   - {address: "172.21.91.100", netmask: "255.255.255.0", home_port: "e0M"}
 
 # NFS storage parameters when data_protocol set to NFS. Volume named after Oracle hosts name identified by mount point as follow for oracle DB server 1. Each mount point dedicates to a particular Oracle files: u01 - Oracle binary, u02 - Oracle data, u03 - Oracle redo. Add additional volumes by click on "More NFS volumes" and also add the volumes list to corresponding host_vars as host_datastores_nfs variable. For multiple DB server deployment, additional volumes sets needs to be added for additional DB server. Input variable "{{groups.oracle[1]}}_u01", "{{groups.oracle[1]}}_u02", and "{{groups.oracle[1]}}_u03" as vol_name for second DB server. Place volumes for multiple DB servers alternatingly between controllers for balanced IO performance, e.g. DB server 1 on controller node1, DB server 2 on controller node2 etc. Make sure match lif address with controller node.
+
 volumes_nfs:
   - {vol_name: "{{groups.oracle[0]}}_u01", aggr_name: "aggr01_node01", lif: "172.21.94.200", size: "25"}
   - {vol_name: "{{groups.oracle[0]}}_u02", aggr_name: "aggr01_node01", lif: "172.21.94.200", size: "25"}
   - {vol_name: "{{groups.oracle[0]}}_u03", aggr_name: "aggr01_node01", lif: "172.21.94.200", size: "25"}
 
 #NFS LIFs IP address and netmask
+
 nfs_lifs_details:
   - address: "172.21.94.200" #for node-1
     netmask: "255.255.255.0"
@@ -187,6 +186,7 @@ nfs_lifs_details:
     netmask: "255.255.255.0"
 
 #NFS client match
+
 client_match: "172.21.94.0/24"
 
 ###########################################
@@ -194,6 +194,7 @@ client_match: "172.21.94.0/24"
 ###########################################
 
 #NFS Mount points for Oracle DB volumes
+
 mount_points:
   - "/u01"
   - "/u02"
@@ -201,9 +202,11 @@ mount_points:
 
 # Up to 75% of node memory size divided by 2mb. Consider how many databases to be hosted on the node and how much ram to be allocated to each DB.
 # Leave it blank if hugepage is not configured on the host.
+
 hugepages_nr: "1234"
 
 # RedHat subscription username and password
+
 redhat_sub_username: "xxx"
 redhat_sub_password: "xxx"
 
@@ -214,6 +217,7 @@ redhat_sub_password: "xxx"
 db_domain: "your.domain.com"
 
 # Set initial password for all required Oracle passwords. Change them after installation.
+
 initial_pwd_all: "netapp123"
 ----
 
@@ -226,26 +230,25 @@ Après avoir rempli les conditions préalables requises à l'environnement et co
 NOTE: vous devez modifier <username> pour l'adapter à votre environnement.
 
 . Exécutez le PlayBook ONTAP en transmettant les balises correctes et le nom d'utilisateur du cluster ONTAP. Saisissez le mot de passe pour le cluster ONTAP et vsadmin lorsque vous y êtes invité.
-
-
++
 [source, cli]
 ----
 ansible-playbook -i hosts all_playbook.yml -u username -k -K -t ontap_config -e @vars/vars.yml
 ----
 . Exécutez le manuel de vente Linux pour exécuter la partie Linux du déploiement. Entrée pour le mot de passe admin ssh ainsi que le mot de passe sudo.
-
-
++
 [source, cli]
 ----
 ansible-playbook -i hosts all_playbook.yml -u username -k -K -t linux_config -e @vars/vars.yml
 ----
 . Exécutez le PlayBook Oracle pour exécuter la partie Oracle du déploiement. Entrée pour le mot de passe admin ssh ainsi que le mot de passe sudo.
-
-
++
 [source, cli]
 ----
 ansible-playbook -i hosts all_playbook.yml -u username -k -K -t oracle_config -e @vars/vars.yml
 ----
+
+
 
 
 === Déployer des bases de données supplémentaires sur le même hôte Oracle
@@ -269,89 +272,92 @@ La partie Oracle du PlayBook crée une base de données de conteneur Oracle uniq
 === Validation de l'installation d'Oracle
 
 . Connectez-vous au serveur Oracle en tant qu'utilisateur oracle et exécutez les commandes suivantes :
-
-
++
 [source, cli]
 ----
 ps -ef | grep ora
 ----
++
 
 NOTE: Cela répertoriera les processus oracle si l'installation est terminée comme prévu et si la base de données oracle a démarré
 
 . Connectez-vous à la base de données pour vérifier les paramètres de configuration de la base de données et les PDB créés avec les jeux de commandes suivants.
-
-
++
 [source, cli]
-----
-sqlplus / as sysdba
 ----
 [oracle@localhost ~]$ sqlplus / as sysdba
 
-SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 12:52:51 2021 version 19.8.0.0.0
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu May 6 12:52:51 2021
+Version 19.8.0.0.0
 
-Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
 
-Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.8.0.0.0
 
 SQL>
 
-[source, cli]
-----
-select name, log_mode from v$database;
-----
-SQL> sélectionnez nom, log_mode à partir de v$database; NAME LOG_MODE --------- ----------- JOURNAL D'ARCHIVAGE CDB2
+SQL> select name, log_mode from v$database;
+NAME      LOG_MODE
+--------- ------------
+CDB2      ARCHIVELOG
 
-[source, cli]
-----
-show pdbs;
-----
-SQL> affiche les pdb
+SQL> show pdbs
 
-....
     CON_ID CON_NAME                       OPEN MODE  RESTRICTED
 ---------- ------------------------------ ---------- ----------
          2 PDB$SEED                       READ ONLY  NO
          3 CDB2_PDB1                      READ WRITE NO
          4 CDB2_PDB2                      READ WRITE NO
          5 CDB2_PDB3                      READ WRITE NO
-....
-[source, cli]
-----
+
 col svrname form a30
 col dirname form a30
 select svrname, dirname, nfsversion from v$dnfs_servers;
-----
-SQL> col svrname form a30 SQL> col dirname form a30 SQL> sélectionnez svrname, dirname, nfsversion de v$dnfs_servers ;
 
-SVRNAME DIRNAME NFSVERSION -------------------------------------- ------------------------- --------------- 172.21.126.200 /rhelora03_u02 NFSv4.0 172.21.126.200 /rhelora03_u03 NFSv4.0 172.21.126.200 /rhelora03_u01 NFSv4.0
+SQL> col svrname form a30
+SQL> col dirname form a30
+SQL> select svrname, dirname, nfsversion from v$dnfs_servers;
 
-[listing]
+SVRNAME                        DIRNAME                        NFSVERSION
+------------------------------ ------------------------------ ----------------
+172.21.126.200                 /rhelora03_u02                 NFSv3.0
+172.21.126.200                 /rhelora03_u03                 NFSv3.0
+172.21.126.200                 /rhelora03_u01                 NFSv3.0
 ----
-This confirms that dNFS is working properly.
-----
++
+Cela permet de vérifier que dNFS fonctionne correctement.
+
 . Connectez-vous à la base de données via l'écouteur pour vérifier la configuration de l'écouteur Oracle à l'aide de la commande suivante. Modifiez le port d'écoute et le nom du service de base de données appropriés.
-
-
++
 [source, cli]
 ----
-sqlplus system@//localhost:1523/cdb2_pdb1.cie.netapp.com
+[oracle@localhost ~]$ sqlplus system@//localhost:1523/cdb2_pdb1.cie.netapp.com
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu May 6 13:19:57 2021
+Version 19.8.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password:
+Last Successful login time: Wed May 05 2021 17:11:11 -04:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.8.0.0.0
+
+SQL> show user
+USER is "SYSTEM"
+SQL> show con_name
+CON_NAME
+CDB2_PDB1
 ----
-[oracle@localhost ~]$ sqlplus système@//localhost:1523/cdb2_pdb1.cie.netapp.com
++
+Cela confirme que l'écouteur Oracle fonctionne correctement.
 
-SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 13:19:57 2021 version 19.8.0.0.0
 
-Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
 
-Entrez le mot de passe : heure de la dernière connexion réussie : mercredi 05 2021 17 mai 11:11 -04:00
-
-Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
-
-SQL> show user USER user est "SYSTEM" SQL> show con_name CON_NAME CDB2_PDB1
-
-[listing]
-----
-This confirms that Oracle listener is working properly.
-----
 
 
 === Où obtenir de l'aide ?

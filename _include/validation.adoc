@@ -1,95 +1,94 @@
-= Validation de l'installation d'Oracle
+= Où obtenir de l'aide ?
 :allow-uri-read: 
 
 
-
-
-=== Validation de l'installation d'Oracle
-
 . Connectez-vous au serveur Oracle en tant qu'utilisateur oracle et exécutez les commandes suivantes :
-
-
++
 [source, cli]
 ----
 ps -ef | grep ora
 ----
++
 
 NOTE: Cela répertoriera les processus oracle si l'installation est terminée comme prévu et si la base de données oracle a démarré
 
 . Connectez-vous à la base de données pour vérifier les paramètres de configuration de la base de données et les PDB créés avec les jeux de commandes suivants.
-
-
++
 [source, cli]
-----
-sqlplus / as sysdba
 ----
 [oracle@localhost ~]$ sqlplus / as sysdba
 
-SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 12:52:51 2021 version 19.8.0.0.0
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu May 6 12:52:51 2021
+Version 19.8.0.0.0
 
-Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
 
-Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.8.0.0.0
 
 SQL>
 
-[source, cli]
-----
-select name, log_mode from v$database;
-----
-SQL> sélectionnez nom, log_mode à partir de v$database; NAME LOG_MODE --------- ----------- JOURNAL D'ARCHIVAGE CDB2
+SQL> select name, log_mode from v$database;
+NAME      LOG_MODE
+--------- ------------
+CDB2      ARCHIVELOG
 
-[source, cli]
-----
-show pdbs;
-----
-SQL> affiche les pdb
+SQL> show pdbs
 
-....
     CON_ID CON_NAME                       OPEN MODE  RESTRICTED
 ---------- ------------------------------ ---------- ----------
          2 PDB$SEED                       READ ONLY  NO
          3 CDB2_PDB1                      READ WRITE NO
          4 CDB2_PDB2                      READ WRITE NO
          5 CDB2_PDB3                      READ WRITE NO
-....
-[source, cli]
-----
+
 col svrname form a30
 col dirname form a30
 select svrname, dirname, nfsversion from v$dnfs_servers;
-----
-SQL> col svrname form a30 SQL> col dirname form a30 SQL> sélectionnez svrname, dirname, nfsversion de v$dnfs_servers ;
 
-SVRNAME DIRNAME NFSVERSION -------------------------------------- ------------------------- --------------- 172.21.126.200 /rhelora03_u02 NFSv4.0 172.21.126.200 /rhelora03_u03 NFSv4.0 172.21.126.200 /rhelora03_u01 NFSv4.0
+SQL> col svrname form a30
+SQL> col dirname form a30
+SQL> select svrname, dirname, nfsversion from v$dnfs_servers;
 
-[listing]
+SVRNAME                        DIRNAME                        NFSVERSION
+------------------------------ ------------------------------ ----------------
+172.21.126.200                 /rhelora03_u02                 NFSv3.0
+172.21.126.200                 /rhelora03_u03                 NFSv3.0
+172.21.126.200                 /rhelora03_u01                 NFSv3.0
 ----
-This confirms that dNFS is working properly.
-----
++
+Cela permet de vérifier que dNFS fonctionne correctement.
+
 . Connectez-vous à la base de données via l'écouteur pour vérifier la configuration de l'écouteur Oracle à l'aide de la commande suivante. Modifiez le port d'écoute et le nom du service de base de données appropriés.
-
-
++
 [source, cli]
 ----
-sqlplus system@//localhost:1523/cdb2_pdb1.cie.netapp.com
+[oracle@localhost ~]$ sqlplus system@//localhost:1523/cdb2_pdb1.cie.netapp.com
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu May 6 13:19:57 2021
+Version 19.8.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password:
+Last Successful login time: Wed May 05 2021 17:11:11 -04:00
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.8.0.0.0
+
+SQL> show user
+USER is "SYSTEM"
+SQL> show con_name
+CON_NAME
+CDB2_PDB1
 ----
-[oracle@localhost ~]$ sqlplus système@//localhost:1523/cdb2_pdb1.cie.netapp.com
++
+Cela confirme que l'écouteur Oracle fonctionne correctement.
 
-SQL*plus: Version 19.0.0.0.0 - production le jeu Mai 6 13:19:57 2021 version 19.8.0.0.0
 
-Copyright (c) 1982, 2019, Oracle. Tous droits réservés.
 
-Entrez le mot de passe : heure de la dernière connexion réussie : mercredi 05 2021 17 mai 11:11 -04:00
-
-Connecté à : Oracle Database 19c Enterprise Edition version 19.0.0.0.0 - production version 19.8.0.0.0
-
-SQL> show user USER user est "SYSTEM" SQL> show con_name CON_NAME CDB2_PDB1
-
-[listing]
-----
-This confirms that Oracle listener is working properly.
-----
 
 
 === Où obtenir de l'aide ?

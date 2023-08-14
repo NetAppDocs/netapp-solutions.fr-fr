@@ -22,10 +22,10 @@ OpenShift sur bare Metal est similaire aux déploiements virtuels d'OpenShift. C
 
 == OpenShift sur bare Metal offre les fonctionnalités suivantes :
 
-* *Déploiement IPI ou programme d'installation assisté.* avec un cluster OpenShift déployé par IPI (installer Provisionable Infrastructure) sur des serveurs bare Metal, les clients peuvent déployer un environnement OpenShift hautement polyvalent et facilement évolutif, directement sur des serveurs génériques, sans avoir à gérer une couche d'hyperviseur.
-* *Conception de cluster compacte.* pour minimiser les besoins matériels, OpenShift sur bare Metal permet aux utilisateurs de déployer des clusters de seulement 3 nœuds, en permettant aux nœuds de plan de contrôle OpenShift d'agir également comme nœuds workers et conteneurs hôtes.
-* *Virtualisation OpenShift.* OpenShift peut exécuter des machines virtuelles dans des conteneurs à l'aide d'OpenShift Virtualization. Cette virtualisation native de conteneur exécute l'hyperviseur KVM dans un conteneur, et connecte les volumes persistants pour le stockage des machines virtuelles.
-* *Infrastructure optimisée pour l'IA/ML*.* déployez des applications comme Kubeflow pour les applications de machine learning en intégrant des nœuds workers basés sur les processeurs graphiques à votre environnement OpenShift et en tirant parti d'OpenShift Advanced Scheduling.
+* *Déploiement IPI ou installation assistée* avec un cluster OpenShift déployé par l'IPI (installer Provisioning Infrastructure) sur des serveurs bare Metal, les clients peuvent déployer un environnement OpenShift extrêmement polyvalent et facilement évolutif directement sur des serveurs ordinaires, sans devoir gérer une couche d'hyperviseur.
+* *Compact Cluster design* pour minimiser les exigences matérielles, OpenShift sur bare Metal permet aux utilisateurs de déployer des clusters de seulement 3 nœuds, en permettant aux nœuds du plan de contrôle OpenShift de faire également office de nœuds worker et de conteneurs hôtes.
+* *OpenShift Virtualization* OpenShift peut exécuter des machines virtuelles dans des conteneurs à l'aide d'OpenShift Virtualization. Cette virtualisation native de conteneur exécute l'hyperviseur KVM dans un conteneur, et connecte les volumes persistants pour le stockage des machines virtuelles.
+* *Infrastructure optimisée pour L'IA/ML* déployez des applications telles que Kubeflow pour les applications de machine learning en intégrant des nœuds workers basés sur des processeurs graphiques à votre environnement OpenShift et en exploitant OpenShift Advanced Scheduling.
 
 
 
@@ -36,8 +36,8 @@ La solution Red Hat OpenShift sur NetApp utilise deux switchs de données pour a
 
 Pour le déploiement d'IPI sans système d'exploitation OpenShift, vous devez créer un nœud de provisionnement, une machine Red Hat Enterprise Linux 8 qui doit disposer d'interfaces réseau connectées à des réseaux distincts.
 
-* *Provisioning Network.* ce réseau est utilisé pour démarrer les nœuds bare-Metal et installer les images et les paquets nécessaires pour déployer le cluster OpenShift.
-* *Réseau bare-Metal.* ce réseau est utilisé pour la communication publique du cluster après son déploiement.
+* *Provisioning network* ce réseau est utilisé pour démarrer les nœuds sans système d'exploitation et installer les images et packages nécessaires pour déployer le cluster OpenShift.
+* *Réseau bare-Metal* ce réseau est utilisé pour la communication publique du cluster après son déploiement.
 
 
 Dans le cadre de la configuration du nœud de provisionnement, le client crée des interfaces de pont qui permettent au trafic de s'acheminer correctement sur le nœud lui-même et sur la machine virtuelle de démarrage provisionnée pour le déploiement. Une fois le cluster déployé, l'API et les adresses VIP d'entrée sont migrées du nœud bootstrap vers le cluster récemment déployé.
@@ -54,9 +54,8 @@ image:redhat_openshift_image37.png["Erreur : image graphique manquante"]
 
 La solution Red Hat OpenShift avec NetApp est conçue pour séparer de façon logique le trafic réseau à différents fins, à l'aide de réseaux locaux virtuels (VLAN).
 
+[cols="40%, 40%, 20%"]
 |===
-
-
 | VLAN | Objectif | ID VLAN 
 
 

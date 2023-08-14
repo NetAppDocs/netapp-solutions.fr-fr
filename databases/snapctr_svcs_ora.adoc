@@ -234,6 +234,38 @@ image:snapctr_svcs_credential_07-aws.png["Capture d'écran montrant cette étape
 
 . Revoir et *Ajouter*.
 image:snapctr_svcs_credential_08-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+. Tout d'abord, à partir de la console AWS EC2, créez un rôle dans le menu *Identity and Access Management (IAM)* *Roles*, *Create role* pour démarrer le workflow de création de rôles.
++
+image:snapctr_svcs_credential_01-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Sur la page *Select Trusted entity*, choisissez *AWS account*, *autre compte AWS*, puis collez l'ID de compte BlueXP, qui peut être récupéré depuis la console BlueXP.
++
+image:snapctr_svcs_credential_02-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Filtrez les stratégies d'autorisation par fsx et ajoutez *stratégies d'autorisations* au rôle.
++
+image:snapctr_svcs_credential_03-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Dans la page *Role details*, nommez le rôle, ajoutez une description, puis cliquez sur *Create Role*.
++
+image:snapctr_svcs_credential_04-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Retour à la console BlueXP, cliquez sur l'icône de paramètre en haut à droite de la console pour ouvrir la page *informations d'identification du compte*, cliquez sur *Ajouter des informations d'identification* pour démarrer le flux de travail de configuration des informations d'identification.
++
+image:snapctr_svcs_credential_05-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Choisissez l'emplacement des informations d'identification comme - *Amazon Web Services - BlueXP*.
++
+image:snapctr_svcs_credential_06-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Définissez les informations d'identification AWS avec le *rôle ARN* approprié, qui peut être récupéré à partir du rôle IAM AWS créé à l'étape 1 ci-dessus. BlueXP *ID de compte*, utilisé pour créer le rôle IAM AWS à l'étape 1.
++
+image:snapctr_svcs_credential_07-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Revoir et *Ajouter*.
++
+image:snapctr_svcs_credential_08-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
 
 
 ====
