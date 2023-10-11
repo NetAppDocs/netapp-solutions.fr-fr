@@ -1,0 +1,44 @@
+---
+sidebar: sidebar 
+permalink: ai/ddlnexus_architecture.html 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, Hybrid, Hybrid Cloud, Hybrid Multicloud, Cloud, AWS, Amazon, Amazon Web Services, FSx for NetApp ONTAP, FSx, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+summary: MLOps du multicloud hybride avec Domino Data Lab et NetApp - Architecture 
+---
+= Architecture
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ddlnexus_technology_overview.html["Précédent : présentation de la technologie."]
+
+[role="lead"]
+Cette solution combine les fonctionnalités de planification de la charge de travail multicloud hybride de Domino Nexus et les services de données NetApp pour créer une plateforme MLOps de cloud hybride unifiée. Voir le tableau suivant pour plus de détails.
+
+|===
+| Composant | Nom | De production 
+
+
+| Plan de contrôle MLOps | link:https://domino.ai/platform/nexus["Plateforme Domino Enterprise ai avec Domino Nexus"] | AWS 
+
+
+| Environnements de calcul de la plateforme MLOps | link:https://docs.dominodatalab.com/en/latest/admin_guide/5781ea/data-planes/["Plans de données Domino Nexus"] | AWS, data Center sur site 
+
+
+| Plateforme de calcul sur site | link:https://kubernetes.io["Kubernetes"] avec link:https://docs.netapp.com/us-en/trident/index.html["NetApp Astra Trident"] | Data Center sur site 
+
+
+| Plateforme de cloud computing | link:https://aws.amazon.com/eks/["Amazon Elastic Kubernetes Service (EKS)"] avec link:https://docs.netapp.com/us-en/trident/index.html["NetApp Astra Trident"] | AWS 
+
+
+| La plateforme de données sur site | link:https://www.netapp.com/data-storage/["Dispositif de stockage NetApp"] optimisé par link:https://www.netapp.com/data-management/ontap-data-management-software/["NetApp ONTAP"] | Data Center sur site 
+
+
+| Plateforme de données cloud | link:https://aws.amazon.com/fsx/netapp-ontap/["Amazon FSX pour NetApp ONTAP"] | AWS 
+|===
+image:ddlnexus_image1.png["Erreur : image graphique manquante"]
+
+link:ddlnexus_initial_setup.html["Suivant : configuration initiale."]

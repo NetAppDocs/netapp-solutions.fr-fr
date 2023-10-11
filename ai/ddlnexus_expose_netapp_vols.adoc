@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: ai/ddlnexus_expose_netapp_vols.html 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, Hybrid, Hybrid Cloud, Hybrid Multicloud, Cloud, AWS, Amazon, Amazon Web Services, FSx for NetApp ONTAP, FSx, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+summary: 'MLOps du multicloud hybride avec Domino Data Lab et NetApp : exposez les volumes NetApp existants à Domino' 
+---
+= Exposer des volumes NetApp existants dans Domino
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ddlnexus_initial_setup.html["Précédent : configuration initiale."]
+
+[role="lead"]
+Cette section décrit les tâches à effectuer pour exposer des volumes NetApp ONTAP NFS existants à la plate-forme Domino MLOps. Ces mêmes étapes s'appliquent à la fois aux environnements sur site et dans AWS.
+
+
+
+== Pourquoi exposer NetApp ONTAP volumes à Domino ?
+
+L'utilisation de volumes NetApp en association avec Domino offre les avantages suivants :
+
+* Vous pouvez exécuter vos charges de travail sur des datasets très volumineux en exploitant les fonctionnalités scale-out de NetApp ONTAP.
+* Vous pouvez exécuter des charges de travail sur plusieurs nœuds de calcul sans avoir à copier vos données sur les nœuds individuels.
+* Vous pouvez utiliser les fonctionnalités NetApp de déplacement et de synchronisation des données dans le multicloud hybride pour accéder à vos données dans plusieurs data centers et/ou clouds.
+* Vous souhaitez créer rapidement et facilement un cache de vos données dans un autre data Center ou cloud.
+
+
+
+
+== Exposez les volumes NFS existants qui n'ont pas été provisionnés par Astra Trident
+
+Si votre volume NFS NetApp ONTAP existant n'a pas été provisionné par Astra Trident, suivez les étapes décrites dans cette sous-section.
+
+
+
+=== Création du volume persistant et de la demande de volume persistant dans Kubernetes
+
+
+NOTE: Pour les volumes sur site, créez le volume persistant et la demande de volume persistant dans votre cluster Kubernetes sur site. Pour les volumes Amazon FSX for NetApp ONTAP, créez le volume persistant et la demande de volume persistant dans Amazon EKS.
+
+Tout d'abord, vous devez créer un volume persistant et une demande de volume persistant dans votre cluster Kubernetes. Pour créer le volume persistant et la demande de volume persistant, utilisez le link:https://docs.dominodatalab.com/en/latest/admin_guide/4cdae9/set-up-kubernetes-pv-and-pvc/#_nfs_pvpvc_example["EXEMPLE NFS PV/PVC"] Dans le guide d'administration Domino et mettez à jour les valeurs afin qu'elles reflètent votre environnement. Assurez-vous de spécifier les valeurs correctes pour le `namespace`, `nfs.path`, et `nfs.server` champs. En outre, nous vous recommandons de donner à vos volumes PV et PVC des noms uniques représentant la nature des données stockées sur le volume NFS ONTAP correspondant. Par exemple, si le volume contient des images de défauts de fabrication, vous pouvez nommer le PV, `pv-mfg-defect-images`, Et le PVC, `pvc-mfg-defect-images`.
+
+
+
+=== Enregistrer un volume de données externe dans Domino
+
+Vous devez ensuite enregistrer un volume de données externe dans Domino. Pour enregistrer un volume de données externe, reportez-vous au link:https://docs.dominodatalab.com/en/latest/admin_guide/9c3564/register-external-data-volumes/["instructions"] Dans le guide d'administration Domino. Lors de l'enregistrement du volume, assurez-vous de sélectionner « NFS » dans le menu déroulant « Type de volume ». Après avoir sélectionné « NFS », votre demande de volume persistant s'affiche dans la liste « volumes disponibles ».
+
+image:ddlnexus_image3.png["Erreur : image graphique manquante"]
+
+
+
+== Exposez les volumes existants qui ont été provisionnés par Astra Trident
+
+Si votre volume existant a été provisionné par Astra Trident, suivez les étapes décrites dans cette sous-section.
+
+
+
+=== Editer la demande de volume persistant existante
+
+Si votre volume a été provisionné par Astra Trident, une demande de volume persistant est déjà associée à votre volume. Pour exposer ce volume à Domino, vous devez modifier la demande de volume et ajouter l'étiquette suivante à la liste des étiquettes de la `metadata.labels` champ :
+
+....
+"dominodatalab.com/external-data-volume": "Generic"
+....
+
+
+=== Enregistrer un volume de données externe dans Domino
+
+Vous devez ensuite enregistrer un volume de données externe dans Domino. Pour enregistrer un volume de données externe, reportez-vous au link:https://docs.dominodatalab.com/en/latest/admin_guide/9c3564/register-external-data-volumes/["instructions"] Dans le guide d'administration Domino. Lors de l'enregistrement du volume, assurez-vous de sélectionner « Générique » dans le menu déroulant « Type de volume ». Après avoir sélectionné « Générique », vous devriez voir votre PVC dans la liste « volumes disponibles ».
+
+link:ddlnexus_access_data_hybrid.html["Ensuite, accédez aux mêmes données dans différents environnements."]

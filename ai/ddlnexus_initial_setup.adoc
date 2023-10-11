@@ -1,0 +1,60 @@
+---
+sidebar: sidebar 
+permalink: ai/ddlnexus_initial_setup.html 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, Hybrid, Hybrid Cloud, Hybrid Multicloud, Cloud, AWS, Amazon, Amazon Web Services, FSx for NetApp ONTAP, FSx, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+summary: 'MLOps du multicloud hybride avec Domino Data Lab et NetApp : configuration initiale' 
+---
+= Configuration initiale
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:ddlnexus_architecture.html["Précédent : architecture."]
+
+[role="lead"]
+Cette section décrit les tâches de configuration initiale à effectuer afin d'utiliser Domino Nexus avec les services de données NetApp dans un environnement hybride intégrant un data Center sur site et AWS.
+
+
+
+== Prérequis
+
+Avant d'effectuer les étapes décrites dans cette section, nous supposons que vous avez déjà effectué les tâches suivantes :
+
+* Vous avez déjà déployé et configuré votre plateforme de stockage NetApp ONTAP sur site. Pour plus d'informations, reportez-vous à la link:https://www.netapp.com/support-and-training/documentation/["Documentation des produits NetApp"].
+* Vous avez déjà provisionné une instance Amazon FSX pour NetApp ONTAP dans AWS. Pour plus d'informations, reportez-vous à la link:https://aws.amazon.com/fsx/netapp-ontap/["Page produit Amazon FSX pour NetApp ONTAP"].
+* Vous avez déjà provisionné un cluster Kubernetes dans votre data Center sur site. Pour plus d'informations, reportez-vous à la link:https://docs.dominodatalab.com/en/latest/admin_guide/b35e66/admin-guide/["Guide d'administration Domino"].
+* Vous avez déjà provisionné un cluster Amazon EKS dans AWS. Pour plus d'informations, reportez-vous à la link:https://docs.dominodatalab.com/en/latest/admin_guide/b35e66/admin-guide/["Guide d'administration Domino"].
+* Vous avez installé NetApp Astra Trident dans votre cluster Kubernetes sur site. En outre, vous avez configuré cette instance Trident pour qu'elle utilise votre plateforme de stockage NetApp ONTAP sur site lors du provisionnement et de la gestion des ressources de stockage. Pour plus d'informations, reportez-vous à la link:https://docs.netapp.com/us-en/trident/index.html["Documentation NetApp Astra Trident"].
+* Vous avez installé NetApp Astra Trident dans votre cluster Amazon EKS. En outre, vous avez configuré cette instance Trident de manière à utiliser votre instance Amazon FSX pour NetApp ONTAP lors du provisionnement et de la gestion des ressources de stockage. Pour plus d'informations, reportez-vous à la link:https://docs.netapp.com/us-en/trident/index.html["Documentation NetApp Astra Trident"].
+* Vous devez disposer d'une connectivité réseau bidirectionnelle entre votre data Center sur site et votre cloud privé virtuel (VPC) dans AWS. Pour plus de détails sur les différentes options de mise en œuvre de cette opération, reportez-vous au link:https://docs.aws.amazon.com/vpc/latest/userguide/vpn-connections.html["Documentation d'Amazon Virtual Private Network (VPN)"].
+
+
+
+
+== Installez la plateforme Domino Enterprise ai dans AWS
+
+Pour installer Domino Enterprise MLOps Platform dans AWS, suivez les instructions de la section link:https://docs.dominodatalab.com/en/latest/admin_guide/c1eec3/deploy-domino/["Guide d'administration Domino"]. Vous devez déployer Domino dans le même cluster Amazon EKS que celui précédemment provisionné. De plus, NetApp Astra Trident doit déjà être installé et configuré dans ce cluster EKS, et vous devez spécifier une classe de stockage gérée par Trident en tant que classe de stockage partagé dans votre fichier de configuration d'installation domino.yml.
+
+
+NOTE: Reportez-vous à la link:https://docs.dominodatalab.com/en/latest/admin_guide/7f4331/install-configuration-reference/#storage-classes["Guide de référence de la configuration d'installation Domino"] pour plus de détails sur la façon de spécifier une classe de stockage partagée dans votre fichier de configuration d'installation domino.yml.
+
+
+NOTE: link:https://www.netapp.com/media/79922-tr-4952.pdf["Rapport technique TR-4952"] Elle décrit le déploiement de Domino dans AWS avec Amazon FSX pour NetApp ONTAP et peut être une référence utile pour résoudre tout problème éventuel.
+
+
+
+== Activez Domino Nexus
+
+Vous devez ensuite activer Domino Nexus. Reportez-vous à la link:https://docs.dominodatalab.com/en/latest/admin_guide/c65074/nexus-hybrid-architecture/["Guide d'administration Domino"] pour plus d'informations.
+
+
+
+== Déployez un plan de données Domino dans votre data Center sur site
+
+Ensuite, vous devez déployer un plan de données Domino dans votre data Center sur site. Vous devez déployer ce plan de données dans le cluster Kubernetes sur site que vous avez précédemment provisionné. De plus, NetApp Astra Trident doit déjà être installé et configuré dans ce cluster Kubernetes. Reportez-vous à la link:https://docs.dominodatalab.com/en/latest/admin_guide/5781ea/data-planes/["Guide d'administration Domino"] pour plus d'informations.
+
+link:ddlnexus_expose_netapp_vols.html["Ensuite, exposez les volumes NetApp existants à Domino."]
