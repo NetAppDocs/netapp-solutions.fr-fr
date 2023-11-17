@@ -1,6 +1,6 @@
 ---
 sidebar: sidebar 
-permalink: data-analytics/hdcs-sh-use-case-1--backing-up-hadoop-data.html 
+permalink: data-analytics/hdcs-sh-use-case-1-backing-up-hadoop-data.html 
 keywords: use case 2, Hadoop repository, dr, disaster recovery 
 summary: 'Dans ce scénario, le client dispose d"un grand référentiel Hadoop sur site et souhaite le sauvegarder à des fins de reprise après incident. Toutefois, la solution de sauvegarde actuelle du client est coûteuse et nécessite une longue fenêtre de sauvegarde de plus de 24 heures.' 
 ---
@@ -40,7 +40,7 @@ Voici les principaux défis et exigences de cette utilisation :
 
 
 
-== Solution de sauvegarde existante du client
+== Solution de sauvegarde existante du client x
 
 La figure ci-dessous présente la solution de sauvegarde native Hadoop de départ.
 
@@ -76,7 +76,7 @@ En fonction de ces défis et exigences, et en tenant compte du système de sauve
 
 === Solution A
 
-Solution A ajoute le module d'analytique sur place au cluster Hadoop de sauvegarde, qui permet de réaliser des sauvegardes secondaires sur les systèmes de stockage NFS NetApp, éliminant ainsi les besoins en bande, comme illustré dans la figure ci-dessous.
+Dans la solution A, le cluster Hadoop de sauvegarde envoie les sauvegardes secondaires aux systèmes de stockage NetApp NFS, ce qui élimine les besoins en bande, comme illustré dans la figure ci-dessous.
 
 image:hdcs-sh-image6.png["Erreur : image graphique manquante"]
 
@@ -91,7 +91,7 @@ Les tâches détaillées de la solution A incluent :
 NOTE: Le snapshot Hadoop protège les données de la production vers le cluster Hadoop de sauvegarde.
 
 * Le contrôleur de stockage NetApp ONTAP fournit un volume exporté NFS, provisionné vers le cluster Hadoop de sauvegarde.
-* En exécutant le `Hadoop distcp` Grâce à MapReduce et à plusieurs mappeurs, les données d'analytique sont protégées du cluster Hadoop de sauvegarde vers NFS à l'aide du module d'analytique sur place.
+* En exécutant le `Hadoop distcp` Commande tirant parti de MapReduce et de plusieurs mappeurs, les données d'analytique sont protégées du cluster Hadoop de sauvegarde vers NFS.
 +
 Une fois les données stockées dans NFS sur le système de stockage NetApp, les technologies NetApp Snapshot, SnapRestore et FlexClone sont utilisées pour sauvegarder, restaurer et dupliquer les données Hadoop selon les besoins.
 
@@ -121,7 +121,7 @@ Avec cette solution, les disques SAN de ONTAP peuvent être utilisés à la plac
 
 === Solution B
 
-La solution B ajoute le module d'analytique sur place au cluster Hadoop de production, ce qui évite d'avoir recours au cluster de sauvegarde Hadoop, comme l'illustre la figure ci-dessous.
+La solution B ajoute un volume NFS au cluster Hadoop de production, ce qui évite d'avoir à utiliser le cluster Hadoop de sauvegarde, comme illustré dans la figure ci-dessous.
 
 image:hdcs-sh-image7.png["Erreur : image graphique manquante"]
 
@@ -129,7 +129,7 @@ Les tâches détaillées de la solution B incluent :
 
 * Le contrôleur de stockage NetApp ONTAP provisionne l'exportation NFS vers le cluster Hadoop de production.
 +
-Hadoop natif `hadoop distcp` Cette commande protège les données Hadoop du cluster de production HDFS vers NFS via le module d'analytique sur place.
+Hadoop natif `hadoop distcp` Protège les données Hadoop du cluster de production HDFS vers NFS.
 
 * Une fois les données stockées dans NFS sur le système de stockage NetApp, les technologies Snapshot, SnapRestore et FlexClone sont utilisées pour sauvegarder, restaurer et dupliquer les données Hadoop selon les besoins.
 
@@ -168,4 +168,4 @@ La solution C présente plusieurs avantages :
 * Fonctions de gestion d'entreprise via les outils NetApp
 
 
-link:hdcs-sh-use-case-2--backup-and-disaster-recovery-from-the-cloud-to-on-premises.html["Ensuite, cas d'utilisation 2 : sauvegarde et reprise d'activité depuis le cloud vers des environnements sur site."]
+link:hdcs-sh-use-case-2-backup-and-disaster-recovery-from-the-cloud-to-on-premises.html["Ensuite, cas d'utilisation 2 : sauvegarde et reprise d'activité depuis le cloud vers des environnements sur site."]
