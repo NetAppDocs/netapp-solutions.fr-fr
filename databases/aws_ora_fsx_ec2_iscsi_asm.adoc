@@ -19,7 +19,7 @@ Allen Cao, Niyaz Mohamed, NetApp
 
 == Objectif
 
-ASM (Automatic Storage Management) est un gestionnaire de volumes de stockage Oracle couramment utilisé dans de nombreuses installations Oracle. Il s'agit également de la solution de gestion du stockage recommandée par Oracle. Il constitue une alternative aux gestionnaires de volumes et aux systèmes de fichiers classiques. Depuis la version 11g d'Oracle, ASM est fourni avec une infrastructure de réseau plutôt qu'avec une base de données. Par conséquent, pour utiliser Oracle ASM pour la gestion du stockage sans RAC, vous devez installer l'infrastructure de grille Oracle sur un serveur autonome, également appelé Oracle Restart. Cela ajoute sans aucun doute plus de complexité dans un déploiement de base de données Oracle plus simple. Cependant, comme son nom l'indique, lorsque Oracle est déployé en mode redémarrage, tous les services Oracle défaillants sont redémarrés après un redémarrage de l'hôte sans intervention de l'utilisateur, ce qui fournit un certain degré de haute disponibilité ou de fonctionnalité haute disponibilité.
+ASM (Automatic Storage Management) est un gestionnaire de volumes de stockage Oracle couramment utilisé dans de nombreuses installations Oracle. Il s'agit également de la solution de gestion du stockage recommandée par Oracle. Il constitue une alternative aux gestionnaires de volumes et aux systèmes de fichiers classiques. Depuis la version 11g d'Oracle, ASM s'est empaqueté de l'infrastructure grid au lieu d'une base de données. Par conséquent, pour utiliser Oracle ASM pour la gestion du stockage sans RAC, vous devez installer l'infrastructure de grille Oracle sur un serveur autonome, également appelé Oracle Restart. Cela ajoute sans aucun doute plus de complexité au déploiement de bases de données Oracle. Cependant, comme son nom l'indique, lorsqu'Oracle a été déployé en mode redémarrage, les services Oracle ont échoué redémarrés automatiquement par l'infrastructure de réseau ou après un redémarrage de l'hôte sans intervention de l'utilisateur, ce qui fournit un certain degré de haute disponibilité ou de fonctionnalité haute disponibilité.
 
 Cette documentation explique comment déployer une base de données Oracle avec le protocole iSCSI et Oracle ASM dans un environnement de stockage Amazon FSX pour ONTAP avec des instances de calcul EC2. Nous démontrons également comment utiliser le service NetApp SnapCenter via la console NetApp BlueXP pour sauvegarder, restaurer et cloner votre base de données Oracle à des fins de développement/test ou pour d'autres utilisations pour un fonctionnement efficace de la base de données dans le cloud public AWS.
 
@@ -96,7 +96,7 @@ image::aws_ora_fsx_ec2_iscsi_asm_architecture.png[Cette image fournit une vue d�
 * *Clusters HA de stockage FSX déploiement sur une ou plusieurs zones.* lors de ces tests et validations, nous avons déployé un cluster HA FSX dans une zone de disponibilité AWS unique. Pour le déploiement de production, NetApp recommande de déployer une paire haute disponibilité FSX dans deux zones de disponibilité différentes. Un cluster FSX HA est provisionné dans une paire haute disponibilité qui est mise en miroir synchrone dans une paire de systèmes de fichiers actifs-passifs afin d'assurer la redondance au niveau du stockage. Un déploiement multizone améliore encore la haute disponibilité en cas de défaillance dans une même zone AWS.
 * *Dimensionnement des clusters de stockage FSX.* un système de fichiers de stockage Amazon FSX pour ONTAP fournit jusqu'à 160,000 000 IOPS SSD brutes, un débit allant jusqu'à 4 Gbit/s et une capacité maximale de 192 Tio. Cependant, vous pouvez dimensionner le cluster en termes d'IOPS provisionnées, de débit et de limite de stockage (au moins 1,024 Gio) en fonction de vos besoins réels au moment du déploiement. La capacité peut être ajustée dynamiquement à la volée sans affecter la disponibilité des applications.
 * *Disposition des données et des journaux Oracle.* dans nos tests et validations, nous avons déployé deux groupes de disques ASM pour les données et les journaux respectivement. Au sein du groupe de disques ASM +DATA, nous avons provisionné quatre LUN dans un volume de données. Au sein du groupe de disques asm +LOGS, nous avons provisionné deux LUN dans un volume de journaux. En général, plusieurs LUN configurées dans un volume Amazon FSX pour ONTAP offrent de meilleures performances.
-* *Configuration iSCSI.* le serveur de base de données de l'instance EC2 se connecte au stockage FSX avec le protocole iSCSI. Les instances EC2 se déploient généralement avec une seule interface réseau ou ENI. L'interface de carte réseau unique assure le trafic iSCSI et applicatif. Il est important d'évaluer les besoins en débit d'E/S de l'aperçu de la base de données Oracle en analysant soigneusement le rapport Oracle AWR afin de choisir une instance de calcul EC2 adaptée aux exigences des applications et du débit du trafic iSCSI. NetApp recommande également d'allouer quatre connexions iSCSI aux deux terminaux iSCSI FSX avec la configuration correcte des chemins d'accès multiples.
+* *Configuration iSCSI.* le serveur de base de données de l'instance EC2 se connecte au stockage FSX avec le protocole iSCSI. Les instances EC2 se déploient généralement avec une seule interface réseau ou ENI. L'interface de carte réseau unique assure le trafic iSCSI et applicatif. Il est important d'évaluer les besoins en débit d'E/S maximal de la base de données Oracle en analysant soigneusement le rapport Oracle AWR afin de choisir une instance de calcul EC2 adaptée aux exigences des applications et du débit du trafic iSCSI. NetApp recommande également d'allouer quatre connexions iSCSI aux deux terminaux iSCSI FSX avec la configuration correcte des chemins d'accès multiples.
 * *Niveau de redondance Oracle ASM à utiliser pour chaque groupe de disques Oracle ASM que vous créez.* comme FSX est déjà en miroir sur le stockage au niveau du cluster FSX, vous devez utiliser la redondance externe, ce qui signifie que l'option ne permet pas à Oracle ASM de mettre en miroir le contenu du groupe de disques.
 * *Sauvegarde de base de données* NetApp fournit une version SaaS du service logiciel SnapCenter pour la sauvegarde, la restauration et le clonage de bases de données dans le cloud, disponible via l'interface utilisateur de la console NetApp BlueXP. NetApp recommande de mettre en œuvre ce type de service afin de permettre une sauvegarde Snapshot rapide (moins d'une minute), une restauration rapide de la base de données et un clonage de base de données.
 
@@ -250,7 +250,7 @@ systemctl start iscsid
 ....
 cat /etc/iscsi/initiatorname.iscsi
 ....
-. Ajoutez le groupe ASM à utiliser pour le groupe sysasm asm
+. Ajoutez le groupe ASM à utiliser pour le groupe sysasm asm.
 +
 ....
 groupadd asm
@@ -259,6 +259,12 @@ groupadd asm
 +
 ....
 usermod -a -G asm oracle
+....
+. Arrêtez et désactivez le pare-feu Linux s'il est actif.
++
+....
+systemctl stop firewalld
+systemctl disable firewalld
 ....
 . Redémarrez l'instance EC2.
 
@@ -738,7 +744,7 @@ unset ORACLE_BASE
 . Connectez-vous à l'instance EC2 en tant qu'utilisateur Oracle et extrayez le correctif dans `/tmp/archive` dossier.
 +
 ....
-unzip p34762026_190000_Linux-x86-64.zip
+unzip /tmp/archive/p34762026_190000_Linux-x86-64.zip -d /tmp/archive
 ....
 . Depuis GRID home /u01/app/oracle/product/19.0.0/grid et en tant qu'utilisateur oracle, lancez `gridSetup.sh` pour l'installation de l'infrastructure de grille.
 +
@@ -889,6 +895,8 @@ templateName=General_Purpose.dbc
 sysPassword="yourPWD"
 systemPassword="yourPWD"
 dbsnmpPassword="yourPWD"
+datafileDestination=+DATA
+recoveryAreaDestination=+LOGS
 storageType=ASM
 diskGroupName=DATA
 characterSet=AL32UTF8
@@ -1022,12 +1030,12 @@ SQL> show pdbs
          5 DB1_PDB3                       READ WRITE NO
 SQL>
 ....
-. Définissez l'emplacement de restauration de la base de données sur le groupe de disques +LOGS.
+. Définissez la taille de destination de la restauration de la base de données sur la taille du groupe de disques +LOGS.
 +
 ....
+
 alter system set db_recovery_file_dest_size = 80G scope=both;
 
-alter system set db_recovery_file_dest = '+LOGS' scope=both;
 ....
 . Connectez-vous à la base de données avec sqlplus et activez le mode journal d'archivage.
 +
