@@ -13,10 +13,10 @@ summary: 'Pour cette solution, NetApp a validé la migration des données du dat
 :imagesdir: ./../media/
 
 
-link:bda-ai-gpfs-to-netapp-ontap-nfs.html["Précédent : GPFS vers NetApp ONTAP NFS."]
-
 [role="lead"]
-Pour cette solution, NetApp a validé la migration des données du data Lake (HDFS) et du cluster MapR vers ONTAP NFS. Les données résidaient dans MapR-FS et HDFS. NetApp XCP a introduit une nouvelle fonctionnalité qui migre directement les données d'un système de fichiers distribué tel que HDFS et MapR-FS vers ONTAP NFS. XCP utilise des threads asynchrones et des appels API HDFS C pour communiquer et transférer des données de MapR-FS ainsi que HDFS. La figure ci-dessous illustre la migration des données entre le data Lake (HDFS) et MapR-FS et le protocole ONTAP NFS. Grâce à cette nouvelle fonctionnalité, il n'est pas nécessaire d'exporter la source en tant que partage NFS.
+Pour cette solution, NetApp a validé la migration des données du data Lake (HDFS) et du cluster MapR vers ONTAP NFS. Les données résidaient dans MapR-FS et HDFS. NetApp XCP a introduit une nouvelle fonctionnalité qui migre directement les données d'un système de fichiers distribué tel que HDFS et MapR-FS vers ONTAP NFS. XCP utilise des threads asynchrones et des appels API HDFS C pour communiquer et transférer des données de MapR-FS ainsi que HDFS.
+
+La figure ci-dessous illustre la migration des données entre le data Lake (HDFS) et MapR-FS et le protocole ONTAP NFS. Grâce à cette nouvelle fonctionnalité, il n'est pas nécessaire d'exporter la source en tant que partage NFS.
 
 image:bda-ai-image6.png["Erreur : image graphique manquante"]
 
@@ -40,5 +40,3 @@ Les tests ont été réalisés dans Amazon Web Services (AWS) pour transférer l
 Selon les tests initiaux, nous avons obtenu un débit de 20 Gbit/s et sommes parvenus à transférer 2 po de données par jour.
 
 Pour plus d'informations sur la migration de données HDFS sans exporter HDFS vers NFS, reportez-vous à la section « étapes de déploiement - NAS » du https://docs.netapp.com/us-en/netapp-solutions/xcp/xcp-bp-deployment-steps.html["Tr-4863 : TR-4863 : instructions sur les meilleures pratiques pour NetApp XCP - Data Mover, migration de fichiers et analyse"^].
-
-link:bda-ai-business-benefits.html["Suivant : avantages commerciaux."]

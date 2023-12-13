@@ -26,5 +26,3 @@ NOTE: Pour que le déploiement Kubernetes de DeepOps fonctionne, le même utilis
 Si le déploiement échoue, modifiez la valeur de `kubectl_localhost` à faux dans `deepops/config/group_vars/k8s-cluster.yml` et répétez l'étape 2. Le `Copy kubectl binary to ansible host` tâche, qui s'exécute uniquement lorsque la valeur de `kubectl_localhost` Est vrai, dépend du module récupérer Ansible, qui présente des problèmes connus d'utilisation de la mémoire. Ces problèmes d'utilisation de la mémoire peuvent parfois entraîner l'échec de la tâche. Si la tâche échoue en raison d'un problème de mémoire, le reste de l'opération de déploiement ne s'effectue pas correctement.
 
 Si le déploiement se termine correctement une fois que vous avez modifié la valeur de `kubectl_localhost` à `false`, vous devez ensuite copier manuellement `kubectl binary` D'un nœud maître Kubernetes vers l'hôte de démarrage du déploiement Vous pouvez trouver l'emplacement du `kubectl binary` sur un nœud maître spécifique en exécutant le `which kubectl` commandez directement sur ce nœud.
-
-link:hcaios_cnvrg.io_deployment.html["Suivant : déploiement Cnvrg.io"]

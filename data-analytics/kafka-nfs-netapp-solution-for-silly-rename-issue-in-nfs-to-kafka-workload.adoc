@@ -13,8 +13,6 @@ summary: Cette section décrit le problème de changement de nom Silly et les mo
 :imagesdir: ./../media/
 
 
-link:kafka-nfs-introduction.html["Précédent : introduction."]
-
 [role="lead"]
 Kafka est construit en supposant que le système de fichiers sous-jacent est conforme aux exigences POSIX, par exemple, XFS ou Ext4. Le rééquilibrage des ressources par Kafka supprime les fichiers tant que l'application les utilise toujours. Un système de fichiers compatible POSIX permet de procéder à l'annulation de la liaison. Cependant, il supprime le fichier uniquement après avoir supprimé toutes les références au fichier. Si le système de fichiers sous-jacent est connecté au réseau, le client NFS intercepte les appels unlink et gère le flux de travail. Comme des ouvertures sont en attente pour le fichier en cours de dissociation, le client NFS envoie une demande de changement de nom au serveur NFS et, à la dernière fermeture du fichier non lié, émet une opération de suppression sur le fichier renommé. Ce comportement, communément appelé renommage NFS, est orchestré par le client NFS.
 
@@ -27,5 +25,3 @@ Pour résoudre le problème de changement de nom de fichier, le serveur NFS et l
 
 
 Grâce aux modifications ci-dessus apportées au client et au serveur NFS, Kafka peut, en toute sécurité, bénéficier de tous les avantages du stockage NFS connecté au réseau.
-
-link:kafka-nfs-functional-validation-silly-rename-fix.html["Suivant : validation fonctionnelle - modification du nom de fichier."]

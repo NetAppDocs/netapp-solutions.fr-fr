@@ -13,9 +13,9 @@ summary: Cette section présente les leçons tirées de cette certification.
 :imagesdir: ./../media/
 
 
-link:confluent-kafka-confluent-kafka-rebalance.html["Précédent : clusters à auto-rééquilibrage fluide."]
-
 [role="lead"]
+Cette section présente les leçons tirées de cette certification.
+
 * Sur la base de notre validation, le stockage objet S3 convient parfaitement au maintien fluide des données.
 * Nous pouvons utiliser un SAN haut débit (notamment FC) pour conserver les données actives du courtier ou le disque local, car, en termes de configuration du stockage multi-niveaux, la taille des données stockées dans le répertoire des courtiers dépend de la taille du segment et de la durée de conservation lorsque les données sont déplacées vers le stockage objet.
 * Les magasins d'objets offrent de meilleures performances lorsque segment.octets est plus élevé ; nous avons testé 512 Mo.
@@ -40,5 +40,3 @@ kafka-acls --bootstrap-server localhost:9092 --command-config adminclient-config
 NOTE: Remplacer l'utilisateur `<kafka>` avec le véritable courtier principal dans votre déploiement.
 
 Par exemple, la commande `confluent-tier-state` Définit les listes de contrôle d'accès sur la rubrique interne pour le stockage à plusieurs niveaux. Actuellement, une seule rubrique interne est consacrée au stockage à plusieurs niveaux. L'exemple crée une liste de contrôle d'accès qui fournit l'autorisation Kafka principale pour toutes les opérations sur le sujet interne.
-
-link:confluent-kafka-sizing.html["Suivant : dimensionnement."]

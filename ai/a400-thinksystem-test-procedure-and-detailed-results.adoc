@@ -13,7 +13,8 @@ summary: Cette section décrit les résultats détaillés de la procédure de te
 :imagesdir: ./../media/
 
 
-link:a400-thinksystem-test-configuration.html["Précédent : test de la configuration."]
+[role="lead"]
+Cette section décrit les résultats détaillés de la procédure de test.
 
 
 
@@ -63,5 +64,3 @@ image:a400-thinksystem-image9.png["Ce figurine montre l'exécution en quelques m
 Ces graphiques présentent un temps d'exécution de quelques minutes. Les images agrégées par seconde pour les nœuds de calcul qui ont utilisé huit GPU de chaque serveur de 100 GbE client, associant le modèle d'entraînement simultané et le modèle d'entraînement unique. La durée d'exécution moyenne du modèle d'entraînement était de 35 minutes et 9 secondes. Les cycles individuels étaient de 34 minutes et 32 secondes, 36 minutes et 21 secondes, 34 minutes et 37 secondes, 35 minutes et 25 secondes, et 34 minutes et 31 secondes. Le modèle d'entraînement comptait en moyenne 22,573 images par seconde et 21,764 images par seconde, 23,438, 22,556, 22,564 et 22,547.
 
 Sur la base de notre validation, un modèle d'entraînement indépendant avec un temps d'exécution des données NetApp s'est établi à 34 minutes et 54 secondes, avec 22,231 images/s. Un modèle d'entraînement indépendant avec un temps d'exécution des données locales (DAS) était de 34 minutes et 21 secondes avec 22,102 images/s. Lors de ces exécutions, l'utilisation moyenne des GPU était de 96 %, comme observé sur nvidia-smi. Notez que cette moyenne inclut la phase de test, au cours de laquelle les GPU n'ont pas été utilisés, tandis que l'utilisation du CPU a été de 40 % mesurée par mpstat. Cela démontre que le taux de livraison des données est suffisant dans chaque cas.
-
-link:a400-thinksystem-architecture-adjustments.html["Ensuite, les ajustements d'architecture."]

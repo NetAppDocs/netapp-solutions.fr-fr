@@ -13,8 +13,6 @@ summary: 'Les protocoles NAS permettent à plusieurs clients sur un réseau d"ac
 :imagesdir: ./../../media/
 
 
-link:ncvs-gc-nas-protocols_overview.html["Précédent : présentation des protocoles NAS."]
-
 [role="lead"]
 Les protocoles NAS permettent à plusieurs clients sur un réseau d'accéder aux mêmes données sur un système de stockage, notamment Cloud Volumes Service sur GCP. NFS et SMB sont les protocoles NAS définis et fonctionnent sur une base client/serveur où Cloud Volumes Service fait office de serveur. Les clients envoient des demandes d'accès, de lecture et d'écriture au serveur, et le serveur est responsable de la coordination des mécanismes de verrouillage des fichiers, du stockage des autorisations et du traitement des demandes d'identité et d'authentification.
 
@@ -25,5 +23,3 @@ Par exemple, le processus général suivant est suivi si un client NAS souhaite 
 . Le client envoie un appel au serveur pour créer le fichier avec le descripteur de répertoire et le nom du fichier et définit l'accès et les heures modifiées. Le serveur émet un ID de fichier unique pour s'assurer qu'aucun autre fichier n'est créé avec le même ID de fichier.
 . Le client envoie un appel pour vérifier les attributs du fichier avant l'opération D'ÉCRITURE. Si les autorisations le permettent, le client écrit le nouveau fichier. Si le verrouillage est utilisé par le protocole/l'application, le client demande au serveur un verrouillage pour empêcher les autres clients d'accéder au fichier lorsqu'il est verrouillé afin d'éviter la corruption des données.
 
-
-link:ncvs-gc-nfs.html["Suivant : NFS."]
