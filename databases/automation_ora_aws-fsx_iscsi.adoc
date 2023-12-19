@@ -1,0 +1,611 @@
+---
+sidebar: sidebar 
+permalink: databases/automation_ora_aws-fsx_iscsi.html 
+keywords: Database, Oracle, AWS, FSx, ONTAP, Automation 
+summary: 'La solution fournit une vue d"ensemble et des détails pour le déploiement et la protection automatisés d"Oracle dans Amazon FSX ONTAP en tant que stockage de base de données primaire avec protocole iSCSI et base de données Oracle configurée en redémarrage autonome à l"aide d"Oracle asm en tant que gestionnaire de volumes.' 
+---
+= Déploiement Oracle simplifié et automatisé sur Amazon FSX ONTAP avec iSCSI
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+
+
+== Objectif
+
+Amazon FSX pour NetApp ONTAP est un service de stockage qui vous permet de lancer et d'exécuter des systèmes de fichiers NetApp ONTAP entièrement gérés dans le cloud AWS. Elle fournit les fonctionnalités, les performances, les capacités et les API familières des systèmes de fichiers NetApp, avec l'agilité, l'évolutivité et la simplicité d'un service AWS entièrement géré. Vous pouvez ainsi exécuter sereinement les workloads de bases de données les plus exigeants, tels qu'Oracle, dans le cloud AWS.
+
+Cette documentation décrit le déploiement simplifié des bases de données Oracle dans un système de fichiers Amazon FSX ONTAP à l'aide de l'automatisation Ansible. La base de données Oracle est déployée dans une configuration de redémarrage autonome avec le protocole iSCSI pour l'accès aux données et Oracle ASM pour la gestion des disques de stockage de base de données. Vous y trouverez également des informations sur la sauvegarde, la restauration et le clonage des bases de données Oracle à l'aide de l'outil de l'interface utilisateur de NetApp SnapCenter qui assure un stockage efficace des opérations de base de données dans le cloud AWS.
+
+Cette solution répond aux cas d'utilisation suivants :
+
+* Déploiement automatisé de la base de données Oracle sur le système de fichiers Amazon FSX ONTAP
+* Sauvegardez et restaurez vos bases de données Oracle sur le système de fichiers Amazon FSX ONTAP à l'aide de l'outil NetApp SnapCenter
+* Clone de base de données Oracle pour le développement/test ou pour d'autres utilisations sur le système de fichiers Amazon FSX ONTAP à l'aide de l'outil NetApp SnapCenter
+
+
+
+
+== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* Administrateur de base de données qui souhaite déployer Oracle sur le système de fichiers Amazon FSX ONTAP.
+* Architecte de solutions de bases de données qui souhaiterait tester les workloads Oracle sur le système de fichiers Amazon FSX ONTAP.
+* Administrateur du stockage qui souhaite déployer et gérer une base de données Oracle sur un système de fichiers Amazon FSX ONTAP.
+* Propriétaire d'application qui souhaite créer une base de données Oracle sur le système de fichiers Amazon FSX ONTAP.
+
+
+
+
+== Environnement de test et de validation de la solution
+
+Les tests et la validation de cette solution ont été réalisés dans un environnement de laboratoire qui ne correspond peut-être pas à l'environnement de déploiement final. Voir la section <<Key Factors for Deployment Consideration>> pour en savoir plus.
+
+
+
+=== Architecture
+
+image::automation_ora_aws-fsx_iscsi_archit.png[Cette image fournit une vue détaillée de la configuration du déploiement Oracle dans le cloud public AWS avec iSCSI et ASM.]
+
+
+
+=== Composants matériels et logiciels
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+| *Matériel* 
+
+
+| Le stockage Amazon FSX ONTAP | Version actuelle proposée par AWS | Un cluster FSX HA dans le même VPC et la même zone de disponibilité 
+
+
+| Instance EC2 pour le calcul | t2.XLarge/4 vCPU/16 Gbit/s | Deux instances EC2 T2 xlarge pour un déploiement simultané 
+
+
+3+| *Logiciel* 
+
+
+| Red Hat Linux | Noyau RHEL-8.6, 4.18.0-372.9.1.el8.x86_64 | Déploiement de l'abonnement Red Hat pour les tests 
+
+
+| Serveur Windows | 2022 Standard, 10.0.20348 année de construction 20348 | Hébergement du serveur SnapCenter 
+
+
+| Infrastructure Oracle Grid | Version 19.18 | Patch RU appliqué p34762026_190000_Linux-x86-64.zip 
+
+
+| Base de données Oracle | Version 19.18 | Patch RU appliqué p34765931_190000_Linux-x86-64.zip 
+
+
+| OPICH Oracle | Version 12.2.0.1.36 | Dernier correctif p6880880_190000_Linux-x86-64.zip 
+
+
+| Serveur SnapCenter | Version 4.9P1 | Déploiement de groupes de travail 
+
+
+| Ouvrez JDK | Version Java-1.8.0-openjdk.x86_64 | Plug-in SnapCenter requis sur les VM de base de données 
+|===
+
+
+=== Configuration de la base de données Oracle dans l'environnement de laboratoire
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+|  
+
+
+| *Serveur* | *Base de données* | *Stockage DB* 
+
+
+| ora_01 | NTAP1(NTAP1_PDB1,NTAP1_PDB2,NTAP1_PDB3) | lun iSCSI sur le système de fichiers Amazon FSX ONTAP 
+
+
+| ora_02 | NTAP2(NTAP2_PDB1,NTAP2_PDB2,NTAP2_PDB3) | lun iSCSI sur le système de fichiers Amazon FSX ONTAP 
+|===
+
+
+=== Facteurs clés à prendre en compte lors du déploiement
+
+* *Organisation du stockage de la base de données Oracle.* dans ce déploiement Oracle automatisé, nous provisionnons quatre volumes de base de données pour héberger les fichiers binaires, les données et les journaux Oracle par défaut. Une seule lun dans un volume alloue au binaire Oracle. Nous créons ensuite deux groupes de disques ASM à partir des lun de données et de journaux. Au sein du groupe de disques asm +DATA, nous provisionnons deux volumes de données avec deux lun dans un volume. Au sein du groupe de disques asm +LOGS, nous créons deux lun dans un volume de log. Plusieurs lun configurées dans un volume ONTAP offrent de meilleures performances en général.
+* *Déploiement de plusieurs serveurs de bases de données.* la solution d'automatisation peut déployer une base de données de conteneurs Oracle sur plusieurs serveurs de bases de données dans un seul PlayBook Ansible. Quel que soit le nombre de serveurs de base de données, l'exécution du PlayBook reste la même. Vous pouvez déployer plusieurs bases de données de conteneurs sur une seule instance EC2 avec différents ID d'instance de base de données (SID Oracle). Mais assurez-vous qu'il y a suffisamment de mémoire sur l'hôte pour prendre en charge les bases de données déployées.
+* *Configuration iSCSI.* le serveur de base de données de l'instance EC2 se connecte au stockage FSX avec le protocole iSCSI. Les instances EC2 se déploient généralement avec une seule interface réseau ou ENI. L'interface de carte réseau unique assure le trafic iSCSI et applicatif. Il est important d'évaluer les besoins en débit d'E/S maximal de la base de données Oracle en analysant soigneusement le rapport Oracle AWR afin de choisir l'instance de calcul EC2 qui répond le mieux aux exigences des applications et du débit du trafic iSCSI. NetApp recommande également d'allouer quatre connexions iSCSI aux deux terminaux iSCSI FSX avec la configuration correcte des chemins d'accès multiples.
+* *Niveau de redondance Oracle ASM à utiliser pour chaque groupe de disques Oracle ASM que vous créez.* comme Amazon FSX ONTAP est activé pour la protection des données au niveau du disque de cluster, vous devez utiliser `External Redundancy`, Ce qui signifie que l'option ne permet pas à Oracle ASM de mettre en miroir le contenu du groupe de disques.
+* *Sauvegarde de la base de données.* NetApp fournit une suite logicielle SnapCenter pour la sauvegarde, la restauration et le clonage de la base de données avec une interface utilisateur conviviale. NetApp recommande de mettre en œuvre cet outil de gestion afin de réaliser rapidement (moins d'une minute) des sauvegardes Snapshot, des restaurations rapides (en minutes) des bases de données et des clones de base de données.
+
+
+
+
+== Déploiement de la solution
+
+Les sections suivantes présentent des procédures détaillées pour le déploiement et la protection automatisés d'Oracle 19c sur le système de fichiers Amazon FSX ONTAP avec des lun de base de données directement montés via iSCSI vers la machine virtuelle d'instance EC2 dans une configuration de redémarrage à nœud unique avec Oracle ASM comme gestionnaire de volume de base de données.
+
+
+
+=== Conditions préalables au déploiement
+
+[%collapsible]
+====
+Le déploiement nécessite les conditions préalables suivantes.
+
+. Un compte AWS a été configuré et les segments de réseau et de VPC nécessaires ont été créés dans votre compte AWS.
+. À partir de la console AWS EC2, déployez les instances EC2 Linux en tant que serveurs de base de données Oracle. Activez l'authentification de clé privée/publique SSH pour l'utilisateur ec2. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au schéma d'architecture de la section précédente. Consultez également le link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html["Guide de l'utilisateur pour les instances Linux"^] pour en savoir plus.
+. À partir de la console AWS FSX, provisionnez un système de fichiers Amazon FSX ONTAP qui répond aux exigences. Consultez la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de FSX pour les systèmes de fichiers ONTAP"^] pour obtenir des instructions détaillées.
+. Les étapes 2 et 3 peuvent être effectuées à l'aide du kit d'outils d'automatisation Terraform suivant, qui crée une instance EC2 nommée `ora_01` Et un système de fichiers FSX nommé `fsx_01`. Lisez attentivement les instructions et modifiez les variables en fonction de votre environnement avant de les exécuter. Ce modèle peut être facilement révisé en fonction de vos propres exigences de déploiement.
++
+[source, cli]
+----
+git clone https://github.com/NetApp-Automation/na_aws_fsx_ec2_deploy.git
+----
+. Provisionnez une instance EC2 Linux en tant que nœud de contrôleur Ansible avec la dernière version d'Ansible et de Git installée. Pour plus de détails, cliquez sur le lien suivant : link:https://docs.netapp.com/us-en/netapp-solutions/automation/getting-started.html["Commencer à utiliser l'automatisation des solutions NetApp"^] dans la section -
+`Setup the Ansible Control Node for CLI deployments on RHEL / CentOS` ou
+`Setup the Ansible Control Node for CLI deployments on Ubuntu / Debian`.
+. Provisionnez un serveur Windows pour exécuter l'outil d'interface utilisateur NetApp SnapCenter avec la dernière version. Pour plus de détails, cliquez sur le lien suivant : link:https://docs.netapp.com/us-en/snapcenter/install/task_install_the_snapcenter_server_using_the_install_wizard.html["Installez le serveur SnapCenter"^]
+. Clonez une copie du kit d'outils d'automatisation du déploiement Oracle de NetApp pour iSCSI.
++
+[source, cli]
+----
+git clone https://bitbucket.ngage.netapp.com/scm/ns-bb/na_oracle_deploy_iscsi.git
+----
+. Étape suivante : fichiers d'installation Oracle 19c sur le répertoire des instances EC2 /tmp/archive.
++
+....
+installer_archives:
+  - "LINUX.X64_193000_grid_home.zip"
+  - "p34762026_190000_Linux-x86-64.zip"
+  - "LINUX.X64_193000_db_home.zip"
+  - "p34765931_190000_Linux-x86-64.zip"
+  - "p6880880_190000_Linux-x86-64.zip"
+....
++
+
+NOTE: Assurez-vous d'avoir alloué au moins 50G dans le volume racine de la machine virtuelle Oracle pour disposer d'un espace suffisant pour préparer les fichiers d'installation d'Oracle.
+
+. Regardez la vidéo suivante :
++
+.Déploiement Oracle simplifié et automatisé sur Amazon FSX ONTAP avec iSCSI
+video::81e389a0-d9b8-495c-883b-b0d701710847[panopto,width=360]
+
+
+====
+
+
+=== Fichiers de paramètres d'automatisation
+
+[%collapsible]
+====
+Le PlayBook Ansible exécute les tâches d'installation et de configuration de la base de données avec des paramètres prédéfinis. Pour cette solution d'automatisation Oracle, trois fichiers de paramètres définis par l'utilisateur doivent être saisis avant l'exécution du PlayBook.
+
+* hôtes : définissez les cibles pour lesquelles le playbook d'automatisation s'exécute.
+* rva/rva.yml - fichier de variables globales qui définit les variables qui s'appliquent à toutes les cibles.
+* host_rva/host_name.yml - fichier de variables locales qui définit les variables qui s'appliquent uniquement à une cible nommée. Dans notre cas d'utilisation, il s'agit des serveurs BDD Oracle.
+
+
+Outre ces fichiers de variables définis par l'utilisateur, il existe plusieurs fichiers de variables par défaut qui contiennent des paramètres par défaut qui ne nécessitent aucune modification, sauf si nécessaire. Les sections suivantes expliquent comment configurer les fichiers de variables définis par l'utilisateur.
+
+====
+
+
+=== Configuration des fichiers de paramètres
+
+[%collapsible]
+====
+. Cible Ansible `hosts` configuration du fichier :
++
+[source, shell]
+----
+# Enter Amazon FSx ONTAP management IP address
+[ontap]
+172.16.9.32
+
+# Enter name for ec2 instance (not default IP address naming) to be deployed one by one, follow by ec2 instance IP address, and ssh private key of ec2-user for the instance.
+[oracle]
+ora_01 ansible_host=10.61.180.21 ansible_ssh_private_key_file=ora_01.pem
+ora_02 ansible_host=10.61.180.23 ansible_ssh_private_key_file=ora_02.pem
+
+----
+. Mondial `vars/vars.yml` configuration de fichier
++
+[source, shell]
+----
+#############################################################################################################
+######                 Oracle 19c deployment global user configurable variables                        ######
+######                 Consolidate all variables from ONTAP, linux and oracle                          ######
+#############################################################################################################
+
+#############################################################################################################
+######                 ONTAP env specific config variables                                             ######
+#############################################################################################################
+
+# Enter the supported ONTAP platform: on-prem, aws-fsx.
+ontap_platform: aws-fsx
+
+# Enter ONTAP cluster management user credentials
+username: "fsxadmin"
+password: "xxxxxxxx"
+
+#############################################################################################################
+###                   Linux env specific config variables                                                 ###
+#############################################################################################################
+
+# Enter RHEL subscription to enable repo
+redhat_sub_username: xxxxxxxx
+redhat_sub_password: "xxxxxxxx"
+
+
+#############################################################################################################
+###                   Oracle DB env specific config variables                                             ###
+#############################################################################################################
+
+# Enter Database domain name
+db_domain: solutions.netapp.com
+
+# Enter initial password for all required Oracle passwords. Change them after installation.
+initial_pwd_all: xxxxxxxx
+
+----
+. Serveur DB local `host_vars/host_name.yml` configuration telle que ora_01.yml, ora_02.yml ...
++
+[source, shell]
+----
+# User configurable Oracle host specific parameters
+
+# Enter container database SID. By default, a container DB is created with 3 PDBs within the CDB
+oracle_sid: NTAP1
+
+# Enter database shared memory size or SGA. CDB is created with SGA at 75% of memory_limit, MB. The grand total of SGA should not exceed 75% available RAM on node.
+memory_limit: 8192
+
+----
+
+
+====
+
+
+=== Exécution de PlayBook
+
+[%collapsible]
+====
+Le kit d'outils d'automatisation comprend cinq playbooks. Chacun exécute des blocs de tâches différents et répond à des besoins différents.
+
+....
+0-all_playbook.yml - execute playbooks from 1-4 in one playbook run.
+1-ansible_requirements.yml - set up Ansible controller with required libs and collections.
+2-linux_config.yml - execute Linux kernel configuration on Oracle DB servers.
+3-ontap_config.yml - configure ONTAP svm/volumes/luns for Oracle database and grant DB server access to luns.
+4-oracle_config.yml - install and configure Oracle on DB servers for grid infrastructure and create a container database.
+5-destroy.yml - optional to undo the environment to dismantle all.
+....
+Il existe trois options pour exécuter les playbooks avec les commandes suivantes.
+
+. Exécutez tous les playbooks en une seule fois.
++
+[source, cli]
+----
+ansible-playbook -i hosts 0-all_playbook.yml -u ec2-user -e @vars/vars.yml
+----
+. Exécutez les playbooks un par un avec la séquence des nombres compris entre 1 et 4.
++
+[source, cli]]
+----
+ansible-playbook -i hosts 1-ansible_requirements.yml -u ec2-user -e @vars/vars.yml
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 2-linux_config.yml -u ec2-user -e @vars/vars.yml
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 3-ontap_config.yml -u ec2-user -e @vars/vars.yml
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 4-oracle_config.yml -u ec2-user -e @vars/vars.yml
+----
+. Exécutez 0-all_PlayBook.yml avec une balise.
++
+[source, cli]
+----
+ansible-playbook -i hosts 0-all_playbook.yml -u ec2-user -e @vars/vars.yml -t ansible_requirements
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 0-all_playbook.yml -u ec2-user -e @vars/vars.yml -t linux_config
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 0-all_playbook.yml -u ec2-user -e @vars/vars.yml -t ontap_config
+----
++
+[source, cli]
+----
+ansible-playbook -i hosts 0-all_playbook.yml -u ec2-user -e @vars/vars.yml -t oracle_config
+----
+. Annulez l'environnement
++
+[source, cli]
+----
+ansible-playbook -i hosts 5-destroy.yml -u ec2-user -e @vars/vars.yml
+----
+
+
+====
+
+
+=== Validation post-exécution
+
+[%collapsible]
+====
+Une fois le PlayBook exécuté, connectez-vous au serveur de base de données Oracle en tant qu'utilisateur Oracle pour vérifier que l'infrastructure de grid et la base de données Oracle sont correctement créées. Voici un exemple de validation de base de données Oracle sur l'hôte ora_01.
+
+. Validez la base de données des conteneurs Oracle sur l'instance EC2
++
+....
+
+[admin@ansiblectl na_oracle_deploy_iscsi]$ ssh -i ora_01.pem ec2-user@172.30.15.40
+Last login: Fri Dec  8 17:14:21 2023 from 10.61.180.18
+[ec2-user@ip-172-30-15-40 ~]$ uname -a
+Linux ip-172-30-15-40.ec2.internal 4.18.0-372.9.1.el8.x86_64 #1 SMP Fri Apr 15 22:12:19 EDT 2022 x86_64 x86_64 x86_64 GNU/Linux
+
+[ec2-user@ip-172-30-15-40 ~]$ sudo su
+[root@ip-172-30-15-40 ec2-user]# su - oracle
+Last login: Fri Dec  8 16:25:52 UTC 2023 on pts/0
+[oracle@ip-172-30-15-40 ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Fri Dec 8 18:18:20 2023
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+SQL> select name, open_mode, log_mode from v$database;
+
+NAME      OPEN_MODE            LOG_MODE
+--------- -------------------- ------------
+NTAP1     READ WRITE           ARCHIVELOG
+
+SQL> show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 NTAP1_PDB1                     READ WRITE NO
+         4 NTAP1_PDB2                     READ WRITE NO
+         5 NTAP1_PDB3                     READ WRITE NO
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP1/DATAFILE/system.257.1155055419
++DATA/NTAP1/DATAFILE/sysaux.258.1155055463
++DATA/NTAP1/DATAFILE/undotbs1.259.1155055489
++DATA/NTAP1/86B637B62FE07A65E053F706E80A27CA/DATAFILE/system.266.1155056241
++DATA/NTAP1/86B637B62FE07A65E053F706E80A27CA/DATAFILE/sysaux.267.1155056241
++DATA/NTAP1/DATAFILE/users.260.1155055489
++DATA/NTAP1/86B637B62FE07A65E053F706E80A27CA/DATAFILE/undotbs1.268.1155056241
++DATA/NTAP1/0C03AAFA7C6FD2E5E063280F1EACFBE0/DATAFILE/system.272.1155057059
++DATA/NTAP1/0C03AAFA7C6FD2E5E063280F1EACFBE0/DATAFILE/sysaux.273.1155057059
++DATA/NTAP1/0C03AAFA7C6FD2E5E063280F1EACFBE0/DATAFILE/undotbs1.271.1155057059
++DATA/NTAP1/0C03AAFA7C6FD2E5E063280F1EACFBE0/DATAFILE/users.275.1155057075
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP1/0C03AC0089ACD352E063280F1EAC12BD/DATAFILE/system.277.1155057075
++DATA/NTAP1/0C03AC0089ACD352E063280F1EAC12BD/DATAFILE/sysaux.278.1155057075
++DATA/NTAP1/0C03AC0089ACD352E063280F1EAC12BD/DATAFILE/undotbs1.276.1155057075
++DATA/NTAP1/0C03AC0089ACD352E063280F1EAC12BD/DATAFILE/users.280.1155057091
++DATA/NTAP1/0C03ACEABA54D386E063280F1EACE573/DATAFILE/system.282.1155057091
++DATA/NTAP1/0C03ACEABA54D386E063280F1EACE573/DATAFILE/sysaux.283.1155057091
++DATA/NTAP1/0C03ACEABA54D386E063280F1EACE573/DATAFILE/undotbs1.281.1155057091
++DATA/NTAP1/0C03ACEABA54D386E063280F1EACE573/DATAFILE/users.285.1155057105
+
+19 rows selected.
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP1/CONTROLFILE/current.261.1155055529
++LOGS/NTAP1/CONTROLFILE/current.256.1155055529
+
+SQL> select member from v$logfile;
+
+MEMBER
+--------------------------------------------------------------------------------
++DATA/NTAP1/ONLINELOG/group_3.264.1155055531
++LOGS/NTAP1/ONLINELOG/group_3.259.1155055539
++DATA/NTAP1/ONLINELOG/group_2.263.1155055531
++LOGS/NTAP1/ONLINELOG/group_2.257.1155055539
++DATA/NTAP1/ONLINELOG/group_1.262.1155055531
++LOGS/NTAP1/ONLINELOG/group_1.258.1155055539
+
+6 rows selected.
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+....
+. Validez l'écouteur Oracle.
++
+....
+
+[oracle@ip-172-30-15-40 ~]$ lsnrctl status listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 08-DEC-2023 18:20:24
+
+Copyright (c) 1991, 2022, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=ip-172-30-15-40.ec2.internal)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     LISTENER
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                08-DEC-2023 16:26:09
+Uptime                    0 days 1 hr. 54 min. 14 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0/grid/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/ip-172-30-15-40/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=ip-172-30-15-40.ec2.internal)(PORT=1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC1521)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcps)(HOST=ip-172-30-15-40.ec2.internal)(PORT=5500))(Security=(my_wallet_directory=/u01/app/oracle/product/19.0.0/NTAP1/admin/NTAP1/xdb_wallet))(Presentation=HTTP)(Session=RAW))
+Services Summary...
+Service "+ASM" has 1 instance(s).
+  Instance "+ASM", status READY, has 1 handler(s) for this service...
+Service "+ASM_DATA" has 1 instance(s).
+  Instance "+ASM", status READY, has 1 handler(s) for this service...
+Service "+ASM_LOGS" has 1 instance(s).
+  Instance "+ASM", status READY, has 1 handler(s) for this service...
+Service "0c03aafa7c6fd2e5e063280f1eacfbe0.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "0c03ac0089acd352e063280f1eac12bd.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "0c03aceaba54d386e063280f1eace573.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "NTAP1.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "NTAP1XDB.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "ntap1_pdb1.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "ntap1_pdb2.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+Service "ntap1_pdb3.solutions.netapp.com" has 1 instance(s).
+  Instance "NTAP1", status READY, has 1 handler(s) for this service...
+The command completed successfully
+
+....
+. Validez l'infrastructure et les ressources du grid créées.
++
+....
+
+[oracle@ip-172-30-15-40 ~]$ asm
+[oracle@ip-172-30-15-40 ~]$ crsctl check has
+CRS-4638: Oracle High Availability Services is online
+[oracle@ip-172-30-15-40 ~]$ crsctl stat res -t
+--------------------------------------------------------------------------------
+Name           Target  State        Server                   State details
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+ora.DATA.dg
+               ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.LISTENER.lsnr
+               ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.LOGS.dg
+               ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.asm
+               ONLINE  ONLINE       ip-172-30-15-40          Started,STABLE
+ora.ons
+               OFFLINE OFFLINE      ip-172-30-15-40          STABLE
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.cssd
+      1        ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.driver.afd
+      1        ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.evmd
+      1        ONLINE  ONLINE       ip-172-30-15-40          STABLE
+ora.ntap1.db
+      1        ONLINE  ONLINE       ip-172-30-15-40          Open,HOME=/u01/app/o
+                                                             racle/product/19.0.0
+                                                             /NTAP1,STABLE
+--------------------------------------------------------------------------------
+
+....
+. Valider Oracle ASM.
++
+....
+
+[oracle@ip-172-30-15-40 ~]$ asmcmd
+ASMCMD> lsdg
+State    Type    Rebal  Sector  Logical_Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512             512   4096  4194304    163840   155376                0          155376              0             N  DATA/
+MOUNTED  EXTERN  N         512             512   4096  4194304     81920    80972                0           80972              0             N  LOGS/
+ASMCMD> lsdsk
+Path
+AFD:ORA_01_DAT1_01
+AFD:ORA_01_DAT1_03
+AFD:ORA_01_DAT2_02
+AFD:ORA_01_DAT2_04
+AFD:ORA_01_LOGS_01
+AFD:ORA_01_LOGS_02
+ASMCMD> afd_state
+ASMCMD-9526: The AFD state is 'LOADED' and filtering is 'ENABLED' on host 'ip-172-30-15-40.ec2.internal'
+ASMCMD> exit
+
+....
+. Connectez-vous à Oracle Enterprise Manager Express pour valider la base de données.
++
+image::automation_ora_aws-fsx_iscsi_em_01.png[Cette image fournit un écran de connexion pour Oracle Enterprise Manager Express]
+
++
+image::automation_ora_aws-fsx_iscsi_em_02.png[Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express]
+
++
+image::automation_ora_aws-fsx_iscsi_em_03.png[Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express]
+
+
+
+====
+
+
+=== Sauvegarde, restauration et clonage Oracle avec SnapCenter
+
+[%collapsible]
+====
+Reportez-vous au document TR-4979 link:https://docs.netapp.com/us-en/netapp-solutions/databases/aws_ora_fsx_vmc_guestmount.html#oracle-backup-restore-and-clone-with-snapcenter["Oracle simplifié et autogéré dans VMware Cloud sur AWS avec FSX ONTAP monté sur l'invité"^] section `Oracle backup, restore, and clone with SnapCenter` Pour plus d'informations sur la configuration de SnapCenter et l'exécution des flux de travail de sauvegarde, de restauration et de clonage de la base de données.
+
+====
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur les informations fournies dans ce document, consultez ces documents et/ou sites web :
+
+* Amazon FSX pour NetApp ONTAP
++
+link:https://aws.amazon.com/fsx/netapp-ontap/["https://aws.amazon.com/fsx/netapp-ontap/"^]
+
+* Amazon EC2
++
+link:https://aws.amazon.com/pm/ec2/?trk=36c6da98-7b20-48fa-8225-4784bced9843&sc_channel=ps&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2&ef_id=Cj0KCQiA54KfBhCKARIsAJzSrdqwQrghn6I71jiWzSeaT9Uh1-vY-VfhJixF-xnv5rWwn2S7RqZOTQ0aAh7eEALw_wcB:G:s&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2["https://aws.amazon.com/pm/ec2/?trk=36c6da98-7b20-48fa-8225-4784bced9843&sc_channel=ps&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2&ef_id=Cj0KCQiA54KfBhCKARIsAJzSrdqwQrghn6I71jiWzSeaT9Uh1-vY-VfhJixF-xnv5rWwn2S7RqZOTQ0aAh7eEALw_wcB:G:s&s_kwcid=AL!4422!3!467723097970!e!!g!!aws%20ec2"^]
+
+* Installation d'Oracle Grid Infrastructure pour un serveur autonome avec une nouvelle installation de base de données
++
+link:https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/installing-oracle-grid-infrastructure-for-a-standalone-server-with-a-new-database-installation.html#GUID-0B1CEE8C-C893-46AA-8A6A-7B5FAAEC72B3["https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/installing-oracle-grid-infrastructure-for-a-standalone-server-with-a-new-database-installation.html#GUID-0B1CEE8C-C893-46AA-8A6A-7B5FAAEC72B3"^]
+
+* Installation et configuration d'Oracle Database à l'aide des fichiers réponses
++
+link:https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/installing-and-configuring-oracle-database-using-response-files.html#GUID-D53355E9-E901-4224-9A2A-B882070EDDF7["https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/installing-and-configuring-oracle-database-using-response-files.html#GUID-D53355E9-E901-4224-9A2A-B882070EDDF7"^]
+
+* Utilisez Red Hat Enterprise Linux 8.2 avec ONTAP
++
+link:https://docs.netapp.com/us-en/ontap-sanhost/hu_rhel_82.html#all-san-array-configurations["https://docs.netapp.com/us-en/ontap-sanhost/hu_rhel_82.html#all-san-array-configurations"^]
+
+
