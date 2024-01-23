@@ -1,57 +1,9 @@
 ---
 sidebar: sidebar 
 permalink: virtualization/vsphere_ontap_ontap_and_vsphere_release-specific_information.html 
-keywords: vSphere, release, ESXi, Cisco UCS, NFS Plug In for VMware VAAI, VASA Provider 
-summary: 'Cette section fournit des conseils sur les fonctionnalités prises en charge par des versions spécifiques de ONTAP et vSphere. NetApp recommande de confirmer une combinaison spécifique de versions avec la matrice d"interopérabilité NetApp.' 
+redirect: ontap-apps-dbs/vmware/vmware-vsphere-overview.html 
 ---
-= Informations spécifiques à la version de ONTAP et vSphere
-:hardbreaks:
+= 
 :allow-uri-read: 
-:nofooter: 
-:icons: font
-:linkattrs: 
-:imagesdir: ./../media/
 
 
-[role="lead"]
-Cette section fournit des conseils sur les fonctionnalités prises en charge par des versions spécifiques de ONTAP et vSphere. NetApp recommande de confirmer une combinaison spécifique de versions avec le http://mysupport.netapp.com/matrix/["Matrice d'interopérabilité NetApp"^].
-
-
-
-== Versions d'ONTAP
-
-Au moment de la publication, NetApp prend intégralement en charge ces gammes de versions :
-
-* ONTAP 9.5
-* ONTAP 9.6
-* ONTAP 9.7
-* ONTAP 9.8
-
-
-
-
-== Prise en charge de vSphere et ESXi
-
-NetApp ONTAP prend en charge de manière étendue les hôtes vSphere ESXi. Les quatre principales gammes de versions décrites (9.5, 9.6, 9.7 et 9.8) sont totalement prises en charge en tant que plateformes de stockage de données pour les dernières versions de vSphere, notamment les versions 6.0, 6.5 et 7.0 (mises à jour disponibles pour ces versions). L'interopérabilité NFS v3 est définie de manière générale, et NetApp prend en charge tous les clients, y compris les hyperviseurs, conformes à la norme NFS v3. La prise en charge de NFSv4.1 est limitée à vSphere 6.0 à 7.0.
-
-Pour les environnements SAN, NetApp effectue un test complet des composants SAN. De manière générale, NetApp prend en charge les serveurs rack X86-64 standard, ainsi que les serveurs Cisco UCS et les adaptateurs Ethernet standard pour les connexions iSCSI. Les environnements FC, FCoE et NVMe/FC bénéficient d'une prise en charge plus spécifique en raison du micrologiciel et des pilotes de HBA requis.
-
-Toujours vérifier le http://mysupport.netapp.com/matrix/["Matrice d'interopérabilité NetApp"^] pour confirmer la prise en charge d'une configuration matérielle et logicielle spécifique.
-
-
-
-== Plug-in NFS pour VMware VAAI
-
-Ce plug-in pour les hôtes ESXi aide à déplacer les opérations vers ONTAP à l'aide de VAAI. La dernière version, 1.1.2, inclut la prise en charge des datastores NFSv4.1, y compris Kerberos (krb5 et krb5i). Il est pris en charge avec ESXi 6.0, 6.5 et 7.0 avec ONTAP 9.5-9.8.
-
-
-
-== Vasa Provider
-
-Le fournisseur VASA de NetApp prend en charge le provisionnement et la gestion de vVol (voir Section 3.7). Les dernières versions de VASA Provider prennent en charge ESXi 6.0, 6.5 et 7.0 avec ONTAP 9.5-9.8.
-
-
-
-== Les outils ONTAP pour VMware vSphere
-
-Les outils ONTAP pour VMware vSphere sont essentiels pour gérer le stockage ONTAP avec vSphere (il s'agit d'une meilleure pratique). La dernière version, 9.8, est prise en charge par vSphere 6.5 et 7.0 avec ONTAP 9.5-9.8.
