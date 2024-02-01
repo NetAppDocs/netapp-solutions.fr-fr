@@ -46,7 +46,7 @@ terraform {
   required_providers {
     netapp-cloudmanager = {
       source = "NetApp/netapp-cloudmanager"
-      version = "20.10.0"
+      version = ">= 23.0.0"
     }
   }
 }
@@ -650,6 +650,9 @@ Variables Terraform pour un volume NetApp ANF unique.
 
 | *az_netapp_vol_storage_quota* | Chaîne | (Requis) quota de stockage maximal autorisé pour un système de fichiers en gigaoctets. 
 |===
+
+NOTE: Conformément à la recommandation, ce script utilise le `prevent_destroy` argument de cycle de vie pour limiter les risques de perte accidentelle de données dans le fichier de configuration. Pour plus d'informations sur le `prevent_destroy` argument de cycle de vie veuillez consulter la documentation de la forme terraform : https://developer.hashicorp.com/terraform/tutorials/state/resource-lifecycle#prevent-resource-deletion[].
+
 --
 .Protection des données ANF
 --
@@ -803,6 +806,9 @@ Variables Terraform pour un volume ANF unique avec protection des données activ
 
 | *az_dp_replication_fréquence* | Chaîne | (Obligatoire) fréquence de réplication, les valeurs prises en charge sont `10minutes`, `hourly`, `daily`, les valeurs sont sensibles à la casse. 
 |===
+
+NOTE: Conformément à la recommandation, ce script utilise le `prevent_destroy` argument de cycle de vie pour limiter les risques de perte accidentelle de données dans le fichier de configuration. Pour plus d'informations sur le `prevent_destroy` argument de cycle de vie veuillez consulter la documentation de la forme terraform : https://developer.hashicorp.com/terraform/tutorials/state/resource-lifecycle#prevent-resource-deletion[].
+
 --
 .Protocole double ANF
 --
@@ -932,6 +938,9 @@ Variables Terraform pour un volume ANF unique avec un double protocole activé.
 
 | *az_smb_dns_server* | Chaîne | (Requis) adresse IP du serveur DNS pour créer un objet ActiveDirectory. 
 |===
+
+NOTE: Conformément à la recommandation, ce script utilise le `prevent_destroy` argument de cycle de vie pour limiter les risques de perte accidentelle de données dans le fichier de configuration. Pour plus d'informations sur le `prevent_destroy` argument de cycle de vie veuillez consulter la documentation de la forme terraform : https://developer.hashicorp.com/terraform/tutorials/state/resource-lifecycle#prevent-resource-deletion[].
+
 --
 .Volume ANF à partir de copies Snapshot
 --
@@ -1050,6 +1059,9 @@ Variables Terraform pour un volume ANF unique à l'aide des snapshots.
 
 | *az_snapshot_id* | Chaîne | (Requis) ID Snapshot utilisant le nouveau volume ANF à créer. 
 |===
+
+NOTE: Conformément à la recommandation, ce script utilise le `prevent_destroy` argument de cycle de vie pour limiter les risques de perte accidentelle de données dans le fichier de configuration. Pour plus d'informations sur le `prevent_destroy` argument de cycle de vie veuillez consulter la documentation de la forme terraform : https://developer.hashicorp.com/terraform/tutorials/state/resource-lifecycle#prevent-resource-deletion[].
+
 --
 .Déploiement de nœud unique CVO
 --
