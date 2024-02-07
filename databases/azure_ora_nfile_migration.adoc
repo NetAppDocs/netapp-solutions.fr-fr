@@ -119,7 +119,7 @@ Arrêtez et redémarrez la base de données du conteneur. Le ncb est sorti du mo
 
 == Migrez des bases de données Oracle sur site vers Azure avec la relocalisation de l'infrastructure de données
 
-La relocalisation d'Oracle PDB avec l'option de disponibilité maximale utilise la technologie de clonage à chaud PDB, qui active la disponibilité du PDB source pendant que le PDB est copié sur la cible. Lors du basculement, les sessions et les connexions sont redirigées automatiquement vers le PDB cible. Ainsi, le temps d'arrêt est réduit en fonction de la taille du PDB déplacé. NetApp fournit un kit d'outils basé sur Ansible qui automatise la procédure de migration.
+La relocalisation du PDB Oracle avec l'option de disponibilité maximale utilise la technologie de clone à chaud PDB, qui permet la disponibilité du PDB source pendant que le PDB est copié sur la cible. Lors du basculement, les connexions utilisateur sont redirigées automatiquement vers le PDB cible. Ainsi, les temps d'arrêt sont réduits indépendamment de la taille du PDB. NetApp fournit un kit d'outils basé sur Ansible qui automatise la procédure de migration.
 
 . Créez un CDB dans le cloud public Azure sur une machine virtuelle Azure avec la même version et le même niveau de patch.
 . Depuis le contrôleur Ansible, clonez une copie du kit d'automatisation.

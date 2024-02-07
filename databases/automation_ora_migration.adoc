@@ -21,6 +21,9 @@ summary: 'La solution fournit un kit d"outils d"automatisation basé sur Ansible
 
 Ce kit automatise la migration des bases de données Oracle d'un environnement sur site vers le cloud AWS avec le stockage FSX ONTAP et l'instance de calcul EC2 en tant qu'infrastructure cible. Il suppose que le client dispose déjà d'une base de données Oracle sur site déployée dans le modèle CDB/PDB. La boîte à outils permet au client de déplacer un PDB nommé à partir d'une base de données de conteneurs sur un hôte Oracle à l'aide de la procédure de déplacement du PDB Oracle avec une option de disponibilité maximale. Cela signifie que le boîtier de distribution électrique source de toute baie de stockage sur site est relocalise dans une nouvelle base de données de conteneurs avec une interruption de service minimale. La procédure de déplacement Oracle déplace les fichiers de données Oracle pendant que la base de données est en ligne. Il réachemine ensuite les sessions utilisateur depuis les installations sur site vers les services de base de données transférés au moment de le basculement, lorsque tous les fichiers de données sont transférés vers le cloud AWS. La technologie soulignée est la méthodologie éprouvée de clone à chaud du PDB Oracle.
 
+
+NOTE: Même si le kit de migration est développé et validé sur l'infrastructure cloud AWS, il s'appuie sur les solutions Oracle au niveau des applications. Ce kit s'applique donc à d'autres plateformes de cloud public, comme Azure, GCP, etc
+
 Cette solution répond aux cas d'utilisation suivants :
 
 * Créez un utilisateur de migration et accordez les privilèges requis au serveur de base de données source sur site.
