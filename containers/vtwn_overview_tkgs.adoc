@@ -1,0 +1,46 @@
+---
+sidebar: sidebar 
+permalink: containers/vtwn_overview_tkgs.html 
+keywords: VMware Tanzu, Tanzu, Tanzu Kubernetes Grid Service, vSphere with Tanzu, DevOps, Netapp, Astra Trident, Astra Control, Astra 
+summary: 'VMware Tanzu Kubernetes Grid Service (également appelé vSphere avec Tanzu) vous permet de créer et d"exploiter des clusters Kubernetes tanzu de manière native dans vSphere. Il vous permet également d"exécuter des charges de travail plus petites directement sur les hôtes ESXi.' 
+---
+= Présentation de VMware Tanzu Kubernetes Grid Service (TKGS)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+VMware Tanzu Kubernetes Grid Service (également appelé vSphere avec Tanzu) vous permet de créer et d'exploiter des clusters Kubernetes tanzu de manière native dans vSphere. Il vous permet également d'exécuter des charges de travail plus petites directement sur les hôtes ESXi. Elle vous permet de transformer vSphere en une plateforme pour exécuter des workloads conteneurisés sur la couche d'hyperviseur. Tanzu Kubernetes Grid Service déploie un cluster de supervision sur vSphere lorsqu'il est activé, ce service déploie et exécute les clusters requis pour les workloads. Il est intégré en mode natif à vSphere 7 et exploite de nombreuses fonctionnalités vSphere fiables telles que vCenter SSO, Content Library, la mise en réseau vSphere, le stockage vSphere HA et DRS, et la sécurité vSphere pour une expérience Kubernetes plus transparente.
+
+VSphere avec Tanzu offre une plateforme unique pour les environnements applicatifs hybrides dans lesquels vous pouvez exécuter vos composants applicatifs dans des conteneurs ou dans des machines virtuelles. Les développeurs, les ingénieurs DevOps et les administrateurs vSphere bénéficient ainsi d'une meilleure visibilité et d'une plus grande simplicité d'exploitation. VMware TKGS n'est pris en charge qu'avec les environnements vSphere 7 et est le seul portefeuille d'opérations Kubernetes de Tanzanie qui vous permet d'exécuter des pods directement sur des hôtes ESXi.
+
+image::vtwn_image03.png[Service VMware Tanzu Kubernetes]
+
+Pour plus d'informations sur Tanzu Kubernetes Grid Service, consultez la documentation link:https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-152BE7D2-E227-4DAA-B527-557B564D9718.html["ici"^].
+
+De nombreux critères architecturaux doivent être pris en compte pour les fonctionnalités, la mise en réseau, etc. Selon l'architecture choisie, les prérequis et le processus de déploiement de Tanzu Kubernetes Grid Service diffèrent. Pour déployer et configurer le service Grid Kubernetes Tanzu dans votre environnement, suivez le guide link:https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-74EC2571-4352-4E15-838E-5F56C8C68D15.html["ici"^]. De plus, pour vous connecter aux nœuds de cluster Kubernetes Tanzu déployés via TKGS, suivez la procédure décrite dans ce document https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-37DC1DF2-119B-4E9E-8CA6-C194F39DDEDA.html["lien"^].
+
+NetApp recommande de déployer tous les environnements de production dans plusieurs déploiements principaux pour une tolérance aux pannes avec le choix de la configuration des nœuds workers afin de répondre aux exigences de ces charges de travail. Ainsi, une classe de machine virtuelle recommandée pour une charge de travail très exigeante aurait au moins quatre CPU virtuels et 12 Go de RAM.
+
+Lorsque des clusters Kubernetes tanzu sont créés dans un espace de noms, les utilisateurs avec `owner` ou `edit` l'autorisation peut créer des modules directement dans n'importe quel espace de noms à l'aide du compte utilisateur. En effet, les utilisateurs de l' `owner` ou `edit` l'autorisation est attribuée au rôle d'administrateur de cluster. Cependant, lors de la création de déploiements, de jeux de démons, de jeux avec état ou d'autres éléments dans un espace de noms, vous devez attribuer un rôle avec les autorisations requises aux comptes de service correspondants. Cela est nécessaire car les déploiements ou les jeux de démons utilisent des comptes de service pour déployer les pods.
+
+Consultez l'exemple suivant de ClusterRoleBinding pour affecter le rôle d'administrateur de cluster à tous les comptes de service du cluster :
+
+[listing]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: all_sa_ca
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: psp:vmware-system-privileged
+  apiGroup: rbac.authorization.k8s.io
+----

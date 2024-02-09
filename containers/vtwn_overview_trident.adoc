@@ -1,0 +1,121 @@
+---
+sidebar: sidebar 
+permalink: containers/vtwn_overview_trident.html 
+keywords: Trident, Astra Trident, Helm, Operator, iSCSI, NFS, Tanzu, VMware Tanzu with NetApp Trident 
+summary: Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes, y compris VMware Tanzu. 
+---
+= Présentation d'Astra Trident
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+:k8s_distribution_name: Red Hat OpenShift, VMware Tanzu, Anthos by Google Cloud, Rancher etc
+
+
+[role="normal"]
+Astra Trident est un orchestrateur de stockage open source entièrement pris en charge pour les conteneurs et les distributions Kubernetes telles que {k8s_distribution_name}. Trident fonctionne avec l'ensemble de la gamme de solutions de stockage NetApp, notamment les systèmes de stockage NetApp ONTAP et Element, et prend également en charge les connexions NFS et iSCSI. Trident accélère le workflow DevOps en permettant aux utilisateurs d'approvisionner et de gérer le stockage à partir de leurs systèmes de stockage NetApp, sans intervention de l'administrateur de stockage.
+
+Un administrateur peut configurer plusieurs systèmes de stockage back-end en fonction des besoins des projets et des modèles de système de stockage. Ces fonctionnalités permettent notamment la compression, des types de disques spécifiques ou des niveaux de QoS garantissant un certain niveau de performance. Une fois définis, ces systèmes back-end peuvent être utilisés par les développeurs dans leurs projets pour créer des demandes de volume persistant et connecter le stockage persistant à la demande dans leurs conteneurs.
+
+image:redhat_openshift_image2.png["Erreur : image graphique manquante"]
+
+Astra Trident a un cycle de développement rapide et, comme Kubernetes, est lancé quatre fois par an.
+
+La dernière version d'Astra Trident est disponible en avril 22.04, en avril 2022. Une matrice de prise en charge pour quelle version de Trident a été testée avec laquelle une distribution Kubernetes est disponible https://docs.netapp.com/us-en/trident/trident-get-started/requirements.html#supported-frontends-orchestrators["ici"].
+
+Depuis la version 20.04, l'opérateur Trident effectue la configuration de Trident. L'opérateur facilite les déploiements à grande échelle et offre un support supplémentaire, notamment l'auto-rétablissement des pods déployés dans le cadre de l'installation de Trident.
+
+Avec la version 21.01, un graphique Helm a été disponible pour faciliter l'installation de l'opérateur Trident.
+
+
+
+== Déploiement de l'opérateur Trident à l'aide de Helm
+
+. Définissez tout d'abord l'emplacement du cluster utilisateur `kubeconfig` Fichier en tant que variable d'environnement pour que vous n'ayez pas à le référencer, car Trident n'a pas d'option pour transmettre ce fichier.
++
+[listing]
+----
+<<<<<<< HEAD
+[netapp-user@rhel7]$ export KUBECONFIG=~/tanzu-install/auth/kubeconfig
+=======
+[netapp-user@rhel7]$ export KUBECONFIG=~/Tanzu-install/auth/kubeconfig
+>>>>>>> eba1007b77b1ef6011dadd158f1df991acc5299f
+----
+. Ajoutez le référentiel NetApp Astra Trident Helm.
++
+[listing]
+----
+[netapp-user@rhel7]$ helm repo add netapp-trident https://netapp.github.io/trident-helm-chart
+"netapp-trident" has been added to your repositories
+----
+. Mettre à jour les référentiels Helm.
++
+[listing]
+----
+[netapp-user@rhel7]$ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "netapp-trident" chart repository
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+----
+. Créez un nouvel espace de nom pour l'installation de Trident.
++
+[listing]
+----
+[netapp-user@rhel7]$ kubetcl create ns trident
+----
+. Créez un secret avec les informations d'identification DockerHub pour télécharger les images Astra Trident.
++
+[listing]
+----
+[netapp-user@rhel7]$ kubectl create secret docker-registry docker-registry-cred --docker-server=docker.io --docker-username=netapp-solutions-tme --docker-password=xxxxxx -n trident
+----
+. Pour les clusters utilisateur ou de charge de travail gérés par TKGS (vSphere avec Tanzu) ou TKG avec des déploiements de clusters de gestion, procédez comme suit pour installer Astra Trident :
++
+.. Assurez-vous que l'utilisateur connecté dispose des autorisations nécessaires pour créer des comptes de service dans l'espace de noms trident et que les comptes de service dans l'espace de noms trident disposent des autorisations de créer des pods.
+.. Exécutez la commande ci-dessous Helm pour installer l'opérateur Trident dans l'espace de noms créé.
++
+[listing]
+----
+[netapp-user@rhel7]$ helm install trident netapp-trident/trident-operator -n trident --set imagePullSecrets[0]=docker-registry-cred
+----
+
+
+. Pour un cluster utilisateur ou de charge de travail géré par des déploiements TKGI, exécutez la commande Helm suivante pour installer l'opérateur Trident dans l'espace de noms créé.
++
+[listing]
+----
+[netapp-user@rhel7]$ helm install trident netapp-trident/trident-operator -n trident --set imagePullSecrets[0]=docker-registry-cred,kubeletDir="/var/vcap/data/kubelet"
+----
+. Vérifiez que les modules Trident sont opérationnels.
++
+[listing]
+----
+NAME                                READY   STATUS    RESTARTS        AGE
+trident-csi-6vv62                   2/2     Running   0               14m
+trident-csi-cfd844bcc-sqhcg         6/6     Running   0               12m
+trident-csi-dfcmz                   2/2     Running   0               14m
+trident-csi-pb2n7                   2/2     Running   0               14m
+trident-csi-qsw6z                   2/2     Running   0               14m
+trident-operator-67c94c4768-xw978   1/1     Running   0               14m
+
+[netapp-user@rhel7]$ ./tridentctl -n trident version
++----------------+----------------+
+| SERVER VERSION | CLIENT VERSION |
++----------------+----------------+
+| 22.04.0          | 22.04.0          |
++----------------+----------------+
+----
+
+
+
+
+== Création de systèmes back-end de stockage
+
+Une fois l'installation d'Astra Trident Operator, vous devez configurer le système back-end pour la plateforme de stockage NetApp spécifique que vous utilisez. Suivez les liens ci-dessous pour poursuivre l'installation et la configuration d'Astra Trident.
+
+* link:vtwn_trident_ontap_nfs.html["NetApp ONTAP NFS"]
+* link:vtwn_trident_ontap_iscsi.html["ISCSI NetApp ONTAP"]
+

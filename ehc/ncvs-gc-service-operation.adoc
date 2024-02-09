@@ -1,0 +1,73 @@
+---
+sidebar: sidebar 
+permalink: ehc/ncvs-gc-service-operation.html 
+keywords: physical security, operations team, customer responsibilities, malicious sre protection, certifications, gdpr 
+summary: 'L"équipe Cloud Volumes Service gère les services de back-end dans Google Cloud et exploite plusieurs stratégies pour sécuriser la plateforme et empêcher les accès non autorisés.' 
+---
+= Opération d'entretien
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+L'équipe Cloud Volumes Service gère les services de back-end dans Google Cloud et exploite plusieurs stratégies pour sécuriser la plateforme et empêcher les accès non autorisés.
+
+Chaque client bénéficie de son propre sous-réseau unique, qui dispose d'un accès clôturé par défaut par rapport à d'autres clients. Par ailleurs, chaque locataire de Cloud Volumes Service dispose de son propre espace de noms et VLAN pour assurer l'isolation totale des données. Après l'authentification d'un utilisateur, le moteur de fourniture de services (SDE) peut uniquement lire les données de configuration spécifiques à ce locataire.
+
+
+
+== Sécurité physique
+
+Une fois la préapprobation adéquate obtenue, seuls les ingénieurs sur site et les ingénieurs de support de terrain (FSE) certifiés NetApp ont accès à la cage et aux racks pour les travaux physiques. La gestion du réseau et du stockage n'est pas autorisée. Seules ces ressources sur site sont en mesure d'effectuer les tâches de maintenance du matériel.
+
+Pour les ingénieurs sur site, un ticket est émis pour l'énoncé des travaux (SOW) qui inclut l'ID de rack et l'emplacement du périphérique (RU). Toutes les autres informations sont incluses dans le ticket. Pour les FSE NetApp, un ticket de visite sur site doit être levé avec la COLOCATION. Le ticket inclut également les détails, la date et l'heure du visiteur à des fins d'audit. Le cahier des charges du FSE est communiqué à NetApp en interne.
+
+
+
+== Équipe chargée des opérations
+
+L'équipe des opérations de Cloud Volumes Service se compose de l'ingénierie de production et d'un ingénieur de fiabilité de site (SRE) pour les services de volume cloud, ainsi que des ingénieurs de support sur site de NetApp et des partenaires pour le matériel. Tous les membres de l'équipe des opérations sont accrédités pour travailler dans Google Cloud et des dossiers de travail détaillés sont conservés pour chaque billet émis. De plus, un processus rigoureux de contrôle et d'approbation du changement est en place pour s'assurer que chaque décision est examinée de façon appropriée.
+
+L'équipe SRE gère le plan de contrôle et la manière dont les données sont acheminées depuis les demandes d'interface utilisateur vers le matériel et les logiciels back-end dans Cloud Volumes Service. L'équipe SRE gère également les ressources système, telles que les volumes et les volumes d'inode maximaux. Les SRES ne sont pas autorisés à interagir avec les données clients ou à y accéder. SRES assure également la coordination des autorisations de renvoi de matériel (RMA), telles que les demandes de remplacement de nouveau disque ou de mémoire pour le matériel interne.
+
+
+
+== Obligations du client
+
+Les clients de Cloud Volumes Service gèrent Active Directory et la gestion des rôles utilisateur de leur entreprise, ainsi que les opérations de volume et de données. Les clients peuvent disposer de rôles administratifs et déléguer des autorisations à d'autres utilisateurs au sein du même projet Google Cloud à l'aide des deux rôles prédéfinis de NetApp et Google Cloud (Administrateur et Viewer).
+
+L'administrateur peut homologue à Cloud Volumes Service tout VPC dans le projet du client, que le client détermine approprié. Il est de la responsabilité du client de gérer l'accès à son abonnement à Google Cloud Marketplace et de gérer les VPC qui ont accès au plan de données.
+
+
+
+== Protection de SRE malveillante
+
+Une préoccupation pouvant survenir est la façon dont Cloud Volumes Service protège-t-elle contre les scénarios dans lesquels il existe un SRE malveillant ou lorsque les informations d'identification des SRE ont été compromises ?
+
+L'accès à l'environnement de production n'est possible qu'avec un nombre limité de SRE particuliers. Les privilèges administratifs sont en outre limités à une poignée d'administrateurs expérimentés. Toutes les actions réalisées par toute personne dans l'environnement de production Cloud Volumes Service sont consignées et toute anomalie affectant une activité de base ou suspecte est détectée par notre plateforme de veille centralisée des informations de sécurité et des événements (SIEM) pour les menaces. Ainsi, les actions malveillantes peuvent être suivies et atténuées avant que le back-end Cloud Volumes Service ne soit trop endommagé.
+
+
+
+== Cycle de vie du volume
+
+Cloud Volumes Service gère uniquement les objets au sein du service, pas les données au sein des volumes. Seuls les clients qui accèdent aux volumes peuvent gérer les données, les listes de contrôle d'accès, les propriétaires de fichiers, etc. Les données de ces volumes sont chiffrées au repos et l'accès est limité aux locataires de l'instance Cloud Volumes Service.
+
+Le cycle de vie des volumes pour Cloud Volumes Service est create-update-delete. Les volumes conservent des copies Snapshot de volumes jusqu'à leur suppression et seuls les administrateurs Cloud Volumes Service validés peuvent supprimer des volumes dans Cloud Volumes Service. Lorsqu'un administrateur demande la suppression d'un volume, une étape supplémentaire de la saisie du nom du volume est requise pour vérifier la suppression. Un volume est supprimé et ne peut plus être restauré.
+
+Dans les cas où un contrat Cloud Volumes Service a été résilié, NetApp marque la suppression des volumes au bout d'une période donnée. Avant l'expiration de cette période, vous pouvez récupérer des volumes à la demande du client.
+
+
+
+== Certifications
+
+Cloud volumes Services pour Google Cloud est actuellement certifié conforme aux normes ISO/IEC 27001:2013 et ISO/IEC 27018:2019. Le service a aussi récemment reçu son rapport d'attestation de type I de la SOC2. Pour plus d'informations sur l'engagement de NetApp en matière de sécurité et de confidentialité des données, consultez la page https://www.netapp.com/company/trust-center/compliance/["Conformité : sécurité et confidentialité des données"^].
+
+
+
+== LE RGPD
+
+Notre engagement en matière de confidentialité et de conformité avec le RGPD est disponible dans un certain nombre de nos  https://www.netapp.com/how-to-buy/sales-terms-and-conditions%22%20/o%20%22SEO%20-%20Sales%20Terms%20and%20Conditions["contrats clients"^], comme notre https://netapp.na1.echosign.com/public/esignWidget?wid=CBFCIBAA3AAABLblqZhCqPPgcufskl_71q-FelD4DHz5EMJVOkqqT0iiORT10DlfZnZeMpDrse5W6K9LEw6o*["Addenda relatif au traitement des données client"^], qui inclut le  https://ec.europa.eu/info/law/law-topic/data-protection/international-dimension-data-protection/standard-contractual-clauses-scc_en["Clauses contractuelles standard"^] Fourni par la Commission européenne. Nous prenons également ces engagements dans notre politique de confidentialité, soutenue par les valeurs fondamentales énoncées dans notre Code de conduite d'entreprise.

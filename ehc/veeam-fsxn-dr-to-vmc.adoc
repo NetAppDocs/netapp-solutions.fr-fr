@@ -1,0 +1,228 @@
+---
+sidebar: sidebar 
+permalink: ehc/veeam-fsxn-dr-to-vmc.html 
+keywords: disaster recovery, vmc, vmware cloud, aws, amazon web services, fsxn, fsx for ontap, fsx for netapp ontap, disaster recovery, dr, veeam, replication 
+summary:  
+---
+= Utilisation de Veeam Replication et FSX for ONTAP pour la reprise d'activité vers VMware Cloud on AWS
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../../media/
+
+
+[role="lead"]
+Auteur: Niyaz Mohamed - NetApp Solutions Engineering
+
+
+
+== Présentation
+
+L'intégration d'Amazon FSX for NetApp ONTAP à VMware Cloud on AWS est un datastore NFS externe géré par AWS basé sur le système de fichiers ONTAP de NetApp qui peut être relié à un cluster dans le SDDC. Elle fournit aux clients une infrastructure de stockage virtualisée flexible et haute performance qui peut évoluer indépendamment des ressources de calcul.
+
+Pour les clients qui cherchent à utiliser VMware Cloud sur AWS SDDC comme cible de reprise d'activité, les datastores FSX pour ONTAP peuvent être utilisés pour répliquer les données depuis un environnement sur site à l'aide d'une solution tierce validée offrant des fonctionnalités de réplication de machines virtuelles. En ajoutant le datastore FSX for ONTAP, il permet un déploiement optimisé par les coûts que la création du cloud VMware sur un SDDC AWS avec un énorme nombre d'hôtes ESXi uniquement pour prendre en charge le stockage.
+
+Cette approche aide également les clients à utiliser un cluster pilote dans VMC avec FSX pour les datastores ONTAP pour héberger les répliques de machine virtuelle. Le même processus peut également être étendu en tant qu'option de migration vers VMware Cloud sur AWS en basculant avec fluidité le plan de réplication.
+
+
+
+== Énoncé du problème
+
+Ce document décrit comment utiliser le datastore FSX pour ONTAP et Veeam Backup and Replication pour configurer la reprise d'activité pour les machines virtuelles VMware sur site vers VMware Cloud on AWS à l'aide de la fonctionnalité de réplication de machine virtuelle.
+
+Veeam Backup & Replication permet la réplication sur site et à distance pour la reprise après incident. Lors de la réplication des machines virtuelles, Veeam Backup & Replication crée une copie exacte des machines virtuelles au format VMware vSphere natif sur le cluster SDDC cible VMware Cloud on AWS et synchronise la copie avec la machine virtuelle d'origine.
+
+La réplication offre les meilleures valeurs d'objectif de délai de restauration (RTO), car une copie d'une machine virtuelle est prête à démarrer.  Ce mécanisme de réplication permet de s'assurer que les workloads peuvent démarrer rapidement dans VMware Cloud sur AWS SDDC en cas d'incident. Le logiciel Veeam Backup & Replication optimise également la transmission du trafic pour la réplication sur WAN et les connexions lentes. De plus, il filtre les blocs de données dupliqués, les blocs de données nuls, les fichiers swap et les fichiers du système d'exploitation invité des machines virtuelles exclus, et compresse le trafic des répliques.
+
+Pour empêcher les tâches de réplication de consommer la totalité de la bande passante réseau, des accélérateurs WAN et des règles de restriction réseau peuvent être mis en place. Dans Veeam Backup & Replication, le processus de réplication est piloté par des tâches, ce qui signifie que la réplication est effectuée via la configuration des tâches de réplication. En cas d'incident, le basculement peut être déclenché pour restaurer les machines virtuelles en basculant vers la copie de réplica.
+
+Lors d'un basculement, une machine virtuelle répliquée prend le rôle de la machine virtuelle d'origine. Le basculement peut être effectué vers l'état le plus récent d'une réplique ou vers l'un de ses points de restauration connus. La restauration est ainsi possible en cas d'attaque par ransomware ou de tests isolés les cas échéant. Dans Veeam Backup & Replication, le basculement et la restauration sont des étapes intermédiaires temporaires qui doivent être finalisées davantage. Veeam Backup & Replication propose plusieurs options pour gérer différents scénarios de reprise d'activité.
+
+image:dr-veeam-fsx-image1.png["Diagramme du scénario de reprise d'activité avec Veeam Replication et FSX ONTAP pour VMC"]
+
+
+
+== Déploiement de la solution
+
+
+
+=== Marches de haut niveau
+
+. Le logiciel Veeam Backup and Replication s'exécute dans un environnement sur site avec une connectivité réseau appropriée.
+. Configurez VMware Cloud on AWS, consultez l'article VMware Cloud Tech zone link:https://vmc.techzone.vmware.com/fsx-guide["Guide de déploiement de l'intégration de VMware Cloud on AWS avec Amazon FSX for NetApp ONTAP"] Pour le déploiement, configurez VMware Cloud sur AWS SDDC et FSX pour ONTAP en tant que datastore NFS. (Un environnement de pilote léger configuré avec une configuration minimale peut être utilisé à des fins de reprise sur incident. Les machines virtuelles basculeront vers ce cluster en cas d'incident et d'autres nœuds pourront être ajoutés.)
+. Configuration des tâches de réplication pour créer des répliques de machine virtuelle à l'aide de Veeam Backup and Replication
+. Création d'un plan de basculement et basculement
+. Revenez aux machines virtuelles de production une fois l'incident terminé et le site principal en marche.
+
+
+
+
+=== Pré-requis pour la réplication de VM Veeam vers VMC et FSX pour les datastores ONTAP
+
+. Assurez-vous que la machine virtuelle de sauvegarde Veeam Backup & Replication est connectée au vCenter source et au cloud VMware cible sur les clusters SDDC AWS.
+. Le serveur de sauvegarde doit pouvoir résoudre les noms abrégés et se connecter aux vCenters source et cible.
+. Le datastore FSX pour ONTAP cible doit disposer de suffisamment d'espace libre pour stocker des VMDK de machines virtuelles répliquées
+
+
+Pour plus d'informations, reportez-vous à la section « considérations et limitations » link:https://helpcenter.veeam.com/docs/backup/vsphere/replica_limitations.html?ver=120["ici"].
+
+
+
+=== Détails du déploiement
+
+.Étape 1 : réplication des machines virtuelles
+[%collapsible]
+====
+Veeam Backup & Replication exploite les fonctionnalités Snapshot de VMware vSphere et, pendant la réplication, Veeam Backup & Replication demande à VMware vSphere de créer un Snapshot de machine virtuelle. Le snapshot de machine virtuelle est la copie instantanée d'une machine virtuelle, qui comprend des disques virtuels, l'état du système, la configuration, etc. Veeam Backup & Replication utilise le snapshot comme source de données pour la réplication.
+
+Pour répliquer des machines virtuelles, procédez comme suit :
+
+. Ouvrez Veeam Backup & Replication Console.
+. Dans la vue d'accueil, sélectionnez Replication Job > Virtual machine > VMware vSphere.
+. Spécifiez un nom de travail et cochez la case de contrôle avancé appropriée. Cliquez sur Suivant.
++
+** Cochez la case amorçage du réplica si la connectivité entre le site et AWS a une bande passante limitée.
+** Cochez la case Remapping réseau (pour les sites VMC AWS avec différents réseaux) si les segments du SDDC VMware Cloud on AWS ne correspondent pas à ceux des réseaux sur site.
+** Si le schéma d'adressage IP du site de production sur site diffère du schéma du site VMC AWS, cochez la case Replica re-IP (pour les sites DR avec un schéma d'adressage IP différent).
++
+image::dr-veeam-fsx-image2.png[dr veeam fsx image2]
+
+
+
+. Sélectionnez les machines virtuelles qui doivent être répliquées vers le datastore FSX for ONTAP connecté au SDDC VMware Cloud on AWS à l'étape *machines virtuelles*. Les machines virtuelles peuvent être placées sur VSAN pour remplir la capacité de datastore VSAN disponible. Dans un cluster à voyants, la capacité utilisable d'un cluster à 3 nœuds sera limitée. Le reste des données peut être répliqué dans des datastores FSX for ONTAP. Cliquez sur *Ajouter*, puis dans la fenêtre *Ajouter un objet*, sélectionnez les machines virtuelles ou les conteneurs VM nécessaires et cliquez sur *Ajouter*. Cliquez sur *Suivant*.
++
+image::dr-veeam-fsx-image3.png[dr veeam fsx image3]
+
+. Ensuite, sélectionnez la destination en tant que cluster/hôte SDDC pour VMware Cloud sur AWS et le pool de ressources, le dossier VM et le datastore FSX pour ONTAP pour les répliques de VM. Cliquez ensuite sur *Suivant*.
++
+image::dr-veeam-fsx-image4.png[dr veeam fsx image4]
+
+. Dans l'étape suivante, créez le mappage entre le réseau virtuel source et le réseau virtuel de destination, selon vos besoins.
++
+image::dr-veeam-fsx-image5.png[dr veeam fsx image5]
+
+. À l'étape *Job Settings*, spécifiez le référentiel de sauvegarde qui stocke les métadonnées pour les répliques de VM, la stratégie de rétention, etc.
+. Mettez à jour les serveurs proxy *Source* et *cible* à l'étape *transfert de données* et laissez la sélection *automatique* (par défaut) et conservez l'option *Direct* sélectionnée, puis cliquez sur *Suivant*.
+. À l'étape *Guest Processing*, sélectionnez l'option *Activer le traitement compatible avec les applications* selon les besoins. Cliquez sur *Suivant*.
++
+image::dr-veeam-fsx-image6.png[dr veeam fsx image6]
+
+. Choisissez la planification de réplication pour exécuter la procédure de réplication à exécuter régulièrement.
+. À l'étape *Résumé* de l'assistant, passez en revue les détails de la procédure de réplication. Pour démarrer le travail juste après la fermeture de l'assistant, cochez la case *Exécuter le travail lorsque je clique sur Terminer*, sinon ne cochez pas la case. Cliquez ensuite sur *Terminer* pour fermer l'assistant.
++
+image::dr-veeam-fsx-image7.png[dr veeam fsx image7]
+
+
+
+Une fois la procédure de réplication lancée, les machines virtuelles dont le suffixe est spécifié sont renseignées sur le cluster/l'hôte VMC SDDC de destination.
+
+image::dr-veeam-fsx-image8.png[dr veeam fsx image8]
+
+Pour plus d'informations sur la réplication Veeam, reportez-vous à la section link:https://helpcenter.veeam.com/docs/backup/vsphere/replication_process.html?ver=120["Fonctionnement de la réplication"].
+
+====
+.Étape 2 : création d'un plan de basculement
+[%collapsible]
+====
+Lorsque la réplication ou l'amorçage initial est terminé, créez le plan de basculement. Le plan de basculement permet d'effectuer automatiquement le basculement des machines virtuelles dépendantes une par une ou en tant que groupe. La planification de basculement est la référence pour l'ordre dans lequel les machines virtuelles sont traitées, y compris les retards de démarrage. Le plan de basculement permet également de s'assurer que les machines virtuelles dépendantes critiques sont déjà en cours d'exécution.
+
+Pour créer le plan, accédez à la nouvelle sous-section intitulée répliques et sélectionnez Plan de basculement. Choisissez les machines virtuelles appropriées. Veeam Backup & Replication recherche les points de restauration les plus proches à ce point dans le temps et les utilise pour démarrer les répliques de machine virtuelle.
+
+
+NOTE: Le plan de basculement ne peut être ajouté qu'une fois la réplication initiale terminée et les répliques de machine virtuelle à l'état prêt.
+
+
+NOTE: Le nombre maximum de machines virtuelles pouvant être démarrées simultanément lors de l'exécution d'un plan de basculement est de 10.
+
+
+NOTE: Pendant le processus de basculement, les machines virtuelles source ne sont pas hors tension.
+
+Pour créer le *Plan de basculement*, procédez comme suit :
+
+. Dans la vue Accueil, sélectionnez *Plan de basculement > VMware vSphere*.
+. Ensuite, donnez un nom et une description au plan. Des scripts de pré-basculement et de post-basculement peuvent être ajoutés si nécessaire. Par exemple, exécutez un script pour arrêter les machines virtuelles avant de démarrer les machines virtuelles répliquées.
++
+image::dr-veeam-fsx-image9.png[dr veeam fsx image9]
+
+. Ajoutez les machines virtuelles au plan et modifiez l'ordre de démarrage de la machine virtuelle et les délais de démarrage afin de répondre aux dépendances des applications.
++
+image::dr-veeam-fsx-image10.png[dr veeam fsx image10]
+
+
+
+Pour plus d'informations sur la création de tâches de réplication, reportez-vous à la section link:https://helpcenter.veeam.com/docs/backup/vsphere/replica_job.html?ver=120["Création de travaux de réplication"].
+
+====
+.Étape 3 : exécutez le plan de basculement
+[%collapsible]
+====
+Lors du basculement, la machine virtuelle source du site de production est basculée vers sa réplique sur le site de reprise après incident. Dans le cadre du processus de basculement, Veeam Backup & Replication restaure le réplica de la machine virtuelle vers le point de restauration requis et déplace toutes les activités d'E/S de la machine virtuelle source vers son réplica. Les répliques peuvent être utilisées non seulement en cas d'incident, mais aussi pour simuler des exercices de DR. Pendant la simulation de basculement, la machine virtuelle source reste en cours d'exécution. Une fois tous les tests nécessaires effectués, vous pouvez annuler le basculement et revenir aux opérations normales.
+
+
+NOTE: Assurez-vous que la segmentation réseau est en place pour éviter les conflits d'adresses IP pendant les tests de DR.
+
+Pour démarrer le plan de basculement, cliquez simplement sur l'onglet *plans de basculement* et cliquez avec le bouton droit de la souris sur le plan de basculement. Sélectionnez *Démarrer*. Cette opération basculera en utilisant les derniers points de restauration des répliques de machine virtuelle. Pour basculer vers des points de restauration spécifiques de répliques de machines virtuelles, sélectionnez *Démarrer à*.
+
+image::dr-veeam-fsx-image11.png[dr veeam fsx image11]
+
+image::dr-veeam-fsx-image12.png[dr veeam fsx image12]
+
+L'état du réplica de la machine virtuelle passe de Ready à Failover et les machines virtuelles démarrent sur le cluster/hôte SDDC AWS de destination VMware Cloud.
+
+image::dr-veeam-fsx-image13.png[dr veeam fsx image13]
+
+Une fois le basculement terminé, l'état des machines virtuelles passe à « basculement ».
+
+image::dr-veeam-fsx-image14.png[dr veeam fsx image14]
+
+
+NOTE: Veeam Backup & Replication arrête toutes les activités de réplication de la machine virtuelle source jusqu'à ce que son réplica revienne à l'état prêt.
+
+Pour plus d'informations sur les plans de basculement, reportez-vous à la section link:https://helpcenter.veeam.com/docs/backup/vsphere/failover_plan.html?ver=120["Plans de basculement"].
+
+====
+.Étape 4 : retour arrière vers le site de production
+[%collapsible]
+====
+Lorsque le plan de basculement est en cours d'exécution, il est considéré comme une étape intermédiaire et doit être finalisé en fonction de l'exigence. Les options sont les suivantes :
+
+* *Retour en production* - revenez à la machine virtuelle d'origine et transférez toutes les modifications qui ont eu lieu pendant que la réplique de la machine virtuelle était en cours d'exécution sur la machine virtuelle d'origine.
+
+
+
+NOTE: Lorsque vous effectuez un retour arrière, les modifications sont uniquement transférées, mais pas publiées. Choisissez *commit readback* (une fois que la machine virtuelle d'origine a été confirmée pour fonctionner comme prévu) ou *Undo readback* pour revenir au réplica de la machine virtuelle si la machine virtuelle d'origine ne fonctionne pas comme prévu.
+
+* *Annuler le basculement* - revenez à la machine virtuelle d'origine et supprimez toutes les modifications apportées à la réplique de la machine virtuelle pendant son exécution.
+* *Basculement permanent* - basculez de manière permanente de la machine virtuelle d'origine vers une réplique de machine virtuelle et utilisez cette réplique comme machine virtuelle d'origine.
+
+
+Dans cette démo, le retour arrière à la production a été choisi. Le basculement vers la machine virtuelle d'origine a été sélectionné lors de l'étape destination de l'assistant et la case à cocher « mettre la machine virtuelle sous tension après la restauration » a été activée.
+
+image::dr-veeam-fsx-image15.png[dr veeam fsx image15]
+
+image::dr-veeam-fsx-image16.png[dr veeam fsx image16]
+
+La validation du retour arrière est l'une des méthodes permettant de finaliser l'opération de restauration. Lorsque le retour arrière est validé, il vérifie que les modifications envoyées à la machine virtuelle qui est en retour (la machine virtuelle de production) fonctionnent comme prévu. Après l'opération de validation, Veeam Backup & Replication reprend les activités de réplication pour la machine virtuelle de production.
+
+Pour plus d'informations sur le processus de restauration, reportez-vous à la documentation Veeam pour link:https://helpcenter.veeam.com/docs/backup/vsphere/failover_failback.html?ver=120["Basculement et retour arrière pour la réplication"].
+
+image::dr-veeam-fsx-image17.png[dr veeam fsx image17]
+
+image::dr-veeam-fsx-image18.png[dr veeam fsx image18]
+
+Une fois la restauration en production réussie, les machines virtuelles sont toutes restaurées vers le site de production d'origine.
+
+image::dr-veeam-fsx-image19.png[dr veeam fsx image19]
+
+====
+
+
+== Conclusion
+
+La fonctionnalité de datastore FSX pour ONTAP permet à Veeam ou à tout outil tiers validé de fournir une solution de reprise après incident à faible coût avec un cluster Pilot light et sans avoir besoin de disposer d'un grand nombre d'hôtes dans le cluster uniquement pour prendre en charge la copie de réplica de la machine virtuelle. Cette solution puissante permet de gérer un plan de reprise d'activité personnalisé et de réutiliser les produits de sauvegarde existants en interne pour répondre aux besoins de reprise après incident. Ainsi, la reprise après incident basée sur le cloud est possible en quittant les data centers de reprise après incident sur site. Le basculement peut s'effectuer en cas de basculement planifié ou de basculement d'un simple clic en cas d'incident. La décision d'activer le site de reprise après incident est prise.
+
+Pour en savoir plus sur ce processus, n'hésitez pas à suivre la vidéo de présentation détaillée.
+
+video::15fed205-8614-4ef7-b2d0-b061015e925a[panopto,width=Video walkthrough of the solution]

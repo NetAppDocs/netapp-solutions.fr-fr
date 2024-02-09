@@ -1,0 +1,120 @@
+---
+sidebar: sidebar 
+permalink: containers/a-w-n_trident_element_iscsi.html 
+summary: 'Pour activer l"intégration de Trident avec le système de stockage NetApp Element, vous devez créer un back-end permettant la communication avec le système de stockage via le protocole iSCSI.' 
+keywords: Trident, Element, Solidfire, iSCSI 
+---
+= Configuration iSCSI de NetApp Element
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Pour activer l'intégration de Trident avec le système de stockage NetApp Element, vous devez créer un back-end permettant la communication avec le système de stockage via le protocole iSCSI.
+
+. Des exemples de fichiers backend sont disponibles dans l'archive d'installation téléchargée dans le `sample-input` hiérarchie des dossiers. Pour les systèmes NetApp Element servant iSCSI, copiez le `backend-solidfire.json` dans votre répertoire de travail et modifiez le fichier.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ cp sample-input/backends-samples/solidfire/backend-solidfire.json ./
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ vi ./backend-solidfire.json
+----
++
+.. Modifiez l'utilisateur, le mot de passe et la valeur MVIP sur le `EndPoint` ligne.
+.. Modifiez le `SVIP` valeur.
++
+[listing]
+----
+ {
+    "version": 1,
+    "storageDriverName": "solidfire-san",
+    "Endpoint": "https://trident:password@172.21.224.150/json-rpc/8.0",
+    "SVIP": "10.61.180.200:3260",
+    "TenantName": "trident",
+    "Types": [{"Type": "Bronze", "Qos": {"minIOPS": 1000, "maxIOPS": 2000, "burstIOPS": 4000}},
+              {"Type": "Silver", "Qos": {"minIOPS": 4000, "maxIOPS": 6000, "burstIOPS": 8000}},
+              {"Type": "Gold", "Qos": {"minIOPS": 6000, "maxIOPS": 8000, "burstIOPS": 10000}}]
+}
+----
+
+
+. Avec ce fichier back-end en place, exécutez la commande suivante pour créer votre premier back-end.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ ./tridentctl -n trident create backend -f backend-solidfire.json
++-------------------------+----------------+--------------------------------------+--------+---------+
+|          NAME           | STORAGE DRIVER |                 UUID                 | STATE  | VOLUMES |
++-------------------------+----------------+--------------------------------------+--------+---------+
+| solidfire_10.61.180.200 | solidfire-san  | b90783ee-e0c9-49af-8d26-3ea87ce2efdf | online |       0 |
++-------------------------+----------------+--------------------------------------+--------+---------+
+----
+. Lorsque le back-end est créé, vous devez ensuite créer une classe de stockage. Tout comme pour le back-end, il existe un exemple de fichier de classe de stockage qui peut être modifié pour l'environnement disponible dans le dossier des échantillons-entrées. Copiez-le dans le répertoire de travail et apportez les modifications nécessaires pour refléter le back-end créé.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ cp sample-input/storage-class-samples/storage-class-csi.yaml.templ ./storage-class-basic.yaml
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ vi storage-class-basic.yaml
+----
+. La seule modification à effectuer dans ce fichier consiste à définir le `backendType` valeur du nom du pilote de stockage du back-end nouvellement créé. Notez également la valeur nom-champ, qui doit être référencée ultérieurement.
++
+[listing]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: basic-csi
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "solidfire-san"
+----
++
+
+NOTE: Il y a un champ facultatif appelé `fsType` qui est défini dans ce fichier. Dans les systèmes back-end iSCSI, cette valeur peut être définie sur un type de système de fichiers Linux spécifique (XFS, ext4, etc.), ou elle peut être supprimée pour permettre à OpenShift de décider du système de fichiers à utiliser.
+
+. Exécutez le `kubectl` pour créer la classe de stockage.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ kubectl create -f storage-class-basic.yaml
+storageclass.storage.k8s.io/basic-csi created
+----
+. Une fois la classe de stockage créée, vous devez ensuite créer la première demande de volume persistant. Il y a un échantillon `pvc-basic.yaml` fichier qui peut être utilisé pour effectuer cette action également située dans les entrées d'échantillons.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ cp sample-input/pvc-samples/pvc-basic.yaml ./
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ vi pvc-basic.yaml
+----
+. La seule modification à effectuer dans ce fichier est de s'assurer que `storageClassName` le champ correspond à celui que vous venez de créer. La définition du volume persistant peut être personnalisée davantage selon les besoins de la charge de travail à provisionner.
++
+[listing]
+----
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: basic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: basic-csi
+----
+. Créez le PVC en émettant le `kubectl` commande. La création peut prendre un certain temps en fonction de la taille du volume de sauvegarde en cours de création, de sorte que vous pouvez regarder le processus au fur et à mesure qu'il se termine.
++
+[listing]
+----
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ kubectl create -f pvc-basic.yaml
+persistentvolumeclaim/basic created
+
+[ubuntu@gke-admin-ws-2022-05-03 trident-installer]$ kubectl get pvc
+NAME    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+basic   Bound    pvc-3445b5cc-df24-453d-a1e6-b484e874349d   1Gi        RWO            basic-csi      5s
+----
+

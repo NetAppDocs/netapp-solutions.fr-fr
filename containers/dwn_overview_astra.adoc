@@ -1,0 +1,44 @@
+---
+sidebar: sidebar 
+permalink: containers/dwn_overview_astra.html 
+keywords: NetApp Astra Control, Astra Control Center, Application, Trident, Astra Trident, Helm, Operator, ONTAP, OpenShift, Kubernetes, Red Hat OpenShift 
+summary: NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données intégrant la cohérence applicative pour les workloads Kubernetes avec état, déployés dans un environnement sur site avec la technologie NetApp de protection des données éprouvée. 
+---
+= Présentation de NetApp Astra Control
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+:k8s_distribution_name: Kubernetes
+
+
+[role="normal"]
+NetApp Astra Control Center propose un ensemble complet de services de gestion du stockage et des données respectueuse des applications pour les workloads Kubernetes avec état, déployés dans un environnement sur site et optimisé par les technologies NetApp de protection des données.
+
+image:redhat_openshift_image44.png["Erreur : image graphique manquante"]
+
+Le centre de contrôle NetApp Astra peut être installé sur un cluster {k8s_distribution_name} sur lequel l'orchestrateur de stockage Astra Trident est déployé et configuré avec des classes de stockage et des systèmes back-end de stockage vers des systèmes de stockage NetApp ONTAP.
+
+Pour en savoir plus sur Astra Trident, rendez-vous sur link:dwn_overview_trident.html["ce document ici"^].
+
+Dans un environnement connecté au cloud, Astra Control Center utilise Cloud Insights pour fournir des fonctionnalités avancées de surveillance et de télémétrie. En l'absence de connexion Cloud Insights, un contrôle limité et une télémétrie (sept jours de metrics) sont disponibles et exportés vers les outils de contrôle natifs Kubernetes (Prometheus et Grafana) via des terminaux ouverts.
+
+Le centre de contrôle Astra est entièrement intégré à l'écosystème NetApp AutoSupport et Active IQ qui fournit un soutien aux utilisateurs, fournit des conseils pour la résolution de problèmes et affiche des statistiques d'utilisation.
+
+En plus de la version payante d'Astra Control Center, une licence d'évaluation de 90 jours est également disponible. La version d'évaluation est prise en charge par e-mail et dans le Channel Slack de la communauté. Les clients ont accès à ces ressources, à d'autres articles de la base de connaissances et à de la documentation disponibles dans le tableau de bord de support des produits.
+
+Pour en savoir plus sur la gamme Astra, consultez le link:https://cloud.netapp.com/astra["Site Web d'Astra"^].
+
+Pour obtenir un guide d'installation et d'exploitation détaillé sur le centre de contrôle Astra, suivez la documentation link:https://docs.netapp.com/us-en/astra-control-center/index.html["ici"^].
+
+
+
+== Automatisation du centre de contrôle Astra
+
+Astra Control Center est doté d'une API REST entièrement fonctionnelle pour l'accès par programmation. Les utilisateurs peuvent utiliser n'importe quel langage ou utilitaire de programmation pour interagir avec les terminaux API REST Astra Control. Pour plus d'informations sur cette API, reportez-vous à la documentation link:https://docs.netapp.com/us-en/astra-automation/index.html["ici"^].
+
+Si vous recherchez un kit de développement logiciel prêt à l'emploi pour interagir avec les API REST Astra Control, NetApp propose un kit avec le kit SDK Python Astra Control que vous pouvez télécharger link:https://github.com/NetApp/netapp-astra-toolkits/["ici"^].
+
+Si la programmation n'est pas propriétaire de votre situation et si vous souhaitez utiliser un outil de gestion de la configuration, vous pouvez cloner et exécuter les playbooks Ansible publiés par NetApp link:https://github.com/NetApp-Automation/na_astra_control_suite["ici"^].

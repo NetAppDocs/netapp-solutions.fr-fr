@@ -1,0 +1,97 @@
+---
+sidebar: sidebar 
+permalink: containers/vtwn_astra_protect.html 
+summary: Une fois les charges de travail applicatives gérées par Astra Control Center, vous pouvez configurer les paramètres de protection pour ces charges de travail. 
+keywords: NetApp Astra Control, Astra Control Center, Application, Trident, Astra Trident, Helm, Operator, ONTAP, Tanzu, Tanzu Kubernetes clusters, VMware Tanzu 
+---
+= Protégez vos applications
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+Une fois les charges de travail applicatives gérées par Astra Control Center, vous pouvez configurer les paramètres de protection pour ces charges de travail.
+
+
+
+== Créer un instantané d'application
+
+Un snapshot d'une application crée une copie ONTAP Snapshot et une copie des métadonnées d'application qui peuvent être utilisées pour restaurer ou cloner l'application à un point dans le temps spécifique en fonction de cette copie Snapshot.
+
+. Pour prendre un instantané de l'application, accédez à l'onglet applications > gestion, puis cliquez sur l'application dont vous souhaitez effectuer une copie Snapshot. Cliquez sur le menu déroulant en regard du nom de l'application et cliquez sur instantané.
++
+image::vtwn_image18.jpg[Bouton instantané du centre de contrôle Astra]
+
+. Entrez les détails du snapshot, cliquez sur Suivant, puis sur instantané. La création du Snapshot prend environ une minute et son état est disponible une fois celui-ci créé.
++
+image::vtwn_image19.jpg[Astra Control Center crée un snapshot]
+
+
+
+
+
+== Création d'une sauvegarde d'application
+
+Une sauvegarde d'une application capture l'état actif de l'application et la configuration des ressources informatiques, les analyse en fichiers et les stocke dans un compartiment de stockage objet distant.
+
+. Pour la sauvegarde et la restauration des applications gérées dans le Centre de contrôle Astra, vous devez configurer les paramètres de superutilisateur des systèmes ONTAP de secours au préalable. Pour ce faire, entrez les commandes suivantes.
++
+[listing]
+----
+ONTAP::> export-policy rule modify -vserver ocp-trident -policyname default -ruleindex 1 -superuser sys
+ONTAP::> export-policy rule modify -policyname default -ruleindex 1 -anon 65534 -vserver ocp-trident
+----
+. Pour créer une sauvegarde de l'application gérée dans Astra Control Center, accédez à l'onglet applications > géré et cliquez sur l'application dont vous souhaitez effectuer une sauvegarde. Cliquez sur le menu déroulant en regard du nom de l'application et cliquez sur Sauvegarder.
++
+image::vtwn_image18.jpg[Bouton de secours Astra Control Center]
+
+. Entrez les détails de la sauvegarde, sélectionnez le compartiment de stockage objet pour contenir les fichiers de sauvegarde, cliquez sur Next (Suivant) et, après avoir vérifié les détails, cliquez sur Backup (Sauvegarder). Selon la taille de l'application et des données, la sauvegarde peut prendre plusieurs minutes, et l'état de la sauvegarde est disponible une fois la sauvegarde terminée.
+
+
+image::vtwn_image20.jpg[Créez une sauvegarde avec Astra Control Center]
+
+
+
+== Restauration d'une application
+
+En appuyant sur un bouton, vous pouvez restaurer une application sur l'espace de noms d'origine dans le même cluster ou sur un cluster distant afin d'assurer la protection des applications et la reprise sur incident.
+
+. Pour restaurer une application, accédez à l'onglet applications > gestion et cliquez sur l'application en question. Cliquez sur le menu déroulant en regard du nom de l'application et cliquez sur Restaurer.
++
+image::vtwn_image18.jpg[Bouton clone du centre de contrôle Astra]
+
+. Entrez le nom de l'espace de noms de restauration, sélectionnez le cluster vers lequel vous souhaitez le restaurer et choisissez si vous souhaitez le restaurer à partir d'un snapshot existant ou à partir d'une sauvegarde de l'application. Cliquez sur Suivant.
++
+image::vtwn_image21.jpg[Restauration du centre de contrôle Astra]
+
+. Dans le volet de révision, entrez `restore` Puis cliquez sur Restaurer une fois que vous avez examiné les détails.
++
+image::vtwn_image22.jpg[Examen de la restauration d'Astra Control Center]
+
+. La nouvelle application passe à l'état de restauration tandis qu'Astra Control Center restaure l'application sur le cluster sélectionné. Une fois que toutes les ressources de l'application sont installées et détectées par Astra, l'application passe à l'état disponible.
+
+
+image::vtwn_image17.jpg[Une nouvelle application Astra Control Center a été découverte]
+
+
+
+== Clonage d'une application
+
+Vous pouvez cloner une application sur le cluster d'origine ou sur un cluster distant à des fins de développement/test ou de protection des applications et de reprise sur incident. Le clonage d'une application au sein d'un même cluster sur le même système back-end utilise la technologie NetApp FlexClone, qui clonez instantanément les demandes de volume persistant et économise de l'espace de stockage.
+
+. Pour cloner une application, accédez à l'onglet applications > gestion et cliquez sur l'application en question. Cliquez sur le menu déroulant en regard du nom de l'application, puis cliquez sur Cloner.
++
+image::vtwn_image18.jpg[Bouton clone du centre de contrôle Astra]
+
+. Entrez les détails du nouvel espace de noms, sélectionnez le cluster vers lequel vous souhaitez le cloner à partir d'un snapshot existant, puis choisissez si vous souhaitez le cloner à partir d'une sauvegarde ou à partir de l'état actuel de l'application. Cliquez sur Suivant, puis sur Cloner dans le volet de révision une fois que vous avez passé en revue les détails.
++
+image:vtwn_image23.jpg["Restauration du centre de contrôle Astra"]
+
+. La nouvelle application passe à l'état découverte tandis que Astra Control Center crée l'application sur le cluster sélectionné. Une fois que toutes les ressources de l'application sont installées et détectées par Astra, l'application passe à l'état disponible.
++
+image:vtwn_image24.jpg["Une nouvelle application Astra Control Center a été découverte"]
+
+
