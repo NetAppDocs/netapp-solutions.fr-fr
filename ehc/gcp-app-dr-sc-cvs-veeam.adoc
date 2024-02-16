@@ -1,6 +1,6 @@
 ---
 sidebar: sidebar 
-permalink: ehc/gcp/gcp-app-dr-sc-cvs-veeam.html 
+permalink: ehc/gcp-app-dr-sc-cvs-veeam.html 
 keywords: gcp, gcve, snapcenter, cvo, cvs, iscsi, guest connect, dr, disaster recovery 
 summary: 'La reprise d"activité dans le cloud est une solution résiliente et économique qui protège les charges de travail contre les pannes sur site et la corruption des données, comme les attaques par ransomware. NetApp SnapMirror permet de répliquer les charges de travail VMware sur site utilisant un stockage connecté à l"invité vers NetApp Cloud Volumes ONTAP exécuté dans Google Cloud.' 
 ---
@@ -10,7 +10,7 @@ summary: 'La reprise d"activité dans le cloud est une solution résiliente et �
 :nofooter: 
 :icons: font
 :linkattrs: 
-:imagesdir: ./../../media/
+:imagesdir: ./../media/
 
 
 [role="lead"]
@@ -76,11 +76,11 @@ NOTE: Plusieurs options de connexion des data centers sur site à Google Cloud s
 .Configurez CVO pour Google Cloud et répliquez les volumes dans CVO
 [%collapsible]
 ====
-La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-guest.html["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
+La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp-guest.html["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
 image:dr-cvo-gcve-image2.png["Erreur : image graphique manquante"]
 
-Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à https://docs.netapp.com/us-en/netapp-solutions/ehc/aws/aws-guest-dr-config-snapmirror.html["Configurez la réplication avec SnapCenter"]
+Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à https://docs.netapp.com/us-en/netapp-solutions/ehc/aws-guest-dr-config-snapmirror.html["Configurez la réplication avec SnapCenter"]
 
 .Révision de la protection de SQL VM avec SnapCenter
 video::395e33db-0d63-4e48-8898-b01200f006ca[panopto]
@@ -92,7 +92,7 @@ Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont 
 
 Le datastore NetApp Cloud Volume Service pour NFS et le journal et les bases de données Cloud Volumes ONTAP pour SQL peuvent être déployés sur n'importe quel VPC et GCVE doivent disposer d'une connexion privée à ce VPC pour monter le datastore NFS et se connecter aux LUN iSCSI par un VM.
 
-Pour configurer GCVE SDDC, voir https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp/gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
+Pour configurer GCVE SDDC, voir https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
 
 Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, commencez à configurer Veeam pour automatiser la restauration des workloads sur site vers GCVE (machines virtuelles avec VMDK d'application et VM avec stockage « Guest ») en utilisant la fonctionnalité de réplication Veeam et en utilisant SnapMirror pour les copies de volumes d'application vers Cloud Volumes ONTAP.
 
