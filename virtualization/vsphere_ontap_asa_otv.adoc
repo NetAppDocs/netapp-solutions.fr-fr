@@ -1,0 +1,231 @@
+---
+sidebar: sidebar 
+permalink: virtualization/vsphere_ontap_asa_otv.html 
+keywords: vsphere, ontap, cloud insights, asa, all-flash san array, 
+summary:  
+---
+= Baie SAN 100 % Flash NetApp avec VMware vSphere 8
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Auteur : Josh Powell - Ingénierie de solutions NetApp
+
+
+
+== Gestion du stockage bloc avec les outils ONTAP pour VMware vSphere
+
+Les outils ONTAP pour VMware permettent aux administrateurs de gérer le stockage NetApp directement à partir du client vSphere. Les outils ONTAP vous permettent de déployer et de gérer des datastores, ainsi que de provisionner des datastores VVol.
+Les outils ONTAP permettent de mapper les datastores aux profils de capacité de stockage qui déterminent un ensemble d'attributs de système de stockage. Il est ainsi possible de créer des datastores dotés d'attributs spécifiques tels que les performances du stockage et la qualité de service.
+
+Les outils ONTAP comprennent les composants suivants :
+
+*Virtual Storage Console (VSC) :* VSC inclut l'interface intégrée au client vSphere, dans laquelle vous pouvez ajouter des contrôleurs de stockage, provisionner des datastores, surveiller les performances des datastores et afficher et mettre à jour les paramètres des hôtes ESXi.
+
+*VASA Provider :* le fournisseur VMware vSphere APIs for Storage Awareness (VASA) pour ONTAP envoie des informations sur le stockage utilisé par VMware vSphere à vCenter Server, permettant le provisionnement de datastores VMware Virtual volumes (vVols), la création et l'utilisation de profils de fonctionnalités de stockage, la vérification de conformité et la surveillance des performances.
+
+*Storage Replication adapter (SRA):* lorsqu'il est activé et utilisé avec VMware site Recovery Manager (SRM), SRA facilite la récupération des datastores et des machines virtuelles vCenter Server en cas de défaillance, permettant ainsi la configuration des sites protégés et des sites de reprise pour la reprise après incident.
+
+Pour plus d'informations sur les outils NetApp ONTAP pour VMware, consultez les documents suivants : https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html[].
+
+
+
+=== Présentation du déploiement de la solution
+
+Dans cette solution, nous démontrerons l'utilisation des outils ONTAP pour VMware vSphere pour provisionner des datastores VMware Virtual volumes (vVol) et créer une machine virtuelle sur un datastore vVol.
+
+Dans un datastore vVols, chaque disque virtuel est un vVol et devient un objet LUN natif sur le système de stockage. L'intégration du système de stockage et de vSphere s'effectue via le fournisseur VASA (VMware API for Storage Awareness) (installé avec les outils ONTAP). Il permet au système de stockage d'être conscient des données des machines virtuelles et de les gérer en conséquence. Les stratégies de stockage, définies dans le client vCenter, sont utilisées pour allouer et gérer les ressources de stockage.
+
+Pour plus d'informations sur les vVols avec ONTAP, reportez-vous à https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vvols-overview.html["Virtual volumes vVols) avec ONTAP"].
+
+Cette solution couvre les étapes générales suivantes :
+
+. Ajoutez un système de stockage dans les outils ONTAP.
+. Créez un profil de capacité de stockage dans les outils ONTAP.
+. Créez un datastore VVOL dans les outils ONTAP.
+. Créer une règle de stockage de machine virtuelle dans le client vSphere.
+. Créer un nouveau serveur virtuel sur le data store VVOL.
+
+
+
+
+=== Prérequis
+
+Cette solution a utilisé les composants suivants :
+
+. Baie SAN 100 % Flash NetApp A400 avec ONTAP 9.13.
+. SVM iSCSI créé sur le ASA avec connectivité réseau aux hôtes ESXi.
+. Outils ONTAP pour VMware vSphere 9.13 (VASA Provider activé par défaut).
+. Cluster vSphere 8.0 (appliance vCenter et hôtes ESXi).
+
+
+
+
+=== Déploiement de la solution
+
+
+
+==== Créez un datastore vVols dans les outils ONTAP
+
+Pour créer un datastore vVols dans les outils ONTAP, procédez comme suit :
+
+.Ajoutez un système de stockage aux outils ONTAP.
+[%collapsible]
+====
+. Accédez aux outils NetApp ONTAP en les sélectionnant dans le menu principal du client vSphere.
++
+image::vmware-asa-image6.png[Outils NetApp ONTAP]
+
+. Dans Outils ONTAP, sélectionnez *systèmes de stockage* dans le menu de gauche, puis appuyez sur *Ajouter*.
++
+image::vmware-asa-image8.png[Ajout d'un système de stockage]
+
+. Indiquez l'adresse IP, les informations d'identification du système de stockage et le numéro de port. Cliquez sur *Ajouter* pour lancer le processus de découverte.
++
+image::vmware-asa-image9.png[Ajout d'un système de stockage]
+
+
+
+====
+.Créez un profil de capacité de stockage dans les outils ONTAP
+[%collapsible]
+====
+Les profils de capacité de stockage décrivent les fonctionnalités fournies par une baie de stockage ou un système de stockage. Ils incluent des définitions de qualité de service et sont utilisés pour sélectionner des systèmes de stockage qui répondent aux paramètres définis dans le profil.
+
+Pour créer un profil de capacité de stockage dans les outils ONTAP, procédez comme suit :
+
+. Dans Outils ONTAP, sélectionnez *profil de capacité de stockage* dans le menu de gauche, puis appuyez sur *Créer*.
++
+image::vmware-asa-image7.png[Profil de capacité de stockage]
+
+. Dans l'assistant *Créer un profil de capacité de stockage*, indiquez un nom et une description du profil et cliquez sur *Suivant*.
++
+image::vmware-asa-image10.png[Ajouter un nom pour SCP]
+
+. Sélectionnez le type de plate-forme et pour spécifier que le système de stockage doit être un ensemble de baies SAN 100 % Flash *asymétrique* sur FALSE.
++
+image::vmware-asa-image11.png[Plate-forme pour SCP]
+
+. Ensuite, sélectionnez le protocole ou *n'importe quel* pour autoriser tous les protocoles possibles. Cliquez sur *Suivant* pour continuer.
++
+image::vmware-asa-image12.png[Protocole pour SCP]
+
+. La page *performance* permet de définir la qualité de service sous la forme d'IOPS minimum et maximum autorisées.
++
+image::vmware-asa-image13.png[QoS pour SCP]
+
+. Complétez la page *Storage Attributes* en sélectionnant l'efficacité du stockage, la réservation d'espace, le cryptage et toute règle de hiérarchisation, le cas échéant.
++
+image::vmware-asa-image14.png[Attributs pour SCP]
+
+. Enfin, passez en revue le résumé et cliquez sur Terminer pour créer le profil.
++
+image::vmware-asa-image15.png[Résumé pour SCP]
+
+
+
+====
+.Créez un datastore vVols dans les outils ONTAP
+[%collapsible]
+====
+Pour créer un datastore vVols dans les outils ONTAP, procédez comme suit :
+
+. Dans Outils ONTAP, sélectionnez *Présentation* et dans l'onglet *mise en route*, cliquez sur *Provision* pour démarrer l'assistant.
++
+image::vmware-asa-image16.png[Provisionner le datastore]
+
+. Sur la page *général* de l'assistant Nouveau datastore, sélectionnez le centre de données vSphere ou la destination du cluster. Sélectionnez *vVols* comme type de dastatore, indiquez un nom pour le datastore et sélectionnez le protocole.
++
+image::vmware-asa-image17.png[Page général]
+
+. Sur la page *système de stockage*, sélectionner le profil de capacité de stockage, le système de stockage et le SVM. Cliquez sur *Suivant* pour continuer.
++
+image::vmware-asa-image18.png[Adieu les migrations de données onéreuses]
+
+. Sur la page *attributs de stockage*, sélectionnez pour créer un nouveau volume pour le datastore et remplissez les attributs de stockage du volume à créer. Cliquez sur *Ajouter* pour créer le volume, puis sur *Suivant* pour continuer.
++
+image::vmware-asa-image19.png[Les attributs de stockage]
+
+. Enfin, passez en revue le résumé et cliquez sur *Finish* pour lancer le processus de création du datastore vVol.
++
+image::vmware-asa-image20.png[Page récapitulative]
+
+
+
+====
+
+
+==== Créer une règle de stockage de machine virtuelle dans le client vSphere
+
+Une règle de stockage de machine virtuelle est un ensemble de règles et d'exigences qui définissent la façon dont les données des machines virtuelles doivent être stockées et gérées. Elle spécifie les caractéristiques de stockage souhaitées, telles que les performances, la disponibilité et les services de données, pour une machine virtuelle spécifique.
+
+Dans ce cas, une stratégie de stockage de machine virtuelle doit être créée pour spécifier qu'une machine virtuelle sera générée sur les datastores vVol et pour établir un mappage un-à-un avec le profil de capacité de stockage généré précédemment.
+
+.Créer une règle de stockage de machine virtuelle
+[%collapsible]
+====
+Pour créer une stratégie de stockage de machine virtuelle, procédez comme suit :
+
+. Dans le menu principal des clients vSphere, sélectionnez *stratégies et profils*.
++
+image::vmware-asa-image21.png[Règles et profils]
+
+. Dans l'assistant *Create VM Storage Policy*, indiquez d'abord un nom et une description pour la stratégie, puis cliquez sur *Next* pour continuer.
++
+image::vmware-asa-image22.png[Assistant de stratégie de stockage VM]
+
+. Sur la page *Policy structure*, sélectionnez pour activer les règles pour le stockage vVol NetApp clustered Data ONTAP et cliquez sur *Suivant*.
++
+image::vmware-asa-image23.png[Structure de la politique]
+
+. Sur la page suivante, propre à la structure de règles choisie, sélectionnez le profil de capacité de stockage qui décrit le ou les systèmes de stockage à utiliser dans la stratégie de stockage de la machine virtuelle. Cliquez sur *Suivant* pour continuer.
++
+image::vmware-asa-image24.png[Structure de la politique]
+
+. Sur la page *compatibilité du stockage*, consultez la liste des datastores VSAN correspondant à cette stratégie et cliquez sur *Suivant*.
+. Enfin, passez en revue la politique à mettre en œuvre et cliquez sur *Terminer* pour créer la politique.
+
+
+====
+
+
+==== Créer une règle de stockage de machine virtuelle dans le client vSphere
+
+Une règle de stockage de machine virtuelle est un ensemble de règles et d'exigences qui définissent la façon dont les données des machines virtuelles doivent être stockées et gérées. Elle spécifie les caractéristiques de stockage souhaitées, telles que les performances, la disponibilité et les services de données, pour une machine virtuelle spécifique.
+
+Dans ce cas, une stratégie de stockage de machine virtuelle doit être créée pour spécifier qu'une machine virtuelle sera générée sur les datastores vVol et pour établir un mappage un-à-un avec le profil de capacité de stockage généré précédemment.
+
+.Créer une machine virtuelle sur un datastore vVol
+[%collapsible]
+====
+La dernière étape consiste à créer une machine virtuelle à l'aide des règles de stockage de machine virtuelle créées précédemment :
+
+. Dans l'assistant *Nouvelle machine virtuelle*, sélectionnez *Créer une nouvelle machine virtuelle* et sélectionnez *Suivant* pour continuer.
++
+image::vmware-asa-image25.png[Nouvelle machine virtuelle]
+
+. Entrez un nom et sélectionnez un emplacement pour la machine virtuelle, puis cliquez sur *Suivant*.
+. Sur la page *Sélectionner une ressource de calcul*, sélectionnez une destination et cliquez sur *Suivant*.
++
+image::vmware-asa-image26.png[Ressources de calcul]
+
+. Sur la page *Select Storage*, sélectionnez une stratégie de stockage de machine virtuelle et le datastore vVols qui sera la destination de la machine virtuelle. Cliquez sur *Suivant*.
++
+image::vmware-asa-image27.png[Sélectionnez stockage]
+
+. Sur la page *Select Compatibility*, choisissez la ou les versions de vSphere avec lesquelles la machine virtuelle sera compatible.
+. Sélectionnez la famille et la version du système d'exploitation invité pour la nouvelle machine virtuelle et cliquez sur *Suivant*.
+. Remplissez la page *Personnaliser le matériel*. Notez qu'il est possible de sélectionner une stratégie de stockage de machine virtuelle distincte pour chaque disque dur (fichier VMDK).
++
+image::vmware-asa-image28.png[Sélectionnez stockage]
+
+. Enfin, passez en revue la page de résumé et cliquez sur *Terminer* pour créer la machine virtuelle.
+
+
+====
+En résumé, les outils NetApp ONTAP automatisent le processus de création de datastores vVol sur les systèmes de stockage ONTAP. Les profils de capacité de stockage définissent non seulement les systèmes de stockage à utiliser pour la création de datastores, mais également les règles de QoS qui peuvent être implémentées sur une base VMDK individuelle. Les vVols offrent un modèle de gestion du stockage simplifié et une intégration étroite entre NetApp et VMware en font une solution pratique permettant un contrôle rationalisé, efficace et granulaire des environnements virtualisés.
