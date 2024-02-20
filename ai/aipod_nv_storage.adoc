@@ -1,0 +1,39 @@
+---
+sidebar: sidebar 
+permalink: ai/aipod_nv_storage.html 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, NVIDIA AI Enterprise, NVIDIA BasePOD, NVIDIA DGX 
+summary: FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - conseils de conception et de dimensionnement des systèmes de stockage 
+---
+= FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - conseils de conception et de dimensionnement des systèmes de stockage
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aipod_nv_architecture.html["Précédent : FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - Architecture."]
+
+
+
+== Conception du système de stockage
+
+Chaque système de stockage AFF A800 est connecté à l'aide de quatre ports 100 GbE de chaque contrôleur. Deux ports de chaque contrôleur sont utilisés pour l'accès aux données de workload à partir des systèmes DGX, et deux ports de chaque contrôleur sont configurés en tant que groupe d'interface LACP pour la prise en charge de l'accès depuis les serveurs du plan de gestion pour les artéfacts de gestion du cluster et les répertoires locaux des utilisateurs. Tout accès aux données à partir du système de stockage s'effectue via NFS, avec une machine virtuelle de stockage (SVM) dédiée à l'accès aux workloads d'IA et un SVM distinct dédié aux utilisations du cluster management.
+
+La SVM de workload est configurée avec un total de quatre interfaces logiques (LIF), avec deux LIF sur chaque VLAN de stockage. Chaque port physique héberge deux LIF, résultant en deux LIF par VLAN sur chaque contrôleur. Cette configuration offre une bande passante maximale ainsi que les moyens pour chaque LIF de basculer vers un autre port du même contrôleur, de sorte que les deux contrôleurs restent actifs en cas de défaillance du réseau. Cette configuration prend également en charge NFS sur RDMA pour activer l'accès au stockage GPUDirect. La capacité de stockage est provisionnée sous la forme d'un grand volume FlexGroup unique qui s'étend aux deux contrôleurs. Cette FlexGroup est accessible depuis n'importe quelle LIF du SVM, et des points de montage des systèmes DGX A100 sont distribués sur toutes les LIF disponibles pour l'équilibrage de la charge.
+
+Le SVM de gestion ne nécessite qu'une seule LIF, hébergée sur les groupes d'interface à 2 ports configurés sur chaque contrôleur. D'autres volumes FlexGroup sont provisionnés sur le SVM de gestion pour héberger les artéfacts de gestion de cluster tels que les images de nœud de cluster, les données historiques de surveillance du système et les répertoires locaux des utilisateurs. Le schéma ci-dessous présente la configuration logique du système de stockage.
+
+image:oai_basepod1_logical.png["Erreur : image graphique manquante"]
+
+
+
+== Conseils de dimensionnement des systèmes de stockage
+
+Cette architecture doit servir de référence aux clients et partenaires qui souhaitent implémenter une infrastructure d'apprentissage profond avec les systèmes NVIDIA DGX et les systèmes de stockage NetApp AFF. Le tableau ci-dessous présente une estimation approximative du nombre de GPU A100 et H100 pris en charge sur chaque modèle AFF.
+
+image:oai_sizing.png["Erreur : image graphique manquante"]
+
+Comme le montre la link:https://www.netapp.com/pdf.html?item=/media/21793-nva-1153-design.pdf["versions précédentes de cette architecture de référence"], Le système AFF A800 prend facilement en charge le workload d'entraînement de deep learning généré par huit systèmes DGX A100. Les estimations pour les autres systèmes de stockage ci-dessus ont été calculées d'après ces résultats, et les estimations pour les GPU H100 ont été calculées en doublant le débit de stockage requis pour les systèmes A100.  Pour les déploiements de plus grande envergure nécessitant des performances de stockage plus élevées, des systèmes AFF supplémentaires peuvent être ajoutés au cluster NetApp ONTAP jusqu'à 12 paires haute disponibilité (24 nœuds) dans un seul cluster. Grâce à la technologie FlexGroup décrite dans cette solution, un cluster à 24 nœuds peut fournir plus de 40 po et un débit pouvant atteindre 300 Gbit/s dans un seul namespace. D'autres systèmes de stockage NetApp, tels que les systèmes AFF A400, A250 et C800, offrent des performances inférieures et/ou des capacités supérieures pour les déploiements de moindre envergure et à moindre coût. Comme ONTAP 9 prend en charge les clusters à modèles mixtes, les clients peuvent commencer avec une empreinte réduite et ajouter au cluster des systèmes de stockage plus nombreux ou plus grands selon l'évolution des besoins en capacité et en performance.
+link:aipod_nv_conclusion.html["Next : FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - conclusion."]

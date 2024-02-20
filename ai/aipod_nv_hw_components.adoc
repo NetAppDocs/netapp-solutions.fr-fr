@@ -1,0 +1,148 @@
+---
+sidebar: sidebar 
+permalink: ai/aipod_nv_hw_components.html 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, NVIDIA AI Enterprise, NVIDIA BasePOD, NVIDIA DGX 
+summary: FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - composants matériels 
+---
+= FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - composants matériels
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+link:aipod_nv_intro.html["Précédent : FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - Présentation."]
+
+
+
+== Systèmes de stockage NetApp AFF
+
+Les systèmes de stockage de pointe NetApp AFF permettent aux services IT DE répondre aux besoins de stockage des entreprises grâce aux performances de pointe, à la flexibilité supérieure, à l'intégration au cloud et à la gestion des données optimale. Conçues spécifiquement pour les systèmes Flash, les baies AFF contribuent à accélérer, gérer et protéger les données stratégiques.
+
+
+
+=== Systèmes de stockage AFF A-Series
+
+MISE À JOUR POUR A900 !!!
+
+NetApp AFF A800 est la première solution NVMe de bout en bout du secteur. Pour les workloads NAS, un seul système AFF A800 supporte un débit de 25 Gbit/s pour les lectures séquentielles et un million d'IOPS pour les lectures aléatoires de petite taille à des latences inférieures à 500 µs.
+
+image:oai_A800_3D.png["Erreur : image graphique manquante"]
+
+Les caractéristiques des systèmes AFF A800 sont :
+* Débit massif allant jusqu'à 300 Gbit/s et 11.4 millions d'IOPS dans un cluster à 24 nœuds
+* Connectivité FC 100 GbE et 32 Gb
+* Jusqu'à 30 To de disques SSD avec écriture multiflux
+* Haute densité avec 2 po dans un tiroir 2U
+* Évolutivité de 200 To (2 contrôleurs) à 9,6 po (24 contrôleurs)
+* NetApp ONTAP comprend une suite complète de fonctionnalités de protection et de réplication des données pour une gestion des données de pointe
+
+Pour les déploiements les plus vastes, les systèmes AFF A900 offrent des options de performances et de capacité supérieures, tandis que d'autres systèmes de stockage NetApp, tels que AFF A700, AFF A400 et AFF A250, offrent des options pour des déploiements plus petits à moindre coût.
+
+
+
+== NVIDIA DGX BasePOD
+
+DGX BasePOD est une solution intégrée qui comprend des composants matériels et logiciels NVIDIA, des solutions MLOps et du stockage tiers. En tirant parti des bonnes pratiques de conception de systèmes scale-out avec les produits NVIDIA et les solutions de partenaires validées, les clients peuvent implémenter une plateforme efficace et gérable pour le développement de l'IA. La Figure 1 présente les différents composants de NVIDIA DGX BasePOD.
+
+image:oai_basepod_layers.png["Erreur : image graphique manquante"]
+
+
+
+=== SYSTÈME NVIDIA DGX H100
+
+Le système DGX&#8482 ; H100 est la dernière version des systèmes DGX et le moteur de l'IA accéléré par les performances révolutionnaires du processeur graphique NVIDIA H100.
+
+image:oai_H100_3D.png["Erreur : image graphique manquante"]
+
+Principales spécifications du système DGX H100 :
+* Huit processeurs graphiques NVIDIA H100.
+* 80 Go de mémoire GPU.
+* Quatre puces NVIDIA NVSwitch™.
+* Processeurs double 56 cœurs de quatrième génération compatibles Intel® Xeon® avec prise en charge de PCIe 5.0.
+* 2 To de mémoire système DDR5.
+* Quatre ports OSFP desservant huit ports NVIDIA ConnectX-7 VPI à port unique, trois ports NVIDIA ConnectX-7 VPI à port double.
+* Deux disques NVMe M.2 de 1.92 To pour le système d'exploitation DGX, huit disques NVMe U.2 de 3.84 To pour le stockage/cache.
+* Puissance max. De 11.3 kW.
+Les ports arrière du plateau du processeur DGX H100 sont illustrés à la Figure 7. Quatre ports OSFP prennent en charge huit HCA ConnectX-7 pour la structure de calcul InfiniBand. Chaque paire d'adaptateurs HCA ConnectX-7 à deux ports fournit des voies parallèles aux structures de stockage et de gestion. Le port hors bande est utilisé pour l'accès au contrôleur BMC.
+image:oai_H100_rear.png["Erreur : image graphique manquante"]
+
+
+
+=== SYSTÈME NVIDIA DGX A100
+
+Le système NVIDIA DGX A100 offre une densité de calcul, des performances et une flexibilité inégalées dans le premier système d'IA au monde, 5 pétaflops.
+
+image:oai_A100_3D.png["Erreur : image graphique manquante"]
+
+Principales spécifications du système DGX A100 :
+* Huit processeurs graphiques NVIDIA A100 Tensor Core.
+* 40 Go ou 80 Go de mémoire GPU.
+* Six puces NVIDIA NVSwitch™.
+* Processeurs doubles AMD EPYC™ 7742, 128 cœurs au total, 2.25 GHz (base), 3.4 GHz (suralimentation maximale).
+* Jusqu'à 2 To de mémoire système.
+* Huit HCA NVIDIA ConnectX-6 ou ConnectX-7 InfiniBand.
+* Deux disques NVMe M.2 de 1.92 To pour le système d'exploitation DGX, huit disques NVMe U.2 de 3.84 To pour le stockage/cache.
+* Puissance max. De 6.5 kW.
+
+Plus d'informations sur les systèmes DGX A100 sont disponibles link:https://www.nvidia.com/en-us/data-center/dgx-a100/["ici"].
+
+Les ports arrière du plateau du processeur DGX A100 sont illustrés dans la Figure 5. Quatre des HCA à un port sont utilisées pour les structures de calcul InfiniBand. Chaque paire d'applications HCA à deux ports fournit des voies parallèles aux structures de stockage et de gestion. Le port hors bande est utilisé pour l'accès au contrôleur BMC.
+image:oai_A100_rear.png["Erreur : image graphique manquante"]
+
+
+
+=== Mise en réseau NVIDIA
+
+
+
+==== Commutateur NVIDIA QM9700
+
+image:oai_QM9700.png["Erreur : image graphique manquante"]
+
+Les switchs NVIDIA QM9700 dotés de la connectivité NDR InfiniBand alimentent la structure de calcul des configurations NDR BasePOD. Les adaptateurs à port unique ConnectX-7 sont utilisés pour la structure de calcul InfiniBand. Chaque système NVIDIA DGX dispose de deux connexions à chaque switch QM9700, fournissant ainsi plusieurs chemins à large bande passante et à faible latence entre
+les systèmes.
+
+
+
+==== Commutateur NVIDIA QM8700
+
+image:oai_QM8700.png["Erreur : image graphique manquante"]
+
+Les switchs NVIDIA QM8700 dotés de la connectivité HDR InfiniBand alimentent la structure de calcul des configurations HDR BasePOD. Les adaptateurs à port unique ConnectX-6 sont utilisés pour la structure de calcul InfiniBand. Chaque système NVIDIA DGX dispose de deux connexions avec chaque switch QM8700, offrant ainsi plusieurs chemins à large bande passante et à faible latence entre les systèmes.
+
+
+
+==== Commutateur NVIDIA SN4600
+
+image:oai_SN4600.png["Erreur : image graphique manquante"]
+
+Les switchs NVIDIA SN4600 offrent 128 ports au total (64 par switch) pour une connectivité redondante pour la gestion intrabande du DGX BasePOD. Le commutateur NVIDIA SN4600 peut fournir des vitesses comprises entre 1 GbE et 200 GbE.pour les appliances de stockage connectées via Ethernet, les switchs NVIDIA SN4600 sont également utilisés. Les ports des cartes HCA à deux ports NVIDIA DGX sont utilisés à la fois pour la gestion intrabande et la connectivité du stockage.
+
+
+
+==== Commutateur NVIDIA SN2201
+
+image:oai_SN2201.png["Erreur : image graphique manquante"]
+
+Les commutateurs NVIDIA SN2201 disposent de 48 ports pour assurer la connectivité nécessaire à la gestion hors bande. La gestion hors bande assure une connectivité de gestion consolidée pour tous les composants de BasePOD.
+
+
+
+==== CARTE HCA NVIDIA CONNECT-X 7
+
+image:oai_CX7.png["Erreur : image graphique manquante"]
+
+Le ConnectX-7 HCA est la dernière ligne ConnectX HCA. Il peut fournir un débit de 25/50/100/200/400G. Les systèmes NVIDIA DGX utilisent à la fois les HCA ConnectX-7 à un et deux ports pour assurer la flexibilité des déploiements DGX BasePOD avec NDR. Des spécifications supplémentaires sont disponibles ici.
+
+
+
+==== CARTE HCA NVIDIA CONNECT-X 6
+
+image:oai_CX6.png["Erreur : image graphique manquante"]
+
+Les HCA ConnectX-6 offrent un débit de 10/25/40/50/100/200G. Les systèmes NVIDIA DGX utilisent à la fois les HCA ConnectX-6 à un et deux ports pour assurer la flexibilité des déploiements DGX BasePOD avec le HDR.
+
+link:aipod_nv_sw_components.html["Next : FlexPod NetApp ai Pod avec les systèmes NVIDIA DGX - composants logiciels."]
