@@ -1,0 +1,163 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_dataprotection_installation.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization, OADP operator, Openshift Data Protection Application operator, velero 
+summary: Protection des données de virtualisation Red Hat OpenShift avec NetApp ONTAP 
+---
+= Installation de l'opérateur OpenShift API for Data protection (OADP)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Prérequis
+
+* Cluster Red Hat OpenShift (version ultérieure à la version 4.12) installé sur une infrastructure sans système d'exploitation avec des nœuds worker RHCOS
+* Un cluster NetApp ONTAP intégré au cluster via Astra Trident
+* Un système back-end Trident configuré avec un SVM sur le cluster ONTAP
+* Classe de stockage configurée sur le cluster OpenShift avec Astra Trident en tant que mécanisme de provisionnement
+* Classe Snapshot Trident créée sur le cluster
+* L'accès cluster-admin au cluster Red Hat OpenShift
+* Accès au cluster NetApp ONTAP par administrateur
+* L'opérateur OpenShift Virtualization est installé et configuré
+* VM déployées dans un espace de noms sur OpenShift Virtualization
+* Une station de travail d'administration avec des outils tridentctl et oc installés et ajoutés à $PATH
+
+
+
+NOTE: Si vous souhaitez effectuer une sauvegarde d'une machine virtuelle alors qu'elle est en cours d'exécution, vous devez installer l'agent invité QEMU sur cette machine virtuelle. Si vous installez la machine virtuelle à l'aide d'un modèle existant, l'agent QEMU est automatiquement installé. QEMU permet à l'agent invité de suspendre les données en vol dans le système d'exploitation invité pendant le processus de snapshot et d'éviter toute corruption potentielle des données. Si QEMU n'est pas installé, vous pouvez arrêter la machine virtuelle avant d'effectuer une sauvegarde.
+
+
+
+== Procédure d'installation de l'opérateur OADP
+
+. Accédez au hub opérateur du cluster et sélectionnez opérateur OADP Red Hat. Dans la page installer, utilisez toutes les sélections par défaut et cliquez sur installer. Sur la page suivante, utilisez à nouveau toutes les valeurs par défaut et cliquez sur installer. L'opérateur OADP sera installé dans l'espace de nom appelé openshift-adp.
+
+
+image::redhat_openshift_OADP_install_image1.jpg[API OpenShift pour la protection des données dans Operator Hub]
+
+image::redhat_openshift_OADP_install_image2.jpg[Installation de l'API OpenShift pour Data protection Operator]
+
+image::redhat_openshift_OADP_install_image3.jpg[OpenShift API for Data protection Operator est installé]
+
+
+
+=== Conditions préalables à la configuration Velero avec ONTAP S3 Détails :
+
+Une fois l'installation de l'opérateur réussie, configurez l'instance de Velero.
+Velero peut être configuré pour utiliser le stockage objet compatible S3. Configurez ONTAP S3 à l'aide des procédures indiquées dans le link:https://docs.netapp.com/us-en/ontap/object-storage-management/index.html["Section gestion du stockage objet de la documentation ONTAP"]. Pour l'intégration à Velero, vous aurez besoin des informations suivantes de votre configuration ONTAP S3.
+
+* Une interface logique (LIF)IP qui peut être utilisée pour accéder à S3
+* Informations d'identification de l'utilisateur pour accéder à S3, y compris la clé d'accès et la clé d'accès secrète
+* Nom de compartiment dans S3 pour les sauvegardes avec des autorisations d'accès pour l'utilisateur
+* Pour un accès sécurisé au stockage objet, le certificat TLS doit être installé sur le serveur de stockage objet.
+
+
+
+
+=== Procédure de configuration de Velero
+
+* Tout d'abord, créez un secret pour les informations d'identification de l'utilisateur ONTAP S3. Ceci sera utilisé pour configurer Velero ultérieurement. Vous pouvez créer un secret à partir de l'interface de ligne de commande ou de la console Web.
+Pour créer un secret à partir de la console Web, sélectionnez secrets, puis cliquez sur clé/valeur Secret.
+Indiquez les valeurs pour le nom, la clé et la valeur des informations d'identification, comme indiqué. Assurez-vous d'utiliser l'ID de clé d'accès et la clé d'accès secrète de votre utilisateur S3.
+
+
+image::redhat_openshift_OADP_install_image4.jpg[Secret pour les identifiants ONTAP S3]
+
+image::redhat_openshift_OADP_install_image5.jpg[Créez un secret pour les informations d'identification ONTAP S3]
+
+
+NOTE: Pour créer le secret par défaut nommé cloud credentials à partir de l'interface de ligne de commande, vous pouvez utiliser la commande suivante. Si les emplacements de sauvegarde et de snapshot utilisent les mêmes informations d'identification, il vous suffit de créer le secret par défaut, comme indiqué ci-dessus. Pour d'autres scénarios, consultez la documentation OADP.
+
+image::redhat_openshift_OADP_install_image6.jpg[Créez le code secret pour les informations d'identification ONTAP S3 à l'aide de l'interface de ligne]
+
+* Ensuite, pour configurer Velero, sélectionnez opérateurs installés dans l'élément de menu sous opérateurs, cliquez sur opérateur OADP, puis sélectionnez l'onglet DataProtectionapplication.
+
+
+image::redhat_openshift_OADP_install_image7.jpg[Application DataProtectionApplication]
+
+Cliquez sur Create DataProtectionApplication. Dans la vue formulaire, indiquez un nom pour l'application Dataprotection ou utilisez le nom par défaut.
+
+image::redhat_openshift_OADP_install_image8.jpg[Créez une application DataProtectionApplication]
+
+Allez maintenant à la vue YAML et remplacez les informations par défaut ou ajoutez les informations comme indiqué dans le fichier yaml ci-dessous.
+
+....
+spec:
+  backupLocations:
+    - velero:
+        config:
+          insecureSkipTLSVerify: 'true' //use this for https communication with ONTAP S3
+          profile: default
+          region: us-east
+          s3ForcePathStyle: 'True' //This allows use of IP in s3URL
+          s3Url: 'https://10.xx.xx.xx' //Ensure TLS certificate for S3 is configured
+        credential:
+          key: cloud
+          name: cloud-credentials //previously created secret named cloud-credentials
+        default: true
+        objectStorage:
+          bucket: velero //Your bucket name previously created in S3 for backups
+          prefix: demobackup //The folder that will be created in the bucket
+        provider: aws
+  configuration:
+    nodeAgent:
+      enable: true
+      uploaderType: kopia
+                    //default Data Mover uses Kopia to move snapshots to Object  Storage
+    velero:
+      defaultPlugins:
+        - csi //Add this plugin
+        - openshift
+        - aws
+        - kubevirt //Add this plugin
+  snapshotLocations:
+    - velero:
+        config:
+          profile: default
+          region: us-east
+        provider: aws
+....
+Le YAML ci-dessus comporte les sections suivantes de la spécification qui doivent être configurées de manière appropriée, similaire à l'exemple :
+
+**BackupLocation**
+ONTAP S3 (avec ses informations d'identification et d'autres informations comme indiqué dans le yaml) est configuré comme emplacement de sauvegarde par défaut pour velero.
+
+**SnapshotLocation**
+ONTAP S3 est configuré comme emplacement par défaut pour les snapshots PVC pour Velero.
+
+**Activer CSI**
+Ajoutez csi aux plug-ins par défaut de Velero pour sauvegarder les volumes persistants avec des snapshots CSI.
+Les plug-ins Velero CSI, pour sauvegarder les PVC CSI, choisiront le VolumeSnapshotClass dans le cluster qui a le label **velero.io/csi-volumesnapshot-class** sur celui-ci. Pour cela
+
+* Vous devez avoir créé la classe VolumeSnapshotClass.
+* Modifiez le libellé de la classe trident-snapshotclass et définissez-le sur
+**velero.io/csi-volumesnapshot-class=true** comme indiqué ci-dessous.
+
+
+image::redhat_openshift_OADP_install_image9.jpg[Nom de la classe Snapshot Trident]
+
+Assurez-vous que les snapshots peuvent persister même si les objets VolumeSnapshot sont supprimés. Pour ce faire, définissez la stratégie de déletionà conserver. Si ce n'est pas le cas, la suppression d'un namespace perd complètement toutes les demandes de volume virtuels sauvegardées.
+
+....
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: trident-snapshotclass
+driver: csi.trident.netapp.io
+deletionPolicy: Retain
+....
+image::redhat_openshift_OADP_install_image10.jpg[La règle de suppression VolumeSnapshotClass doit être définie sur conserver]
+
+Assurez-vous que l'application DataProtectionApplication est créée et qu'elle est en condition:réconciliée.
+
+image::redhat_openshift_OADP_install_image11.jpg[L'objet DataProtectionApplication est créé]
+
+L'opérateur OADP va créer un BackupStorageLocation correspondant. Il sera utilisé lors de la création d'une sauvegarde.
+
+image::redhat_openshift_OADP_install_image12.jpg[BackupStorageLocation est créé]

@@ -1,0 +1,139 @@
+---
+sidebar: sidebar 
+permalink: rhhc/self-managed/rhhc-sm-azure-setup.html 
+keywords: NetApp Solutions, redhat OpenShift, red hat OpenShift, redhat openshift container platform, ocp, openshift container platform, Advanced Cluster Management, ACM, Hub Cluster, containers, container workloads, VMware, customer managed storage, ONTAP, Azure, Azure Cloud. 
+summary:  
+---
+= Déploiement et configuration de la plateforme de conteneurs Red Hat OpenShift sur Azure
+:allow-uri-read: 
+
+
+
+
+== Déploiement et configuration de la plateforme de conteneurs Red Hat OpenShift sur Azure
+
+[role="lead"]
+Cette section décrit un workflow général expliquant comment configurer et gérer des clusters OpenShift dans Azure et comment déployer des applications avec état sur ces clusters. Il présente l'utilisation du stockage NetApp Cloud Volumes ONTAP à l'aide d'Astra Trident/Astra Control Provisioner pour fournir des volumes persistants. Vous y trouverez des informations détaillées sur l'utilisation d'Astra Control Center pour effectuer les activités de protection des données et de migration des applications avec état.
+
+Voici un diagramme illustrant les clusters déployés sur Azure et connectés au data Center à l'aide d'un VPN.
+
+image:rhhc-self-managed-azure.png[""]
+
+
+NOTE: Il existe plusieurs façons de déployer les clusters de plateforme de conteneurs Red Hat OpenShift dans Azure. Cette description de haut niveau de la configuration fournit des liens de documentation pour la méthode spécifique qui a été utilisée. Vous pouvez vous référer aux autres méthodes dans les liens pertinents fournis dans le link:../rhhc-resources.html["ressources"].
+
+Le processus de configuration peut être divisé en plusieurs étapes :
+
+.Installez un cluster OCP sur Azure à partir de l'interface de ligne de commande.
+[%collapsible]
+====
+* Assurez-vous que vous avez rempli toutes les conditions préalables indiquées link:https://docs.openshift.com/container-platform/4.13/installing/installing_azure/installing-azure-vnet.html["ici"].
+* Créez un VPN, des sous-réseaux et des groupes de sécurité réseau, ainsi qu'une zone DNS privée. Créez une passerelle VPN et une connexion VPN de site à site.
+* Pour la connectivité VPN entre les installations sur site et Azure, une machine virtuelle pfsense a été créée et configurée. Pour obtenir des instructions, reportez-vous à la section link:https://docs.netgate.com/pfsense/en/latest/recipes/ipsec-s2s-psk.html["ici"].
+* Obtenez le programme d'installation et le code Pull et déployez le cluster en suivant les étapes fournies dans la documentation link:https://docs.openshift.com/container-platform/4.13/installing/installing_azure/installing-azure-vnet.html["ici"].
+* L'installation du cluster est terminée et fournira un fichier kubeconfig ainsi qu'un nom d'utilisateur et un mot de passe pour vous connecter à la console du cluster.
+
+
+Un exemple de fichier install-config.yaml est fourni ci-dessous.
+
+....
+apiVersion: v1
+baseDomain: sddc.netapp.com
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  platform:
+    azure:
+      encryptionAtHost: false
+      osDisk:
+        diskSizeGB: 512
+        diskType: "StandardSSD_LRS"
+      type: Standard_D2s_v3
+      ultraSSDCapability: Disabled
+      #zones:
+      #- "1"
+      #- "2"
+      #- "3"
+  replicas: 3
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform:
+    azure:
+      encryptionAtHost: false
+      osDisk:
+        diskSizeGB: 1024
+        diskType: Premium_LRS
+      type: Standard_D8s_v3
+      ultraSSDCapability: Disabled
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: azure-cluster
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  azure:
+    baseDomainResourceGroupName: ocp-base-domain-rg
+    cloudName: AzurePublicCloud
+    computeSubnet: ocp-subnet2
+    controlPlaneSubnet: ocp-subnet1
+    defaultMachinePlatform:
+      osDisk:
+        diskSizeGB: 1024
+        diskType: "StandardSSD_LRS"
+      ultraSSDCapability: Disabled
+    networkResourceGroupName: ocp-nc-us-rg
+    #outboundType: UserDefinedRouting
+    region: northcentralus
+    resourceGroupName: ocp-cluster-ncusrg
+    virtualNetwork: ocp_vnet_ncus
+publish: Internal
+pullSecret:
+....
+====
+.Déployez Cloud Volumes ONTAP dans Azure à l'aide de BlueXP.
+[%collapsible]
+====
+* Installez un connecteur dans Azure. Reportez-vous aux instructions https://docs.netapp.com/us-en/bluexp-setup-admin/task-install-connector-azure-bluexp.html["ici"].
+* Déployez une instance CVO dans Azure à l'aide de Connector. Reportez-vous au lien d'instructions :https://docs.netapp.com/us-en/bluexp-cloud-volumes-ontap/task-getting-started-azure.html [ici].
+
+
+====
+.Installez Astra Control Provisioner dans le cluster OCP dans Azure
+[%collapsible]
+====
+* Pour ce projet, Astra Control Provisioner (ACP) a été installé sur tous les clusters (cluster sur site, cluster sur site où Astra Control Center est déployé et le cluster dans Azure). En savoir plus sur Astra Control Provisioner link:https://docs.netapp.com/us-en/astra-control-center/release-notes/whats-new.html#7-november-2023-23-10-0["ici"].
+* Créez le back-end et des classes de stockage. Reportez-vous aux instructions link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-postdeployment.html["ici"].
+
+
+====
+.Ajoutez le cluster OCP sur Azure à Astra Control Center.
+[%collapsible]
+====
+* Créez un fichier KubeConfig distinct avec un rôle de cluster qui contient les autorisations minimales nécessaires à la gestion d'un cluster par Astra Control. Les instructions sont disponibles
+link:https://docs.netapp.com/us-en/astra-control-center/get-started/setup_overview.html#create-a-cluster-role-kubeconfig["ici"].
+* Ajoutez le cluster à Astra Control Center en suivant les instructions
+link:https://docs.netapp.com/us-en/astra-control-center/get-started/setup_overview.html#add-cluster["ici"]
+
+
+====
+.Utilisation de la fonctionnalité de topologie CSI de Trident pour les architectures multi-zones
+Les fournisseurs de cloud permettent aujourd'hui aux administrateurs de clusters Kubernetes/OpenShift de frayer les nœuds des clusters basés sur les zones. Les nœuds peuvent se trouver dans différentes zones de disponibilité au sein d'une région ou entre différentes régions. Astra Trident utilise la topologie CSI pour faciliter le provisionnement des volumes pour les charges de travail dans une architecture multi-zones. Grâce à la fonction de topologie CSI, l'accès aux volumes peut être limité à un sous-ensemble de nœuds, en fonction des régions et des zones de disponibilité. Reportez-vous à link:https://docs.netapp.com/us-en/trident/trident-use/csi-topology.html["ici"] pour plus d'informations.
+
+
+NOTE: Kubernetes prend en charge deux modes de liaison de volume : - lorsque **_VolumeBindingMode_ est défini sur _immédiat_** (par défaut), Astra Trident crée le volume sans sensibilisation à la topologie. Les volumes persistants sont créés sans dépendance vis-à-vis des exigences de planification du pod qui en fait la demande. - Lorsque **_VolumeBindingMode_ est défini sur _WaitForFirstConsumer_**, la création et la liaison d'un volume persistant pour une PVC est retardée jusqu'à ce qu'un pod qui utilise la PVC soit planifié et créé. De cette façon, les volumes sont créés pour répondre aux contraintes de planification appliquées en fonction des besoins de topologie. Les systèmes back-end de stockage Astra Trident peuvent être conçus pour provisionner de manière sélective des volumes en fonction des zones de disponibilité (back-end compatible avec la topologie). Pour les classes de stockage qui utilisent un tel backend, un volume ne sera créé que si une application est planifiée dans une région/zone prise en charge. (Classes de stockage orientées topologie) link:https://docs.netapp.com/us-en/trident/trident-use/csi-topology.html["ici"] pour plus d'informations.
+
+[Souligné]#*vidéo de démonstration*#
+
+.Utilisation d'Astra Control pour le basculement et le retour arrière des applications
+video::1546191b-bc46-42eb-ac34-b0d60142c58d[panopto,width=360]
