@@ -36,8 +36,7 @@ spec:
   ttl: 720h0m0s
 ....
 Une fois la sauvegarde terminée, sa phase s'affiche comme terminée.
-
-image::redhat_openshift_OADP_backup_image1.jpg[Sauvegarde terminée]
+Image ::redhat_openshift_OADP_backup_image1.jpg[Backup terminée]
 
 Vous pouvez inspecter la sauvegarde dans le stockage objet à l'aide d'une application de navigateur S3. Le chemin de la sauvegarde s'affiche dans le compartiment configuré avec le préfixe nom (velero/démobilackup). Vous pouvez voir le contenu de la sauvegarde inclut les snapshots de volume, les journaux et d'autres métadonnées de la machine virtuelle.
 
@@ -51,7 +50,6 @@ image::redhat_openshift_OADP_backup_image2.jpg[Objets de sauvegarde dans S3]
 == Création de sauvegardes planifiées pour les machines virtuelles dans OpenShift Virtualization
 
 Pour créer des sauvegardes sur un planning, vous devez créer une demande de modification d'horaires.
-
 Le planning est simplement une expression cron qui vous permet de spécifier l'heure à laquelle vous souhaitez créer la sauvegarde. Un exemple de yaml pour créer une demande de modification d'horaire.
 
 ....
