@@ -13,8 +13,6 @@ summary: FlexPod pour IA NetApp avec les systèmes NVIDIA DGX - Architecture
 :imagesdir: ./../media/
 
 
-link:aipod_nv_sw_components.html["Précédent : ONTAP ai - composants logiciels"]
-
 
 
 == NetApp ai Pod avec les systèmes DGX H100
@@ -62,5 +60,3 @@ image:aipod_nv_A900logical.png["Erreur : image graphique manquante"]
 Cette architecture de référence comprend également cinq serveurs basés sur processeurs pour l'utilisation d'un plan de gestion. Deux de ces systèmes sont utilisés comme nœuds principaux pour NVIDIA base Command Manager pour le déploiement et la gestion du cluster. Les trois autres systèmes sont utilisés pour fournir des services de cluster supplémentaires tels que les nœuds maîtres Kubernetes ou les nœuds de connexion pour les déploiements utilisant Slurm pour la planification des tâches. Les déploiements qui utilisent Kubernetes peuvent exploiter le pilote NetApp Astra Trident CSI pour fournir un provisionnement automatisé et des services de données avec un stockage persistant pour la gestion et les workloads d'IA sur le système de stockage AFF A900.
 
 Chaque serveur est connecté physiquement aux switchs IB et Ethernet pour permettre le déploiement et la gestion du cluster, et configuré avec des montages NFS sur le système de stockage via la SVM de gestion pour le stockage des artéfacts de gestion de cluster, comme décrit précédemment.
-
-link:aipod_nv_validation_sizing.html["Next : NetApp AIPod avec les systèmes NVIDIA DGX - conseils de validation et de dimensionnement de la solution"]
