@@ -1,0 +1,98 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/apache-spark-major-ai-ml-and-dl-use-cases-and-architectures.html 
+keywords: nlp pipelines, tensorflow distributed inferenceing, horovod distributed training, multi-worker, deep learning, keras, ctr prediction 
+summary: 'Cette page décrit en détail les principaux cas d"utilisation et architectures d"IA, DE ML et de DL.' 
+---
+= Principales utilisations et architectures de l'IA, DU ML et du DL
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Les principaux champs d'application de l'IA, DU ML et du DL peuvent être divisés en plusieurs sections :
+
+
+
+== Les pipelines Spark NLP et l'inférence TensorFlow distribuée
+
+La liste suivante contient les bibliothèques Open Source les plus populaires de NLP qui ont été adoptées par la communauté des sciences de la donnée sous différents niveaux de développement :
+
+* https://www.nltk.org/["Boîte à outils en langage naturel (NLTK)"^]. La boîte à outils complète pour toutes les techniques NLP. Elle est maintenue depuis le début des années 2000.
+* https://textblob.readthedocs.io/en/dev/["TextBlob"^]. Une API Python facile à utiliser avec les outils NLP reposant sur NLTK et Pattern.
+* https://stanfordnlp.github.io/CoreNLP/["Stanford Core NLP"^]. Services et paquets NLP en Java développés par le Stanford NLP Group.
+* https://radimrehurek.com/gensim/["Gensim"^]. La modélisation des sujets pour l'homme a commencé comme un ensemble de scripts Python pour le projet de la Bibliothèque de mathématiques numériques tchèque.
+* https://spacy.io/["L'espionnage"^]. Flux de production NLP industriels de bout en bout avec Python et cython avec accélération GPU pour transformateurs.
+* https://fasttext.cc/["Texte rapide"^]. Une bibliothèque libre, légère et open-source de NLP pour l’apprentissage des mariages de mots et la classification des peines créée par le laboratoire de recherche sur l’IA (FAIR) de Facebook.
+
+
+Spark NLP est une solution unique et unifiée pour toutes les tâches et exigences de la NLP qui permet un logiciel évolutif, haute performance et haute précision de la NLP pour les cas d'utilisation réels en production. Elle tire parti de l'apprentissage par transfert et met en œuvre les derniers algorithmes et modèles de pointe dans la recherche et dans d'autres secteurs. En raison du manque de soutien total de Spark pour les bibliothèques ci-dessus, Spark NLP a été construit sur le dessus de https://spark.apache.org/docs/latest/ml-guide.html["Spark ML"^] Tirer parti du moteur de traitement de données distribué en mémoire général de Spark en tant que bibliothèque NLP de qualité professionnelle pour les flux de production critiques. Les annoter utilisent des algorithmes basés sur des règles, l'apprentissage machine et TensorFlow pour alimenter l'implémentation de l'apprentissage profond. Cela couvre les tâches NLP courantes, y compris, mais sans s'y limiter, la tokenisation, la lemmatisation, le juguler, le marquage de la partie de la parole, la reconnaissance de l'entité nommée, vérification orthographique et analyse de sentiment.
+
+Les représentations d'encodeur bidirectionnelles des transformateurs (BERT) sont une technique d'apprentissage machine basée sur transformateur pour NLP. Elle a popularisé le concept de préformation et de réglage fin. L'architecture de transformateur de BERT provient de la traduction automatique, qui modélise les dépendances à long terme mieux que les modèles de langage RNN (réseau neuronal récurrent). Il a également introduit la tâche MLM (Modelage du langage masqué), où 15 % aléatoire de tous les jetons sont masqués et le modèle les prédit, ce qui permet une réelle bidirectionnalité.
+
+L'analyse des sentiments financiers est difficile en raison du langage spécialisé et du manque de données étiquetées dans ce domaine. https://nlp.johnsnowlabs.com/2021/11/03/bert_sequence_classifier_finbert_en.html["FinBERT"^], Un modèle de langue basé sur une BERT pré-pré-pré-pré-pré, a été adapté au domaine https://trec.nist.gov/data/reuters/reuters.html["Reuters TRC2"^], un corpus financier, et affinée avec des données étiquetées ( https://www.researchgate.net/publication/251231364_FinancialPhraseBank-v10["Banque de PhraseBank"^]) pour la classification des sentiments financiers. Les chercheurs ont extrait 4, 500 phrases d'articles de presse avec des termes financiers. Puis 16 experts et maîtres étudiants ayant des antécédents financiers ont qualifié les phrases de positif, neutre et négatif. Nous avons conçu un flux de travail Spark de bout en bout pour analyser le sentiment des transcriptions d'appel des primes d'entreprise du Top 10 NASDAQ de 2016 à 2020 à l'aide de FinBERT et de deux autres pipelines pré-entraînés ( https://nlp.johnsnowlabs.com/2021/11/11/classifierdl_bertwiki_finance_sentiment_pipeline_en.html["Analyse des sentiments pour les nouvelles financières"^], https://nlp.johnsnowlabs.com/2020/03/19/explain_document_dl.html["Expliquer le DL du document"^]) De Spark NLP.
+
+Le moteur de deep learning sous-jacent pour Spark NLP est TensorFlow, une plateforme open source de bout en bout pour le machine learning. Elle permet de créer des modèles facilement, de produire du ML partout et de puissants expérimentations à des fins de recherche. Par conséquent, lors de l'exécution de nos pipelines dans Spark `yarn cluster` Le mode consiste à exécuter TensorFlow distribué avec des données et une mise en parallèle des modèles sur un nœud maître, plusieurs nœuds workers et un stockage NAS monté sur le cluster.
+
+
+
+== Horovod a distribué une formation
+
+La validation principale de Hadoop pour les performances MapReduce est réalisée avec TeraGen, Terasort, TeraValidate et DFSIO (lecture et écriture). Les résultats de la validation TeraGen et Terasort sont présentés dans le http://www.netapp.com/us/media/tr-3969.pdf["Tr-3969 : Solutions NetApp pour Hadoop"^] Pour les E-Series et dans la section « hiérarchisation du stockage » pour la AFF.
+
+Selon les demandes des clients, nous considérons que la formation distribuée avec Spark constitue l'un des cas d'utilisation les plus importants. Dans ce document, nous avons utilisé le https://horovod.readthedocs.io/en/stable/spark_include.html["Hovorod sur Spark"^] Pour valider les performances de Spark avec les solutions NetApp de cloud hybride, cloud et sur site à l'aide des contrôleurs de stockage FAS 100 % Flash (AFF) de NetApp, Azure NetApp Files et StorageGRID.
+
+Le package Horovod sur Spark constitue une solution idéale pour Horovod, qui simplifie l'exécution de charges de travail d'entraînement distribuées dans les clusters Spark. Ceci permet une boucle de conception étroite dans laquelle le traitement des données, l'entraînement des modèles et l'évaluation des modèles sont réalisés dans Spark où résident les données d'entraînement et d'inférence.
+
+Il existe deux API pour exécuter Horovod sur Spark : une API d'estimateur de haut niveau et une API d'exécution de bas niveau. Bien que les deux utilisent le même mécanisme sous-jacent pour lancer Horovod sur des exécuteurs Spark, l'API Estimator résume le traitement des données, la boucle d'entraînement des modèles, la vérification des modèles, la collecte des métriques et la formation distribuée. Nous avons utilisé les estimateurs Horovod Spark, TensorFlow et Keras pour une préparation des données de bout en bout et un workflow de formation distribué basé sur le https://www.kaggle.com/c/rossmann-store-sales["Vente de magasins de Gaggle Rossmann"^] la concurrence.
+
+Le script `keras_spark_horovod_rossmann_estimator.py` se trouve dans la section link:apache-spark-python-scripts-for-each-major-use-case.html["Scripts Python pour chaque utilisation majeure."] Il contient trois parties :
+
+* La première partie effectue diverses étapes de prétraitement des données sur un ensemble initial de fichiers CSV fournis par Kaggle et rassemblés par la communauté. Les données d'entrée sont séparées dans un kit d'entraînement par un `Validation` un sous-ensemble de données et un jeu de données test.
+* La seconde partie définit un modèle DNN (réseau neuronal de deep Keras) avec une fonction d'activation sigmoïde logarithmique et un optimiseur Adam. Elle effectue également une entraînement distribué du modèle à l'aide de Horovod sur Spark.
+* La troisième partie effectue des prévisions sur le dataset de test en utilisant le meilleur modèle qui minimise le jeu de validation moyenne d'erreur absolue globale. Il crée ensuite un fichier CSV de sortie.
+
+
+Voir la section link:apache-spark-use-cases-summary.html#machine-learning["« Apprentissage machine »"] pour divers résultats de comparaison d'exécution.
+
+
+
+== L'apprentissage profond multi-utilisateur utilisant Keras pour la prédiction CTR
+
+Avec les récentes avancées des plates-formes ET des applications DE ML, une grande attention se porte maintenant sur l'apprentissage à grande échelle. Le taux de clics (CTR) est défini comme le nombre moyen de clics par cent impressions de publicités en ligne (exprimé en pourcentage). Elle est largement adoptée comme indicateur clé dans différents secteurs d'activité et champs d'application, notamment le marketing digital, la vente au détail, l'e-commerce et les fournisseurs de services. Découvrez nos https://docs.netapp.com/us-en/netapp-solutions/ai/aks-anf_introduction.html["Tr-4904 : formation distribuée dans Azure - prévision de taux par clic"^] Pour en savoir plus sur les applications CTR et une implémentation complète du workflow d'IA cloud avec Kubernetes, l'ETL de données distribuées et l'entraînement des modèles via DASK et CUDA ML.
+
+Dans ce rapport technique, nous avons utilisé une variante du https://labs.criteo.com/2013/12/download-terabyte-click-logs-2/["Criteo Terabyte cliquez sur le jeu de données des journaux"^] (Voir TR-4904) pour l'apprentissage profond distribué multi-travailleurs utilisant Keras pour créer un workflow Spark avec des modèles DCN (Deep et Cross Network), en comparant ses performances en termes de fonction d'erreur de perte de journaux avec un modèle de régression logistique Spark ML de base. Le DCN capture efficacement les interactions de fonctions efficaces avec des degrés délimités, apprend des interactions hautement non linéaires, ne nécessite pas d'ingénierie des fonctions manuelles ni de recherche exhaustive et présente un faible coût de calcul.
+
+Les données des systèmes de recommandation Web sont généralement distinctes et catégoriques, ce qui conduit à un espace important et clairsemé de problèmes pour l'exploration des fonctionnalités. Cela a limité la plupart des systèmes à grande échelle à des modèles linéaires tels que la régression logistique. Cependant, il est essentiel d'identifier les fonctionnalités prédictives fréquentes et d'explorer en même temps des caractéristiques croisées rares ou peu visibles pour faire de bonnes prévisions. Les modèles linéaires sont simples, interprétables et faciles à mettre à l'échelle, mais ils sont limités dans leur puissance expressive.
+
+Les caractéristiques transversales, en revanche, ont été montrées significatives dans l'amélioration de l'expressivité des modèles. Malheureusement, il nécessite souvent une ingénierie des fonctionnalités manuelles ou une recherche exhaustive pour identifier ces fonctionnalités. Il est souvent difficile de généraliser les interactions de composants non visibles. L'utilisation d'un réseau neuronal transversal comme DCN évite l'ingénierie des fonctions spécifiques aux tâches en appliquant explicitement le croisement des fonctions de manière automatique. Le réseau transversal se compose de plusieurs couches, où le degré d'interactions le plus élevé est déterminé par la profondeur de la couche. Chaque couche produit des interactions d'ordre plus élevé en fonction de celles existantes et conserve les interactions des couches précédentes.
+
+Un réseau neuronal de deep learning (DNN) promet de capturer des interactions très complexes entre plusieurs fonctionnalités. Toutefois, par rapport au DCN, il nécessite presque un ordre de grandeur plus de paramètres, est incapable de former explicitement des fonctions transversales et peut ne pas apprendre efficacement certains types d'interactions de fonctions. Le réseau transversal est efficace en termes de mémoire et facile à mettre en œuvre. L'entraînement conjoint des composants Cross et DNN capture efficacement les interactions prédictives des fonctions et fournit des performances de pointe sur le jeu de données Criteo CTR.
+
+Un modèle DCN commence par une couche d'intégration et de superposition, suivie d'un réseau transversal et d'un réseau profond en parallèle. Elles sont ensuite suivies d'une couche de combinaison finale qui combine les sorties des deux réseaux. Vos données d'entrée peuvent être un vecteur avec des fonctions éparses et denses. Dans Spark, les deux https://spark.apache.org/docs/3.1.1/api/python/reference/api/pyspark.ml.linalg.SparseVector.html["ml"^] et https://spark.apache.org/docs/3.1.1/api/python/reference/api/pyspark.mllib.linalg.SparseVector.html["mllib"^] les bibliothèques contiennent le type `SparseVector`. Il est donc important que les utilisateurs établissent une distinction entre les deux et soient conscients lorsqu'ils appellent leurs fonctions et méthodes respectives. Dans les systèmes de recommandation Web tels que la prédiction CTR, les entrées sont surtout des fonctions catégoriques, par exemple `‘country=usa’`. Ces fonctions sont souvent codées en tant que vecteurs à chaud, par exemple `‘[0,1,0, …]’`. Codage à chaud (OHE) avec `SparseVector` est utile lorsqu'il s'agit de jeux de données du monde réel avec des vocabulaires en constante évolution et en pleine croissance. Nous avons modifié des exemples dans https://github.com/shenweichen/DeepCTR["DeepCTR"^] Traiter de gros vocabulaires, créant des vecteurs d'intégration dans la couche d'intégration et de superposition de notre DCN.
+
+Le https://www.kaggle.com/competitions/criteo-display-ad-challenge/data["Criteo Afficher le jeu de données annonces"^] prédit le taux de clics des publicités. Il possède 13 caractéristiques entières et 26 caractéristiques catégoriques dans lesquelles chaque catégorie a une cardinalité élevée. Pour ce jeu de données, une amélioration de 0.001 dans logloperdus est pratiquement significative en raison de la grande taille d'entrée. Une légère amélioration de la précision des prévisions pour une grande base d'utilisateurs peut potentiellement conduire à une augmentation importante du chiffre d'affaires d'une entreprise. Le jeu de données contient 11 Go de journaux utilisateur sur une période de 7 jours, ce qui équivaut à environ 41 millions d'enregistrements. Nous avons utilisé Spark `dataFrame.randomSplit()function` diviser par deux les données à des fins d'entraînement (80 %), de cross-validation (10 %) et les 10 % restants à des fins de test.
+
+DCN a été mis en œuvre sur TensorFlow avec Keras. Il existe quatre composants principaux pour la mise en œuvre du processus de formation des modèles avec DCN :
+
+* *Traitement et incorporation de données.* les fonctions de valeur réelle sont normalisées en appliquant une transformation de journal. Pour les caractéristiques catégoriques, nous intégrons les fonctions dans les vecteurs denses de dimension 6×(cardinalité de catégorie)1/4. Le fait de concaténer tous les émudages donne un vecteur de dimension 1026.
+* *Optimisation.* nous avons appliqué l'optimisation stochastique de mini-lot avec l'optimiseur Adam. La taille de batchs a été définie sur 512. La normalisation des lots a été appliquée au réseau profond et la norme de l'attache de gradient a été définie à 100.
+* * Régularisation.* nous avons utilisé l'arrêt précoce, comme la régularisation L2 ou la chute n'a pas été trouvée efficace.
+* *Hyperparamètres.* nous présentons des résultats basés sur une recherche de grille sur le nombre de couches masquées, la taille de couche masquée, le taux d'apprentissage initial et le nombre de couches transversales. Le nombre de couches masquées variait de 2 à 5, avec des tailles de couche cachées comprises entre 32 et 1024. Pour le DCN, le nombre de couches transversales était de 1 à 6. Le taux d'apprentissage initial a été ajusté de 0.0001 à 0.001 par incréments de 0.0001. Toutes les expériences ont appliqué un arrêt précoce à l'étape 150,000 de l'entraînement, au-delà duquel le surajustement a commencé.
+
+
+En plus du DCN, nous avons également testé d'autres modèles de deep learning courants pour la prédiction CTR, notamment https://www.ijcai.org/proceedings/2017/0239.pdf["DeepFM"^], https://arxiv.org/pdf/1803.05170.pdf["XDeepFM"^], https://arxiv.org/abs/1810.11921["Int. Auto"^], et https://arxiv.org/abs/2008.13535["DCN v2"^].
+
+
+
+== Architectures utilisées pour la validation
+
+Nous avons utilisé quatre nœuds workers et un nœud maître avec une paire HA AFF-A800. Tous les membres du cluster étaient connectés via des commutateurs réseau 10GbE.
+
+Pour cette validation de la solution NetApp Spark, nous avons utilisé trois contrôleurs de stockage différents : E5760, E5724 et AFF-A800. Les contrôleurs de stockage E-Series ont été connectés à cinq nœuds de données avec des connexions SAS de 12 Gbit/s. Le contrôleur de stockage AFF à paire haute disponibilité fournit les volumes NFS exportés via des connexions 10 GbE vers les nœuds workers Hadoop. Les membres du cluster Hadoop ont été connectés via des connexions 10GbE dans les solutions E-Series, AFF et StorageGRID Hadoop.
+
+image:apache-spark-image10.png["Architectures utilisées pour la validation."]

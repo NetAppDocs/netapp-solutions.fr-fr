@@ -16,7 +16,7 @@ summary:
 [role="lead"]
 Dans cette section, quand nous le montrons `team-d` Lorsque plusieurs GPU sont en attente (ils sont sous leur quota), le système interrompt les charges de travail de `team-b` et `team-c` et les déplace dans un état en attente de façon équitable.
 
-Pour plus de détails, y compris les soumissions de travaux, les images de conteneur utilisées et les séquences de commandes exécutées, reportez-vous à la section link:osrunai_testing_details_for_section_4.9.html["Détails des tests pour la section 4.9"].
+Pour plus de détails, y compris les soumissions de travaux, les images de conteneur utilisées et les séquences de commandes exécutées, reportez-vous à la section link:osrunai_testing_details_for_section_49.html["Détails des tests pour la section 4.9"].
 
 La figure suivante montre l'utilisation du cluster résultant, les GPU alloués par équipe et les tâches en attente dus à l'équilibrage de la charge automatique et à la planification préventive. Nous pouvons observer que lorsque le nombre total de GPU requis par toutes les charges de travail d'équipe dépasse le nombre total de GPU disponibles dans le cluster, l'algorithme d'équité interne de Run:ai interrompt chaque tâche pour `team-b` et `team-c` parce qu'ils ont atteint leur quota de projet. Cela assure, de manière générale, l'utilisation élevée des clusters et les équipes de data Scientists restent contraintes pour les ressources définies par un administrateur.
 

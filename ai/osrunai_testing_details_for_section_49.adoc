@@ -1,0 +1,52 @@
+---
+sidebar: sidebar 
+permalink: ai/osrunai_testing_details_for_section_49.html 
+keywords:  
+summary:  
+---
+= Détails des tests pour la section 4.9
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section contient des détails sur les tests pour la section link:osrunai_basic_resource_allocation_fairness.html["Équité de l'allocation des ressources de base"].
+
+Soumettre les travaux dans l'ordre suivant :
+
+|===
+| Projet | NB de GPU | Total | Commentaire 
+
+
+| équipe-d | 2 | 6/8 | La charge de travail TEAM-b/c s'interrompt et passe à `pending`. 
+
+
+| équipe-d | 2 | 8/8 | Les autres charges de travail d'équipe (b/c) sont suspendues et transférées vers `pending`. 
+|===
+Voir la séquence de commande exécutée suivante :
+
+....
+$ runai submit d-2-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-d$ runai submit d-3-gg -i gcr.io/run-ai-demo/quickstart -g 2 -p team-d
+....
+À ce stade, vous devez avoir les États suivants :
+
+|===
+| Projet | GPU alloués | Charges de travail en file d'attente 
+
+
+| équipe a | 4/4 | Aucune 
+
+
+| équipe-b | 2/2 | Aucune 
+
+
+| equipe-c | 2/2 | Aucune 
+
+
+| équipe-d | 8/8 | Aucune 
+|===
+Voir la section link:osrunai_basic_resource_allocation_fairness.html["Équité de l'allocation des ressources de base"] pour une discussion sur le scénario de test en cours.

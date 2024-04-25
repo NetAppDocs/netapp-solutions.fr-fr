@@ -1,0 +1,145 @@
+---
+sidebar: sidebar 
+permalink: ai/hcaios_cnvrg_io_deployment.html 
+keywords: cnrvg.io, Deployment, Kubernetes 
+summary:  
+---
+= Déploiement cnvrg.io
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Déploiement DU CŒUR cnvrg à l'aide de Helm
+
+Helm est le moyen le plus simple de déployer rapidement cnvrg dans n'importe quel cluster, sur site, Minikube ou dans n'importe quel cluster cloud (AKS, EKS et GKE, par exemple). Cette section décrit comment cnvrg a été installé sur une instance locale (DGX-1) avec Kubernetes installé.
+
+
+
+=== Prérequis
+
+Avant de terminer l'installation, vous devez installer et préparer les dépendances suivantes sur votre ordinateur local :
+
+* Kubectl
+* Helm 3.x
+* Cluster Kubernetes 1.15+
+
+
+
+
+=== Déploiement à l'aide de Helm
+
+. Pour télécharger les graphiques cnvrg Helm les plus mis à jour, exécutez la commande suivante :
++
+....
+helm repo add cnvrg https://helm.cnvrg.io
+helm repo update
+....
+. Avant de déployer cnvrg, vous devez disposer de l'adresse IP externe du cluster et du nom du nœud sur lequel vous allez déployer cnvrg. Pour déployer cnvrg sur un cluster Kubernetes sur site, exécutez la commande suivante :
++
+....
+helm install cnvrg cnvrg/cnvrg --timeout 1500s  --wait \ --set global.external_ip=<ip_of_cluster> \ --set global.node=<name_of_node>
+....
+. Exécutez le `helm install` commande. L'ensemble des services et systèmes s'installent automatiquement sur le cluster. Ce processus peut prendre jusqu'à 15 minutes.
+. Le `helm install` la commande peut prendre jusqu'à 10 minutes. Une fois le déploiement terminé, accédez à l'URL de votre nouveau cluster cnvrg déployé ou ajoutez-le en tant que ressource au sein de votre organisation. Le `helm` Commande vous informe de l'URL correcte.
++
+....
+Thank you for installing cnvrg.io!
+Your installation of cnvrg.io is now available, and can be reached via:
+Talk to our team via email at
+....
+. Lorsque l'état de tous les conteneurs est en cours d'exécution ou terminé, cnvrg a été déployé avec succès. Similaire à la sortie d'exemple suivante :
+
+
+....
+NAME                            READY   STATUS      RESTARTS   AGE
+cnvrg-app-69fbb9df98-6xrgf              1/1     Running     0          2m cnvrg-sidekiq-b9d54d889-5x4fc           1/1     Running     0          2m controller-65895b47d4-s96v6             1/1     Running     0          2m init-app-vs-config-wv9c4                0/1     Completed   0          9m init-gateway-vs-config-2zbpp            0/1     Completed   0          9m init-minio-vs-config-cd2rg              0/1     Completed   0          9m minio-0                                 1/1     Running     0          2m postgres-0                              1/1     Running     0          2m redis-695c49c986-kcbt9                  1/1     Running     0          2m seeder-wh655                            0/1     Completed   0          2m speaker-5sghr                           1/1     Running     0          2m
+....
+
+
+== Computer Vision Model Training with ResNet50 and the thorax X-ray Dataset
+
+Le système d'exploitation cesnvrg.io ai a été déployé sur une configuration Kubernetes sur une architecture NetApp ONTAP ai optimisée par le système NVIDIA DGX. Pour la validation, nous avons utilisé le jeu de données de radiographie du thorax NIH composé d'images déidentifiées des radiographies pulmonaires. Les images étaient au format PNG. Les données ont été fournies par le Centre clinique des NIH et sont disponibles par l'intermédiaire du https://nihcc.app.box.com/v/ChestXray-NIHCC["Site de téléchargement NIH"^]. Nous avons utilisé un échantillon de 250 Go de données comportant 627, 615 images dans 15 classes.
+
+Le dataset a été téléchargé sur la plateforme cnvrg et a été mis en cache sur une exportation NFS depuis le système de stockage NetApp AFF A800.
+
+
+
+== Configurez les ressources de calcul
+
+L'architecture cnvrg et la fonctionnalité de méta-planification permettent aux ingénieurs et aux professionnels DE L'IT d'associer différentes ressources de calcul à une seule plateforme. Dans notre configuration, nous avons utilisé le même cluster cnvrg qui a été déployé pour exécuter les workloads d'apprentissage profond. Si vous devez ajouter des clusters, utilisez l'interface graphique, comme illustré ci-dessous.
+
+image:hcaios_image7.png["Erreur : image graphique manquante"]
+
+
+
+== Charger les données
+
+Pour charger des données sur la plateforme cnvrg, vous pouvez utiliser l'interface graphique ou l'interface de ligne de commande cnvrg. Pour les jeux de données volumineux, NetApp recommande l'utilisation de l'interface de ligne de commande, car il s'agit d'un outil robuste, évolutif et fiable capable de gérer un grand nombre de fichiers.
+
+Pour télécharger des données, procédez comme suit :
+
+. Téléchargez le https://app.cnvrg.io/docs/cli/install.html["CLI cnvrg"^].
+. accédez au répertoire des rayons x.
+. Initialisez le dataset dans la plate-forme à l'aide du `cnvrg data init` commande.
+. Télécharger tout le contenu du répertoire vers le data Lake central avec le `cnvrg data sync` Commande.une fois les données chargées dans le magasin d'objets central (StorageGRID, S3 ou autres), vous pouvez naviguer à l'aide de l'interface graphique. La figure suivante montre un fichier PNG d'image de fibrose radiologique thoracique chargé. De plus, cnvrg version les données afin que tout modèle que vous construisez puisse être reproduit à la version des données.
+
+
+image:hcaios_image8.png["Erreur : image graphique manquante"]
+
+
+
+== Données de compte-tours
+
+Pour accélérer l'entraînement et éviter de télécharger plus de 600 000 fichiers pour chaque essai et entraînement du modèle, nous avons utilisé la fonctionnalité de mise en cache des données après la première mise en ligne des données dans le magasin d'objets central du data Lake.
+
+image:hcaios_image9.png["Erreur : image graphique manquante"]
+
+Lorsque les utilisateurs cliquent sur cache, cnvrg télécharge les données de leur validation spécifique depuis le magasin d'objets distant et les met en cache sur le volume NFS ONTAP. Les données sont ensuite disponibles pour un entraînement instantané. De plus, si les données ne sont pas utilisées pendant quelques jours (pour l'entraînement ou l'exploration des modèles, par exemple), cnvrg efface automatiquement le cache.
+
+
+
+== Créez un pipeline DE ML avec les données en cache
+
+Les flux cnvrg vous permettent de construire facilement des pipelines DE ML de production. Les flux sont flexibles, peuvent fonctionner pour tous types d'utilisation DU ML et peuvent être créés via l'interface utilisateur graphique ou le code. Chaque composant d'un flux peut s'exécuter sur une ressource de calcul différente avec une image Docker différente, ce qui permet de créer un cloud hybride et des pipelines DE ML optimisés.
+
+image:hcaios_image10.png["Erreur : image graphique manquante"]
+
+
+
+=== Création du flux de rayons X thorax : réglage des données
+
+Nous avons ajouté notre dataset à un nouveau flux créé. Lors de l'ajout du dataset, vous pouvez sélectionner la version spécifique (commit) et indiquer si vous voulez la version en cache. Dans cet exemple, nous avons sélectionné la validation en cache.
+
+image:hcaios_image11.png["Erreur : image graphique manquante"]
+
+
+
+=== Construction du flux de rayons X thorax : réglage du modèle d'entraînement : ResNet50
+
+Dans le pipeline, vous pouvez ajouter n'importe quel type de code personnalisé. Dans cnvrg, il y a aussi la bibliothèque ai, une collection de composants DE ML réutilisables. La bibliothèque d'IA comprend des algorithmes, des scripts, des sources de données et d'autres solutions qui peuvent être utilisés dans n'importe quel flux DE ML ou de deep learning. Dans cet exemple, nous avons sélectionné le module ResNet50 prédéfini. Nous avons utilisé des paramètres par défaut tels que batch_size:128, des séries de tests:10, etc. Ces paramètres peuvent être affichés dans la documentation de la bibliothèque d'IA. La capture d'écran suivante montre le nouveau flux avec le jeu de données de rayons X connecté à ResNet50.
+
+image:hcaios_image12.png["Erreur : image graphique manquante"]
+
+
+
+== Définissez la ressource de calcul pour ResNet50
+
+Chaque algorithme ou composant des flux cnvrg peut être exécuté sur une instance de calcul différente, avec une image Docker différente. Dans notre configuration, nous voulions exécuter l'algorithme d'entraînement sur les systèmes NVIDIA DGX avec l'architecture NetApp ONTAP ai. Dans la figure suivante, nous avons sélectionné `gpu-real`, qui est un modèle de calcul et une spécification pour notre cluster sur site. Nous avons également créé une file d'attente de modèles et sélectionné plusieurs modèles. De cette façon, si le `gpu-real` les ressources ne peuvent pas être allouées (si, par exemple, d'autres data scientists l'utilisent), vous pouvez activer la bursting en ajoutant un modèle de fournisseur de cloud. La capture d'écran suivante montre l'utilisation de gpu-Real comme nœud de calcul pour ResNet50.
+
+image:hcaios_image13.png["Erreur : image graphique manquante"]
+
+
+
+=== Suivi et surveillance des résultats
+
+Après l'exécution d'un flux, cnvrg déclenche le moteur de suivi et de surveillance. Chaque cycle d'un flux est automatiquement documenté et mis à jour en temps réel. Hyperparamètres, mesures, utilisation des ressources (utilisation des GPU, etc.), version de code, artéfacts, journaux Et ainsi de suite sont automatiquement disponibles dans la section expériences, comme indiqué dans les deux captures d'écran suivantes.
+
+image:hcaios_image14.png["Erreur : image graphique manquante"]
+
+image:hcaios_image15.png["Erreur : image graphique manquante"]
