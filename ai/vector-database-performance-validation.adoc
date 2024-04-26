@@ -1,0 +1,203 @@
+---
+sidebar: sidebar 
+permalink: ai/vector-database-performance-validation.html 
+keywords: vector database 
+summary: Validation des performances de la base de données Vector - solution de base de données vectorielle pour NetApp 
+---
+= Validation des performances de la base de données Vector
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Validation des performances
+
+La validation des performances joue un rôle critique à la fois dans les bases de données vectorielles et les systèmes de stockage. Elle joue un rôle clé dans la garantie d'un fonctionnement optimal et d'une utilisation efficace des ressources. Les bases de données vectorielles, connues pour le traitement de données de grande dimension et l'exécution de recherches de similarité, doivent maintenir des niveaux de performances élevés pour traiter rapidement et précisément les requêtes complexes. La validation des performances permet d'identifier les goulets d'étranglement, d'ajuster les configurations et de s'assurer que le système peut gérer les charges attendues sans dégradation des services. De même, dans les systèmes de stockage, la validation des performances est essentielle pour garantir le stockage et la récupération efficaces des données, sans problèmes de latence ni goulets d'étranglement susceptibles d'affecter les performances globales du système. Il permet également de prendre des décisions avisées concernant les mises à niveau ou les modifications nécessaires de l'infrastructure de stockage. Par conséquent, la validation des performances est un aspect crucial de la gestion du système et contribue de manière significative au maintien d'un niveau élevé de qualité de service, d'efficacité opérationnelle et de fiabilité globale du système.
+
+Dans cette section, nous allons examiner la validation des performances des bases de données vectorielles, telles que Milvus et pgvecto.RS, en nous concentrant sur leurs caractéristiques de performances de stockage, telles que le profil d'E/S et le contrôleur de stockage NetApp qui prennent en charge les charges de travail RAG et d'inférence dans le cadre du cycle de vie LLM. Nous évaluerons et identifierons les différences de performances éventuelles lorsque ces bases de données sont combinées à la solution de stockage ONTAP. Notre analyse sera basée sur des indicateurs clés de performance, comme le nombre de requêtes traitées par seconde (QPS).
+
+Veuillez vérifier la méthodologie utilisée pour le milvus et la progression ci-dessous.
+
+|===
+| Détails | Milvus (autonome et cluster) | Postgres(pgvecto.RS) 
+
+
+| version | 2.3.2 | 0.2.0 
+
+
+| Système de fichiers | XFS sur LUN iSCSI |  
+
+
+| Générateur de charges de travail | link:https://github.com/zilliztech/VectorDBBench["VectorDB-Bench"] – v0.0.5 |  
+
+
+| Jeux de données | Jeu de données LAION
+* 10millions de lits
+* 768 Dimensions
+* Taille de Dataset de 300 Go |  
+|===
+
+
+=== VectorDB-Bench avec cluster autonome Milvus
+
+Nous avons effectué la validation de performances suivante sur un cluster autonome milvus avec vectorDB-Bench.
+La connectivité réseau et serveur du cluster autonome milvus est ci-dessous.
+
+image:./perf_mivus_standalone.png["Erreur. Image graphique manquante"]
+
+Dans cette section, nous partageons nos observations et nos résultats des tests de la base de données autonome Milvus.
+.	Nous avons sélectionné DiskANN comme type d'index pour ces tests.
+.	L'ingestion, l'optimisation et la création d'index pour un dataset d'environ 100 Go ont pris environ 5 heures. Pendant la majeure partie de cette durée, le serveur Milvus, équipé de 20 cœurs (ce qui équivaut à 40 vcpu lorsque Hyper-Threading est activé), fonctionnait à sa capacité de processeur maximale de 100 %.nous avons constaté que DiskANN est particulièrement important pour les jeux de données volumineux qui dépassent la taille de la mémoire système.
+.	Dans la phase de requête, nous avons observé un taux de requêtes par seconde (QPS) de 10.93 avec un rappel de 0.9987. La latence du 99e centile pour les requêtes a été mesurée à 708.2 millisecondes.
+
+Du point de vue du stockage, la base de données a émis environ 1,000 000 opérations/s durant les phases d'ingestion, d'optimisation après insertion et de création d'index. Dans la phase de requête, il a demandé 32,000 opérations/s.
+
+La section suivante présente les mesures de performances du stockage.
+
+|===
+| Phase du workload | Métrique | Valeur 
+
+
+| Ingestion des données
+et
+Optimisation post-insertion | D'IOPS | < 1,000 
+
+
+|  | Latence | < 400 utilisateurs 
+
+
+|  | Charge de travail | Proportion de lectures/écritures, principalement des écritures 
+
+
+|  | Taille des E/S. | 64 KO 
+
+
+| Requête | D'IOPS | Crête à 32,000 
+
+
+|  | Latence | < 400 utilisateurs 
+
+
+|  | Charge de travail | 100 % de lectures mises en cache 
+
+
+|  | Taille des E/S. | Principalement 8 Ko 
+|===
+Le résultat vectorDB-Bench est inférieur à.
+
+image:vector_db_result_standalone.png["Erreur:image graphique manquante"]
+
+Depuis la validation des performances de l'instance Milvus autonome, il est évident que la configuration actuelle est insuffisante pour prendre en charge un jeu de données de 5 millions de vecteurs avec une dimension de 1536. nous avons déterminé que le stockage possède les ressources adéquates et ne constitue pas un goulet d'étranglement dans le système.
+
+
+
+=== VectorDB-Bench avec cluster Milvus
+
+Cette section traite du déploiement d'un cluster Milvus dans un environnement Kubernetes. Cette configuration Kubernetes a été construite sur un déploiement VMware vSphere, qui héberge les nœuds maîtres et workers Kubernetes.
+
+Les sections suivantes présentent un détail des déploiements VMware vSphere et Kubernetes.
+
+image:milvus_vmware_perf.png["Erreur : image graphique manquante"]
+image:milvus_cluster_perf.png["Erreur : image graphique manquante"]
+
+Dans cette section, nous présentons nos observations et nos résultats des tests de la base de données Milvus.
+* Le type d'index utilisé était DiskANN.
+* Le tableau ci-dessous fournit une comparaison entre les déploiements autonomes et les déploiements en grappe lorsqu'ils travaillent avec 5 millions de vecteurs à une dimension de 1536. Nous avons observé que le temps nécessaire pour l'ingestion et l'optimisation après insertion des données était plus faible dans le déploiement du cluster. Au cours du déploiement du cluster, la latence du 99e centile pour les requêtes a été divisée par six par rapport à une configuration autonome.
+* Bien que le taux de requêtes par seconde (QPS) ait été plus élevé dans le déploiement du cluster, il n'était pas au niveau souhaité.
+
+image:milvus_standalone_cluster_perf.png["Erreur : image graphique manquante"]
+
+Les images ci-dessous présentent diverses mesures de stockage, notamment la latence du cluster de stockage et les IOPS totales (opérations d'entrée/sortie par seconde).
+
+image:storagecluster_latency_iops_milcus.png["Erreur : image graphique manquante"]
+
+La section suivante présente les principaux metrics de performance du stockage.
+
+|===
+| Phase du workload | Métrique | Valeur 
+
+
+| Ingestion des données
+et
+Optimisation post-insertion | D'IOPS | < 1,000 
+
+
+|  | Latence | < 400 utilisateurs 
+
+
+|  | Charge de travail | Proportion de lectures/écritures, principalement des écritures 
+
+
+|  | Taille des E/S. | 64 KO 
+
+
+| Requête | D'IOPS | Crête à 147,000 
+
+
+|  | Latence | < 400 utilisateurs 
+
+
+|  | Charge de travail | 100 % de lectures mises en cache 
+
+
+|  | Taille des E/S. | Principalement 8 Ko 
+|===
+Sur la base de la validation des performances du cluster Milvus autonome et du cluster Milvus, nous présentons les détails du profil d'E/S du stockage.
+* Nous avons observé que le profil d'E/S reste cohérent à la fois dans les déploiements autonomes et en cluster.
+* La différence observée dans le pic d'IOPS peut être attribuée au plus grand nombre de clients dans le déploiement de cluster.
+
+
+
+=== VectorDB-Bench avec Postgres (pgvecto.RS)
+
+Nous avons effectué les actions suivantes sur PostgreSQL(pgvecto.RS) à l'aide de VectorDB-Bench :
+Les détails concernant la connectivité réseau et serveur de PostgreSQL (plus précisément, pgvecto.RS) sont les suivants :
+
+image:pgvecto_perf_network_connectivity.png["Erreur : image graphique manquante"]
+
+Dans cette section, nous partageons nos observations et nos résultats des tests de la base de données PostgreSQL, en particulier à l'aide de pgvecto.RS.
+* Nous avons choisi HNSW comme type d'index pour ces tests parce qu'au moment des tests, DiskANN n'était pas disponible pour pgvecto.RS.
+* Pendant la phase d'ingestion des données, nous avons chargé le jeu de données de Cohere, qui se compose de 10 millions de vecteurs à une dimension de 768. Ce processus a pris environ 4.5 heures.
+* Dans la phase de requête, nous avons observé un taux de requêtes par seconde (QPS) de 1,068 avec un rappel de 0.6344. La latence du 99e centile pour les requêtes a été mesurée à 20 millisecondes. Pendant la majeure partie de l'exécution, le CPU client fonctionnait à 100 % de sa capacité.
+
+Les images ci-dessous offrent une vue d'ensemble des différentes mesures de stockage, y compris les IOPS totales de latence du cluster de stockage (opérations d'entrée/sortie par seconde).
+
+image:pgvecto_storage_iops_latency.png["Erreur : image graphique manquante"]
+
+ The following section presents the key storage performance metrics.
+image:pgvecto_storage_perf_metrics.png["Erreur : image graphique manquante"]
+
+
+
+=== Comparaison des performances entre milvus et postgres sur le banc de base de données vectoriel
+
+image:perf_comp_milvus_postgres.png["Erreur : image graphique manquante"]
+
+Sur la base de notre validation des performances de Milvus et PostgreSQL à l'aide de VectorDBBench, nous avons observé ce qui suit :
+
+* Type d'index : HNSW
+* Dataset : cohere avec 10 millions de vecteurs à 768 dimensions
+
+
+Nous avons constaté que pgvecto.RS a atteint un taux de requêtes par seconde (QPS) de 1,068 avec un rappel de 0.6344, tandis que Milvus a atteint un taux QPS de 106 avec un rappel de 0.9842.
+
+Si la haute précision de vos requêtes est une priorité, Milvus surpasse pgvecto.RS car il récupère une proportion plus élevée d'éléments pertinents par requête. Toutefois, si le nombre de requêtes par seconde est un facteur plus important, pgvecto.RS dépasse Milvus. Il est important de noter, cependant, que la qualité des données récupérées via pgvecto.RS est plus faible, avec environ 37% des résultats de recherche étant des éléments non pertinents.
+
+
+
+=== Observation basée sur nos validations de performances :
+
+Sur la base de nos validations de performances, nous avons fait les observations suivantes :
+
+Chez Milvus, le profil d'E/S ressemble beaucoup à une charge de travail OLTP, comme c'est le cas avec Oracle SLOB. Le banc d'essai se compose de trois phases : ingestion des données, post-optimisation et requête. Les étapes initiales sont principalement caractérisées par des opérations d'écriture de 64 Ko, alors que la phase de requête implique principalement des lectures de 8 Ko. Nous pensons que ONTAP devrait gérer la charge d'E/S Milvus avec compétence.
+
+Le profil d'E/S PostgreSQL ne présente pas de charge de travail de stockage complexe. Étant donné que l'implémentation in-memory est en cours, nous n'avons pas observé d'E/S de disque pendant la phase de requête.
+
+DiskANN émerge comme une technologie cruciale pour la différenciation du stockage. Il permet une mise à l'échelle efficace de la recherche de base de données vectorielle au-delà de la limite de la mémoire système. Toutefois, il est peu probable qu'il se démarque des performances de stockage grâce à des indices de base de données vectoriels en mémoire tels que HNSW.
+
+Il est également important de noter que le stockage ne joue pas un rôle critique pendant la phase de requête lorsque le type d'index est HSNW, qui est la phase de fonctionnement la plus importante pour les bases de données vectorielles prenant en charge les applications RAG. Cela signifie que la performance du stockage n'a pas un impact significatif sur les performances globales de ces applications.

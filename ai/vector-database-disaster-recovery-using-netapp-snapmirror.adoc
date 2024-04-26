@@ -1,0 +1,33 @@
+---
+sidebar: sidebar 
+permalink: ai/vector-database-disaster-recovery-using-netapp-snapmirror.html 
+keywords: vector database 
+summary: 'Reprise après incident à l"aide de NetApp SnapMirror - solution de base de données vecteur pour NetApp' 
+---
+= Reprise sur incident à l'aide de NetApp SnapMirror
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Reprise sur incident à l'aide de NetApp SnapMirror
+
+image:vector_database_dr_fsxn_gcnv.png["Erreur : image graphique manquante"]
+
+La reprise après sinistre est essentielle pour maintenir l'intégrité et la disponibilité d'une base de données vectorielle, en particulier compte tenu de son rôle dans la gestion des données de grande dimension et l'exécution de recherches complexes de similarité. Une stratégie de reprise d'activité bien planifiée et mise en œuvre permet de s'assurer que les données ne sont pas perdues ou compromises en cas d'incidents imprévus, tels que des pannes matérielles, des catastrophes naturelles ou des cyberattaques. Cette approche est particulièrement importante pour les applications reposant sur des bases de données vectorielles, où toute perte ou corruption de données peut entraîner des interruptions opérationnelles et des pertes financières importantes. En outre, un plan solide de reprise sur incident assure également la continuité de l'activité en minimisant les temps d'arrêt et en permettant la restauration rapide des services. Pour ce faire, nous vous recours à SnapMirror, produit de réplication de données NetApp, sur différents sites géographiques, à des sauvegardes régulières et à des mécanismes de basculement. Par conséquent, la reprise après incident n'est pas seulement une mesure de protection, mais un composant essentiel d'une gestion responsable et efficace de la base de données vectorielle.
+
+NetApp SnapMirror assure la réplication des données d'un contrôleur de stockage NetApp ONTAP vers un autre, principalement utilisé pour la reprise après incident et les solutions hybrides. Dans le contexte d'une base de données vectorielle, cet outil facilite la transition en douceur des données entre les environnements sur site et cloud. Cette transition s'effectue sans conversion de données ni remaniement d'applications, ce qui améliore l'efficacité et la flexibilité de la gestion des données sur plusieurs plateformes.
+
+La solution hybride NetApp dans un scénario de base de données vectorielle peut vous apporter davantage d'avantages :
+
+. Évolutivité : la solution de cloud hybride de NetApp vous permet de faire évoluer vos ressources en fonction de vos besoins. Vous pouvez utiliser les ressources sur site pour des charges de travail régulières et prévisibles ainsi que des ressources cloud comme Amazon FSxN pour NetApp ONTAP et Google Cloud NetApp Volume (GCNV) en cas de pics d'activité ou de charges inattendues.
+. Maîtrise des coûts : le modèle de cloud hybride NetApp vous permet d'optimiser les coûts en utilisant des ressources sur site pour les workloads réguliers, et en payant uniquement les ressources cloud que vous utilisez lorsque vous en avez besoin. Ce modèle de paiement basé sur l'utilisation peut être économique avec une offre de service NetApp Instaclustr. Pour les principaux fournisseurs de services cloud et sur site, Instaclustr fournit un support et un conseil.
+. La flexibilité : avec le cloud hybride NetApp, vous pouvez choisir où traiter vos données. Par exemple, vous pouvez choisir d'effectuer des opérations vectorielles complexes sur site où vous disposez de matériel plus puissant et d'opérations moins intensives dans le cloud.
+. Continuité de l'activité : en cas d'incident, la mise à disposition de vos données dans un cloud hybride NetApp assure la continuité de l'activité. En cas d'impact sur vos ressources sur site, vous pouvez rapidement passer au cloud. Nous pouvons utiliser NetApp SnapMirror pour déplacer les données d'un environnement sur site vers le cloud, et inversement.
+. Innovation : les solutions de cloud hybride de NetApp permettent également d'innover plus rapidement en fournissant un accès à des services et technologies de pointe dans le cloud. Les innovations NetApp dans le cloud, telles qu'Amazon FSxN pour NetApp ONTAP, Azure NetApp Files et Google Cloud NetApp volumes sont des fournisseurs de services cloud qui innovent et préfèrent le NAS.
+

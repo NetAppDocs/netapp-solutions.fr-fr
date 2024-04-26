@@ -1,0 +1,245 @@
+---
+sidebar: sidebar 
+permalink: ai/vector-database-protection-using-snapcenter.html 
+keywords: vector database 
+summary: 'Protection de base de données Vector à l"aide de la solution de base de données SnapCenter - Vector pour NetApp' 
+---
+= Protection de base de données Vector à l'aide de SnapCenter
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Protection de base de données Vector à l'aide de NetApp SnapCenter.
+
+Par exemple, dans le secteur de la production cinématographique, les clients possèdent souvent des données intégrées essentielles, telles que des fichiers audio et vidéo. La perte de ces données, due à des problèmes tels que les pannes de disque dur, peut avoir un impact significatif sur leurs opérations, ce qui risque de mettre en péril des projets à plusieurs millions de dollars. Nous avons rencontré des cas où du contenu inestimable a été perdu, causant des perturbations importantes et des pertes financières. La sécurité et l'intégrité de ces données essentielles sont donc d'une importance capitale dans ce secteur.
+Dans cette section, nous allons examiner comment SnapCenter protège les données de la base de données vectorielle et les données Milvus résidant dans ONTAP. Dans cet exemple, nous avons utilisé un compartiment NAS (milvusdbvol1) dérivé d'un volume ONTAP NFS (vol1) pour les données clients, et un volume NFS distinct (vectordbpv) pour les données de configuration du cluster Milvus. veuillez vérifier le link:https://docs.netapp.com/us-en/snapcenter-47/protect-sco/backup-workflow.html["ici"] pour le flux de travail de sauvegarde SnapCenter
+
+. Configurez l'hôte qui sera utilisé pour exécuter les commandes SnapCenter.
++
+image:sc_host_setup.png["Erreur : image graphique manquante"]
+
+. Installez et configurez le plug-in de stockage. Dans l'hôte ajouté, sélectionnez « autres options ». Accédez au plug-in de stockage téléchargé et sélectionnez-le dans le link:https://automationstore.netapp.com/snap-detail.shtml?packUuid=Storage&packVersion=1.0["Le site NetApp Automation Store"]. Installez le plug-in et enregistrez la configuration.
++
+image:sc_storage_plugin.png["Erreur : image graphique manquante"]
+
+. Configurer le système et le volume de stockage : ajouter le système de stockage sous « système de stockage » et sélectionner le SVM (Storage Virtual machine). Dans cet exemple, nous avons choisi « vs_nvidia ».
++
+image:sc_storage_system.png["Erreur : image graphique manquante"]
+
+. Établissez une ressource pour la base de données vectorielle, en incorporant une règle de sauvegarde et un nom de snapshot personnalisé.
++
+** Activer la sauvegarde de groupe de cohérence avec les valeurs par défaut et activer SnapCenter sans cohérence de système de fichiers.
+** Dans la section empreinte du stockage, sélectionnez les volumes associés aux données clients de la base de données vectorielle et aux données du cluster Milvus. Dans notre exemple, il s'agit de "vol1" et de "vectordbpv".
+** Créez une stratégie pour la protection de la base de données vectorielle et protégez la ressource de base de données vectorielle à l'aide de la stratégie.
++
+image:sc_resource_vectordatabase.png["Erreur : image graphique manquante"]
+
+
+
+. Insérez les données dans le compartiment NAS S3 à l'aide d'un script Python. Dans notre cas, nous avons modifié le script de sauvegarde fourni par Milvus, à savoir « prepare_data_netapp.py », et exécuté la commande « sync » pour vider les données du système d'exploitation.
++
+[source, python]
+----
+root@node2:~# python3 prepare_data_netapp.py
+
+=== start connecting to Milvus     ===
+
+
+=== Milvus host: localhost         ===
+
+Does collection hello_milvus_netapp_sc_test exist in Milvus: False
+
+=== Create collection `hello_milvus_netapp_sc_test` ===
+
+
+=== Start inserting entities       ===
+
+Number of entities in hello_milvus_netapp_sc_test: 3000
+
+=== Create collection `hello_milvus_netapp_sc_test2` ===
+
+Number of entities in hello_milvus_netapp_sc_test2: 6000
+root@node2:~# for i in 2 3 4 5 6   ; do ssh node$i "hostname; sync; echo 'sync executed';" ; done
+node2
+sync executed
+node3
+sync executed
+node4
+sync executed
+node5
+sync executed
+node6
+sync executed
+root@node2:~#
+----
+. Vérifiez les données dans le compartiment NAS S3. Dans notre exemple, les fichiers dont l'horodatage est « 2024-04-08 21:22 » ont été créés par le script « prepare_data_netapp.py ».
++
+[source, bash]
+----
+root@node2:~# aws s3 ls --profile ontaps3  s3://milvusdbvol1/ --recursive | grep '2024-04-08'
+
+<output content removed to save page space>
+2024-04-08 21:18:14       5656 stats_log/448950615991000809/448950615991000810/448950615991001854/100/1
+2024-04-08 21:18:12       5654 stats_log/448950615991000809/448950615991000810/448950615991001854/100/448950615990800869
+2024-04-08 21:18:17       5656 stats_log/448950615991000809/448950615991000810/448950615991001872/100/1
+2024-04-08 21:18:15       5654 stats_log/448950615991000809/448950615991000810/448950615991001872/100/448950615990800876
+2024-04-08 21:22:46       5625 stats_log/448950615991003377/448950615991003378/448950615991003385/100/1
+2024-04-08 21:22:45       5623 stats_log/448950615991003377/448950615991003378/448950615991003385/100/448950615990800899
+2024-04-08 21:22:49       5656 stats_log/448950615991003408/448950615991003409/448950615991003416/100/1
+2024-04-08 21:22:47       5654 stats_log/448950615991003408/448950615991003409/448950615991003416/100/448950615990800906
+2024-04-08 21:22:52       5656 stats_log/448950615991003408/448950615991003409/448950615991003434/100/1
+2024-04-08 21:22:50       5654 stats_log/448950615991003408/448950615991003409/448950615991003434/100/448950615990800913
+root@node2:~#
+----
+. Lancez une sauvegarde à l'aide du snapshot du groupe de cohérence (CG) à partir de la ressource 'milvusdb'
++
+image:sc_backup_vector_database.png["Erreur : image graphique manquante"]
+
+. Pour tester la fonctionnalité de sauvegarde, nous avons soit ajouté un nouveau tableau après le processus de sauvegarde, soit supprimé certaines données du NFS (compartiment NAS S3).
++
+Pour ce test, imaginez un scénario dans lequel quelqu'un a créé une nouvelle collection, inutile ou inappropriée après la sauvegarde. Dans ce cas, nous devrions rétablir la base de données vectorielle à son état avant l'ajout de la nouvelle collection. Par exemple, de nouvelles collections telles que « hello_milvus_netapp_sc_testNew » et « hello_milvus_netapp_sc_testnew2 » ont été insérées.
+
++
+[source, python]
+----
+root@node2:~# python3 prepare_data_netapp.py
+
+=== start connecting to Milvus     ===
+
+
+=== Milvus host: localhost         ===
+
+Does collection hello_milvus_netapp_sc_testnew exist in Milvus: False
+
+=== Create collection `hello_milvus_netapp_sc_testnew` ===
+
+
+=== Start inserting entities       ===
+
+Number of entities in hello_milvus_netapp_sc_testnew: 3000
+
+=== Create collection `hello_milvus_netapp_sc_testnew2` ===
+
+Number of entities in hello_milvus_netapp_sc_testnew2: 6000
+root@node2:~#
+----
+. Exécutez une restauration complète du compartiment NAS S3 à partir du snapshot précédent.
++
+image:sc_restore_vector_database.png["Erreur : image graphique manquante"]
+
+. Utilisez un script Python pour vérifier les données des collections « hello_milvus_netapp_sc_test » et « hello_milvus_netapp_sc_test2 ».
++
+[source, python]
+----
+root@node2:~# python3 verify_data_netapp.py
+
+=== start connecting to Milvus     ===
+
+
+=== Milvus host: localhost         ===
+
+Does collection hello_milvus_netapp_sc_test exist in Milvus: True
+{'auto_id': False, 'description': 'hello_milvus_netapp_sc_test', 'fields': [{'name': 'pk', 'description': '', 'type': <DataType.INT64: 5>, 'is_primary': True, 'auto_id': False}, {'name': 'random', 'description': '', 'type': <DataType.DOUBLE: 11>}, {'name': 'var', 'description': '', 'type': <DataType.VARCHAR: 21>, 'params': {'max_length': 65535}}, {'name': 'embeddings', 'description': '', 'type': <DataType.FLOAT_VECTOR: 101>, 'params': {'dim': 8}}]}
+Number of entities in Milvus: hello_milvus_netapp_sc_test : 3000
+
+=== Start Creating index IVF_FLAT  ===
+
+
+=== Start loading                  ===
+
+
+=== Start searching based on vector similarity ===
+
+hit: id: 2998, distance: 0.0, entity: {'random': 0.9728033590489911}, random field: 0.9728033590489911
+hit: id: 1262, distance: 0.08883658051490784, entity: {'random': 0.2978858685751561}, random field: 0.2978858685751561
+hit: id: 1265, distance: 0.09590047597885132, entity: {'random': 0.3042039939240304}, random field: 0.3042039939240304
+hit: id: 2999, distance: 0.0, entity: {'random': 0.02316334456872482}, random field: 0.02316334456872482
+hit: id: 1580, distance: 0.05628091096878052, entity: {'random': 0.3855988746044062}, random field: 0.3855988746044062
+hit: id: 2377, distance: 0.08096685260534286, entity: {'random': 0.8745922204004368}, random field: 0.8745922204004368
+search latency = 0.2832s
+
+=== Start querying with `random > 0.5` ===
+
+query result:
+-{'random': 0.6378742006852851, 'embeddings': [0.20963514, 0.39746657, 0.12019053, 0.6947492, 0.9535575, 0.5454552, 0.82360446, 0.21096309], 'pk': 0}
+search latency = 0.2257s
+
+=== Start hybrid searching with `random > 0.5` ===
+
+hit: id: 2998, distance: 0.0, entity: {'random': 0.9728033590489911}, random field: 0.9728033590489911
+hit: id: 747, distance: 0.14606499671936035, entity: {'random': 0.5648774800635661}, random field: 0.5648774800635661
+hit: id: 2527, distance: 0.1530652642250061, entity: {'random': 0.8928974315571507}, random field: 0.8928974315571507
+hit: id: 2377, distance: 0.08096685260534286, entity: {'random': 0.8745922204004368}, random field: 0.8745922204004368
+hit: id: 2034, distance: 0.20354536175727844, entity: {'random': 0.5526117606328499}, random field: 0.5526117606328499
+hit: id: 958, distance: 0.21908017992973328, entity: {'random': 0.6647383716417955}, random field: 0.6647383716417955
+search latency = 0.5480s
+Does collection hello_milvus_netapp_sc_test2 exist in Milvus: True
+{'auto_id': True, 'description': 'hello_milvus_netapp_sc_test2', 'fields': [{'name': 'pk', 'description': '', 'type': <DataType.INT64: 5>, 'is_primary': True, 'auto_id': True}, {'name': 'random', 'description': '', 'type': <DataType.DOUBLE: 11>}, {'name': 'var', 'description': '', 'type': <DataType.VARCHAR: 21>, 'params': {'max_length': 65535}}, {'name': 'embeddings', 'description': '', 'type': <DataType.FLOAT_VECTOR: 101>, 'params': {'dim': 8}}]}
+Number of entities in Milvus: hello_milvus_netapp_sc_test2 : 6000
+
+=== Start Creating index IVF_FLAT  ===
+
+
+=== Start loading                  ===
+
+
+=== Start searching based on vector similarity ===
+
+hit: id: 448950615990642008, distance: 0.07805602252483368, entity: {'random': 0.5326684390871348}, random field: 0.5326684390871348
+hit: id: 448950615990645009, distance: 0.07805602252483368, entity: {'random': 0.5326684390871348}, random field: 0.5326684390871348
+hit: id: 448950615990640618, distance: 0.13562293350696564, entity: {'random': 0.7864676926688837}, random field: 0.7864676926688837
+hit: id: 448950615990642314, distance: 0.10414951294660568, entity: {'random': 0.2209597460821181}, random field: 0.2209597460821181
+hit: id: 448950615990645315, distance: 0.10414951294660568, entity: {'random': 0.2209597460821181}, random field: 0.2209597460821181
+hit: id: 448950615990640004, distance: 0.11571306735277176, entity: {'random': 0.7765521996186631}, random field: 0.7765521996186631
+search latency = 0.2381s
+
+=== Start querying with `random > 0.5` ===
+
+query result:
+-{'embeddings': [0.15983285, 0.72214717, 0.7414838, 0.44471496, 0.50356466, 0.8750043, 0.316556, 0.7871702], 'pk': 448950615990639798, 'random': 0.7820620141382767}
+search latency = 0.3106s
+
+=== Start hybrid searching with `random > 0.5` ===
+
+hit: id: 448950615990642008, distance: 0.07805602252483368, entity: {'random': 0.5326684390871348}, random field: 0.5326684390871348
+hit: id: 448950615990645009, distance: 0.07805602252483368, entity: {'random': 0.5326684390871348}, random field: 0.5326684390871348
+hit: id: 448950615990640618, distance: 0.13562293350696564, entity: {'random': 0.7864676926688837}, random field: 0.7864676926688837
+hit: id: 448950615990640004, distance: 0.11571306735277176, entity: {'random': 0.7765521996186631}, random field: 0.7765521996186631
+hit: id: 448950615990643005, distance: 0.11571306735277176, entity: {'random': 0.7765521996186631}, random field: 0.7765521996186631
+hit: id: 448950615990640402, distance: 0.13665105402469635, entity: {'random': 0.9742541034109935}, random field: 0.9742541034109935
+search latency = 0.4906s
+root@node2:~#
+----
+. Vérifiez que la collection inutile ou inappropriée n'est plus présente dans la base de données.
++
+[source, python]
+----
+root@node2:~# python3 verify_data_netapp.py
+
+=== start connecting to Milvus     ===
+
+
+=== Milvus host: localhost         ===
+
+Does collection hello_milvus_netapp_sc_testnew exist in Milvus: False
+Traceback (most recent call last):
+  File "/root/verify_data_netapp.py", line 37, in <module>
+    recover_collection = Collection(recover_collection_name)
+  File "/usr/local/lib/python3.10/dist-packages/pymilvus/orm/collection.py", line 137, in __init__
+    raise SchemaNotReadyException(
+pymilvus.exceptions.SchemaNotReadyException: <SchemaNotReadyException: (code=1, message=Collection 'hello_milvus_netapp_sc_testnew' not exist, or you can pass in schema to create one.)>
+root@node2:~#
+----
+
+
+En conclusion, l'utilisation de SnapCenter de NetApp pour protéger les données de base de données Vector et les données Milvus résidant dans ONTAP offre des avantages considérables aux clients, en particulier dans les secteurs où l'intégrité des données est primordiale, tels que la production cinématographique. La capacité de SnapCenter à créer des sauvegardes cohérentes et à restaurer les données complètes garantit que les données stratégiques, telles que les fichiers audio et vidéo intégrés, sont protégées contre les pertes causées par des défaillances de disque dur ou d'autres problèmes. Cela permet non seulement d'éviter les perturbations opérationnelles, mais également d'éviter des pertes financières substantielles.
+
+Dans cette section, nous avons démontré comment configurer SnapCenter pour protéger les données résidant dans ONTAP, notamment la configuration des hôtes, l'installation et la configuration des plug-ins de stockage, et la création d'une ressource pour la base de données Vector avec un nom de snapshot personnalisé. Nous vous avons également présenté comment effectuer une sauvegarde à l'aide du snapshot de groupe de cohérence et vérifier les données dans le compartiment NAS S3.
+
+De plus, nous avons simulé un scénario dans lequel une collection inutile ou inappropriée a été créée après la sauvegarde. Dans de tels cas, la capacité de SnapCenter à effectuer une restauration complète à partir d'un snapshot précédent permet de rétablir l'état de la base de données vectorielle avant l'ajout de la nouvelle collection, préservant ainsi l'intégrité de la base de données. Cette fonctionnalité de restauration des données à un point dans le temps est inestimable pour les clients. Elle leur assure non seulement la sécurité de leurs données, mais aussi la maintenance adéquate. Le produit SnapCenter de NetApp offre ainsi une solution robuste et fiable de protection et de gestion des données.
