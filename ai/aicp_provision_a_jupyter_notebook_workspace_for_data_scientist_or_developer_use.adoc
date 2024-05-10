@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: ai/aicp_provision_a_jupyter_notebook_workspace_for_data_scientist_or_developer_use.html 
 keywords: Jupyter, Notebook, Workspace, Kubeflow 
-summary: 'Kubeflow est capable de provisionner rapidement de nouveaux serveurs Jupyter Notebook pour agir en tant qu"espaces de travail de data Scientist. Pour provisionner un nouveau serveur Jupyter Notebook avec Kubeflow, exécutez les tâches répertoriées sur cette page.' 
+summary: 'Opérations MLOps open source avec NetApp : fourniture d"un espace de travail Jupyter pour ordinateur portable destiné aux data Scientists ou aux développeurs' 
 ---
 = Provisionner un espace de travail Jupyter Notebook pour un usage Data Scientist ou Developer
 :hardbreaks:
@@ -14,59 +14,6 @@ summary: 'Kubeflow est capable de provisionner rapidement de nouveaux serveurs J
 
 
 [role="lead"]
-Kubeflow est capable de provisionner rapidement de nouveaux serveurs Jupyter Notebook pour agir en tant qu'espaces de travail de data Scientist. Pour provisionner un nouveau serveur Jupyter Notebook avec Kubeflow, effectuez les tâches suivantes. Pour plus d'informations sur les ordinateurs portables Jupyter dans le contexte Kubeflow, reportez-vous au https://www.kubeflow.org/docs/components/notebooks/["Documentation officielle Kubeflow"^].
+Kubeflow est capable de provisionner rapidement de nouveaux serveurs Jupyter Notebook pour agir en tant qu'espaces de travail de data Scientist. Pour plus d'informations sur les ordinateurs portables Jupyter dans le contexte Kubeflow, reportez-vous au https://www.kubeflow.org/docs/components/notebooks/["Documentation officielle Kubeflow"^].
 
-. Dans le tableau de bord central Kubeflow, cliquez sur serveurs portables dans le menu principal pour accéder à la page d'administration des serveurs Jupyter Notebook.
-+
 image:aicp_image9.png["Erreur : image graphique manquante"]
-
-. Cliquez sur Nouveau serveur pour provisionner un nouveau serveur Jupyter Notebook.
-+
-image:aicp_image10.png["Erreur : image graphique manquante"]
-
-. Donnez un nom à votre nouveau serveur, choisissez l'image Docker sur laquelle vous voulez que votre serveur soit basé, et spécifiez la quantité de CPU et de RAM à réserver par votre serveur. Si le champ espace de noms est vide, utilisez le menu Sélectionner espace de noms dans l'en-tête de la page pour choisir un espace de noms. Le champ espace de noms est alors automatiquement renseigné avec l'espace de noms choisi.
-+
-Dans l'exemple suivant, le `kubeflow-anonymous` l'espace de noms est choisi. En outre, les valeurs par défaut pour l'image Docker, la CPU et la RAM sont acceptées.
-
-+
-image:aicp_image11.png["Erreur : image graphique manquante"]
-
-. Spécifiez les détails du volume de l'espace de travail. Si vous choisissez de créer un nouveau volume, ce volume ou cette demande de volume persistant est provisionné à l'aide de la classe de stockage par défaut. Comme une classe de stockage utilisant Trident a été désignée comme classe de stockage par défaut dans la section link:aicp_kubeflow_deployment_overview.html["Déploiement Kubeflow"], Le volume ou la demande de volume persistant est provisionné avec Trident. Ce volume est automatiquement monté comme espace de travail par défaut dans le conteneur Jupyter Notebook Server. Tous les ordinateurs portables créés par un utilisateur sur le serveur qui ne sont pas enregistrés dans un volume de données distinct sont automatiquement enregistrés dans ce volume d'espace de travail. Par conséquent, les ordinateurs portables sont persistants entre les redémarrages.
-+
-image:aicp_image12.png["Erreur : image graphique manquante"]
-
-. Ajout de volumes de données. L'exemple suivant indique un PVC existant nommé 'pb-fg-all' et accepte le point de montage par défaut.
-+
-image:aicp_image13.png["Erreur : image graphique manquante"]
-
-. *Facultatif:* Demandez que le nombre de processeurs graphiques souhaité soit alloué à votre serveur d'ordinateur portable. Dans l'exemple suivant, un GPU est demandé.
-+
-image:aicp_image14.png["Erreur : image graphique manquante"]
-
-. Cliquez sur lancer pour approvisionner votre nouveau serveur d'ordinateur portable.
-. Attendez que le serveur de votre ordinateur portable soit entièrement approvisionné. Cette opération peut prendre plusieurs minutes si vous n'avez jamais provisionné de serveur à l'aide de l'image Docker que vous avez spécifiée, car l'image doit être téléchargée. Lorsque votre serveur a été entièrement provisionné, une coche verte s'affiche dans la colonne État de la page d'administration du serveur Jupyter Notebook.
-+
-image:aicp_image15.png["Erreur : image graphique manquante"]
-
-. Cliquez sur connexion pour vous connecter à votre nouvelle interface Web de serveur.
-. Vérifiez que le volume du dataset spécifié à l'étape 6 est monté sur le serveur. Notez que ce volume est monté par défaut dans l'espace de travail par défaut. Du point de vue de l'utilisateur, ce n'est qu'un autre dossier dans l'espace de travail. L'utilisateur, qui est probablement un spécialiste des données et non un expert en infrastructure, n'a pas besoin de posséder de compétences en stockage pour utiliser ce volume.
-+
-image:aicp_image16.png["Erreur : image graphique manquante"]
-
-+
-image:aicp_image17.png["Erreur : image graphique manquante"]
-
-. Ouvrez un terminal et, en supposant qu'un nouveau volume a été demandé à l'étape 5, exécutez `df -h` Pour confirmer qu'un nouveau volume persistant provisionné avec Trident est monté en tant qu'espace de travail par défaut.
-+
-Le répertoire d’espace de travail par défaut est le répertoire de base avec lequel vous êtes présenté lorsque vous accédez pour la première fois à l’interface Web du serveur. Par conséquent, tout artefact que vous créez via l'interface Web est stocké sur ce volume persistant provisionné par Trident.
-
-+
-image:aicp_image18.png["Erreur : image graphique manquante"]
-
-+
-image:aicp_image19.png["Erreur : image graphique manquante"]
-
-. À l'aide du terminal, exécutez `nvidia-smi` Pour vérifier que le nombre correct de GPU a été attribué au serveur d'ordinateur portable. Dans l'exemple suivant, un GPU a été affecté au serveur d'ordinateurs portables comme demandé à l'étape 7.
-
-
-image:aicp_image20.png["Erreur : image graphique manquante"]

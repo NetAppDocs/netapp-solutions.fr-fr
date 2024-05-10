@@ -1,0 +1,71 @@
+---
+sidebar: sidebar 
+permalink: ai/aicp_kubeflow_train_image_recognition.html 
+keywords: Jupyter Notebook, Kubeflow Pipeline, NetApp DataOps Toolkit, MNIST, Image Recognition 
+summary: 'Opérations MLOps open source avec NetApp - exemple de flux de travail - entraînement d"un modèle de reconnaissance d"image à l"aide de Kubeflow et du kit d"outils NetApp DataOps' 
+---
+= Exemple de flux de travail - entraînez un modèle de reconnaissance d'image à l'aide de Kubeflow et du kit d'outils NetApp DataOps
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section décrit les étapes de la formation et du déploiement d'un réseau neuronal pour la reconnaissance des images à l'aide de Kubeflow et du kit NetApp DataOps. L'objectif est de fournir un exemple de formation intégrant le stockage NetApp.
+
+
+
+== Prérequis
+
+Créez un fichier Dockerfile avec les configurations requises pour les étapes de train et de test dans le pipeline Kubeflow.
+Voici un exemple de fichier Dockerfile -
+
+[source]
+----
+FROM pytorch/pytorch:latest
+RUN pip install torchvision numpy scikit-learn matplotlib tensorboard
+WORKDIR /app
+COPY . /app
+COPY train_mnist.py /app/train_mnist.py
+CMD ["python", "train_mnist.py"]
+----
+En fonction de vos besoins, installez toutes les bibliothèques et tous les packages requis pour exécuter le programme. Avant d'entraîner le modèle de machine learning, il est supposé que vous disposez déjà d'un déploiement Kubeflow fonctionnel.
+
+
+
+== Entraîner un petit NN sur des données MNIST à l'aide de pipelines PyTorch et Kubeflow
+
+Nous utilisons l'exemple d'un petit réseau neuronal formé sur les données MNIST. Le jeu de données MNIST se compose d'images manuscrites de chiffres compris entre 0 et 9. La taille des images est de 28 x 28 pixels. Le dataset est divisé en 60,000 images d'entraînement et 10,000 images de validation. Le réseau neuronal utilisé pour cette expérience est un réseau d'avance à 2 couches. L'entraînement est exécuté à l'aide de Kubeflow pipelines. Reportez-vous à la documentation https://www.kubeflow.org/docs/components/pipelines/v1/introduction/["ici"^] pour en savoir plus. Notre pipeline Kubeflow intègre l'image docker de la section Prerequisites.
+
+image:kubeflow_pipeline.png["Visualisation de l'exécution du pipeline Kubeflow"]
+
+
+
+== Visualisez les résultats à l'aide de Tensorboard
+
+Une fois le modèle entraîné, nous pouvons visualiser les résultats à l'aide de Tensorboard. https://www.tensorflow.org/tensorboard["Tensorboard"^] Elle est disponible en tant que fonctionnalité dans le tableau de bord Kubeflow. Vous pouvez créer un tableau de tension personnalisé pour votre travail. Un exemple ci-dessous montre le tracé de la précision de l'entraînement par rapport à nombre de séries de tests et de pertes d'entraînement par rapport à nombre de séries de tests.
+
+image:tensorboard_graph.png["Graphique Tensorboard pour la perte d'entraînement et la précision"]
+
+
+
+== Testez les hyperparamètres à l'aide de Katib
+
+https://www.kubeflow.org/docs/components/katib/hyperparameter/["Katib"^] Est un outil de Kubeflow qui peut être utilisé pour tester les hyperparamètres du modèle. Pour créer une expérience, définissez d'abord une mesure/un objectif souhaité. Il s'agit généralement de la précision du test. Une fois la mesure définie, choisissez les hyperparamètres que vous souhaitez utiliser (optimiseur/apprentissage_rate/nombre de couches). Katib effectue un balayage hyperparamètre avec les valeurs définies par l'utilisateur pour trouver la meilleure combinaison de paramètres qui répondent à la mesure souhaitée. Vous pouvez définir ces paramètres dans chaque section de l'interface utilisateur. Vous pouvez également définir un fichier *YAML* avec les spécifications nécessaires. Vous trouverez ci-dessous une illustration d'une expérience Katib -
+
+image:katib_experiment_1.png["Tableau de bord d'expérience Katib avec hyperparamètres"]
+
+image:katib_experiment_2.png["Vérification d'essai réussie"]
+
+
+
+== Utilisez les instantanés NetApp pour enregistrer les données pour la traçabilité
+
+Lors de l'entraînement du modèle, nous pouvons enregistrer un instantané du dataset d'entraînement à des fins de traçabilité. Pour ce faire, nous pouvons ajouter une étape snapshot au pipeline, comme illustré ci-dessous. Pour créer le snapshot, nous pouvons utiliser le https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s["Kit NetApp DataOps pour Kubernetes"^].
+
+image:kubeflow_snapshot.png["Créez un pipeline Snapshot dans Kubeflow"]
+
+Reportez-vous à la https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s/Examples/Kubeflow["Exemple de kit NetApp DataOps pour Kubeflow"^] pour en savoir plus.

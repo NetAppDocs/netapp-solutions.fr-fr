@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: ai/aicp_introduction.html 
 keywords: tr-4798, tr4798, 4798, NetApp AI, Machine, Deep learning, introduction 
-summary: 'Ce rapport vous explique comment cloner rapidement un espace de noms de données. Vous découvrirez comment définir et implémenter des workflows d"entraînement d"IA pour intégrer la création quasi instantanée de données et de modèles de base à des fins de traçabilité et de gestion des versions. Il montre également comment répliquer des données de manière transparente entre plusieurs sites et régions, et déployer rapidement des espaces de travail Jupyter Notebook à l"aide de jeux de données volumineux.' 
+summary: 'Cette solution a pour objectif de démontrer plusieurs outils et frameworks open source pouvant être intégrés à un workflow MLOps. Ces différents outils et structures peuvent être utilisés ensemble ou eux-mêmes en fonction des exigences et du cas d"utilisation.' 
 ---
-= Tr-4798 : plan de contrôle pour l'IA de NetApp
+= MLOps open source avec NetApp
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,14 +14,17 @@ summary: 'Ce rapport vous explique comment cloner rapidement un espace de noms d
 
 
 Mike Oglesby, NetApp
+Mohan Acharya, NetApp
 
 [role="lead"]
-Toutes les entreprises, quelle que soit leur taille et leurs secteurs, se tournent vers l'intelligence artificielle (IA), le machine learning (ML) et le deep learning (DL) pour résoudre des problèmes concrets, proposer des produits et des services innovants et se démarquer sur un marché de plus en plus concurrentiel. Alors que les entreprises ont de plus en plus recours à l'IA, AU ML et au DL, elles sont confrontées à de nombreux défis, notamment l'évolutivité des workloads et la disponibilité des données. Ce document explique comment relever ces défis en utilisant NetApp ai Control plane, une solution qui associe les fonctionnalités de gestion des données NetApp aux outils et frameworks open source les plus répandus.
+Toutes les entreprises, quelle que soit leur taille et leurs secteurs, se tournent vers l'intelligence artificielle (IA), le machine learning (ML) et le deep learning (DL) pour résoudre des problèmes concrets, proposer des produits et des services innovants et se démarquer sur un marché de plus en plus concurrentiel. Alors que les entreprises ont de plus en plus recours à l'IA, AU ML et au DL, elles sont confrontées à de nombreux défis, notamment l'évolutivité des workloads et la disponibilité des données. Cette solution vous montre comment relever ces défis en associant les fonctionnalités de gestion de données NetApp à des outils et des frameworks open source populaires.
 
-Ce rapport vous explique comment cloner rapidement un espace de noms de données. Il vous montre également comment répliquer de manière fluide les données entre plusieurs sites et régions pour créer un pipeline de données d'IA/AM/AP cohérent et unifié. Vous y trouverez également des informations sur la définition et l'implémentation des workflows d'entraînement d'IA, DE ML et de DL pour créer quasi instantanément des données et des modèles de base à des fins de traçabilité et de gestion des versions. Avec cette solution, vous pouvez suivre l'entraînement des modèles jusqu'au dataset exact où on a utilisé pour entraîner et/ou valider le modèle. Enfin, ce document vous montre comment provisionner rapidement des espaces de travail Jupyter Notebook avec accès à des jeux de données volumineux.
+Cette solution a pour objectif de démontrer plusieurs outils et frameworks open source pouvant être intégrés à un workflow MLOps. Ces différents outils et structures peuvent être utilisés ensemble ou eux-mêmes en fonction des exigences et du cas d'utilisation.
 
-Remarque : pour un entraînement distribué de style HPC à grande échelle impliquant un grand nombre de serveurs GPU qui nécessitent un accès partagé au même dataset, ou si vous avez besoin/préférez un système de fichiers parallèle, consultez le document link:https://www.netapp.com/pdf.html?item=/media/31317-tr-4890.pdf["TR-4890"^]. Ce rapport technique décrit comment inclure link:https://blog.netapp.com/solution-support-for-beegfs-and-e-series/["La solution de système de fichiers parallèle entièrement prise en charge par NetApp, BeeGFS"^] Dans le cadre du plan de contrôle d'IA NetApp. Cette solution est conçue pour s'adapter de quelques systèmes NVIDIA DGX A100 à un superPOD de 140 nœuds.
+Cette solution propose les outils/structures suivants :
 
-Le plan de contrôle de l'IA de NetApp est destiné aux data Scientists et aux ingénieurs de données. L'expertise minimale de NetApp ou de NetApp ONTAP® est donc requise. Avec cette solution, les fonctions de gestion des données peuvent être exécutées à l'aide d'outils et d'interfaces simples et familiers. Si votre environnement dispose déjà d'un système de stockage NetApp, vous pouvez tester le plan NetApp ai Control dès aujourd'hui. Si vous souhaitez tester la solution, mais que vous ne disposez pas encore de système de stockage NetApp, rendez-vous sur http://cloud.netapp.com/["cloud.netapp.com"^], Vous pouvez être opérationnel avec une solution de stockage NetApp dans le cloud en quelques minutes. La figure suivante fournit une visualisation de la solution.
+* link:https://airflow.apache.org["Débit d'air Apache"]
+* link:https://www.kubeflow.org["Kubeflow"]
+
 
 image:aicp_image1.png["Erreur : image graphique manquante"]

@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: ai/aicp_apache_airflow_deployment.html 
 keywords: AI, control plane, apache, airflow 
-summary: 'Cette section décrit les tâches à effectuer pour déployer l"air dans votre cluster Kubernetes.' 
+summary: MLOps open source avec NetApp - déploiement Apache Airflow 
 ---
 = Déploiement du flux d'air Apache
 :hardbreaks:
@@ -14,7 +14,7 @@ summary: 'Cette section décrit les tâches à effectuer pour déployer l"air da
 
 
 [role="lead"]
-NetApp recommande d'exécuter le flux d'air Apache sur Kubernetes. Cette section décrit les tâches à effectuer pour déployer l'air dans votre cluster Kubernetes.
+Cette section décrit les tâches à effectuer pour déployer l'air dans votre cluster Kubernetes.
 
 
 NOTE: Il est possible de déployer du flux d'air sur d'autres plateformes que Kubernetes. Le déploiement de flux d'air sur des plateformes autres que Kubernetes ne fait pas partie du cadre de cette solution.
@@ -26,7 +26,7 @@ NOTE: Il est possible de déployer du flux d'air sur d'autres plateformes que Ku
 Avant d'effectuer l'exercice de déploiement décrit dans cette section, nous supposons que vous avez déjà effectué les tâches suivantes :
 
 . Vous disposez déjà d'un cluster Kubernetes fonctionnel.
-. Vous avez déjà installé et configuré NetApp Trident dans votre cluster Kubernetes comme décrit dans la section « déploiement et configuration de NetApp Trident ».
+. Vous avez déjà installé et configuré NetApp Astra Trident dans votre cluster Kubernetes. Pour plus d'informations sur Astra Trident, consultez le link:https://docs.netapp.com/us-en/trident/index.html["Documentation Astra Trident"].
 
 
 
@@ -39,7 +39,7 @@ Le flux d'air est déployé à l'aide de Helm, un gestionnaire de packages popul
 
 == Définissez la classe de stockage Kubernetes par défaut
 
-Avant de déployer le flux d'air, vous devez désigner une classe de stockage par défaut dans votre cluster Kubernetes. Le processus de déploiement du flux d'air tente de provisionner de nouveaux volumes persistants à l'aide de la classe de stockage par défaut. Si aucune classe de stockage n'est désignée comme classe de stockage par défaut, le déploiement échoue. Pour désigner une classe de stockage par défaut au sein de votre cluster, suivez les instructions de la section link:aicp_kubeflow_deployment_overview.html["Déploiement Kubeflow"]. Si vous avez déjà désigné une classe de stockage par défaut dans votre cluster, vous pouvez ignorer cette étape.
+Avant de déployer le flux d'air, vous devez désigner une classe de stockage par défaut dans votre cluster Kubernetes. Le processus de déploiement du flux d'air tente de provisionner de nouveaux volumes persistants à l'aide de la classe de stockage par défaut. Si aucune classe de stockage n'est désignée comme classe de stockage par défaut, le déploiement échoue. Pour désigner une classe de stockage par défaut au sein de votre cluster, suivez les instructions décrites dans le link:aicp_kubeflow_deployment_overview.html["Déploiement Kubeflow"] section. Si vous avez déjà désigné une classe de stockage par défaut dans votre cluster, vous pouvez ignorer cette étape.
 
 
 
