@@ -1,0 +1,209 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmware_vcf_asa_overview.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, san, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi, fc, fibre channel, nvme 
+summary:  
+---
+= VMware Cloud Foundation avec les baies SAN 100 % Flash NetApp
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Auteur: Josh Powell
+
+
+
+== VMware Cloud Foundation avec les baies SAN 100 % Flash NetApp
+
+VMware Cloud Foundation (VCF) est une plateforme de data Center Software-defined intégrée qui fournit une pile complète d'infrastructure Software-defined pour exécuter les applications d'entreprise dans un environnement de cloud hybride. Elle réunit les fonctionnalités de calcul, de stockage, de mise en réseau et de gestion dans une plateforme unifiée, offrant ainsi une expérience opérationnelle cohérente dans les clouds privés et publics.
+
+Ce document fournit des informations sur les options de stockage disponibles pour VMware Cloud Foundation utilisant la baie SAN 100 % Flash NetApp. Les options de stockage prises en charge sont couvertes par des instructions spécifiques pour le déploiement de datastores iSCSI en tant que stockage supplémentaire pour les domaines de gestion et les datastores vVol (iSCSI) et NVMe/TCP en tant que datastores supplémentaires pour les domaines de charge de travail. La protection des données des machines virtuelles et des datastores avec SnapCenter pour VMware vSphere est également couverte.
+
+
+
+=== Cas d'utilisation
+
+Cas d'utilisation décrits dans cette documentation :
+
+* Options de stockage pour les clients à la recherche d'environnements uniformes sur les clouds privés et publics.
+* Solution automatisée pour le déploiement d'infrastructures virtuelles pour les domaines de charge de travail.
+* Solution de stockage évolutive et adaptée à l'évolution des besoins, même lorsqu'elle n'est pas directement alignée sur les besoins en ressources de calcul.
+* Déployez du stockage supplémentaire pour les domaines de gestion et de charges de travail VI à l'aide des outils ONTAP pour VMware vSphere.
+* Protection des machines virtuelles et des datastores à l'aide du plug-in SnapCenter pour VMware vSphere.
+
+
+
+
+=== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* Architectes de solutions qui recherchent des options de stockage plus flexibles pour les environnements VMware conçus pour optimiser le TCO.
+* Architectes de solutions à la recherche d'options de stockage VCF offrant des options de protection des données et de reprise d'activité avec les principaux fournisseurs cloud.
+* Les administrateurs de stockage qui souhaitent obtenir des instructions spécifiques sur la configuration de VCF avec le stockage principal et supplémentaire.
+* Les administrateurs du stockage qui souhaitent des instructions spécifiques sur la protection des VM et datastores résidant sur le stockage ONTAP
+
+
+
+
+== Présentation de la technologie
+
+La solution VCF avec NetApp ASA comprend les principaux composants suivants :
+
+
+
+=== Socle cloud VMware
+
+VMware Cloud Foundation étend les offres d'hyperviseur vSphere de VMware en combinant des composants clés tels que SDDC Manager, vSphere, VSAN, NSX et VMware Aria Suite pour créer un data Center Software-defined.
+
+La solution VCF prend en charge les workloads Kubernetes natifs et basés sur des machines virtuelles. Les services clés tels que VMware vSphere, VMware VSAN, VMware NSX-T Data Center et VMware Aria Cloud Management font partie intégrante du package VCF. Ces services permettent d'établir une infrastructure Software-defined capable de gérer efficacement le calcul, le stockage, la mise en réseau, la sécurité et la gestion du cloud.
+
+VCF comprend un seul domaine de gestion et jusqu'à 24 domaines de charge de travail VI, chacun représentant une unité d'infrastructure prête pour les applications. Un domaine de charges de travail comprend un ou plusieurs clusters vSphere gérés par une seule instance vCenter.
+
+image:vmware-vcf-aff-image02.png["Architecture VCF"]
+
+Pour plus d'informations sur l'architecture et la planification VCF, reportez-vous à la section link:https://docs.vmware.com/en/VMware-Cloud-Foundation/5.1/vcf-design/GUID-A550B597-463F-403F-BE9A-BFF3BECB9523.html["Modèles d'architecture et types de domaine de charge de travail dans VMware Cloud Foundation"].
+
+{nbsp}
+
+
+
+==== Options de stockage VCF
+
+VMware divise les options de stockage pour VCF en stockage *principal* et *supplémentaire*. Le domaine de gestion VCF doit utiliser VSAN comme stockage principal. Cependant, il existe de nombreuses options de stockage supplémentaires pour le domaine de gestion et des options de stockage principal et supplémentaire disponibles pour les domaines de charges de travail VI.
+
+image:vmware-vcf-aff-image01.png["Options de stockage VCF"]
+
+*Stockage principal pour les domaines de charge de travail*
+Le terme stockage principal désigne tout type de stockage pouvant être directement connecté à un domaine de charge de travail VI pendant le processus de configuration dans SDDC Manager. Le stockage principal est déployé avec le gestionnaire SDDC dans le cadre de l'orchestration de création de cluster. Il s'agit du premier datastore configuré pour un domaine de charge de travail. Notamment VSAN, vVols (VMFS), NFS et VMFS sur Fibre Channel.
+
+*Stockage supplémentaire pour les domaines de gestion et de charge de travail*
+Le stockage supplémentaire correspond au type de stockage qui peut être ajouté aux domaines de gestion ou de charge de travail à tout moment après la création du cluster. Le stockage supplémentaire représente le plus grand nombre d'options de stockage prises en charge, toutes prises en charge sur les baies NetApp ASA. Un stockage supplémentaire peut être déployé à l'aide des outils ONTAP pour VMware vSphere pour la plupart des types de protocoles de stockage.
+
+Ressources de documentation supplémentaires pour VMware Cloud Foundation :
+* link:https://docs.vmware.com/en/VMware-Cloud-Foundation/index.html["Documentation de VMware Cloud Foundation"]
+* link:https://docs.vmware.com/en/VMware-Cloud-Foundation/5.1/vcf-design/GUID-2156EC66-BBBB-4197-91AD-660315385D2E.html["Types de stockage pris en charge pour VMware Cloud Foundation"]
+* link:https://docs.vmware.com/en/VMware-Cloud-Foundation/5.1/vcf-admin/GUID-2C4653EB-5654-45CB-B072-2C2E29CB6C89.html["Gestion du stockage dans VMware Cloud Foundation"]
+{nbsp}
+
+
+
+=== Baies SAN 100 % Flash de NetApp
+
+La baie SAN 100 % Flash (ASA) NetApp est une solution de stockage haute performance conçue pour répondre aux exigences élevées des data centers modernes. Il associe la vitesse et la fiabilité du stockage Flash aux fonctionnalités avancées de gestion des données de NetApp pour assurer des performances, une évolutivité et une protection des données exceptionnelles.
+
+La gamme ASA comprend à la fois des modèles de la série A et des modèles de la série C.
+
+Les baies Flash NetApp A-Series 100 % NVMe sont conçues pour les workloads haute performance. Elles offrent une latence ultra faible et une résilience élevée. Elles sont donc adaptées aux applications stratégiques.
+
+image::vmware-asa-image1.png[image vmware ASA 1]
+
+Les baies Flash C-Series QLC sont destinées à des cas d'utilisation de capacité supérieure, offrant la vitesse de la technologie Flash et l'économie du Flash hybride.
+
+image::vmware-asa-image2.png[image vmware ASA 2]
+
+Pour plus d'informations, reportez-vous au https://www.netapp.com/data-storage/all-flash-san-storage-array["Page d'accueil NetApp ASA"].
+{nbsp}
+
+
+
+==== Prise en charge des protocoles de stockage
+
+La baie ASA prend en charge tous les protocoles SAN standard, notamment iSCSI, Fibre Channel (FC), Fibre Channel over Ethernet (FCoE) et NVMe over Fabrics.
+
+*ISCSI* - NetApp ASA fournit une prise en charge robuste pour iSCSI, permettant un accès au niveau des blocs aux périphériques de stockage sur les réseaux IP. Il offre une intégration transparente avec les initiateurs iSCSI pour un provisionnement et une gestion efficaces des LUN iSCSI. Fonctionnalités avancées d'ONTAP, telles que les chemins d'accès multiples, l'authentification CHAP et la prise en charge ALUA.
+
+Pour obtenir des conseils de conception sur les configurations iSCSI, reportez-vous au https://docs.netapp.com/us-en/ontap/san-config/configure-iscsi-san-hosts-ha-pairs-reference.html["Documentation de référence sur la configuration SAN"].
+
+*Fibre Channel* - NetApp ASA offre une prise en charge complète de Fibre Channel (FC), une technologie de réseau haut débit couramment utilisée dans les réseaux de stockage (SAN). ONTAP s'intègre en toute transparence à l'infrastructure FC, offrant ainsi un accès fiable et efficace au niveau des blocs aux systèmes de stockage. Elle offre des fonctionnalités telles que le zoning, les chemins d'accès multiples et la connexion à la fabric (FLOGI) pour optimiser les performances, améliorer la sécurité et assurer la connectivité transparente dans les environnements FC.
+
+Pour obtenir des conseils de conception sur les configurations Fibre Channel, reportez-vous au https://docs.netapp.com/us-en/ontap/san-config/fc-config-concept.html["Documentation de référence sur la configuration SAN"].
+
+*NVMe over Fabrics* - NetApp ONTAP et ASA prennent en charge NVMe over Fabrics. NVMe/FC permet d'utiliser des périphériques de stockage NVMe sur l'infrastructure Fibre Channel et NVMe/TCP sur les réseaux de stockage IP.
+
+Pour obtenir des conseils de conception sur NVMe, reportez-vous à la section https://docs.netapp.com/us-en/ontap/nvme/support-limitations.html["Configuration, prise en charge et limitations de NVMe"]
+{nbsp}
+
+
+
+==== Technologie active/active
+
+Les baies SAN 100 % Flash de NetApp autorisent des chemins de données actif-actif à travers les deux contrôleurs, ce qui évite au système d'exploitation hôte d'attendre la panne d'un chemin actif avant d'activer le chemin alternatif. Cela signifie que l'hôte peut utiliser tous les chemins disponibles sur tous les contrôleurs, en veillant à ce que les chemins actifs soient toujours présents, que le système soit dans un état stable ou qu'il ait subi un basculement de contrôleur.
+
+De plus, la fonctionnalité NetApp ASA améliore considérablement la vitesse de basculement du SAN. Chaque contrôleur réplique en continu les métadonnées de LUN essentielles à son partenaire. Par conséquent, chaque contrôleur est prêt à reprendre les responsabilités liées à la transmission de données en cas de panne soudaine de son partenaire. Cette préparation est possible car le contrôleur possède déjà les informations nécessaires pour commencer à utiliser les lecteurs précédemment gérés par le contrôleur défectueux.
+
+Avec les chemins d'accès actif-actif, les basculements planifiés et non planifiés bénéficient de délais de reprise des E/S de 2-3 secondes.
+
+Pour plus d'informations, voir https://www.netapp.com/pdf.html?item=/media/85671-tr-4968.pdf["Tr-4968, Baie 100 % SAS NetApp – disponibilité et intégrité des données avec le NetApp ASA"].
+{nbsp}
+
+
+
+==== Garanties de stockage
+
+NetApp propose un ensemble unique de garanties de stockage grâce aux baies SAN 100 % Flash de NetApp. Ses avantages uniques incluent :
+
+*Garantie d'efficacité du stockage :* atteignez une haute performance tout en réduisant les coûts de stockage grâce à la garantie d'efficacité du stockage. Ratio de 4:1 pour les workloads SAN
+
+*6 Nines (99.9999 %) garantie de disponibilité des données :* garantit la correction des temps d'arrêt imprévus de plus de 31.56 secondes par an.
+
+*Garantie de restauration ransomware :* garantie de récupération des données en cas d'attaque par ransomware.
+
+Voir la https://www.netapp.com/data-storage/all-flash-san-storage-array/["Portail produit NetApp ASA"] pour en savoir plus.
+{nbsp}
+
+
+
+=== Outils NetApp ONTAP pour VMware vSphere
+
+Les outils ONTAP pour VMware vSphere permettent aux administrateurs de gérer le stockage NetApp directement à partir du client vSphere. Les outils ONTAP vous permettent de déployer et de gérer des datastores, ainsi que de provisionner des datastores VVol.
+
+Les outils ONTAP permettent de mapper les datastores aux profils de capacité de stockage qui déterminent un ensemble d'attributs de système de stockage. Il est ainsi possible de créer des datastores dotés d'attributs spécifiques tels que les performances du stockage et la qualité de service.
+
+Les outils ONTAP incluent également un fournisseur * VMware vSphere API for Storage Awareness (VASA)* pour les systèmes de stockage ONTAP, qui permet le provisionnement de datastores VMware Virtual volumes (vVols), la création et l'utilisation de profils de fonctionnalités de stockage, la vérification de conformité et la surveillance des performances.
+
+Pour plus d'informations sur les outils NetApp ONTAP, reportez-vous au link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html["Documentation sur les outils ONTAP pour VMware vSphere"] page.
+{nbsp}
+
+
+
+=== Plug-in SnapCenter pour VMware vSphere
+
+Le plug-in SnapCenter pour VMware vSphere (SCV) est une solution logicielle de NetApp qui protège intégralement les données dans les environnements VMware vSphere. Son objectif est de simplifier et de rationaliser le processus de protection et de gestion des machines virtuelles et des datastores. SCV utilise un snapshot basé sur le stockage et la réplication sur des baies secondaires pour atteindre des objectifs de durée de restauration plus faibles.
+
+Le plug-in SnapCenter pour VMware vSphere offre les fonctionnalités suivantes dans une interface unifiée, intégrée au client vSphere :
+
+*Snapshots basés sur des règles* - SnapCenter vous permet de définir des règles pour la création et la gestion de snapshots cohérents au niveau des applications de machines virtuelles dans VMware vSphere.
+
+*Automatisation* - la création et la gestion automatisées de snapshots basées sur des règles définies permettent d'assurer une protection cohérente et efficace des données.
+
+*Protection au niveau VM* - la protection granulaire au niveau VM permet une gestion et une récupération efficaces des machines virtuelles individuelles.
+
+*Fonctionnalités d'efficacité du stockage* - l'intégration aux technologies de stockage NetApp fournit des fonctionnalités d'efficacité du stockage telles que la déduplication et la compression pour les snapshots, ce qui réduit les besoins en stockage.
+
+Le plug-in SnapCenter orchestre la mise en veille des machines virtuelles en association avec des snapshots matériels sur des baies de stockage NetApp. La technologie SnapMirror permet de répliquer des copies de sauvegarde sur les systèmes de stockage secondaires, y compris dans le cloud.
+
+Pour plus d'informations, reportez-vous à la https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere["Documentation du plug-in SnapCenter pour VMware vSphere"].
+
+L'intégration de BlueXP active 3-2-1 stratégies de sauvegarde qui étendent les copies de données au stockage objet dans le cloud.
+
+Pour plus d'informations sur les stratégies de sauvegarde 3-2-1 avec BlueXP, rendez-vous sur link:../ehc/bxp-scv-hybrid-solution.html["3-2-1 protection des données pour VMware avec le plug-in SnapCenter et sauvegarde et restauration BlueXP pour les VM"].
+
+
+
+== Présentation de la solution
+
+Les scénarios présentés dans cette documentation expliquent comment utiliser les systèmes de stockage ONTAP en tant que stockage supplémentaire dans des domaines de gestion et de charge de travail. En outre, le plug-in SnapCenter pour VMware vSphere est utilisé pour protéger les VM et les datastores.
+
+Scénarios traités dans cette documentation :
+
+* *Utilisez les outils ONTAP pour déployer les datastores iSCSI dans un domaine de gestion VCF*. Cliquez sur link:vmware_vcf_asa_supp_mgmt_iscsi.html["*ici*"] pour les étapes de déploiement.
+* *Utilisez les outils ONTAP pour déployer les datastores vVols (iSCSI) dans un domaine de charge de travail VI*. Cliquez sur link:vmware_vcf_asa_supp_wkld_vvols.html["*ici*"] pour les étapes de déploiement.
+* *Configurer les datastores NVMe sur TCP pour une utilisation dans un domaine de charge de travail VI*. Cliquez sur link:vmware_vcf_asa_supp_wkld_nvme.html["*ici*"] pour les étapes de déploiement.
+* *Déployer et utiliser le plug-in SnapCenter pour VMware vSphere pour protéger et restaurer des machines virtuelles dans un domaine de charges de travail VI*. Cliquez sur link:vmware_vcf_asa_scv_wkld.html["*ici*"] pour les étapes de déploiement.
+

@@ -72,11 +72,11 @@ NOTE: Plusieurs options de connexion des data centers sur site à Google Cloud s
 .Configurez CVO pour Google Cloud et répliquez les volumes dans CVO
 [%collapsible]
 ====
-La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp-guest.html["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
+La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (link:gcp-guest.html#gcp-cvo["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
 image:dr-cvo-gcve-image2.png["Erreur : image graphique manquante"]
 
-Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à la section https://docs.netapp.com/us-en/netapp-solutions/ehc/aws-guest-dr-overview.html#config-snapmirror["Configurez la réplication avec SnapCenter"]
+Pour obtenir des exemples d'instructions détaillées sur la configuration de SnapCenter et la réplication des données, reportez-vous à la section link:aws-guest-dr-solution-overview.html#config-snapmirror["Configurez la réplication avec SnapCenter"]
 
 .Configurez la réplication avec SnapCenter
 video::395e33db-0d63-4e48-8898-b01200f006ca[panopto]
@@ -88,7 +88,7 @@ Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont 
 
 Cloud Volumes ONTAP peut être déployé sur n'importe quel VPC et GCVE doit disposer d'une connexion privée à ce VPC pour que la VM se connecte aux LUN iSCSI.
 
-Pour configurer GCVE SDDC, voir https://docs.netapp.com/us-en/netapp-solutions/ehc/gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
+Pour configurer GCVE SDDC, voir link:gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
 
 Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, commencez à configurer Veeam pour automatiser la restauration des workloads sur site vers GCVE (machines virtuelles avec VMDK d'application et VM avec stockage « Guest ») en utilisant la fonctionnalité de réplication Veeam et en utilisant SnapMirror pour les copies de volumes d'application vers Cloud Volumes ONTAP.
 
