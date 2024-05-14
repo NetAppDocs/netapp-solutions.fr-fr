@@ -1,0 +1,230 @@
+---
+sidebar: sidebar 
+permalink: hyperv/hyperv-deploy-prereqs.html 
+keywords: hyperv, hyper-v, deploy, netapp, virtualization, prereqs, pre-requisites 
+summary: 'La solution fournit les étapes nécessaires au déploiement d"Hyper-V sur un stockage NetApp' 
+---
+= Déploiement de Microsoft Hyper-V sur le stockage NetApp : pré-demandes
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette rubrique explique comment configurer et déployer un cluster de basculement à deux nœuds et des machines virtuelles Hyper-V en cluster exploitant le système de stockage ONTAP.
+
+
+
+== Conditions préalables à la procédure de déploiement
+
+* Tout le matériel doit être certifié pour la version de Windows Server que vous exécutez et la solution complète de cluster de basculement doit réussir tous les tests de l'Assistant validation d'une configuration
+* Les nœuds Hyper-V se sont joints au contrôleur de domaine (recommandé) et une connectivité appropriée entre eux.
+* Chaque nœud Hyper-V doit être configuré de manière identique.
+* Adaptateurs réseau et switchs virtuels désignés configurés sur chaque serveur Hyper-V pour un trafic séparé pour la gestion, ISCSI, SMB et la migration en direct.
+* La fonctionnalité cluster de basculement est activée sur chaque serveur Hyper-V.
+* Les partages SMB ou les CSV sont utilisés comme stockage partagé pour stocker les machines virtuelles et leurs disques pour la mise en cluster Hyper-V.
+* Le stockage ne doit pas être partagé entre des clusters différents. Prévoyez un ou plusieurs partages CSV/CIFS par cluster.
+* Si le partage SMB est utilisé comme stockage partagé, les autorisations sur le partage SMB doivent être configurées de manière à accorder l'accès aux comptes ordinateur de tous les nœuds Hyper-V du cluster.
+
+
+Pour plus d'informations, voir :
+
+* link:https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/system-requirements-for-hyper-v-on-windows#how-to-check-for-hyper-v-requirements["Configuration système requise pour Hyper-V sur Windows Server"]
+* link:https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj134244(v=ws.11)#step-1-prepare-to-validate-hardware-for-a-failover-cluster["Validation du matériel pour un cluster de basculement"]
+* link:https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj863389(v=ws.11)["Déployer un cluster Hyper-V."]
+
+
+
+
+=== Installation des fonctionnalités Windows
+
+Les étapes suivantes décrivent comment installer les fonctionnalités requises de Windows Server 2022.
+
+*Tous les hôtes*
+
+. Préparez le système d'exploitation Windows 2022 avec les mises à jour et les pilotes de périphériques nécessaires sur tous les nœuds désignés.
+. Connectez-vous à chaque nœud Hyper-V à l'aide du mot de passe administrateur saisi lors de l'installation.
+. Lancez une invite PowerShell en cliquant avec le bouton droit de la souris sur l'icône PowerShell dans la barre des tâches et en sélectionnant `Run as Administrator`.
+. Ajoutez les fonctionnalités Hyper-V, MPIO et de mise en cluster.
++
+[source, cli]
+----
+Add-WindowsFeature Hyper-V, Failover-Clustering, Multipath-IO `-IncludeManagementTools –Restart
+----
+
+
+
+
+=== Configuration des réseaux
+
+Une bonne planification du réseau est essentielle pour obtenir un déploiement tolérant aux pannes. La configuration de cartes réseau physiques distinctes pour chaque type de trafic a été la suggestion standard pour un cluster de basculement. Grâce à la possibilité d'ajouter des cartes réseau virtuelles, de mettre en place un ENSEMBLE (agrégation) intégré de commutateurs et des fonctionnalités telles que Hyper-V QoS, condensez le trafic réseau sur un nombre réduit de cartes physiques. Concevez la configuration réseau en tenant compte de la qualité de service, de la redondance et de l'isolation du trafic. La configuration de techniques d'isolation du réseau comme les VLAN et des techniques d'isolation du trafic assure la redondance du trafic et de la qualité du service, ce qui améliorerait et améliorerait la cohérence des performances du trafic de stockage.
+
+Il est conseillé de séparer et d'isoler des charges de travail spécifiques à l'aide de plusieurs réseaux physiques et/ou logiques. Voici des exemples de trafic réseau généralement divisés en segments :
+
+* Réseau de stockage ISCSI.
+* CSV (Cluster Shared Volume) ou réseau Heartbeat.
+* Migration en direct
+* Réseau de machines virtuelles
+* Réseau de gestion
+
+
+*Remarque* : lorsque iSCSI est utilisé avec des cartes réseau dédiées, l'utilisation d'une solution de regroupement n'est pas recommandée et MPIO/DSM doit être utilisé.
+
+*Remarque* : les meilleures pratiques de mise en réseau Hyper-V ne recommandent pas non plus d'utiliser le regroupement de cartes réseau pour les réseaux de stockage SMB 3.0 dans un environnement Hyper-V.
+
+Pour plus d'informations, reportez-vous à la section link:https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/plan/plan-hyper-v-networking-in-windows-server["Planifiez la mise en réseau Hyper-V dans Windows Server"]
+
+
+
+=== Décider de la conception du stockage pour Hyper-V.
+
+Hyper-V prend en charge NAS (SMB3.0) et le stockage bloc (iSCSI/FC) comme stockage secondaire pour les machines virtuelles. NetApp prend en charge le protocole SMB3.0, iSCSI et FC qui peut être utilisé comme stockage natif pour les VM - volumes CSV (Cluster Shared volumes) avec iSCSI/FC et SMB3. Les clients peuvent également utiliser SMB3 et iSCSI comme options de stockage invité pour les charges de travail qui nécessitent un accès direct au stockage. ONTAP propose des options flexibles avec un stockage unifié (baie 100 % Flash) pour les charges de travail qui nécessitent un accès à des protocoles mixtes et un stockage optimisé pour le SAN (baie 100 % SAN) pour les configurations SAN uniquement.
+
+La décision d'utiliser SMB3 plutôt que iSCSI/FC dépend de l'infrastructure existante actuellement en place. SMB3/iSCSI permet aux clients d'utiliser l'infrastructure réseau existante. Pour les clients qui disposent d'une infrastructure FC existante peuvent exploiter cette infrastructure et la présenter sous forme de volumes partagés en cluster basés sur FC.
+
+*Remarque :* Un contrôleur de stockage NetApp exécutant le logiciel ONTAP peut prendre en charge les charges de travail suivantes dans un environnement Hyper-V :
+
+* Machines virtuelles hébergées dans des partages SMB 3.0 disponibles en continu
+* Serveurs virtuels hébergés sur des LUN CSV (Cluster Shared Volume) s'exécutant sur iSCSI ou FC
+* Stockage In-Guest et disques de transfert vers les machines virtuelles invitées
+
+
+*Remarque* : les principales fonctionnalités de ONTAP telles que le provisionnement fin, la déduplication, la compression, la compaction des données, les clones flexibles, les copies Snapshot et la réplication fonctionnent en arrière-plan de manière transparente, indépendamment de la plateforme ou du système d'exploitation, ce qui apporte une valeur ajoutée considérable aux charges de travail Hyper-V. Les paramètres par défaut de ces fonctionnalités sont optimaux pour Windows Server et Hyper-V.
+
+*Remarque* : MPIO est pris en charge sur la machine virtuelle invitée à l'aide d'initiateurs invités si plusieurs chemins d'accès sont disponibles pour la machine virtuelle et que la fonctionnalité E/S multivoies est installée et configurée.
+
+*Remarque* : ONTAP prend en charge les principaux protocoles clients standard du secteur : NFS, SMB, FC, FCoE, iSCSI, NVMe/FC et S3. Cependant, NVMe/FC et NVMe/TCP ne sont pas pris en charge par Microsoft.
+
+
+
+=== Installation des utilitaires hôtes iSCSI Windows de NetApp
+
+La section suivante décrit comment effectuer une installation automatique des utilitaires d'hôtes iSCSI Windows de NetApp. Pour plus d'informations sur l'installation, reportez-vous au link:https://docs.netapp.com/us-en/ontap-sanhost/hu_wuhu_72.html["Installer Windows Unified Host Utilities 7.2 (ou la dernière version prise en charge)"]
+
+*Tous les hôtes*
+
+. Télécharger link:https://mysupport.netapp.com/site/products/all/details/hostutilities/downloads-tab/download/61343/7.2["Utilitaires d'hôtes iSCSI Windows"]
+. Débloquer le fichier téléchargé.
++
+[source, cli]
+----
+Unblock-file ~\Downloads\netapp_windows_host_utilities_7.2_x64.msi
+----
+. Installez les utilitaires hôtes.
++
+[source, cli]
+----
+~\Downloads\netapp_windows_host_utilities_7.2_x64.msi /qn "MULTIPATHING=1"
+----
+
+
+*Remarque* : le système redémarre pendant ce processus.
+
+
+
+=== Configuration de l'initiateur iSCSI de l'hôte Windows
+
+Les étapes suivantes décrivent comment configurer l'initiateur iSCSI Microsoft intégré.
+
+*Tous les hôtes*
+
+. Lancez une invite PowerShell en cliquant avec le bouton droit de la souris sur l'icône PowerShell dans la barre des tâches et en sélectionnant Exécuter en tant qu'administrateur.
+. Configurez le service iSCSI pour qu'il démarre automatiquement.
++
+[source, cli]
+----
+Set-Service -Name MSiSCSI -StartupType Automatic
+----
+. Démarrez le service iSCSI.
++
+[source, cli]
+----
+Start-Service -Name MSiSCSI
+----
+. Configurez MPIO pour réclamer tout périphérique iSCSI.
++
+[source, cli]
+----
+Enable-MSDSMAutomaticClaim -BusType iSCSI
+----
+. Définissez la règle d'équilibrage de charge par défaut de tous les périphériques nouvellement réclamés sur round Robin.
++
+[source, cli]
+----
+Set-MSDSMGlobalDefaultLoadBalancePolicy -Policy RR 
+----
+. Configurez une cible iSCSI pour chaque contrôleur.
++
+[source, cli]
+----
+New-IscsiTargetPortal -TargetPortalAddress <<iscsia_lif01_ip>> -InitiatorPortalAddress <iscsia_ipaddress>
+
+New-IscsiTargetPortal -TargetPortalAddress <<iscsib_lif01_ip>> -InitiatorPortalAddress <iscsib_ipaddress
+
+New-IscsiTargetPortal -TargetPortalAddress <<iscsia_lif02_ip>> -InitiatorPortalAddress <iscsia_ipaddress>
+
+New-IscsiTargetPortal -TargetPortalAddress <<iscsib_lif02_ip>> -InitiatorPortalAddress <iscsib_ipaddress>
+----
+. Connectez une session pour chaque réseau iSCSI à chaque cible.
++
+[source, cli]
+----
+Get-IscsiTarget | Connect-IscsiTarget -IsPersistent $true -IsMultipathEnabled $true -InitiatorPo rtalAddress <iscsia_ipaddress>
+
+Get-IscsiTarget | Connect-IscsiTarget -IsPersistent $true -IsMultipathEnabled $true -InitiatorPo rtalAddress <iscsib_ipaddress>
+----
+
+
+*Remarque* : ajoutez plusieurs sessions (min. De 5 à 8) pour améliorer les performances et utiliser la bande passante.
+
+
+
+=== Création d'un cluster
+
+*Un seul serveur*
+
+. Lancez une invite PowerShell avec des autorisations d'administration, en cliquant avec le bouton droit de la souris sur l'icône PowerShell et en sélectionnant `Run as Administrator``.
+. Créez un nouveau cluster.
++
+[source, cli]
+----
+New-Cluster -Name <cluster_name> -Node <hostnames> -NoStorage -StaticAddress <cluster_ip_address>
+----
++
+image:hyperv-deploy-image01.png["Image montrant l'interface de gestion du cluster"]
+
+. Sélectionnez le réseau de cluster approprié pour la migration dynamique.
+. Désigner le réseau CSV.
++
+[source, cli]
+----
+(Get-ClusterNetwork -Name Cluster).Metric = 900
+----
+. Modifiez le cluster pour qu'il utilise un disque de quorum.
++
+.. Lancez une invite PowerShell avec des autorisations d'administration en cliquant avec le bouton droit de la souris sur l'icône PowerShell et en sélectionnant « Exécuter en tant qu'administrateur ».
++
+[source, cli]
+----
+start-ClusterGroup "Available Storage"| Move-ClusterGroup -Node $env:COMPUTERNAME
+----
+.. Dans le Gestionnaire de clusters de basculement, sélectionnez `Configure Cluster Quorum Settings`.
++
+image:hyperv-deploy-image02.png["Illustration des paramètres configurer le quorum du cluster"]
+
+.. Cliquez sur Suivant dans la page d'accueil.
+.. Sélectionnez le témoin de quorum et cliquez sur Suivant.
+.. Sélectionnez configurer un témoin de disque et cliquez sur Suivant.
+.. Sélectionnez disque W: Dans le stockage disponible et cliquez sur Suivant.
+.. Cliquez sur Suivant dans la page de confirmation et sur Terminer dans la page de résumé.
++
+Pour plus d'informations sur le quorum et le témoin, voir link:https://learn.microsoft.com/en-us/windows-server/failover-clustering/manage-cluster-quorum#general-recommendations-for-quorum-configuration["Configuration et gestion du quorum"]
+
+
+
+. Exécutez l'assistant de validation de cluster depuis le gestionnaire de clusters de basculement pour valider le déploiement.
+. Créez une LUN CSV pour stocker les données de la machine virtuelle et créer des machines virtuelles hautement disponibles via les rôles dans Failover Cluster Manager.
+
