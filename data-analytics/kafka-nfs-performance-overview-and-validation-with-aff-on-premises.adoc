@@ -110,7 +110,7 @@ vserver modify -vserver vs1 -v4.1-pnfs enabled -tcp-max-xfer-size 262144
 ....
 sudo bin/benchmark --drivers driver-kafka/kafka-throughput.yaml workloads/1-topic-100-partitions-1kb.yaml
 ....
-. Enfin, nous avons réalisé des mesures en utilisant un carnet de commandes pour mesurer la capacité des consommateurs à rattraper les derniers messages. L'OMB crée un arriéré en interrompant les consommateurs au début d'une mesure. Cela produit trois phases distinctes : la création de carnet de commandes (trafic uniquement pour les producteurs), la purge des arriérés (une phase lourde pour les consommateurs dans laquelle les consommateurs rattrapent les événements manqués dans un sujet) et l'état stable. Voir la section «<<Extreme performance,exploration des limites de stockage>>” pour plus d'informations.
+. Enfin, nous avons réalisé des mesures en utilisant un carnet de commandes pour mesurer la capacité des consommateurs à rattraper les derniers messages. L'OMB crée un arriéré en interrompant les consommateurs au début d'une mesure. Cela produit trois phases distinctes : la création de carnet de commandes (trafic uniquement pour les producteurs), la purge des arriérés (une phase lourde pour les consommateurs dans laquelle les consommateurs rattrapent les événements manqués dans un sujet) et l'état stable. Voir la section «<<Des performances extrêmes et l'exploration des limites de stockage>>” pour plus d'informations.
 
 
 

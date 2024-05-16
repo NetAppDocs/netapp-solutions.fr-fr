@@ -13,14 +13,16 @@ summary: 'La reprise d"activité dans le cloud est une solution résiliente et �
 :imagesdir: ./../media/
 
 
+[role="lead"]
+La reprise d'activité dans le cloud est une solution résiliente et économique qui protège les charges de travail contre les pannes sur site et la corruption des données, comme les attaques par ransomware. NetApp SnapMirror permet de répliquer les charges de travail VMware sur site utilisant un stockage connecté à l'invité vers NetApp Cloud Volumes ONTAP exécuté dans Azure.
+
 
 
 == Présentation
 
 Auteurs : Ravi BCB et Niyaz Mohamed, NetApp
 
-La reprise d'activité dans le cloud est une solution résiliente et économique qui protège les charges de travail contre les pannes sur site et la corruption des données, comme les attaques par ransomware. NetApp SnapMirror permet de répliquer les charges de travail VMware sur site utilisant un stockage connecté à l'invité vers NetApp Cloud Volumes ONTAP exécuté dans Azure. Il s'agit aussi des données applicatives, mais qu'en est-il des machines virtuelles elles-mêmes ? La reprise sur incident doit couvrir tous les composants dépendants, notamment les machines virtuelles, les VMDK ou les données d'application. Pour ce faire, SnapMirror et Jetstream peuvent être utilisés pour restaurer de manière transparente les charges de travail répliquées sur site vers Cloud Volumes ONTAP tout en utilisant le stockage VSAN pour les VMDK de VM.
-
+ This covers application data; however, what about the actual VMs themselves. Disaster recovery should cover all dependent components, including virtual machines, VMDKs, application data, and more. To accomplish this, SnapMirror along with Jetstream can be used to seamlessly recover workloads replicated from on-premises to Cloud Volumes ONTAP while using vSAN storage for VM VMDKs.
 Ce document présente une approche détaillée de la configuration et des performances de la reprise après incident à l'aide de NetApp SnapMirror, JetStream et d'Azure VMware solution (AVS).
 
 image:dr-cvo-avs-image1.png["Erreur : image graphique manquante"]

@@ -14,13 +14,15 @@ summary:
 
 
 [role="lead"]
+La reprise d'activité avec réplication au niveau des blocs entre les régions dans le cloud est un moyen résilient et économique de protéger les workloads contre les pannes sur site et les corruptions de données (par exemple, les ransomwares).
+
 Auteur(s) : Niyaz Mohamed, ingénierie des solutions NetApp
 
 
 
 == Présentation
 
-La reprise d'activité avec réplication au niveau des blocs entre les régions dans le cloud est un moyen résilient et économique de protéger les workloads contre les pannes sur site et les corruptions de données (par exemple, les ransomwares). Avec la réplication de volume inter-régions Azure NetApp Files (ANF), les workloads VMware s'exécutant sur un site SDDC Azure VMware solution (AVS) avec des volumes Azure NetApp Files en tant que datastore NFS sur le site AVS principal peuvent être répliqués sur un site AVS secondaire désigné dans la région de restauration cible.
+Avec la réplication de volume inter-régions Azure NetApp Files (ANF), les workloads VMware s'exécutant sur un site SDDC Azure VMware solution (AVS) avec des volumes Azure NetApp Files en tant que datastore NFS sur le site AVS principal peuvent être répliqués sur un site AVS secondaire désigné dans la région de restauration cible.
 
 L'orchestrateur de reprise après incident (DRO) (une solution basée sur des scripts avec interface utilisateur) peut être utilisé pour restaurer de manière fluide les workloads répliqués depuis un SDDC AVS. DRO automatise la restauration en rompant le peering de réplication, puis en montant le volume de destination en tant que datastore, via l'enregistrement de machine virtuelle vers AVS, en passant par les mappages du réseau directement sur NSX-T (inclus avec tous les clouds privés AVS).
 
