@@ -1,0 +1,41 @@
+---
+sidebar: sidebar 
+permalink: ai/rag_nemo_ingest_netapp_data.html 
+keywords: RAG, Retrieval Augmented Generation, NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, NeMo, NIM, NIMS, Hybrid, Hybrid Cloud, Hybrid Multicloud, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+summary: 'RAG d"entreprise avec NetApp - ingérer les données NetApp existantes avec Nemo Retriever' 
+---
+= Acquisition des données NetApp existantes avec Nemo Retriever
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Le microservice Nemo Embedding, qui fait partie de NVIDIA Nemo Retriever, peut être utilisé pour transférer des données dans le magasin de vecteurs RAG/la base de connaissances. Cette section décrit les tâches à effectuer pour acquérir des données à partir de sources de données NetApp existantes.
+
+
+
+== Ingérer les données à l'aide de l'exemple de chat de NVIDIA
+
+Vous pouvez acquérir des fichiers existants à l'aide de l'exemple d'application web chat bot déployée par l'opérateur NVIDIA Enterprise RAG LLM. Le processus d'acquisition de fichiers existants à l'aide de l'application Web de chat bot est décrit dans ce link:https://netapp.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=f718b504-d89b-497e-bd25-b13400d0bfbf&start=57["vidéo de démonstration"]
+
+
+
+== Ingestion des données par programmation
+
+Vous pouvez ingérer par programmation de grandes quantités de données à l'aide du serveur de requête RAG déployé par l'opérateur NVIDIA Enterprise RAG LLM.
+
+L'API du serveur de requêtes RAG est automatiquement exposée via un service Kubernetes, comme indiqué dans le résultat de la commande suivante.
+
+[source]
+----
+$ kubectl -n rag-sample get service chain-server
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+chain-server   ClusterIP   10.233.28.129   <none>        8081/TCP   59d
+----
+Par défaut, le type de service est ClusterIP. Le terminal de l'API est donc accessible uniquement depuis l'intérieur du cluster Kubernetes. Le type de service peut être modifié en modifiant le `query.service.type` dans la configuration de votre pipeline helm (par exemple, helmpipeline_app.yaml).
+
+Le schéma swagger du serveur d'API est accessible à l'adresse `<chain_server_url>:<chain_server_api_port>/docs``.

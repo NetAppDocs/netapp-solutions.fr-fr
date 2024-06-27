@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: ai/rag_nemo_deployment.html 
+keywords: RAG, Retrieval Augmented Generation, NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, NeMo, NIM, NIMS, Hybrid, Hybrid Cloud, Hybrid Multicloud, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+summary: 'RAG d"entreprise avec NetApp - déploiement de microservices Nemo' 
+---
+= Déploiement de microservices Nemo
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section décrit les tâches à effectuer pour déployer les microservices NVIDIA Nemo en parallèle du stockage NetApp. Les microservices NVIDIA Nemo seront déployés à l'aide du link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/index.html["Opérateur NVIDIA Enterprise RAG LLM"].
+
+
+
+== Prérequis
+
+Avant d'effectuer les étapes décrites dans cette section, nous supposons que vous avez déjà effectué les tâches suivantes :
+
+* Vous disposez déjà d'un cluster Kubernetes en fonctionnement, et vous exécutez une version de Kubernetes prise en charge par l'opérateur NVIDIA Enterprise RAG LLM. Pour obtenir la liste des versions Kubernetes prises en charge, reportez-vous au link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/platform-support.html["Documentation de l'opérateur RAG LLM."] Ce cluster Kubernetes peut être hébergé sur site ou dans le cloud.
+* Votre cluster Kubernetes comprend au moins trois GPU pris en charge par l'opérateur NVIDIA Enterprise RAG LLM. Pour obtenir la liste des GPU pris en charge, reportez-vous au link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/platform-support.html["Documentation de l'opérateur RAG LLM."]
+* Vous avez déjà installé et configuré NetApp Astra Trident dans votre cluster Kubernetes. Pour plus d'informations sur Astra Trident, consultez le link:https://docs.netapp.com/us-en/trident/index.html["Documentation Astra Trident"]. Cette solution est compatible avec toutes les appliances de stockage physique, les instances Software-defined ou les services cloud NetApp pris en charge par Trident.
+
+
+
+
+== Utilisez l'opérateur NVIDIA Enterprise RAG LLM pour déployer les microservices NVIDIA Nemo
+
+. Si l'opérateur de processeur graphique NVIDIA n'est pas déjà installé dans votre cluster Kubernetes, installez l'opérateur de processeur graphique NVIDIA en suivant les instructions fournies dans le link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/install.html#install-the-nvidia-gpu-operator["Documentation de l'opérateur RAG LLM."]
+. Installez l'opérateur NVIDIA Enterprise RAG LLM en suivant les instructions fournies dans le link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/install.html#install-the-rag-llm-operator["Documentation de l'opérateur RAG LLM."]
+. Créez un pipeline RAG à l'aide de l'opérateur NVIDIA Enterprise RAG LLM en suivant les instructions décrites dans le link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/pipelines.html["Documentation de l'opérateur RAG LLM."]
++
+** Lorsque vous spécifiez une classe de stockage, veillez à spécifier une classe de stockage qui utilise Astra Trident.
+** Par défaut, le pipeline RAG déploie une nouvelle base de données pgvector pour servir de base de connaissances/magasin vectoriel pour le déploiement RAG. Si vous souhaitez utiliser une instance pgvector ou Milvus existante, suivez les instructions décrites dans le link:https://docs.nvidia.com/ai-enterprise/rag-llm-operator/0.4.1/vector-database.html["Documentation de l'opérateur RAG LLM."] Pour plus d'informations sur l'exécution d'une base de données vectorielle avec NetApp, reportez-vous au link:https://docs.netapp.com/us-en/netapp-solutions/ai/vector-database-solution-with-netapp.html["Documentation de la solution de base de données NetApp Vector."]
+
+
+
