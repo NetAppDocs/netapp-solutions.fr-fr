@@ -30,11 +30,11 @@ Les utilisations suivantes sont au cœur de cette solution. Dans les deux cas, T
 
 Pour analyser les interactions entre les employés et les clients du centre de support, chaque conversation client sous forme d'appels audio peut être exécutée dans le pipeline pour extraire des sentiments de phrase. Ces sentiments peuvent ensuite être vérifiés par un humain pour justifier les sentiments ou les ajuster selon les besoins. Les données étiquetées sont ensuite transmises à l'étape de réglage fin pour améliorer les prédictions de sentiment. Si des données de sentiment étiquetées existent déjà, le réglage fin du modèle peut être accéléré. Dans les deux cas, le pipeline est généralisable à d'autres solutions qui exigent l'ingestion de l'audio et la classification des phrases.
 
-image:ai-sent-image1.png["Erreur : image graphique manquante"]
+image:ai-sent-image1.png[""]
 
 Les résultats des sentiments d'IA sont soit téléchargés vers une base de données cloud externe, soit vers un système de stockage géré par l'entreprise. Les sorties de sentiment sont transférées de cette base de données plus grande vers le stockage local pour une utilisation dans le tableau de bord qui affiche l'analyse de sentiment pour les gestionnaires. La principale fonctionnalité du tableau de bord consiste à interagir avec l’employé du service client en temps réel. Les responsables peuvent évaluer et fournir des commentaires sur les employés lors de leurs appels avec des mises à jour en direct du sentiment de chaque phrase, ainsi qu'un examen historique des performances passées de l'employé ou des réactions des clients.
 
-image:ai-sent-image2.png["Erreur : image graphique manquante"]
+image:ai-sent-image2.png[""]
 
 Le link:https://github.com/NetApp/netapp-dataops-toolkit/releases/tag/v2.0.0["Kit NetApp DataOps"^] Peut continuer à gérer les systèmes de stockage des données même après que le pipeline d'inférence RIVA génère des étiquettes de sentiments. Les résultats de cette IA peuvent être téléchargés vers un système de stockage des données géré par le kit NetApp DataOps. Les systèmes de stockage des données doivent être capables de gérer des centaines d'insertions et de sélectionner chaque minute. Le système de stockage de périphériques local interroge le stockage de données plus important en temps réel pour l'extraction. Le tableau de bord peut également être interrogé sur ses données historiques afin d'optimiser l'expérience qu'il fournit. Le kit NetApp DataOps facilite ces deux utilisations en clonant rapidement les données et en les distribuant dans tous les tableaux de bord.
 

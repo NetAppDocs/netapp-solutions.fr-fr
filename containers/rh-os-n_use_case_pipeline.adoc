@@ -24,12 +24,12 @@ Pour créer les ressources nécessaires au déploiement de l'application Jenkins
 
 . Créez un nouveau projet appelé Jenkins.
 +
-image:redhat_openshift_image15.jpeg["Erreur : image graphique manquante"]
+image:redhat_openshift_image15.jpeg[""]
 
 . Dans cet exemple, nous avons déployé Jenkins avec du stockage persistant. Pour prendre en charge la construction Jenkins, créez le PVC. Accédez à stockage > demandes de volume persistant et cliquez sur Créer une demande de volume persistant. Sélectionnez la classe de stockage créée, vérifiez que le nom de la demande de volume persistant est jenkins, sélectionnez la taille et le mode d'accès appropriés, puis cliquez sur Créer.
 
 
-image:redhat_openshift_image16.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image16.png[""]
 
 
 
@@ -39,54 +39,54 @@ Pour déployer Jenkins avec le stockage persistant, procédez comme suit :
 
 . Dans le coin supérieur gauche, modifiez le rôle de Administrateur à Développeur. Cliquez sur +Ajouter et sélectionnez à partir du catalogue. Dans la barre filtre par mot-clé, recherchez jenkins. Sélectionnez le service Jenkins avec le stockage persistant.
 +
-image:redhat_openshift_image17.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image17.png[""]
 
 . Cliquez sur `Instantiate Template`.
 +
-image:redhat_openshift_image18.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image18.png[""]
 
 . Par défaut, les détails de l'application Jenkins sont renseignés. En fonction de vos besoins, modifiez les paramètres et cliquez sur Créer. Ce processus crée toutes les ressources nécessaires pour prendre en charge Jenkins sur OpenShift.
 +
-image:redhat_openshift_image19.jpeg["Erreur : image graphique manquante"]
+image:redhat_openshift_image19.jpeg[""]
 
 . Les modules Jenkins prennent environ 10 à 12 minutes pour entrer en état « prêt ».
 +
-image:redhat_openshift_image20.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image20.png[""]
 
 . Une fois les pods instanciés, accédez à réseau > routes. Pour ouvrir la page Web Jenkins, cliquez sur l'URL fournie pour la route jenkins.
 +
-image:redhat_openshift_image21.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image21.png[""]
 
 . OpenShift OAuth a été utilisé lors de la création de l'application Jenkins, cliquez sur « se connecter avec OpenShift ».
 +
-image:redhat_openshift_image22.jpeg["Erreur : image graphique manquante"]
+image:redhat_openshift_image22.jpeg[""]
 
 . Autoriser le compte de service Jenkins à accéder aux utilisateurs OpenShift.
 +
-image:redhat_openshift_image23.jpeg["Erreur : image graphique manquante"]
+image:redhat_openshift_image23.jpeg[""]
 
 . La page d'accueil de Jenkins s'affiche. Parce que nous utilisons une construction Maven, terminez d'abord l'installation Maven. Accédez à Manage Jenkins > Global Tool Configuration, puis, dans le sous-titre Maven, cliquez sur Add Maven. Entrez le nom de votre choix et assurez-vous que l'option installer automatiquement est sélectionnée. Cliquez sur Enregistrer.
 +
-image:redhat_openshift_image24.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image24.png[""]
 
 . Vous pouvez désormais créer un pipeline pour démontrer le workflow ci/CD. Sur la page d'accueil, cliquez sur Créer de nouveaux travaux ou nouvel élément dans le menu de gauche.
 +
-image:redhat_openshift_image25.jpeg["Erreur : image graphique manquante"]
+image:redhat_openshift_image25.jpeg[""]
 
 . Sur la page Créer un élément, entrez le nom de votre choix, sélectionnez Pipeline, puis cliquez sur OK.
 +
-image:redhat_openshift_image26.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image26.png[""]
 
 . Sélectionnez l'onglet Pipeline. Dans le menu déroulant essayer un pipeline d'échantillon, sélectionnez Github + Maven. Le code est automatiquement renseigné. Cliquez sur Enregistrer.
 +
-image:redhat_openshift_image27.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image27.png[""]
 
 . Cliquez sur Créer maintenant pour déclencher le développement tout au long de la phase de préparation, de création et de test. Il peut prendre plusieurs minutes pour terminer l'ensemble du processus de construction et afficher les résultats de la construction.
 +
-image:redhat_openshift_image28.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image28.png[""]
 
 . Chaque fois que du code change, le pipeline peut être reconstruit pour corriger la nouvelle version du logiciel permettant l'intégration et la livraison continues. Cliquez sur modifications récentes pour suivre les modifications apportées à la version précédente.
 +
-image:redhat_openshift_image29.png["Erreur : image graphique manquante"]
+image:redhat_openshift_image29.png[""]
 
 

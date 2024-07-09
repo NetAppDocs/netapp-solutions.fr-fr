@@ -16,11 +16,11 @@ summary: Cette page décrit les performances de Splunk SmartStore sur un contrô
 [role="lead"]
 Cette section décrit les performances de Splunk SmartStore sur un contrôleur NetApp StorageGRID. Splunk SmartStore déplace les données actives vers un stockage distant, qui, dans ce cas, est le stockage objet StorageGRID dans la validation des performances.
 
-image:stgr-splunkss-image10.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image10.png[""]
 
 Nous avons utilisé EF600 pour le stockage à chaud/cache et StorageGRID 6060 pour le stockage distant. Nous avons utilisé l'architecture suivante pour valider les performances. Nous avons utilisé deux têtes de recherche, quatre gros porteurs pour transférer les données à des indexeurs, sept générateurs d'événements Splunk (Eventgens) pour générer les données en temps réel et 18 indexeurs pour le stockage des données.
 
-image:stgr-splunkss-image11.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image11.png[""]
 
 
 
@@ -57,7 +57,7 @@ Dans cette validation des performances, nous avons configuré le cache SmartStor
 
 Cette image montre les données ingérées en une journée.
 
-image:stgr-splunkss-image12.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image12.png[""]
 
 Nous avons exécuté la commande suivante à partir du cluster master (le nom de l'index est `eventgen-test`). Nous avons ensuite capturé le débit de chargement maximal et moyen par instance et par déploiement dans l'ensemble des tableaux de bord de la console de surveillance SmartStore.
 
@@ -140,15 +140,15 @@ rtp-cm01:~ #
 ....
 Nous avons exécuté la requête de recherche suivante sur l'en-tête de recherche pour collecter la matrice de performance.
 
-image:stgr-splunkss-image13.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image13.png[""]
 
 Nous avons collecté les informations de performances à partir du maître de cluster. Ses performances maximales ont été 61,34 Gbit/s.
 
-image:stgr-splunkss-image14.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image14.png[""]
 
 Les performances moyennes étaient d'environ 29 Gbit/s.
 
-image:stgr-splunkss-image15.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image15.png[""]
 
 
 
@@ -159,11 +159,11 @@ Les performances de SmartStore reposent sur la recherche de modèles et de chaî
 
 NOTE: La couleur verte indique les données de résultats et la couleur orange indique les données de non-respect.
 
-image:stgr-splunkss-image16.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image16.png[""]
 
 Lors de l'exécution de la requête sur StorageGRID, le taux de récupération S3 à partir de StorageGRID est affiché dans l'image suivante.
 
-image:stgr-splunkss-image17.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image17.png[""]
 
 
 
@@ -171,7 +171,7 @@ image:stgr-splunkss-image17.png["Erreur : image graphique manquante"]
 
 L'instance StorageGRID dispose d'un équilibreur de charge et de trois contrôleurs StorageGRID. Le taux d'utilisation du processeur pour les trois contrôleurs passe de 75 à 100 %.
 
-image:stgr-splunkss-image18.png["Erreur : image graphique manquante"]
+image:stgr-splunkss-image18.png[""]
 
 
 

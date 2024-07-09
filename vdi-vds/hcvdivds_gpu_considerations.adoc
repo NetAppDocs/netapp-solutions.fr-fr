@@ -21,19 +21,19 @@ Pour les applications graphiques exigeantes, Microsoft Azure propose la gamme NV
 
 NOTE: Une licence NVIDIA est incluse dans la gamme NV.
 
-image:hcvdivds_image37.png["Erreur : image graphique manquante"]
+image:hcvdivds_image37.png[""]
 
 Avec NetApp HCI, le GPU H615C contient trois cartes NVIDIA Tesla T4. Chaque carte NVIDIA Tesla T4 dispose d'un processeur graphique Touring avec 16 Go de mémoire GDDR6. Lorsqu'elles sont utilisées dans un environnement VMware vSphere, les serveurs virtuels peuvent partager les GPU, chaque machine virtuelle disposant d'une mémoire tampon dédiée. Le suivi des rayons est disponible avec les processeurs graphiques de la NetApp HCI H615C pour produire des images réalistes comprenant les réflexions de lumière. Notez que vous devez disposer d'un serveur de licences NVIDIA avec une licence pour les fonctionnalités GPU.
 
-image:hcvdivds_image38.png["Erreur : image graphique manquante"]
+image:hcvdivds_image38.png[""]
 
 Pour utiliser le GPU, vous devez installer le pilote approprié, qui peut être téléchargé à partir du portail de licences NVIDIA. Dans un environnement Azure, le pilote NVIDIA est disponible en tant qu'extension de pilote GPU. Ensuite, les stratégies de groupe de la capture d'écran suivante doivent être mises à jour pour utiliser le matériel GPU pour les sessions de service de bureau à distance. Vous devez hiérarchiser le mode graphique H.264 et activer la fonctionnalité d'encodeur.
 
-image:hcvdivds_image39.png["Erreur : image graphique manquante"]
+image:hcvdivds_image39.png[""]
 
 Validez la surveillance des performances du GPU avec Task Manager ou à l'aide de l'interface de ligne de commande nvidia-smi lors de l'exécution d'échantillons WebGL. Assurez-vous que les ressources GPU, mémoire et encodeur sont utilisées.
 
-image:hcvdivds_image40.png["Erreur : image graphique manquante"]
+image:hcvdivds_image40.png[""]
 
 Pour s'assurer que la machine virtuelle est déployée dans NetApp HCI H615C avec le service de bureau virtuel, définissez un site avec la ressource de cluster vCenter dotée d'hôtes H615C. Le profil vGPU requis doit être associé au modèle VM.
 

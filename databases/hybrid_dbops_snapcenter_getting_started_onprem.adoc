@@ -36,7 +36,7 @@ Dans un environnement SnapCenter sur site préinstallé et configuré, les tâch
 . Accédez à l'onglet accès sous Paramètres et utilisateurs, puis cliquez sur Ajouter pour ajouter un nouvel utilisateur. Le nouvel ID utilisateur est lié à l'utilisateur admin créé dans Windows Active Directory à l'étape 1. . Attribuez le rôle approprié à l'utilisateur selon les besoins. Affectez des ressources à l'utilisateur administrateur, le cas échéant.
 
 
-image:snapctr_admin_users.PNG["Erreur : image graphique manquante"]
+image:snapctr_admin_users.PNG[""]
 
 
 
@@ -84,7 +84,7 @@ Les étapes suivantes illustrent la manière dont un hôte de base de données e
 
 Accédez à Paramètres > Paramètres globaux. Sous Paramètres de l'hyperviseur, sélectionnez « les machines virtuelles ont des disques iSCSI à connexion directe ou NFS pour tous les hôtes », puis cliquez sur mettre à jour.
 
-image:snapctr_vmware_global.PNG["Erreur : image graphique manquante"]
+image:snapctr_vmware_global.PNG[""]
 
 
 
@@ -94,23 +94,23 @@ image:snapctr_vmware_global.PNG["Erreur : image graphique manquante"]
 . Cliquez sur l'onglet hôtes dans le menu de gauche, puis cliquez sur Ajouter pour ouvrir le flux de travail Ajouter hôte.
 . Choisissez Windows pour le type d'hôte ; le nom d'hôte peut être un nom d'hôte ou une adresse IP. Le nom d'hôte doit être résolu à l'adresse IP d'hôte correcte de l'hôte SnapCenter. Choisissez les informations d'identification de l'hôte créées à l'étape 2. Choisissez Microsoft Windows et Microsoft SQL Server comme modules d'extension à installer.
 +
-image:snapctr_add_windows_host_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_01.PNG[""]
 
 . Une fois le plug-in installé sur un hôte Windows, son état global s'affiche sous la forme "configurer le répertoire du journal".
 +
-image:snapctr_add_windows_host_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_02.PNG[""]
 
 . Cliquez sur le nom d'hôte pour ouvrir la configuration du répertoire du journal de SQL Server.
 +
-image:snapctr_add_windows_host_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_03.PNG[""]
 
 . Cliquez sur « configurer le répertoire du journal » pour ouvrir « configurer le plug-in pour SQL Server ».
 +
-image:snapctr_add_windows_host_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_04.PNG[""]
 
 . Cliquez sur Parcourir pour découvrir le stockage NetApp afin de définir un répertoire de journaux ; SnapCenter utilise ce répertoire de journaux pour restaurer les fichiers journaux de transactions du serveur SQL. Cliquez ensuite sur Enregistrer.
 +
-image:snapctr_add_windows_host_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_05.PNG[""]
 
 +
 
@@ -118,14 +118,14 @@ NOTE: Pour que le stockage NetApp provisionné sur un hôte de base de données 
 
 . Une fois le répertoire du journal configuré, l'état global du plug-in hôte Windows est défini sur en cours d'exécution.
 +
-image:snapctr_add_windows_host_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_06.PNG[""]
 
 . Pour attribuer l'hôte à l'ID utilisateur de gestion de base de données, accédez à l'onglet accès sous Paramètres et utilisateurs, cliquez sur l'ID utilisateur de gestion de base de données (dans notre cas, l'ID utilisateur de gestion de base de données à affecter à l'hôte), puis cliquez sur Enregistrer pour terminer l'affectation de ressources hôte.
 +
-image:snapctr_add_windows_host_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_07.PNG[""]
 
 +
-image:snapctr_add_windows_host_08.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_08.PNG[""]
 
 
 
@@ -137,26 +137,26 @@ image:snapctr_add_windows_host_08.PNG["Erreur : image graphique manquante"]
 . Cliquez sur l'onglet hôtes dans le menu de gauche, puis cliquez sur Ajouter pour ouvrir le flux de travail Ajouter hôte.
 . Choisissez Linux comme Type d'hôte. Le nom d'hôte peut être soit le nom d'hôte, soit une adresse IP. Cependant, le nom d'hôte doit être résolu pour corriger l'adresse IP de l'hôte SnapCenter. Choisissez les informations d'identification de l'hôte créées à l'étape 2. Les informations d'identification de l'hôte nécessitent des privilèges sudo. Vérifiez Oracle Database en tant que plug-in à installer, qui installe à la fois les plug-ins hôtes Oracle et Linux.
 +
-image:snapctr_add_linux_host_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_01.PNG[""]
 
 . Cliquez sur plus d'options et sélectionnez « Ignorer les vérifications de préinstallation ». Vous êtes invité à confirmer l'omission de la vérification de préinstallation. Cliquez sur Oui, puis sur Enregistrer.
 +
-image:snapctr_add_linux_host_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_02.PNG[""]
 
 . Cliquez sur soumettre pour démarrer l'installation du plug-in. Vous êtes invité à confirmer l'empreinte digitale comme indiqué ci-dessous.
 +
-image:snapctr_add_linux_host_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_03.PNG[""]
 
 . SnapCenter effectue la validation et l'enregistrement des hôtes, puis le plug-in est installé sur l'hôte Linux. L'état passe de installation du plug-in à exécution.
 +
-image:snapctr_add_linux_host_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_04.PNG[""]
 
 . Affectez l'hôte nouvellement ajouté à l'ID utilisateur de gestion de base de données approprié (dans notre cas, oradba).
 +
-image:snapctr_add_linux_host_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_05.PNG[""]
 
 +
-image:snapctr_add_linux_host_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_linux_host_06.PNG[""]
 
 
 
@@ -166,23 +166,23 @@ image:snapctr_add_linux_host_06.PNG["Erreur : image graphique manquante"]
 
 Une fois l'installation du plug-in réussie, les ressources de la base de données sur l'hôte peuvent être immédiatement découvertes. Cliquez sur l'onglet Ressources dans le menu de gauche. Selon le type de plate-forme de base de données, un certain nombre de vues sont disponibles, comme la base de données, le groupe de ressources, etc. Vous devrez peut-être cliquer sur l'onglet Actualiser les ressources si les ressources de l'hôte ne sont pas découvertes et affichées.
 
-image:snapctr_resources_ora.PNG["Erreur : image graphique manquante"]
+image:snapctr_resources_ora.PNG[""]
 
 Lorsque la base de données est initialement découverte, l'état global est indiqué comme « non protégé ». La capture d'écran précédente montre qu'une base de données Oracle n'est pas encore protégée par une règle de sauvegarde.
 
 Lorsqu'une configuration ou une stratégie de sauvegarde est configurée et qu'une sauvegarde a été exécutée, l'état général de la base de données affiche l'état de sauvegarde « sauvegarde réussie » et l'horodatage de la dernière sauvegarde. La capture d'écran suivante montre l'état de sauvegarde d'une base de données utilisateur SQL Server.
 
-image:snapctr_resources_sql.PNG["Erreur : image graphique manquante"]
+image:snapctr_resources_sql.PNG[""]
 
 Si les informations d'identification d'accès à la base de données ne sont pas correctement configurées, un bouton de verrouillage rouge indique que la base de données n'est pas accessible. Par exemple, si les informations d'identification Windows ne disposent pas d'un accès sysadmin à une instance de base de données, les informations d'identification de la base de données doivent être reconfigurées pour déverrouiller le verrou rouge.
 
-image:snapctr_add_windows_host_09.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_09.PNG[""]
 
-image:snapctr_add_windows_host_10.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_10.PNG[""]
 
 Une fois que les informations d'identification appropriées sont configurées soit au niveau de Windows, soit au niveau de la base de données, le verrou rouge disparaît et les informations de type de serveur SQL sont rassemblées et vérifiées.
 
-image:snapctr_add_windows_host_11.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_windows_host_11.PNG[""]
 
 
 
@@ -195,13 +195,13 @@ Pour protéger vos données de base de données sur site à l'aide d'un cloud pu
 Cluster sur site :
 
 +
-image:snapctr_cluster_replication_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_cluster_replication_01.PNG[""]
 
 +
 Cluster CVO cible :
 
 +
-image:snapctr_cluster_replication_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_cluster_replication_02.PNG[""]
 
 . Lorsque les LIF intercluster sont configurées, le peering de clusters et la réplication des volumes peuvent être configurés en utilisant le glisser-déposer dans NetApp Cloud Manager. Voir link:hybrid_dbops_snapcenter_getting_started_aws.html#aws-public-cloud["Mise en route - Cloud public AWS"] pour plus d'informations.
 +
@@ -209,19 +209,19 @@ Vous pouvez également effectuer la réplication de volume de peering de cluster
 
 . Connectez-vous à ONTAP System Manager. Naviguez jusqu'à Cluster > Paramètres et cliquez sur Peer Cluster pour configurer le cluster peering avec l'instance CVO dans le cloud.
 +
-image:snapctr_vol_snapmirror_00.PNG["Erreur : image graphique manquante"]
+image:snapctr_vol_snapmirror_00.PNG[""]
 
 . Accédez à l'onglet volumes. Sélectionnez le volume de la base de données à répliquer et cliquez sur protéger.
 +
-image:snapctr_vol_snapmirror_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_vol_snapmirror_01.PNG[""]
 
 . Définissez la règle de protection sur asynchrone. Sélectionner le cluster de destination et le SVM de stockage.
 +
-image:snapctr_vol_snapmirror_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_vol_snapmirror_02.PNG[""]
 
 . Vérifier que le volume est synchronisé entre la source et la cible et que la relation de réplication fonctionne correctement.
 +
-image:snapctr_vol_snapmirror_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_vol_snapmirror_03.PNG[""]
 
 
 
@@ -232,15 +232,15 @@ image:snapctr_vol_snapmirror_03.PNG["Erreur : image graphique manquante"]
 . Connectez-vous à SnapCenter avec un ID utilisateur doté des privilèges SnapCenterAdmin.
 . Cliquez sur l'onglet Storage System dans le menu, puis sur New pour ajouter un SVM de stockage CVO qui héberge les volumes de base de données cible répliqués dans SnapCenter. Saisissez l'IP de gestion de cluster dans le champ Storage System, puis saisissez le nom d'utilisateur et le mot de passe appropriés.
 +
-image:snapctr_add_cvo_svm_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_cvo_svm_01.PNG[""]
 
 . Cliquez sur plus d'options pour ouvrir d'autres options de configuration de stockage. Dans le champ plate-forme, sélectionnez Cloud Volumes ONTAP, cochez secondaire, puis cliquez sur Enregistrer.
 +
-image:snapctr_add_cvo_svm_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_cvo_svm_02.PNG[""]
 
 . Attribuez les systèmes de stockage aux ID d'utilisateur de gestion de la base de données SnapCenter, comme indiqué dans la <<3. Installation du plug-in hôte SnapCenter>>.
 +
-image:snapctr_add_cvo_svm_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_add_cvo_svm_03.PNG[""]
 
 
 
@@ -256,35 +256,35 @@ Les procédures suivantes montrent comment créer une stratégie de sauvegarde c
 
 . Connectez-vous à SnapCenter en tant qu'ID utilisateur de gestion de base de données, cliquez sur Paramètres, puis sur stratégies.
 +
-image:snapctr_ora_policy_data_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_01.PNG[""]
 
 . Cliquez sur Nouveau pour lancer un nouveau workflow de création de stratégie de sauvegarde ou choisir une stratégie existante pour la modification.
 +
-image:snapctr_ora_policy_data_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_02.PNG[""]
 
 . Sélectionnez le type de sauvegarde et la fréquence de planification.
 +
-image:snapctr_ora_policy_data_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_03.PNG[""]
 
 . Définissez le paramètre de conservation de sauvegarde. Cet objectif définit le nombre de copies de sauvegarde complètes à conserver dans une base de données.
 +
-image:snapctr_ora_policy_data_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_04.PNG[""]
 
 . Sélectionnez les options de réplication secondaires pour envoyer les sauvegardes de snapshots primaires locaux à répliquer vers un emplacement secondaire dans le cloud.
 +
-image:snapctr_ora_policy_data_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_05.PNG[""]
 
 . Spécifiez tout script facultatif à exécuter avant et après l'exécution d'une sauvegarde.
 +
-image:snapctr_ora_policy_data_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_06.PNG[""]
 
 . Exécutez la vérification des sauvegardes si nécessaire.
 +
-image:snapctr_ora_policy_data_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_07.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_ora_policy_data_08.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_data_08.PNG[""]
 
 
 
@@ -295,31 +295,31 @@ image:snapctr_ora_policy_data_08.PNG["Erreur : image graphique manquante"]
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données, cliquez sur Paramètres, puis sur stratégies.
 . Cliquez sur Nouveau pour lancer un nouveau workflow de création de stratégie de sauvegarde ou choisissez une stratégie existante à modifier.
 +
-image:snapctr_ora_policy_log_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_01.PNG[""]
 
 . Sélectionnez le type de sauvegarde et la fréquence de planification.
 +
-image:snapctr_ora_policy_log_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_02.PNG[""]
 
 . Définissez la période de conservation du journal.
 +
-image:snapctr_ora_policy_log_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_03.PNG[""]
 
 . Répliquez la réplication dans un emplacement secondaire dans le cloud public.
 +
-image:snapctr_ora_policy_log_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_04.PNG[""]
 
 . Spécifiez tous les scripts facultatifs à exécuter avant et après la sauvegarde du journal.
 +
-image:snapctr_ora_policy_log_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_05.PNG[""]
 
 . Spécifiez tous les scripts de vérification de sauvegarde.
 +
-image:snapctr_ora_policy_log_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_06.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_ora_policy_log_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_policy_log_07.PNG[""]
 
 
 
@@ -329,35 +329,35 @@ image:snapctr_ora_policy_log_07.PNG["Erreur : image graphique manquante"]
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données, cliquez sur Paramètres, puis sur stratégies.
 +
-image:snapctr_sql_policy_data_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_01.PNG[""]
 
 . Cliquez sur Nouveau pour lancer un nouveau workflow de création de stratégie de sauvegarde ou choisissez une stratégie existante à modifier.
 +
-image:snapctr_sql_policy_data_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_02.PNG[""]
 
 . Définissez l'option de sauvegarde et la fréquence de planification. Pour SQL Server configuré avec un groupe de disponibilité, il est possible de définir une réplique de sauvegarde préférée.
 +
-image:snapctr_sql_policy_data_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_03.PNG[""]
 
 . Définissez la période de conservation des sauvegardes.
 +
-image:snapctr_sql_policy_data_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_04.PNG[""]
 
 . Intégrez la réplication de copie de sauvegarde à un emplacement secondaire dans le cloud.
 +
-image:snapctr_sql_policy_data_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_05.PNG[""]
 
 . Spécifiez tous les scripts facultatifs à exécuter avant ou après une procédure de sauvegarde.
 +
-image:snapctr_sql_policy_data_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_06.PNG[""]
 
 . Spécifiez les options d'exécution de la vérification de sauvegarde.
 +
-image:snapctr_sql_policy_data_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_07.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_sql_policy_data_08.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_data_08.PNG[""]
 
 
 
@@ -367,27 +367,27 @@ image:snapctr_sql_policy_data_08.PNG["Erreur : image graphique manquante"]
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données, cliquez sur Paramètres > règles, puis sur Nouveau pour lancer un nouveau workflow de création de règles.
 +
-image:snapctr_sql_policy_log_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_01.PNG[""]
 
 . Définissez l'option de sauvegarde du journal et la fréquence de planification. Pour SQL Server configuré avec un groupe de disponibilité, une réplique de sauvegarde préférée peut être définie.
 +
-image:snapctr_sql_policy_log_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_02.PNG[""]
 
 . La stratégie de sauvegarde des données de SQL Server définit la rétention de la sauvegarde des journaux ; acceptez les valeurs par défaut ici.
 +
-image:snapctr_sql_policy_log_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_03.PNG[""]
 
 . Réplication de sauvegardes de journaux sur un stockage secondaire dans le cloud.
 +
-image:snapctr_sql_policy_log_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_04.PNG[""]
 
 . Spécifiez tous les scripts facultatifs à exécuter avant ou après une procédure de sauvegarde.
 +
-image:snapctr_sql_policy_log_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_05.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_sql_policy_log_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_policy_log_06.PNG[""]
 
 
 
@@ -403,35 +403,35 @@ SnapCenter utilise un groupe de ressources pour sauvegarder une base de données
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données et accédez à l'onglet Ressources. Dans la liste déroulante Affichage, choisissez base de données ou Groupe de ressources pour lancer le flux de travail de création de groupe de ressources.
 +
-image:snapctr_ora_rgroup_full_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_01.PNG[""]
 
 . Indiquez un nom et des balises pour le groupe de ressources. Vous pouvez définir un format de nommage pour la copie Snapshot et contourner la destination redondante du journal d'archivage si elle est configurée.
 +
-image:snapctr_ora_rgroup_full_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_02.PNG[""]
 
 . Ajoutez des ressources de base de données au groupe de ressources.
 +
-image:snapctr_ora_rgroup_full_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_03.PNG[""]
 
 . Sélectionnez une stratégie de sauvegarde complète créée dans la section 7 dans la liste déroulante.
 +
-image:snapctr_ora_rgroup_full_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_04.PNG[""]
 
 . Cliquez sur le signe (+) pour configurer le programme de sauvegarde souhaité.
 +
-image:snapctr_ora_rgroup_full_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_05.PNG[""]
 
 . Cliquez sur Charger les localisateurs pour charger le volume source et le volume de destination.
 +
-image:snapctr_ora_rgroup_full_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_06.PNG[""]
 
 . Configurez le serveur SMTP pour la notification par e-mail si vous le souhaitez.
 +
-image:snapctr_ora_rgroup_full_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_07.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_ora_rgroup_full_08.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_full_08.PNG[""]
 
 
 
@@ -441,35 +441,35 @@ image:snapctr_ora_rgroup_full_08.PNG["Erreur : image graphique manquante"]
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données et accédez à l'onglet Ressources. Dans la liste déroulante Affichage, choisissez base de données ou Groupe de ressources pour lancer le flux de travail de création de groupe de ressources.
 +
-image:snapctr_ora_rgroup_log_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_01.PNG[""]
 
 . Indiquez un nom et des balises pour le groupe de ressources. Vous pouvez définir un format de nommage pour la copie Snapshot et contourner la destination redondante du journal d'archivage si elle est configurée.
 +
-image:snapctr_ora_rgroup_log_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_02.PNG[""]
 
 . Ajoutez des ressources de base de données au groupe de ressources.
 +
-image:snapctr_ora_rgroup_log_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_03.PNG[""]
 
 . Sélectionnez une stratégie de sauvegarde de journal créée dans la section 7 dans la liste déroulante.
 +
-image:snapctr_ora_rgroup_log_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_04.PNG[""]
 
 . Cliquez sur le signe (+) pour configurer le programme de sauvegarde souhaité.
 +
-image:snapctr_ora_rgroup_log_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_05.PNG[""]
 
 . Si la vérification de sauvegarde est configurée, elle s'affiche ici.
 +
-image:snapctr_ora_rgroup_log_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_06.PNG[""]
 
 . Configurez un serveur SMTP pour la notification par e-mail si vous le souhaitez.
 +
-image:snapctr_ora_rgroup_log_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_07.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_ora_rgroup_log_08.PNG["Erreur : image graphique manquante"]
+image:snapctr_ora_rgroup_log_08.PNG[""]
 
 
 
@@ -479,31 +479,31 @@ image:snapctr_ora_rgroup_log_08.PNG["Erreur : image graphique manquante"]
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données et accédez à l'onglet Ressources. Dans la liste déroulante Affichage, choisissez une base de données ou un groupe de ressources pour lancer le flux de travail de création de groupe de ressources. Indiquez un nom et des balises pour le groupe de ressources. Vous pouvez définir un format d'attribution de nom à la copie Snapshot.
 +
-image:snapctr_sql_rgroup_full_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_01.PNG[""]
 
 . Sélectionnez les ressources de base de données à sauvegarder.
 +
-image:snapctr_sql_rgroup_full_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_02.PNG[""]
 
 . Sélectionnez une stratégie de sauvegarde SQL complète créée dans la section 7.
 +
-image:snapctr_sql_rgroup_full_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_03.PNG[""]
 
 . Ajoutez la durée exacte des sauvegardes ainsi que la fréquence.
 +
-image:snapctr_sql_rgroup_full_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_04.PNG[""]
 
 . Choisissez le serveur de vérification pour la sauvegarde sur secondaire si la vérification de sauvegarde doit être effectuée. Cliquez sur Charger le localisateur pour renseigner l'emplacement de stockage secondaire.
 +
-image:snapctr_sql_rgroup_full_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_05.PNG[""]
 
 . Configurez le serveur SMTP pour la notification par e-mail si vous le souhaitez.
 +
-image:snapctr_sql_rgroup_full_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_06.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_sql_rgroup_full_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_full_07.PNG[""]
 
 
 
@@ -513,31 +513,31 @@ image:snapctr_sql_rgroup_full_07.PNG["Erreur : image graphique manquante"]
 
 . Connectez-vous à SnapCenter à l'aide d'un ID utilisateur de gestion de base de données et accédez à l'onglet Ressources. Dans la liste déroulante Affichage, choisissez une base de données ou un groupe de ressources pour lancer le flux de travail de création de groupe de ressources. Indiquez le nom et les balises du groupe de ressources. Vous pouvez définir un format d'attribution de nom à la copie Snapshot.
 +
-image:snapctr_sql_rgroup_log_01.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_01.PNG[""]
 
 . Sélectionnez les ressources de base de données à sauvegarder.
 +
-image:snapctr_sql_rgroup_log_02.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_02.PNG[""]
 
 . Sélectionnez une stratégie de sauvegarde du journal SQL créée à la section 7.
 +
-image:snapctr_sql_rgroup_log_03.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_03.PNG[""]
 
 . Ajoutez la synchronisation exacte pour la sauvegarde ainsi que la fréquence.
 +
-image:snapctr_sql_rgroup_log_04.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_04.PNG[""]
 
 . Choisissez le serveur de vérification pour la sauvegarde sur secondaire si la vérification de sauvegarde doit être effectuée. Cliquez sur le localisateur de charge pour renseigner l'emplacement de stockage secondaire.
 +
-image:snapctr_sql_rgroup_log_05.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_05.PNG[""]
 
 . Configurez le serveur SMTP pour la notification par e-mail si vous le souhaitez.
 +
-image:snapctr_sql_rgroup_log_06.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_06.PNG[""]
 
 . Récapitulatif.
 +
-image:snapctr_sql_rgroup_log_07.PNG["Erreur : image graphique manquante"]
+image:snapctr_sql_rgroup_log_07.PNG[""]
 
 
 
@@ -547,10 +547,10 @@ image:snapctr_sql_rgroup_log_07.PNG["Erreur : image graphique manquante"]
 
 Une fois que des groupes de ressources de sauvegarde de base de données sont créés pour protéger les ressources de base de données, les tâches de sauvegarde s'exécutent en fonction du planning prédéfini. Vérifiez l'état d'exécution du travail sous l'onglet moniteur.
 
-image:snapctr_job_status_sql.PNG["Erreur : image graphique manquante"]
+image:snapctr_job_status_sql.PNG[""]
 
 Accédez à l'onglet Ressources, cliquez sur le nom de la base de données pour afficher les détails de la sauvegarde de la base de données, et basculez entre les copies locales et les copies miroir pour vérifier que les sauvegardes Snapshot sont répliquées dans un emplacement secondaire du cloud public.
 
-image:snapctr_job_status_ora.PNG["Erreur : image graphique manquante"]
+image:snapctr_job_status_ora.PNG[""]
 
 À ce stade, les copies de sauvegarde de base de données dans le cloud sont prêtes à cloner pour exécuter des processus de développement/test ou pour la reprise après incident en cas de panne principale.

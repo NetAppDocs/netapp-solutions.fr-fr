@@ -29,11 +29,11 @@ Une séquence standard de développement et de déploiement de modèles DE ML im
 * Monitoringcnvrg.io a développé une plateforme complète pour automatiser toutes les tâches, de la recherche au déploiement. Un petit exemple de captures d'écran du tableau de bord concernant le pipeline est présenté dans la figure suivante.
 
 
-image:hcaios_image2.png["Erreur : image graphique manquante"]
+image:hcaios_image2.png[""]
 
 Il est très courant d'avoir plusieurs jeux de données dans les référentiels publics et les données privées. En outre, plusieurs versions sont possibles pour chaque jeu de données suite à un nettoyage de jeux de données ou à l'ingénierie des fonctionnalités. Un tableau de bord fournissant un hub de jeux de données et une version Hub est nécessaire pour garantir la disponibilité des outils de collaboration et de cohérence à l'équipe, comme l'illustre la figure suivante.
 
-image:hcaios_image3.png["Erreur : image graphique manquante"]
+image:hcaios_image3.png[""]
 
 L'étape suivante du pipeline est l'entraînement, qui nécessite plusieurs instances parallèles de modèles d'entraînement, chacun associé à un dataset et à une instance de calcul spécifique. La liaison d'un dataset à une certaine instance de calcul est un défi, car il est possible que certaines expériences soient réalisées par des instances GPU d'Amazon Web Services (AWS), tandis que d'autres expériences sont réalisées par des instances DGX-1 ou DGX-2 sur site. D'autres expériences peuvent être exécutées sur des serveurs CPU dans GCP, tandis que l'emplacement du dataset n'est pas à proximité des ressources de calcul lors de l'entraînement. Une proximité raisonnable aurait une connectivité complète 10 GbE ou plus faible latence entre le stockage du dataset et l'instance de calcul.
 
@@ -54,4 +54,4 @@ Cette solution de NetApp et cnvrg.io fournit une mise en cache des datasets, com
 
 La plateforme cnvrg.io détecte automatiquement les datasets obsolètes qui n'ont pas été utilisés depuis un certain temps et les supprime du cache, ce qui conserve l'espace de cache NFS libre pour les datasets plus fréquemment utilisés. Il est important de noter que la mise en cache du dataset avec ONTAP fonctionne dans le cloud et sur site, pour une flexibilité maximale.
 
-image:hcaios_image4.png["Erreur : image graphique manquante"]
+image:hcaios_image4.png[""]

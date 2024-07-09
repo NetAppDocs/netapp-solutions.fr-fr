@@ -25,15 +25,15 @@ Dans cette section, nous allons examiner comment SnapCenter protège les donnée
 
 . Configurez l'hôte qui sera utilisé pour exécuter les commandes SnapCenter.
 +
-image:sc_host_setup.png["Erreur : image graphique manquante"]
+image:sc_host_setup.png[""]
 
 . Installez et configurez le plug-in de stockage. Dans l'hôte ajouté, sélectionnez « autres options ». Accédez au plug-in de stockage téléchargé et sélectionnez-le dans le link:https://automationstore.netapp.com/snap-detail.shtml?packUuid=Storage&packVersion=1.0["Le site NetApp Automation Store"]. Installez le plug-in et enregistrez la configuration.
 +
-image:sc_storage_plugin.png["Erreur : image graphique manquante"]
+image:sc_storage_plugin.png[""]
 
 . Configurer le système et le volume de stockage : ajouter le système de stockage sous « système de stockage » et sélectionner le SVM (Storage Virtual machine). Dans cet exemple, nous avons choisi « vs_nvidia ».
 +
-image:sc_storage_system.png["Erreur : image graphique manquante"]
+image:sc_storage_system.png[""]
 
 . Établissez une ressource pour la base de données vectorielle, en incorporant une règle de sauvegarde et un nom de snapshot personnalisé.
 +
@@ -41,7 +41,7 @@ image:sc_storage_system.png["Erreur : image graphique manquante"]
 ** Dans la section empreinte du stockage, sélectionnez les volumes associés aux données clients de la base de données vectorielle et aux données du cluster Milvus. Dans notre exemple, il s'agit de "vol1" et de "vectordbpv".
 ** Créez une stratégie pour la protection de la base de données vectorielle et protégez la ressource de base de données vectorielle à l'aide de la stratégie.
 +
-image:sc_resource_vectordatabase.png["Erreur : image graphique manquante"]
+image:sc_resource_vectordatabase.png[""]
 
 
 
@@ -102,7 +102,7 @@ root@node2:~#
 ----
 . Lancez une sauvegarde à l'aide du snapshot du groupe de cohérence (CG) à partir de la ressource 'milvusdb'
 +
-image:sc_backup_vector_database.png["Erreur : image graphique manquante"]
+image:sc_backup_vector_database.png[""]
 
 . Pour tester la fonctionnalité de sauvegarde, nous avons soit ajouté un nouveau tableau après le processus de sauvegarde, soit supprimé certaines données du NFS (compartiment NAS S3).
 +
@@ -134,7 +134,7 @@ root@node2:~#
 ----
 . Exécutez une restauration complète du compartiment NAS S3 à partir du snapshot précédent.
 +
-image:sc_restore_vector_database.png["Erreur : image graphique manquante"]
+image:sc_restore_vector_database.png[""]
 
 . Utilisez un script Python pour vérifier les données des collections « hello_milvus_netapp_sc_test » et « hello_milvus_netapp_sc_test2 ».
 +

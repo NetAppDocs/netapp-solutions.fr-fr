@@ -40,7 +40,7 @@ Amazon FSX pour NetApp ONTAP est une solution de stockage entièrement gérée p
 
 === Environnement réseau
 
-image:mlops_fsxn_sagemaker_integration_training_0.png["Erreur : environnement réseau"]
+image:mlops_fsxn_sagemaker_integration_training_0.png["Environnement réseau"]
 
 FSxN (Amazon FSX pour NetApp ONTAP) est un service de stockage AWS. Elle comprend un système de fichiers s'exécutant sur le système NetApp ONTAP et une machine virtuelle (SVM) gérée par AWS qui se connecte à celui-ci. Dans le diagramme fourni, le serveur NetApp ONTAP géré par AWS se trouve en dehors du VPC. Le SVM sert d'intermédiaire entre SageMaker et le système NetApp ONTAP, en recevant les demandes d'opération de SageMaker et en les transférant vers le stockage sous-jacent. Pour accéder à FSxN, SageMaker doit être placé dans le même VPC que le déploiement FSxN. Cette configuration assure la communication et l'accès aux données entre SageMaker et FSxN.
 
@@ -56,7 +56,7 @@ Le processus de lecture des données implique la configuration de FSxN en tant q
 
 == Présentation de l'intégration
 
-image:mlops_fsxn_sagemaker_integration_training_1.png["Erreur : workflow de formation"]
+image:mlops_fsxn_sagemaker_integration_training_1.png["Flux de travail de formation"]
 
 Le workflow d'utilisation des données d'entraînement dans FSxN pour créer un modèle de deep learning dans SageMaker peut être résumé en trois étapes principales : la définition du chargeur de données, l'entraînement du modèle et le déploiement. À un niveau élevé, ces étapes constituent la base d'un pipeline MLOps. Cependant, chaque étape implique plusieurs sous-étapes détaillées pour une mise en œuvre complète. Ces sous-étapes englobent diverses tâches, telles que le prétraitement des données, la division des datasets, la configuration des modèles, le réglage des hyperparamètres, l'évaluation des modèles, et le déploiement des modèles. Ces étapes permettent de mettre en place un processus complet et efficace pour créer et déployer des modèles de deep learning à l'aide des données d'entraînement de FSxN dans l'environnement SageMaker.
 
