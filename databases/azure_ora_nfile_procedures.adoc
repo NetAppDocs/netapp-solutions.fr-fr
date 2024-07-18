@@ -53,36 +53,38 @@ En fonction du workload, déterminez le type de machine virtuelle Azure dont vou
 
 . Sur la page VM Azure, cliquez sur *Créer*, puis choisissez *machine virtuelle Azure*.
 +
-image:db_ora_azure_anf_vm_01.PNG["Cette capture d'écran affiche la liste des machines virtuelles Azure disponibles."]
+image::db_ora_azure_anf_vm_01.PNG[Cette capture d'écran affiche la liste des machines virtuelles Azure disponibles.]
 
 . Choisissez l'ID d'abonnement pour le déploiement, puis choisissez le groupe de ressources, la région, le nom d'hôte, l'image de la machine virtuelle, la taille, et la méthode d'authentification. Accédez à la page disque.
 +
-image:db_ora_azure_anf_vm_02-1.PNG["Cette capture d'écran montre les données saisies pour la page Créer une machine virtuelle."]
-image:db_ora_azure_anf_vm_02-2.PNG["Cette capture d'écran affiche des informations supplémentaires pour la page Créer une machine virtuelle."]
+image::db_ora_azure_anf_vm_02-1.PNG[Cette capture d'écran montre les données saisies pour la page Créer une machine virtuelle.]
+
++
+image::db_ora_azure_anf_vm_02-2.PNG[Cette capture d'écran affiche des informations supplémentaires pour la page Créer une machine virtuelle.]
 
 . Choisissez *Premium SSD* pour la redondance locale du système d'exploitation et laissez le disque de données vide car les disques de données sont montés depuis le stockage ANF. Accédez à la page réseau.
 +
-image:db_ora_azure_anf_vm_03.PNG["Cette capture d'écran montre les données saisies pour la page Créer des disques de machine virtuelle."]
+image::db_ora_azure_anf_vm_03.PNG[Cette capture d'écran montre les données saisies pour la page Créer des disques de machine virtuelle.]
 
 . Choisissez le vnet et le sous-réseau. Allouez une IP publique pour l'accès à un serveur virtuel externe. Ensuite, accédez à la page gestion.
 +
-image:db_ora_azure_anf_vm_04.PNG["Cette capture d'écran affiche des informations supplémentaires pour la page Créer une machine virtuelle."]
+image::db_ora_azure_anf_vm_04.PNG[Cette capture d'écran affiche des informations supplémentaires pour la page Créer une machine virtuelle.]
 
 . Conservez toutes les valeurs par défaut pour la gestion et passez à la page Avancé.
 +
-image:db_ora_azure_anf_vm_05.PNG["Cette capture d'écran montre les données saisies pour la page Créer une gestion de machine virtuelle."]
+image::db_ora_azure_anf_vm_05.PNG[Cette capture d'écran montre les données saisies pour la page Créer une gestion de machine virtuelle.]
 
 . Conservez toutes les valeurs par défaut de la page Avancé, sauf si vous avez besoin de personnaliser une machine virtuelle après un déploiement avec des scripts personnalisés. Ensuite, accédez à la page balises.
 +
-image:db_ora_azure_anf_vm_06.PNG["Cette capture d'écran montre les données saisies pour la page Créer une machine virtuelle avancée."]
+image::db_ora_azure_anf_vm_06.PNG[Cette capture d'écran montre les données saisies pour la page Créer une machine virtuelle avancée.]
 
 . Ajoutez une balise pour la machine virtuelle si vous le souhaitez. Ensuite, accédez à la page révision + création.
 +
-image:db_ora_azure_anf_vm_07.PNG["Cette capture d'écran montre les données saisies pour la page Créer une étiquette de machine virtuelle."]
+image::db_ora_azure_anf_vm_07.PNG[Cette capture d'écran montre les données saisies pour la page Créer une étiquette de machine virtuelle.]
 
 . Le flux de travail de déploiement exécute une validation sur la configuration et, si la validation réussit, cliquez sur *Create* pour créer la VM.
 +
-image:db_ora_azure_anf_vm_08.PNG["« Cette capture d'écran montre les données saisies pour la page Créer une machine virtuelle de révision et de création »."]
+image::db_ora_azure_anf_vm_08.PNG[Cette capture d'écran affiche les données saisies pour la page de révision et de création d'une machine virtuelle]
 
 
 
@@ -94,28 +96,30 @@ Vous devez créer trois volumes NFS pour un pool de capacité ANF pour les volum
 
 . Dans la console Azure, sous la liste des services Azure, cliquez sur Azure NetApp Files pour ouvrir un workflow de création de volumes. Si vous disposez de plusieurs comptes de stockage ANF, cliquez sur le compte à partir duquel vous souhaitez provisionner des volumes.
 +
-image:db_ora_azure_anf_vols_00.PNG["Cette capture d'écran présente la page des services Azure avec la fonctionnalité ANF mise en surbrillance."]
+image::db_ora_azure_anf_vols_00.PNG[Cette capture d'écran présente la page des services Azure avec la fonctionnalité ANF mise en surbrillance.]
 
 . Sous votre compte de stockage NetApp, cliquez sur *volumes*, puis sur *Add volume* pour créer de nouveaux volumes Oracle.
 +
-image:db_ora_azure_anf_vols_01_1.PNG["Cette capture d'écran affiche l'écran d'accueil d'un compte de stockage NetApp."]
-image:db_ora_azure_anf_vols_01.PNG["Cette capture d'écran montre les volumes disponibles pour le compte de stockage NetApp."]
+image::db_ora_azure_anf_vols_01_1.PNG[Cette capture d'écran affiche l'écran d'accueil d'un compte de stockage NetApp.]
+
++
+image::db_ora_azure_anf_vols_01.PNG[Cette capture d'écran montre les volumes disponibles pour le compte de stockage NetApp.]
 
 . Il est conseillé d'identifier les volumes Oracle dont le nom d'hôte de la machine virtuelle est préfixe, puis le point de montage sur l'hôte, par exemple u01 pour le binaire Oracle, u02 pour les données Oracle et u03 pour le journal Oracle. Choisissez le même vnet pour le volume que pour la machine virtuelle. Cliquez sur *Suivant : Protocole>*.
 +
-image:db_ora_azure_anf_vols_02.PNG["Écran de création de volume."]
+image::db_ora_azure_anf_vols_02.PNG[Écran de création de volume.]
 
 . Choisissez le protocole NFS, ajoutez l'adresse IP de l'hôte Oracle au client autorisé et supprimez la stratégie par défaut qui autorise toutes les adresses IP 0.0.0.0/0. Cliquez ensuite sur *Suivant : balises>*.
 +
-image:db_ora_azure_anf_vols_03.PNG["Entrée de protocole sur l'écran de création de volume."]
+image::db_ora_azure_anf_vols_03.PNG[Entrée de protocole sur l'écran de création de volume.]
 
 . Ajoutez une balise de volume si vous le souhaitez. Cliquez ensuite sur *Revue + Créer>*.
 +
-image:db_ora_azure_anf_vols_04.PNG["Saisie de balises sur l'écran de création de volume."]
+image::db_ora_azure_anf_vols_04.PNG[Saisie de balises sur l'écran de création de volume.]
 
 . Si la validation réussit, cliquez sur *Créer* pour créer le volume.
 +
-image:db_ora_azure_anf_vols_05.PNG["Passer en revue et créer l'étape de l'écran de création de volume."]
+image::db_ora_azure_anf_vols_05.PNG[Passer en revue et créer l'étape de l'écran de création de volume.]
 
 
 

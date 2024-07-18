@@ -52,14 +52,14 @@ Le tableau suivant présente la configuration environnementale d'un cluster Kafk
 
 . Pour la paire haute disponibilité Cloud Volumes ONTAP, nous avons créé deux agrégats avec trois volumes sur chaque agrégat de chaque contrôleur de stockage. Pour le seul nœud Cloud Volumes ONTAP, nous créons six volumes dans un agrégat.
 +
-image:kafka-nfs-image25.png["Cette image illustre les propriétés de aggr3 et aggr22."]
+image::kafka-nfs-image25.png[Cette image illustre les propriétés de aggr3 et aggr22.]
 
 +
-image:kafka-nfs-image26.png["Cette image illustre les propriétés d'aggr2."]
+image::kafka-nfs-image26.png[Cette image illustre les propriétés d'aggr2.]
 
 . Afin d'améliorer les performances réseau, nous avons activé une mise en réseau haut débit pour la paire haute disponibilité et le nœud unique.
 +
-image:kafka-nfs-image27.png["Cette image montre comment activer la mise en réseau haut débit."]
+image::kafka-nfs-image27.png[Cette image montre comment activer la mise en réseau haut débit.]
 
 . Nous avons constaté que la mémoire NVRAM de ONTAP offrait plus d'IOPS. Nous avons donc remplacé le nombre d'IOPS par un nombre de 2350 pour le volume racine Cloud Volumes ONTAP. La taille du disque de volume racine dans Cloud Volumes ONTAP était de 47 Go. La commande ONTAP suivante s'applique à la paire HA, et la même étape s'applique à un seul nœud.
 +
@@ -88,7 +88,7 @@ Scope: kafka_nfs_cvo_ha1-02
 kafka_nfs_cvo_ha1::*>
 ....
 +
-image:kafka-nfs-image28.png["Cette image montre comment modifier les propriétés du volume."]
+image::kafka-nfs-image28.png[Cette image montre comment modifier les propriétés du volume.]
 
 
 
@@ -99,7 +99,7 @@ La figure suivante illustre l'architecture d'un cluster Kafka basé sur NAS.
 * *Stockage* nous avons utilisé une instance Cloud Volumes ONTAP à paire haute disponibilité avec un volume GP3 AWS-EBS de 6 To monté sur l'instance. Le volume a ensuite été exporté vers le courtier Kafka avec un montage NFS.
 
 
-image:kafka-nfs-image29.png["Cette figure illustre l'architecture d'un cluster Kafka basé sur NAS."]
+image::kafka-nfs-image29.png[Cette figure illustre l'architecture d'un cluster Kafka basé sur NAS.]
 
 
 
@@ -362,8 +362,8 @@ Le pilote de synchronisation peut générer un débit constant lorsque les journ
 
 Ces valeurs de débit sont générées pour la configuration AWS appropriée. Pour des besoins de performances plus élevés, il est possible de renforcer l'évolutivité des types d'instances et de les ajuster davantage pour obtenir un meilleur débit. Le débit total ou le taux total est la combinaison du taux de production et du taux de consommation.
 
-image:kafka-nfs-image30.png["Quatre graphiques différents sont présentés ici. Pilote de débit CVO-HA pair. Pilote de synchronisation de paire CVO-HA. Pilote de débit de nœud CVO unique. Pilote CVO-Single Node Sync."]
+image::kafka-nfs-image30.png[Quatre graphiques différents sont présentés ici. Pilote de débit CVO-HA pair. Pilote de synchronisation de paire CVO-HA. Pilote de débit de nœud CVO unique. Pilote CVO-Single Node Sync.]
 
 Vérifiez le débit de stockage lorsque vous effectuez une évaluation du débit ou du pilote de synchronisation.
 
-image:kafka-nfs-image31.png["Ce graphique présente les performances en termes de latence, d'IOPS et de débit."]
+image::kafka-nfs-image31.png[Ce graphique présente les performances en termes de latence, d'IOPS et de débit.]

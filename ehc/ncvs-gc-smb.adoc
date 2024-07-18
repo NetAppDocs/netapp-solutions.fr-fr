@@ -45,7 +45,7 @@ Par exemple, ce volume Cloud Volumes Service utilise le chemin de partage UNC su
 
 Dans Active Directory, il s'agit des entrées SPN générées par le service Cloud volumes :
 
-image:ncvs-gc-image6.png[""]
+image::ncvs-gc-image6.png[image gc ncvs 6]
 
 Il s'agit du résultat de recherche DNS avant/arrière :
 
@@ -71,7 +71,7 @@ Dans certains cas, les utilisateurs finaux ne pourront pas connaître le nom du 
 
 Si vous souhaitez créer des alias pour le chemin du partage SMB, vous pouvez exploiter ce qu'on appelle un enregistrement CNAME dans DNS. Par exemple, si vous souhaitez utiliser le nom `\\CIFS` pour accéder aux partages au lieu de `\\cvs-east- 433d.cvsdemo.local`, Mais vous souhaitez toujours utiliser l'authentification Kerberos, un CNAME dans DNS qui pointe vers l'enregistrement A/AAAA existant et un SPN supplémentaire ajouté au compte de machine existant fournit l'accès Kerberos.
 
-image:ncvs-gc-image7.png[""]
+image::ncvs-gc-image7.png[image gc ncvs 7]
 
 Il s'agit du résultat de la recherche de transfert DNS après l'ajout d'un CNAME :
 
@@ -85,11 +85,11 @@ Aliases:  cifs.cvsdemo.local
 ....
 Il s'agit de la requête SPN qui s'affiche après l'ajout de nouveaux SPN :
 
-image:ncvs-gc-image8.png[""]
+image::ncvs-gc-image8.png[image gc ncvs 8]
 
 Dans une capture de paquets, nous pouvons voir la demande de configuration de session en utilisant le SPN associé au CNAME.
 
-image:ncvs-gc-image9.png[""]
+image::ncvs-gc-image9.png[image gc ncvs 9]
 
 
 
@@ -148,9 +148,9 @@ Par défaut, les listes de contrôle d'accès de partage et les listes de contr�
 
 Par exemple, si un utilisateur n'est autorisé que l'accès en lecture à la liste de contrôle d'accès de fichier de volume Cloud Volumes Service, il est refusé d'accéder à la création de fichiers et de dossiers, même si la liste de contrôle d'accès du partage est définie sur tous les utilisateurs bénéficiant d'un contrôle total, comme indiqué dans la figure suivante.
 
-image:ncvs-gc-image10.png[""]
+image::ncvs-gc-image10.png[image gc ncvs 10]
 
-image:ncvs-gc-image11.png[""]
+image::ncvs-gc-image11.png[image gc ncvs 11]
 
 Pour obtenir les meilleurs résultats en matière de sécurité, procédez comme suit :
 
@@ -172,7 +172,7 @@ Les options suivantes dépendent du niveau Cloud Volumes Service (performances o
 * *Rendre le répertoire snapshot visible (disponible pour CVS-Performance et CVS-SW).* cette option permet de contrôler si les clients SMB peuvent accéder au répertoire snapshot dans un partage SMB (`\\server\share\~snapshot` Et/ou l'onglet versions précédentes). Le paramètre par défaut n'est pas coché, ce qui signifie que le volume par défaut est masqué et interdit l'accès au `~snapshot` Et aucune copie Snapshot n'apparaît dans l'onglet versions précédentes du volume.
 
 
-image:ncvs-gc-image12.png[""]
+image::ncvs-gc-image12.png[image gc ncvs 12]
 
 Le masquage des copies Snapshot à partir des utilisateurs finaux peut être souhaité pour des raisons de sécurité, de performances (masquage de ces dossiers à partir d'analyses antivirus) ou de préférence. Les snapshots Cloud Volumes Service sont en lecture seule. Par conséquent, même si ces snapshots sont visibles, les utilisateurs finaux ne peuvent pas supprimer ou modifier les fichiers dans le répertoire Snapshot. Autorisations liées aux fichiers ou dossiers au moment de la copie Snapshot. Si les autorisations d'un fichier ou d'un dossier changent entre les copies Snapshot, les modifications s'appliquent également aux fichiers ou dossiers du répertoire Snapshot. Les utilisateurs et les groupes peuvent accéder à ces fichiers ou dossiers en fonction des autorisations. Lorsque des suppressions ou des modifications de fichiers dans le répertoire Snapshot ne sont pas possibles, il est possible de copier des fichiers ou des dossiers à partir du répertoire Snapshot.
 
@@ -202,11 +202,11 @@ Lorsque vous spécifiez un utilisateur à ajouter aux utilisateurs de sauvegarde
 
 Lorsque vous ajoutez un utilisateur à des utilisateurs de privilèges de sécurité, l'utilisateur reçoit le privilège de sécurité, ce qui est utile dans certains cas d'utilisation d'application, tels que https://docs.netapp.com/us-en/ontap/smb-hyper-v-sql/add-sesecurityprivilege-user-account-task.html["SQL Server sur des partages SMB"^].
 
-image:ncvs-gc-image13.png[""]
+image::ncvs-gc-image13.png[image gc ncvs 13]
 
 Vous pouvez afficher les membres du groupe local Cloud Volumes Service par l'intermédiaire de la console MMC avec les privilèges appropriés. La figure suivante montre les utilisateurs qui ont été ajoutés à l'aide de la console Cloud Volumes Service.
 
-image:ncvs-gc-image14.png[""]
+image::ncvs-gc-image14.png[image gc ncvs 14]
 
 Le tableau suivant présente la liste des groupes par défaut BUILTIN et les utilisateurs/groupes ajoutés par défaut.
 
@@ -232,9 +232,9 @@ Le tableau suivant présente la liste des groupes par défaut BUILTIN et les uti
 
 Vous pouvez afficher des utilisateurs et des groupes locaux (et des membres de groupe) dans la fenêtre MMC, mais vous ne pouvez pas ajouter ou supprimer des objets ou modifier les appartenances de groupe à partir de cette console. Par défaut, seul le groupe administrateurs de domaine et l'administrateur sont ajoutés au groupe BULILTIN\Administrators dans Cloud Volumes Service. Actuellement, vous ne pouvez pas le modifier.
 
-image:ncvs-gc-image15.png[""]
+image::ncvs-gc-image15.png[image gc ncvs 15]
 
-image:ncvs-gc-image16.png[""]
+image::ncvs-gc-image16.png[image gc ncvs 16]
 
 
 
@@ -250,9 +250,9 @@ Lorsque vous affichez des partages SMB avec les autorisations appropriées, tous
 
 N'oubliez pas qu'une seule connexion Active Directory est autorisée par région.
 
-image:ncvs-gc-image17.png[""]
+image::ncvs-gc-image17.png[image gc ncvs 17]
 
-image:ncvs-gc-image18.png[""]
+image::ncvs-gc-image18.png[image gc ncvs 18]
 
 Le tableau suivant présente la liste des fonctionnalités prises en charge/non prises en charge pour la console MMC.
 

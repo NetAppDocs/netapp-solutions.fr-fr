@@ -22,8 +22,8 @@ Le https://docs.dask.org/en/latest/scheduling.html["Planificateur distribué DAS
 
 Dans notre cas, la figure suivante montre comment surveiller la progression de la tâche, y compris les octets stockés, le flux de tâches avec une répartition détaillée du nombre de flux et la progression par nom de tâche avec les fonctions associées exécutées. Dans notre cas, étant donné que nous avons trois nœuds workers, il y a trois principaux segments de flux et les codes de couleurs indiquent des tâches différentes dans chaque flux.
 
-image:aks-anf_image13.png[""]
+image::aks-anf_image13.png[aks anf image13]
 
 Vous avez la possibilité d'analyser des tâches individuelles et d'examiner le temps d'exécution en millisecondes ou d'identifier tout obstacle ou obstacle. Par exemple, la figure suivante montre les flux de tâches pour le stade d'ajustement du modèle forestier aléatoire. Il y a beaucoup plus de fonctions exécutées, y compris le bloc unique pour le traitement de DataFrame, _construct_rf pour l'adaptation de la forêt aléatoire, et ainsi de suite. La plupart du temps a été consacré à des opérations DataFrame en raison de la grande taille (45 Go) des données d'une journée provenant des journaux Criteo Click.
 
-image:aks-anf_image14.png[""]
+image::aks-anf_image14.png[aks anf image14]

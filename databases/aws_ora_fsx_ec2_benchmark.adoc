@@ -33,7 +33,7 @@ Les sections suivantes fournissent des détails sur la configuration et les rés
 
 Nous avons déployé une instance EC2 M5 avec 8 vCPU, 32 Go de RAM et 10 Gps de bande passante réseau.
 
-image:aws_ora_fsx_ec2_inst_10.PNG[""]
+image::aws_ora_fsx_ec2_inst_10.PNG[aws ora fsx ec2, inst. 10]
 
 
 
@@ -48,7 +48,7 @@ Nous avons créé trois volumes de base de données et monté les volumes avec N
 
 Nous avons conservé deux copies d'un fichier de contrôle stratégique pour assurer la redondance.
 
-image:aws_ora_fsx_ec2_stor_15.PNG[""]
+image::aws_ora_fsx_ec2_stor_15.PNG[aws ora fsx ec2 stor 15]
 
 Le système de fichiers FSX est configuré avec une capacité de 80,000 IOPS et un débit d'E/S de 2 GiBps.
 
@@ -60,7 +60,7 @@ Nous avons installé Oracle version 19c avec le correctif 19.8 RU. DNFS était a
 
 La base de données a été déployée en tant que base de données conteneurisée avec trois BDD. Nous avons utilisé une instance de PDB pour les tests de performances. La figure suivante montre le dimensionnement du stockage Oracle sur les points de montage NFS.
 
-image:aws_ora_fsx_ec2_inst_11.PNG[""]
+image::aws_ora_fsx_ec2_inst_11.PNG[aws ora fsx ec2, inst. 11]
 
 
 
@@ -72,7 +72,7 @@ Le facteur d'échelle de schéma que nous avons utilisé était 50, ce qui a fou
 
 La capture d'écran suivante montre le profil de charge de travail et les mesures d'exécution transactionnelle typiques de l'interface utilisateur Windows Swingbanon.
 
-image:aws_ora_fsx_ec2_swin_01.PNG[""]
+image::aws_ora_fsx_ec2_swin_01.PNG[aws ora fsx ec2 swin 01]
 
 Comme le montre ce graphique, le niveau de transaction a été maintenu au même niveau tout au long de l'exécution du test.
 
@@ -88,16 +88,18 @@ Pour l'utilisateur final, nous avons étudié des mesures clés, telles que le v
 
 Nous avons saisi le volume de transaction utilisateur, le temps de réponse utilisateur et les événements d'attente Oracle en tête par rapport au nombre d'utilisateurs simultanés lors de l'exécution d'une transaction. Les résultats sont présentés ci-dessous :
 
-image:aws_ora_fsx_ec2_swin_02.PNG[""]
+image::aws_ora_fsx_ec2_swin_02.PNG[aws ora fsx ec2 swin 02]
 
 Ces résultats indiquent que nous pouvons augmenter en continu les volumes de transactions des utilisateurs avec un nombre croissant d'utilisateurs simultanés, tout en maintenant une faible latence d'E/S et un temps de réponse utilisateur, ce qui est approprié pour une application Oracle.
 
 La latence d'E/S et le temps de réponse des utilisateurs ont commencé à augmenter quand on atteint 128 utilisateurs simultanés. Cela est dû au fait que l'instance EC2 approche de la capacité totale des serveurs, comme illustré dans le schéma suivant :
 
-image:aws_ora_fsx_ec2_swin_03.PNG[""]
+image::aws_ora_fsx_ec2_swin_03.PNG[aws ora fsx ec2 swin 03]
 
 De même, le schéma suivant montre les IOPS et le débit FSX correspondants, tout en remplissant les volumes de transaction utilisateur au moment opportun.
 
-image:aws_ora_fsx_ec2_swin_04.PNG[""] image:aws_ora_fsx_ec2_swin_05.PNG[""]
+image::aws_ora_fsx_ec2_swin_04.PNG[aws ora fsx ec2 swin 04]
+
+image::aws_ora_fsx_ec2_swin_05.PNG[aws ora fsx ec2 swin 05]
 
 Nous n'avons pas atteint la capacité de stockage FSX provisionnée en IOPS ou en débit lorsque l'instance EC2 de serveur Oracle est devenue le facteur limitant. Par conséquent, vous devez dimensionner correctement la capacité de calcul et de stockage en fonction du volume de transaction au niveau de l'application utilisateur, comme nous le présentons dans la section link:aws_ora_fsx_ec2_factors.html["Facteurs à prendre en compte pour le déploiement de bases de données Oracle"]

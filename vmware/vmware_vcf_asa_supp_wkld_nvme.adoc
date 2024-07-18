@@ -48,7 +48,7 @@ Ce scénario nécessite les composants et configurations suivants :
 
 NetApp recommande des designs réseau entièrement redondants pour NVMe/TCP. Le schéma suivant illustre un exemple de configuration redondante, fournissant une tolérance aux pannes pour les systèmes de stockage, les commutateurs, les cartes réseau et les systèmes hôtes. Reportez-vous au NetApp link:https://docs.netapp.com/us-en/ontap/san-config/index.html["Référence de configuration SAN"] pour plus d'informations.
 
-image:vmware-vcf-asa-image74.png["Conception du réseau NVMe-tcp"]
+image::vmware-vcf-asa-image74.png[Conception du réseau NVMe-tcp]
 
 Pour les chemins d'accès multiples et le basculement sur plusieurs chemins, NetApp recommande de disposer d'au moins deux LIF par nœud de stockage dans des réseaux ethernet distincts pour tous les SVM dans des configurations NVMe/TCP.
 
@@ -75,14 +75,14 @@ Effectuez les étapes suivantes pour créer un SVM avec plusieurs LIF pour le tr
 
 . Dans le Gestionnaire système ONTAP, accédez à *Storage VMs* dans le menu de gauche et cliquez sur *+ Add* pour démarrer.
 +
-image:vmware-vcf-asa-image01.png["Cliquer sur +Ajouter pour commencer à créer une SVM"]
+image::vmware-vcf-asa-image01.png[Cliquer sur +Ajouter pour commencer à créer une SVM]
 
 +
 {nbsp}
 
 . Dans l'assistant *Add Storage VM*, indiquez un *Name* pour le SVM, sélectionnez *IP Space*, puis, sous *Access Protocol*, cliquez sur l'onglet *NVMe* et cochez la case *Enable NVMe/TCP*.
 +
-image:vmware-vcf-asa-image75.png["Assistant Add Storage VM : activez NVMe/TCP"]
+image::vmware-vcf-asa-image75.png[Assistant Add Storage VM : activez NVMe/TCP]
 
 +
 {nbsp}
@@ -93,14 +93,14 @@ image:vmware-vcf-asa-image75.png["Assistant Add Storage VM : activez NVMe/TCP"]
 NOTE: Pour les chemins d'accès multiples et le basculement sur plusieurs chemins, NetApp recommande de disposer d'au moins deux LIF par nœud de stockage dans des réseaux Ethernet distincts pour tous les SVM dans des configurations NVMe/TCP.
 
 +
-image:vmware-vcf-asa-image76.png["Renseignez les informations réseau des LIF"]
+image::vmware-vcf-asa-image76.png[Renseignez les informations réseau des LIF]
 
 +
 {nbsp}
 
 . Indiquez si vous souhaitez activer le compte Storage VM Administration (pour les environnements en colocation) et cliquez sur *Save* pour créer le SVM.
 +
-image:vmware-vcf-asa-image04.png["Activer le compte SVM et Terminer"]
+image::vmware-vcf-asa-image04.png[Activer le compte SVM et Terminer]
 
 
 
@@ -129,7 +129,7 @@ Host NQN: nqn.2014-08.com.netapp.sddc:nvme:vcf-wkld-esx01
 . Enregistrez le NQN pour chaque hôte ESXi du cluster
 . Dans le Gestionnaire système ONTAP, naviguez jusqu'à *Namespaces NVMe* dans le menu de gauche et cliquez sur *+ Add* pour démarrer.
 +
-image:vmware-vcf-asa-image93.png["Cliquez sur +Ajouter pour créer l'espace de noms NVMe"]
+image::vmware-vcf-asa-image93.png[Cliquez sur +Ajouter pour créer l'espace de noms NVMe]
 
 +
 {nbsp}
@@ -139,8 +139,7 @@ image:vmware-vcf-asa-image93.png["Cliquez sur +Ajouter pour créer l'espace de n
 
 Cliquez sur *plus d'options* pour configurer des éléments supplémentaires tels que la stratégie de protection des snapshots. Enfin, cliquez sur *Save* pour créer l'espace de noms NVMe.
 
-+
-image:vmware-vcf-asa-image93.png["Cliquez sur +Ajouter pour créer l'espace de noms NVMe"]
++ image::vmware-vcf-asa-image93.png[cliquez sur +Ajouter pour créer un espace de noms NVMe]
 
 ====
 
@@ -156,7 +155,7 @@ Pour créer un nouveau groupe de ports distribués pour chaque réseau NVMe/TCP,
 
 . Dans le client vSphere , accédez à *Inventory > Networking* pour le domaine de charge de travail. Naviguez jusqu'au commutateur distribué existant et choisissez l'action pour créer *Nouveau groupe de ports distribués...*.
 +
-image:vmware-vcf-asa-image22.png["Choisissez de créer un nouveau groupe de ports"]
+image::vmware-vcf-asa-image22.png[Choisissez de créer un nouveau groupe de ports]
 
 +
 {nbsp}
@@ -164,7 +163,7 @@ image:vmware-vcf-asa-image22.png["Choisissez de créer un nouveau groupe de port
 . Dans l'assistant *Nouveau groupe de ports distribués*, entrez un nom pour le nouveau groupe de ports et cliquez sur *Suivant* pour continuer.
 . Sur la page *configurer les paramètres*, remplissez tous les paramètres. Si des VLAN sont utilisés, assurez-vous de fournir l'ID de VLAN correct. Cliquez sur *Suivant* pour continuer.
 +
-image:vmware-vcf-asa-image23.png["Remplir l'ID VLAN"]
+image::vmware-vcf-asa-image23.png[Remplir l'ID VLAN]
 
 +
 {nbsp}
@@ -173,18 +172,18 @@ image:vmware-vcf-asa-image23.png["Remplir l'ID VLAN"]
 . Répétez ce processus pour créer un groupe de ports distribués pour le deuxième réseau NVMe/TCP utilisé et assurez-vous que vous avez entré l'ID *VLAN* correct.
 . Une fois les deux groupes de ports créés, naviguez jusqu'au premier groupe de ports et sélectionnez l'action *Modifier les paramètres...*.
 +
-image:vmware-vcf-asa-image77.png["DPG - permet de modifier les paramètres"]
+image::vmware-vcf-asa-image77.png[DPG - permet de modifier les paramètres]
 
 +
 {nbsp}
 
 . Sur la page *Distributed Port Group - Edit Settings*, accédez à *Teaming and failover* dans le menu de gauche et cliquez sur *uplink2* pour le déplacer vers *uplinks* inutilisés.
 +
-image:vmware-vcf-asa-image78.png["déplacez uplink2 vers inutilisé"]
+image::vmware-vcf-asa-image78.png[déplacez uplink2 vers inutilisé]
 
 . Répétez cette étape pour le deuxième groupe de ports NVMe/TCP. Cependant, cette fois, déplacez *uplink1* vers *uplinks* inutilisés.
 +
-image:vmware-vcf-asa-image79.png["déplacer la liaison montante 1 vers inutilisé"]
+image::vmware-vcf-asa-image79.png[déplacer la liaison montante 1 vers inutilisé]
 
 
 
@@ -196,42 +195,42 @@ Répétez ce processus sur chaque hôte ESXi du domaine de charge de travail.
 
 . À partir du client vSphere, accédez à l'un des hôtes ESXi de l'inventaire du domaine de charge de travail. Dans l'onglet *configurer*, sélectionnez *adaptateurs VMkernel* et cliquez sur *Ajouter réseau...* pour démarrer.
 +
-image:vmware-vcf-asa-image30.png["Démarrez l'assistant d'ajout de réseau"]
+image::vmware-vcf-asa-image30.png[Démarrez l'assistant d'ajout de réseau]
 
 +
 {nbsp}
 
 . Dans la fenêtre *Select connection type*, choisissez *VMkernel Network adapter* et cliquez sur *Next* pour continuer.
 +
-image:vmware-vcf-asa-image08.png["Choisissez VMkernel Network adapter"]
+image::vmware-vcf-asa-image08.png[Choisissez VMkernel Network adapter]
 
 +
 {nbsp}
 
 . Sur la page *Sélectionner le périphérique cible*, choisissez l'un des groupes de ports distribués pour iSCSI créés précédemment.
 +
-image:vmware-vcf-asa-image95.png["Choisissez le groupe de ports cible"]
+image::vmware-vcf-asa-image95.png[Choisissez le groupe de ports cible]
 
 +
 {nbsp}
 
 . Sur la page *Port properties*, cliquez sur la case *NVMe over TCP* et cliquez sur *Next* pour continuer.
 +
-image:vmware-vcf-asa-image96.png["Propriétés du port VMkernel"]
+image::vmware-vcf-asa-image96.png[Propriétés du port VMkernel]
 
 +
 {nbsp}
 
 . Sur la page *IPv4 settings*, remplissez *adresse IP*, *masque de sous-réseau* et fournissez une nouvelle adresse IP de passerelle (uniquement si nécessaire). Cliquez sur *Suivant* pour continuer.
 +
-image:vmware-vcf-asa-image97.png["Paramètres IPv4 VMkernel"]
+image::vmware-vcf-asa-image97.png[Paramètres IPv4 VMkernel]
 
 +
 {nbsp}
 
 . Consultez vos sélections sur la page *prêt à terminer* et cliquez sur *Terminer* pour créer l'adaptateur VMkernel.
 +
-image:vmware-vcf-asa-image98.png["Vérifiez les sélections VMkernel"]
+image::vmware-vcf-asa-image98.png[Vérifiez les sélections VMkernel]
 
 +
 {nbsp}
@@ -249,14 +248,14 @@ Pour installer les adaptateurs NVMe over TCP et découvrir les contrôleurs NVMe
 
 . Dans le client vSphere, accédez à l'un des hôtes ESXi du cluster du domaine de charge de travail. Dans l'onglet *Configure*, cliquez sur *Storage Adapters* dans le menu, puis, dans le menu déroulant *Add Software adapter*, sélectionnez *Add NVMe over TCP adapter*.
 +
-image:vmware-vcf-asa-image99.png["Ajout de l'adaptateur NVMe over TCP"]
+image::vmware-vcf-asa-image99.png[Ajout de l'adaptateur NVMe over TCP]
 
 +
 {nbsp}
 
 . Dans la fenêtre *Add Software NVMe over TCP adapter*, accédez au menu déroulant *Physical Network adapter* et sélectionnez l'adaptateur réseau physique approprié sur lequel activer l'adaptateur NVMe.
 +
-image:vmware-vcf-asa-image100.png["Sélectionnez une carte physique"]
+image::vmware-vcf-asa-image100.png[Sélectionnez une carte physique]
 
 +
 {nbsp}
@@ -264,7 +263,7 @@ image:vmware-vcf-asa-image100.png["Sélectionnez une carte physique"]
 . Répétez cette procédure pour le second réseau attribué au trafic NVMe sur TCP, en attribuant l'adaptateur physique approprié.
 . Sélectionnez l'un des adaptateurs NVMe over TCP récemment installés et, dans l'onglet *contrôleurs*, sélectionnez *Ajouter un contrôleur*.
 +
-image:vmware-vcf-asa-image101.png["Ajouter un contrôleur"]
+image::vmware-vcf-asa-image101.png[Ajouter un contrôleur]
 
 +
 {nbsp}
@@ -276,7 +275,7 @@ image:vmware-vcf-asa-image101.png["Ajouter un contrôleur"]
 ** Dans la liste des contrôleurs découverts, cochez la case des deux contrôleurs dont les adresses réseau sont alignées sur cet adaptateur NVMe over TCP.
 ** Cliquez sur le bouton *OK* pour ajouter les contrôleurs sélectionnés.
 +
-image:vmware-vcf-asa-image102.png["Détection et ajout de contrôleurs"]
+image::vmware-vcf-asa-image102.png[Détection et ajout de contrôleurs]
 
 +
 {nbsp}
@@ -285,7 +284,7 @@ image:vmware-vcf-asa-image102.png["Détection et ajout de contrôleurs"]
 
 . Au bout de quelques secondes, l'espace de nom NVMe s'affiche dans l'onglet Devices.
 +
-image:vmware-vcf-asa-image103.png["Espace de noms NVMe répertorié sous Devices"]
+image::vmware-vcf-asa-image103.png[Espace de noms NVMe répertorié sous Devices]
 
 +
 {nbsp}
@@ -301,7 +300,7 @@ Pour créer un datastore VMFS sur l'espace de noms NVMe, effectuez les opératio
 
 . Dans le client vSphere, accédez à l'un des hôtes ESXi du cluster du domaine de charge de travail. Dans le menu *actions*, sélectionnez *stockage > Nouveau datastore...*.
 +
-image:vmware-vcf-asa-image104.png["Ajout de l'adaptateur NVMe over TCP"]
+image::vmware-vcf-asa-image104.png[Ajout de l'adaptateur NVMe over TCP]
 
 +
 {nbsp}
@@ -309,7 +308,7 @@ image:vmware-vcf-asa-image104.png["Ajout de l'adaptateur NVMe over TCP"]
 . Dans l'assistant *Nouveau datastore*, sélectionnez *VMFS* comme type. Cliquez sur *Suivant* pour continuer.
 . Sur la page *sélection du nom et du périphérique*, indiquez un nom pour le datastore et sélectionnez l'espace de noms NVMe dans la liste des périphériques disponibles.
 +
-image:vmware-vcf-asa-image105.png["Sélection du nom et du périphérique"]
+image::vmware-vcf-asa-image105.png[Sélection du nom et du périphérique]
 
 +
 {nbsp}
@@ -317,7 +316,7 @@ image:vmware-vcf-asa-image105.png["Sélection du nom et du périphérique"]
 . Sur la page *VMFS version*, sélectionnez la version de VMFS pour le datastore.
 . Sur la page *partition configuration*, apportez les modifications souhaitées au schéma de partition par défaut. Cliquez sur *Suivant* pour continuer.
 +
-image:vmware-vcf-asa-image106.png["Configuration des partitions NVMe"]
+image::vmware-vcf-asa-image106.png[Configuration des partitions NVMe]
 
 +
 {nbsp}
@@ -325,7 +324,7 @@ image:vmware-vcf-asa-image106.png["Configuration des partitions NVMe"]
 . Sur la page *prêt à terminer*, passez en revue le résumé et cliquez sur *Terminer* pour créer le datastore.
 . Naviguez jusqu'au nouveau datastore de l'inventaire et cliquez sur l'onglet *hosts*. S'il est configuré correctement, tous les hôtes ESXi du cluster doivent être répertoriés et avoir accès au nouveau datastore.
 +
-image:vmware-vcf-asa-image107.png["Hôtes connectés au datastore"]
+image::vmware-vcf-asa-image107.png[Hôtes connectés au datastore]
 
 +
 {nbsp}

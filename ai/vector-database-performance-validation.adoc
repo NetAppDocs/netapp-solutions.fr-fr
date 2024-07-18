@@ -56,7 +56,7 @@ Veuillez vérifier la méthodologie utilisée pour le milvus et la progression c
 Nous avons effectué la validation de performances suivante sur un cluster autonome milvus avec vectorDB-Bench.
 La connectivité réseau et serveur du cluster autonome milvus est ci-dessous.
 
-image:perf_mivus_standalone.png[""]
+image::perf_mivus_standalone.png[perf mivus autonome]
 
 Dans cette section, nous partageons nos observations et nos résultats des tests de la base de données autonome Milvus.
 .	Nous avons sélectionné DiskANN comme type d'index pour ces tests.
@@ -98,7 +98,7 @@ Optimisation post-insertion | D'IOPS | < 1,000
 |===
 Le résultat vectorDB-Bench est inférieur à.
 
-image:vector_db_result_standalone.png[""]
+image::vector_db_result_standalone.png[vecteur db résultat autonome]
 
 Depuis la validation des performances de l'instance Milvus autonome, il est évident que la configuration actuelle est insuffisante pour prendre en charge un jeu de données de 5 millions de vecteurs avec une dimension de 1536. nous avons déterminé que le stockage possède les ressources adéquates et ne constitue pas un goulet d'étranglement dans le système.
 
@@ -110,18 +110,20 @@ Cette section traite du déploiement d'un cluster Milvus dans un environnement K
 
 Les sections suivantes présentent un détail des déploiements VMware vSphere et Kubernetes.
 
-image:milvus_vmware_perf.png[""] image:milvus_cluster_perf.png[""]
+image::milvus_vmware_perf.png[performances de milvus vmware]
+
+image::milvus_cluster_perf.png[perf. cluster milvus]
 
 Dans cette section, nous présentons nos observations et nos résultats des tests de la base de données Milvus.
 * Le type d'index utilisé était DiskANN.
 * Le tableau ci-dessous fournit une comparaison entre les déploiements autonomes et les déploiements en grappe lorsqu'ils travaillent avec 5 millions de vecteurs à une dimension de 1536. Nous avons observé que le temps nécessaire pour l'ingestion et l'optimisation après insertion des données était plus faible dans le déploiement du cluster. Au cours du déploiement du cluster, la latence du 99e centile pour les requêtes a été divisée par six par rapport à une configuration autonome.
 * Bien que le taux de requêtes par seconde (QPS) ait été plus élevé dans le déploiement du cluster, il n'était pas au niveau souhaité.
 
-image:milvus_standalone_cluster_perf.png[""]
+image::milvus_standalone_cluster_perf.png[perf. cluster autonome milvus]
 
 Les images ci-dessous présentent diverses mesures de stockage, notamment la latence du cluster de stockage et les IOPS totales (opérations d'entrée/sortie par seconde).
 
-image:storagecluster_latency_iops_milcus.png[""]
+image::storagecluster_latency_iops_milcus.png[latence en cluster iops millisecondes]
 
 La section suivante présente les principaux metrics de performance du stockage.
 
@@ -165,7 +167,7 @@ Sur la base de la validation des performances du cluster Milvus autonome et du c
 Nous avons effectué les actions suivantes sur PostgreSQL(pgvecto.RS) à l'aide de VectorDB-Bench :
 Les détails concernant la connectivité réseau et serveur de PostgreSQL (plus précisément, pgvecto.RS) sont les suivants :
 
-image:pgvecto_perf_network_connectivity.png[""]
+image::pgvecto_perf_network_connectivity.png[connectivité réseau pgvecto perf]
 
 Dans cette section, nous partageons nos observations et nos résultats des tests de la base de données PostgreSQL, en particulier à l'aide de pgvecto.RS.
 * Nous avons choisi HNSW comme type d'index pour ces tests parce qu'au moment des tests, DiskANN n'était pas disponible pour pgvecto.RS.
@@ -174,16 +176,16 @@ Dans cette section, nous partageons nos observations et nos résultats des tests
 
 Les images ci-dessous offrent une vue d'ensemble des différentes mesures de stockage, y compris les IOPS totales de latence du cluster de stockage (opérations d'entrée/sortie par seconde).
 
-image:pgvecto_storage_iops_latency.png[""]
+image::pgvecto_storage_iops_latency.png[latence des iops de stockage pgvecto]
 
  The following section presents the key storage performance metrics.
-image:pgvecto_storage_perf_metrics.png[""]
+image::pgvecto_storage_perf_metrics.png[metrics de performances de stockage pgvecto]
 
 
 
 === Comparaison des performances entre milvus et postgres sur le banc de base de données vectoriel
 
-image:perf_comp_milvus_postgres.png[""]
+image::perf_comp_milvus_postgres.png[post. comp. perf. milvus]
 
 Sur la base de notre validation des performances de Milvus et PostgreSQL à l'aide de VectorDBBench, nous avons observé ce qui suit :
 

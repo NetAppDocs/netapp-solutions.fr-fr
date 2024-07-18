@@ -89,14 +89,14 @@ Pour déployer les outils ONTAP pour VMware vSphere, procédez comme suit :
 . Connectez-vous à l'appliance vCenter pour le domaine de gestion VCF.
 . Dans l'interface de l'appliance vCenter, cliquez avec le bouton droit de la souris sur le cluster de gestion et sélectionnez *déployer le modèle OVF…*
 +
-image:vmware-vcf-aff-image21.png["Déployer le modèle OVF..."]
+image::vmware-vcf-aff-image21.png[Déployer le modèle OVF...]
 
 +
 {nbsp}
 
 . Dans l'assistant *déployer modèle OVF*, cliquez sur le bouton radio *fichier local* et sélectionnez le fichier OVA des outils ONTAP téléchargé à l'étape précédente.
 +
-image:vmware-vcf-aff-image22.png["Sélectionnez fichier OVA"]
+image::vmware-vcf-aff-image22.png[Sélectionnez fichier OVA]
 
 +
 {nbsp}
@@ -104,14 +104,14 @@ image:vmware-vcf-aff-image22.png["Sélectionnez fichier OVA"]
 . Pour les étapes 2 à 5 de l'assistant, sélectionnez un nom et un dossier pour la machine virtuelle, sélectionnez la ressource de calcul, vérifiez les détails et acceptez le contrat de licence.
 . Pour l'emplacement de stockage des fichiers de configuration et des fichiers disque, sélectionnez le datastore VSAN du cluster VCF Management Domain.
 +
-image:vmware-vcf-aff-image23.png["Sélectionnez fichier OVA"]
+image::vmware-vcf-aff-image23.png[Sélectionnez fichier OVA]
 
 +
 {nbsp}
 
 . Sur la page Sélectionner le réseau, sélectionnez le réseau utilisé pour le trafic de gestion.
 +
-image:vmware-vcf-aff-image24.png["Sélectionnez réseau"]
+image::vmware-vcf-aff-image24.png[Sélectionnez réseau]
 
 +
 {nbsp}
@@ -129,10 +129,10 @@ image:vmware-vcf-aff-image24.png["Sélectionnez réseau"]
 Une fois terminé, cliquez sur *Suivant* pour continuer.
 
 +
-image:vmware-vcf-aff-image25.png["Personnaliser le modèle OTV 1"]
+image::vmware-vcf-aff-image25.png[Personnaliser le modèle OTV 1]
 
 +
-image:vmware-vcf-aff-image26.png["Personnaliser le modèle OTV 2"]
+image::vmware-vcf-aff-image26.png[Personnaliser le modèle OTV 2]
 
 +
 {nbsp}
@@ -151,16 +151,16 @@ Plusieurs étapes doivent être effectuées à l'aide de l'interface swagger-UI.
 . Accédez à l'interface utilisateur de swagger en accédant à https://otv_ip:8143/api/rest/swagger-ui.html[] dans un navigateur web.
 . Faites défiler jusqu'à *User Authentication: API for user Authentication* et sélectionnez *Post /2.0/VCF/user/login*.
 +
-image:vmware-vcf-aff-image27.png["Post /2.0/VCF/user/login"]
+image::vmware-vcf-aff-image27.png[Post /2.0/VCF/user/login]
 
 . Sous *Type de contenu paramètre*, changez le type de contenu en *application/json*.
 . Sous *vcfLoginRequest*, entrez le nom d’utilisateur et le mot de passe de l’appliance OTV.
 +
-image:vmware-vcf-aff-image28.png["Saisissez le nom d'utilisateur et le mot de passe OTV"]
+image::vmware-vcf-aff-image28.png[Saisissez le nom d'utilisateur et le mot de passe OTV]
 
 . Cliquez sur le bouton *essayer!* et, sous *en-tête de réponse*, copiez la chaîne de texte *"autorisation":*.
 +
-image:vmware-vcf-aff-image29.png["copier l'en-tête de réponse d'autorisation"]
+image::vmware-vcf-aff-image29.png[copier l'en-tête de réponse d'autorisation]
 
 
 
@@ -172,12 +172,12 @@ L'étape suivante consiste à obtenir le certificat SSL public du système de st
 
 . Dans l'interface utilisateur swagger, localisez *Security: API liées aux certificats* et sélectionnez *get /3.0/Security/certificates/{host}/Server-certificate*.
 +
-image:vmware-vcf-aff-image30.png["Obtenir /3.0/Security/certificates/{host}/Server-certificate"]
+image::vmware-vcf-aff-image30.png[Obtenir /3.0/Security/certificates/{host}/Server-certificate]
 
 . Dans le champ *appliance-api-token*, collez la chaîne de texte obtenue à l'étape précédente.
 . Dans le champ *host*, saisissez l'adresse IP du système de stockage ONTAP à partir duquel vous souhaitez obtenir le certificat SSL public.
 +
-image:vmware-vcf-aff-image31.png["copier le certificat ssl public"]
+image::vmware-vcf-aff-image31.png[copier le certificat ssl public]
 
 
 
@@ -191,7 +191,7 @@ Ajoutez le système de stockage ONTAP à OTV à l'aide du jeton d'api de l'appli
 . Dans le champ Appliance-api-token, remplissez le jeton VCF obtenu à l'étape précédente. Notez que le jeton expirera éventuellement, il peut donc être nécessaire d'obtenir un nouveau jeton périodiquement.
 . Dans la zone de texte *controllerRequest*, indiquez l'adresse IP du système de stockage ONTAP, le nom d'utilisateur, le mot de passe et le certificat SSL public obtenu à l'étape précédente.
 +
-image:vmware-vcf-aff-image32.png["fournir des informations pour ajouter un système de stockage"]
+image::vmware-vcf-aff-image32.png[fournir des informations pour ajouter un système de stockage]
 
 . Cliquez sur le bouton *essayez!* pour ajouter le système de stockage à OTV.
 
@@ -204,7 +204,7 @@ L'étape suivante consiste à créer le conteneur vVol sur le système de stocka
 
 . Dans l'interface utilisateur swagger, faites défiler jusqu'à Container: API liées aux conteneurs et sélectionnez Post /2.0/admin/conteneurs.
 +
-image:vmware-vcf-aff-image33.png["/2.0/admin/conteneurs"]
+image::vmware-vcf-aff-image33.png[/2.0/admin/conteneurs]
 
 . Dans le champ *appliance-api-token*, remplissez le jeton VCF obtenu à l'étape précédente. Notez que le jeton expirera éventuellement, il peut donc être nécessaire d'obtenir un nouveau jeton périodiquement.
 . Dans la zone ContainerRequest, remplissez les champs obligatoires suivants :
@@ -219,7 +219,7 @@ image:vmware-vcf-aff-image33.png["/2.0/admin/conteneurs"]
 
 
 
-image:vmware-vcf-aff-image34.png["Formulaire de demande de conteneur vvol"]
+image::vmware-vcf-aff-image34.png[Formulaire de demande de conteneur vvol]
 
 4 cliquez sur *essayez!* pour exécuter l'instruction et créer le conteneur vvol.
 

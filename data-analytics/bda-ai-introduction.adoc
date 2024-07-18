@@ -46,7 +46,7 @@ Le module d'analytique sur place (NIPAM) de NetApp sert de pilote pour que les c
 
 Hadoop Distributed Copy (DistCp) est un outil de copie distribué utilisé pour les tâches de gestion inter-cluster et intra-cluster volumineuses. Cet outil utilise MapReduce pour la distribution des données, le traitement des erreurs et le reporting. Elle étend la liste des fichiers et répertoires et les saisit pour mapper les tâches afin de copier les données de la liste source. L'image ci-dessous présente l'opération DistCp dans HDFS et non HDFS.
 
-image:bda-ai-image1.png[""]
+image::bda-ai-image1.png[image bda ai 1]
 
 Le DistCp Hadoop déplace les données entre les deux systèmes HDFS sans utiliser de pilote supplémentaire. NetApp est le pilote des systèmes non HDFS. Pour une destination NFS, NIPAM fournit au pilote la copie des données utilisées par Hadoop DistCp pour communiquer avec les destinations NFS lors de la copie des données.
 
@@ -62,7 +62,7 @@ NetApp Cloud Volumes Service est un service de fichiers cloud natif offrant des 
 
 NetApp XCP est un logiciel client qui permet une migration de données rapide et fiable, de tout type à NetApp et de NetApp à NetApp. Cet outil est conçu pour copier un grand nombre de données NAS non structurées depuis n'importe quel système NAS vers un contrôleur de stockage NetApp. L'outil de migration XCP utilise un moteur de streaming d'E/S multi-cœurs capable de traiter de nombreuses demandes en parallèle, comme la migration des données, la liste des fichiers ou des répertoires et la génération de rapports sur l'espace. Il s'agit de l'outil de migration des données NetApp par défaut. Vous pouvez utiliser XCP pour copier les données d'un cluster Hadoop et d'HPC vers un stockage NFS NetApp. Le schéma ci-dessous présente le transfert des données d'un cluster Hadoop et HPC vers un volume NFS NetApp utilisant XCP.
 
-image:bda-ai-image2.png[""]
+image::bda-ai-image2.png[image bda ai 2]
 
 
 

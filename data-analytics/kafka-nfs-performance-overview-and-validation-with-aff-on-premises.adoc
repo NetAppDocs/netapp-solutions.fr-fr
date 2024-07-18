@@ -18,7 +18,7 @@ Sur site, nous avons utilisé le contrôleur de stockage NetApp AFF A900 avec ON
 
 Nous avons utilisé Kafka 6.2.0 confluent pour évaluer le système AFF A900. Le cluster comporte huit nœuds de broker et trois nœuds de zookeeper. Pour les tests de performances, nous avons utilisé cinq nœuds workers OMB.
 
-image:kafka-nfs-image32.png[""]
+image::kafka-nfs-image32.png[image nfs kafka 32]
 
 
 
@@ -121,11 +121,11 @@ Nous avons évalué le système AFF A900 à l'aide du banc d'essai OpenMessaging
 
 Grâce à Kafka et au AFF A900, les performances stables ont atteint un débit moyen supérieur à 3,4 Gbit/s pour les producteurs et les consommateurs. Il s'agit de plus de 3.4 millions de messages sur le cluster Kafka. En visualisant le débit continu en octets par seconde pour BrokerTopicMetrics, nous constatons l'excellente performance à l'état stable et le trafic pris en charge par le système AFF A900.
 
-image:kafka-nfs-image33.png["Ce graphique présente le débit réseau du broker."]
+image::kafka-nfs-image33.png[Ce graphique présente le débit réseau du broker.]
 
 Cela s'aligne parfaitement sur la vue des messages transmis par sujet. Le graphique suivant présente une répartition par thème. Dans la configuration testée, nous avons vu près de 900 000 messages par sujet sur quatre sujets.
 
-image:kafka-nfs-image34.png["Ce graphique présente le débit réseau du broker."]
+image::kafka-nfs-image34.png[Ce graphique présente le débit réseau du broker.]
 
 
 
@@ -137,7 +137,7 @@ Pour comprendre les limites de stockage du débit consommateur dans cette config
 
 Lors de la partie réservée aux producteurs de cette mesure, nous avons constaté un débit de pointe élevé qui a repoussé les limites des performances d'A900 (lorsque les autres ressources des courtiers n'étaient pas saturées pour desservir le trafic des producteurs et du consommateur).
 
-image:kafka-nfs-image35.png[""]
+image::kafka-nfs-image35.png[image nfs kafka 35]
 
 
 NOTE: La taille des messages a été portée à 16 000 pour cette mesure, afin de limiter les frais par message et d'optimiser le débit de stockage aux points de montage NFS.

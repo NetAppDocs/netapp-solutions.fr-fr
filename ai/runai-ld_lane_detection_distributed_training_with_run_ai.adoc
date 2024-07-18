@@ -39,7 +39,7 @@ Pour la configuration et l'installation du cluster AKS, accédez à https://docs
 .. Ajouter le nœud système principal nommé `agentpool` au `Standard_DS2_v2` taille. Utilisez les trois nœuds par défaut.
 .. Ajouter un nœud de travail `gpupool` avec `the Standard_NC6s_v3` de taille de pool. Utilisez trois nœuds au minimum pour les nœuds GPU.
 +
-image:runai-ld_image3.png[""]
+image::runai-ld_image3.png[runai ld image3]
 
 +
 
@@ -66,7 +66,7 @@ kubectl get nodes
 NOTE: Si les six nœuds sont opérationnels comme indiqué ici, votre cluster AKS est prêt et connecté à votre environnement local.
 
 +
-image:runai-ld_image4.png[""]
+image::runai-ld_image4.png[runai ld image4]
 
 
 
@@ -78,15 +78,15 @@ Pour créer un sous-réseau délégué pour Azure NetApp Files, suivez cette sé
 
 . Accédez aux réseaux virtuels depuis le portail Azure. Trouvez votre nouveau réseau virtuel. Il devrait avoir un préfixe tel que aks-vnet, comme indiqué ici. Cliquez sur le nom du réseau virtuel.
 +
-image:runai-ld_image5.png[""]
+image::runai-ld_image5.png[runai ld image5]
 
 . Cliquez sur sous-réseaux et sélectionnez +sous-réseau dans la barre d'outils supérieure.
 +
-image:runai-ld_image6.png[""]
+image::runai-ld_image6.png[runai ld image6]
 
 . Indiquez au sous-réseau un nom tel que `ANF.sn` Et sous l'en-tête délégation de sous-réseau, sélectionnez Microsoft.NetApp/volumes. Ne rien changer. Cliquez sur OK.
 +
-image:runai-ld_image7.png[""]
+image::runai-ld_image7.png[runai ld image7]
 
 
 
@@ -295,7 +295,7 @@ kubectl get sc azurenetappfiles
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image8.png[""]
+image::runai-ld_image8.png[runai ld image8]
 
 
 
@@ -332,7 +332,7 @@ kubectl create -f netapp-volume-snapshot-class.yaml
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image9.png[""]
+image::runai-ld_image9.png[runai ld image9]
 
 . Vérifier que la classe de copie Snapshot du volume a été créée à l'aide de la commande suivante :
 +
@@ -343,7 +343,7 @@ kubectl get volumesnapshotclass
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image10.png[""]
+image::runai-ld_image10.png[runai ld image10]
 
 
 
@@ -356,7 +356,7 @@ Pour installer RUN:ai, procédez comme suit :
 . https://docs.run.ai/Administrator/Cluster-Setup/cluster-install/["Installez le cluster RUN:ai sur AKS"^].
 . Accédez à app.runai.ai, cliquez sur Créer un nouveau projet et nommez-le détection de voie. Un namespace est créé sur un cluster K8s à partir de `runai`- suivi du nom du projet. Dans ce cas, l'espace de noms créé serait runai-Lane-détection.
 +
-image:runai-ld_image11.png[""]
+image::runai-ld_image11.png[runai ld image11]
 
 . https://docs.run.ai/Administrator/Cluster-Setup/cluster-install/["INSTALLER RUN:AI CLI"^].
 . Sur votre terminal, définissez la détection de voie comme EXÉCUTION par défaut : projet ai à l'aide de la commande suivante :
@@ -368,7 +368,7 @@ image:runai-ld_image11.png[""]
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image12.png[""]
+image::runai-ld_image12.png[runai ld image12]
 
 . Créer ClusterRole et ClusterRoleBinding pour l'espace de noms du projet (par exemple, `lane-detection)` donc le compte de service par défaut appartenant à `runai-lane-detection` l'espace de noms est autorisé à effectuer `volumesnapshot` opérations durant l'exécution du travail :
 +
@@ -381,7 +381,7 @@ kubectl get namespaces
 La sortie doit apparaître comme dans l'exemple suivant :
 
 +
-image:runai-ld_image13.png[""]
+image::runai-ld_image13.png[runai ld image13]
 
 
 
@@ -413,7 +413,7 @@ cd ./lane-detection-SCNN-horovod/data
 ....
 .. Modifier `build_image.sh` script shell et remplacez le référentiel docker par le vôtre. Par exemple, remplacer `muneer7589` avec le nom de votre référentiel docker. Vous pouvez également modifier le nom et LA BALISE de l'image docker (par exemple, `download-tusimple` et `1.0`) :
 +
-image:runai-ld_image14.png[""]
+image::runai-ld_image14.png[runai ld image14]
 
 .. Exécutez le script pour créer l'image docker et l'envoyer dans le référentiel docker à l'aide des commandes suivantes :
 +
@@ -451,7 +451,7 @@ runai submit
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image15.png[""]
+image::runai-ld_image15.png[runai ld image15]
 
 .. Répertorier les travaux RUN:ai soumis.
 +
@@ -459,7 +459,7 @@ image:runai-ld_image15.png[""]
 runai list jobs
 ....
 +
-image:runai-ld_image16.png[""]
+image::runai-ld_image16.png[runai ld image16]
 
 .. Vérifiez les journaux des travaux soumis.
 +
@@ -467,7 +467,7 @@ image:runai-ld_image16.png[""]
 runai logs download-tusimple-data -t 10
 ....
 +
-image:runai-ld_image17.png[""]
+image::runai-ld_image17.png[runai ld image17]
 
 .. Énumérez le `pvc` créé. Utilisez-le `pvc` commande pour la formation à l'étape suivante.
 +
@@ -478,11 +478,11 @@ kubectl get pvc | grep download-tusimple-data
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image18.png[""]
+image::runai-ld_image18.png[runai ld image18]
 
 .. Vérifiez le travail EN COURS D'EXÉCUTION : ai UI (ou `app.run.ai`).
 +
-image:runai-ld_image19.png[""]
+image::runai-ld_image19.png[runai ld image19]
 
 
 
@@ -508,7 +508,7 @@ cd ./lane-detection-SCNN-horovod
 ....
 .. Modifiez le `build_image.sh` script shell et remplacez le référentiel docker par le vôtre (par exemple, remplacez-le `muneer7589` avec le nom de votre référentiel docker). Vous pouvez également modifier le nom et LA BALISE de l'image docker (`dist-lane-detection` et `3.1, for example)`.
 +
-image:runai-ld_image20.png[""]
+image::runai-ld_image20.png[runai ld image20]
 
 .. Exécutez le script pour créer l'image docker et l'envoyer dans le référentiel docker.
 +
@@ -527,7 +527,7 @@ chmod +x build_image.sh
 kubectl get pvc | grep download-tusimple-data
 ....
 +
-image:runai-ld_image21.png[""]
+image::runai-ld_image21.png[runai ld image21]
 
 .. Corriger le volume et mettre à jour le mode d'accès à ReadWriteMany (remplacer le nom du volume par le vôtre dans la commande suivante) :
 +
@@ -602,7 +602,7 @@ runai submit-mpi
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image22.png[""]
+image::runai-ld_image22.png[runai ld image22]
 
 .. Répertorier le travail soumis.
 +
@@ -610,7 +610,7 @@ image:runai-ld_image22.png[""]
 runai list jobs
 ....
 +
-image:runai-ld_image23.png[""]
+image::runai-ld_image23.png[runai ld image23]
 
 .. Journaux des travaux soumis :
 +
@@ -618,14 +618,14 @@ image:runai-ld_image23.png[""]
 runai logs dist-lane-detection-training
 ....
 +
-image:runai-ld_image24.png[""]
+image::runai-ld_image24.png[runai ld image24]
 
 .. Consulter la tâche d'entraînement EXÉCUTÉE : GUI d'IA (ou app.runai.ai): SESSIONS : tableau de bord d'IA, comme le montre les figures ci-dessous). La première figure présente trois processeurs graphiques alloués à la tâche d'entraînement distribuée sur trois nœuds sur AKS, puis la seconde SESSION :ai Jobs :
 +
-image:runai-ld_image25.png[""]
+image::runai-ld_image25.png[runai ld image25]
 
 +
-image:runai-ld_image26.png[""]
+image::runai-ld_image26.png[runai ld image26]
 
 .. Une fois l'entraînement terminé, vérifiez la copie NetApp Snapshot créée et associée à L'EXÉCUTION du travail : IA.
 +
@@ -633,7 +633,7 @@ image:runai-ld_image26.png[""]
 runai logs dist-lane-detection-training --tail 1
 ....
 +
-image:runai-ld_image27.png[""]
+image::runai-ld_image27.png[runai ld image27]
 
 +
 ....
@@ -661,7 +661,7 @@ cd ./lane-detection-SCNN-horovod
 ....
 . Modifier `restore-snaphot-pvc.yaml` et mettre à jour `dataSource` `name` Champ de la copie Snapshot à partir duquel vous souhaitez restaurer les données. Vous pouvez également modifier le nom du volume persistant dans lequel les données seront restaurées, dans cet exemple son `restored-tusimple`.
 +
-image:runai-ld_image29.png[""]
+image::runai-ld_image29.png[runai ld image29]
 
 . Créez un nouveau PVC à l'aide de `restore-snapshot-pvc.yaml`.
 +
@@ -672,7 +672,7 @@ kubectl create -f restore-snapshot-pvc.yaml
 Le résultat de la commande doit ressembler à l'exemple suivant :
 
 +
-image:runai-ld_image30.png[""]
+image::runai-ld_image30.png[runai ld image30]
 
 . Si vous souhaitez utiliser les données restaurées pour l'entraînement, la candidature reste la même qu'auparavant. Remplacez uniquement la `PVC_NAME` avec le restauré `PVC_NAME` lors de la soumission du travail de formation, comme l'indique les commandes suivantes :
 +
@@ -708,35 +708,35 @@ Les chiffres présentés dans la suite de ce document illustrent des exemples de
 
 La figure ci-dessous illustre l'allocation de 1 GPU et l'utilisation de la mémoire.
 
-image:runai-ld_image31.png[""]
+image::runai-ld_image31.png[runai ld image31]
 
 La figure ci-dessous illustre l'utilisation des GPU d'un nœud.
 
-image:runai-ld_image32.png[""]
+image::runai-ld_image32.png[runai ld image32]
 
 La figure ci-dessous illustre la taille de la mémoire d'un nœud unique (16 Go).
 
-image:runai-ld_image33.png[""]
+image::runai-ld_image33.png[runai ld image33]
 
 La figure ci-dessous illustre le nombre de GPU d'un nœud (1).
 
-image:runai-ld_image34.png[""]
+image::runai-ld_image34.png[runai ld image34]
 
 La figure ci-dessous illustre l'allocation de GPU d'un nœud (%).
 
-image:runai-ld_image35.png[""]
+image::runai-ld_image35.png[runai ld image35]
 
 La figure ci-dessous illustre trois GPU répartis sur trois nœuds : l'allocation des GPU et la mémoire.
 
-image:runai-ld_image36.png[""]
+image::runai-ld_image36.png[runai ld image36]
 
 La figure ci-dessous illustre le taux d'utilisation de trois GPU sur trois nœuds (%).
 
-image:runai-ld_image37.png[""]
+image::runai-ld_image37.png[runai ld image37]
 
 La figure ci-dessous illustre l'utilisation de la mémoire de trois nœuds sur trois GPU (%).
 
-image:runai-ld_image38.png[""]
+image::runai-ld_image38.png[runai ld image38]
 
 
 
@@ -752,11 +752,11 @@ Pour modifier le niveau de service d'un volume, procédez comme suit :
 
 . Sur la page volumes, cliquez avec le bouton droit de la souris sur le volume dont vous souhaitez modifier le niveau de service. Sélectionnez Modifier le pool.
 +
-image:runai-ld_image39.png[""]
+image::runai-ld_image39.png[runai ld image39]
 
 . Dans la fenêtre change Pool, sélectionnez le pool de capacité vers lequel vous souhaitez déplacer le volume. Cliquez ensuite sur OK.
 +
-image:runai-ld_image40.png[""]
+image::runai-ld_image40.png[runai ld image40]
 
 
 

@@ -34,7 +34,7 @@ Dans les data centers accélérés par GPU, les entreprises peuvent utiliser NVI
 
 Cette solution présente les étapes détaillées du traitement des fichiers audio, de l'entraînement des modèles NLP, de l'apprentissage par transfert et de la gestion des données. Le pipeline de bout en bout qui en résulte génère un résumé des sentiments qui s'affiche en temps réel sur les tableaux de bord des agents du support humain.
 
-image:ai-sent-image4.png[""]
+image::ai-sent-image4.png[ai envoyé image4]
 
 
 
@@ -233,12 +233,12 @@ Cette solution s'applique aux cas d'utilisation suivants :
 * Analyse des sentiments
 
 
-image:ai-sent-image6.png[""]
+image::ai-sent-image6.png[ai envoyé l'image6]
 
 L'utilisation de texte à texte commence par l'acquisition de fichiers audio pour les centres de support. Ce son est ensuite traité pour s'adapter à la structure requise par RIVA. Si les fichiers audio n'ont pas déjà été divisés en unités d'analyse, cela doit être fait avant de transmettre l'audio à RIVA. Une fois le fichier audio traité, il est transmis au serveur RIVA en tant qu'appel API. Le serveur utilise l'un des nombreux modèles qu'il héberge et renvoie une réponse. Ce message vocal au texte (fait partie de la reconnaissance vocale automatique) renvoie une représentation textuelle de l'audio. À partir de là, le pipeline passe à la partie analyse de sentiment.
 
 Pour l'analyse des sentiments, la sortie du texte de la reconnaissance vocale automatique sert d'entrée à la classification de texte. La classification de texte est le composant NVIDIA permettant de classer le texte dans n'importe quelle catégorie. Les catégories de sentiments varient de positif à négatif pour les conversations du centre de support. Les performances des modèles peuvent être évaluées à l'aide d'un jeu de retenue pour déterminer la réussite de l'étape de réglage précis.
 
-image:ai-sent-image8.png[""]
+image::ai-sent-image8.png[ai envoyé l'image8]
 
 Un pipeline similaire est utilisé à la fois pour l'analyse de la parole au texte et de l'opinion dans la boîte à outils TAO. La différence majeure réside dans l'utilisation d'étiquettes nécessaires au réglage précis des modèles. Le pipeline TAT Toolkit commence par le traitement des fichiers de données. Puis les modèles pré-entraînés (provenant du https://ngc.nvidia.com/catalog["Catalogue NVIDIA NGC"^]) sont affinée à l'aide des données du centre de support. Les modèles optimisés sont évalués en fonction des metrics de performance correspondants. S'ils sont plus performants que les modèles pré-entraînés, ils sont déployés sur le serveur RIVA.

@@ -196,7 +196,7 @@ https://docs.aws.amazon.com/cli/latest/reference/fsx/update-file-system.html[]
 La figure suivante présente l'architecture finale d'un cluster Kafka à base de FSX pour NetApp ONTAP :
 
 +
-image:aws-fsx-kafka-arch1.png["Cette image montre l'architecture d'un cluster Kafka à base de FSxN."]
+image::aws-fsx-kafka-arch1.png[Cette image montre l'architecture d'un cluster Kafka à base de FSxN.]
 
 +
 ** Calcul. Nous avons utilisé un cluster Kafka à trois nœuds avec un ensemble de zoocontrôle à trois nœuds qui s'exécute sur des serveurs dédiés. Chaque courtier disposait de six points de montage NFS pour six volumes sur l'instance FSX pour NetApp ONTAP.
@@ -254,12 +254,12 @@ Le pilote de synchronisation peut générer un débit constant lorsque les journ
 
 Ces valeurs de débit sont générées pour la configuration AWS appropriée. Pour des besoins de performances plus élevés, il est possible de renforcer l'évolutivité des types d'instances et de les ajuster davantage pour obtenir un meilleur débit. Le débit total ou le taux total est la combinaison du taux de production et du taux de consommation.
 
-image:aws-fsxn-performance-rf-1-rf-3.png["Cette image montre les performances de kafka avec RF1 et RF3"]
+image::aws-fsxn-performance-rf-1-rf-3.png[Cette image montre les performances de kafka avec RF1 et RF3]
 
 Le tableau ci-dessous présente la FSX 2 Go/s pour NetApp ONTAP et la performance de 4 Go/s pour le facteur de réplication Kafka 3. Le facteur de réplication 3 effectue l'opération de lecture et d'écriture trois fois sur FSX pour le stockage NetApp ONTAP. Le débit total du pilote de débit est de 881 Mo/s, ce qui permet de lire et d'écrire le fonctionnement Kafka à environ 2.64 Go/s sur le système de fichiers FSX for NetApp ONTAP de 2 Go/s. Le débit total du pilote de débit est de 1328 Mo/s, ce qui permet de lire et d'écrire le fonctionnement kafka à environ 3.98 Go/s. Les performances de Kafka sont linéaires et évolutives en fonction du débit de FSX pour NetApp ONTAP.
 
-image:aws-fsxn-2gb-4gb-scale.png["Cette image montre les performances d'évolutivité horizontale de 2 Go/s et 4 Go/s."]
+image::aws-fsxn-2gb-4gb-scale.png[Cette image montre les performances d'évolutivité horizontale de 2 Go/s et 4 Go/s.]
 
 Le tableau ci-dessous présente les performances entre une instance EC2 et FSX pour NetApp ONTAP (facteur de réplication Kafka : 3)
 
-image:aws-fsxn-ec2-fsxn-comparition.png["Cette image montre la comparaison des performances d'EC2 par rapport à FSxN dans RF3."]
+image::aws-fsxn-ec2-fsxn-comparition.png[Cette image montre la comparaison des performances d'EC2 par rapport à FSxN dans RF3.]

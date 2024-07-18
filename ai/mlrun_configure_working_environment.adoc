@@ -60,12 +60,12 @@ Ce bloc-notes crée deux images que nous utilisons dans le pipeline.
 * `iguazio/netapp.` Utilisé pour traiter les tâches DE ML.
 
 
-image:mlrun_image13.png[""]
+image::mlrun_image13.png[mlrun image13]
 
 * `netapp/pipeline`. Contient des utilitaires pour la gestion des copies NetApp Snapshot.
 
 
-image:mlrun_image14.png[""]
+image::mlrun_image14.png[mlrun image14]
 
 
 
@@ -98,7 +98,7 @@ Nous avons utilisé plusieurs ordinateurs portables pour construire le pipeline 
 
 Le résultat souhaité est un pipeline qui forme un modèle basé sur une copie Snapshot des données et déploie le modèle pour l'inférence. Un schéma fonctionnel d'un pipeline MLRun terminé est présenté dans l'image suivante.
 
-image:mlrun_image15.png[""]
+image::mlrun_image15.png[mlrun image15]
 
 
 
@@ -331,26 +331,26 @@ prep = data_prep.as_step(name='data-prep', handler='handler',params=params,
 |===
 Vous pouvez exécuter `pipeline.ipynb` de haut en bas. Vous pouvez ensuite accéder à l'onglet pipelines à partir du tableau de bord Iguazio pour contrôler la progression comme indiqué dans l'onglet Iguazio Dashboard pipelines.
 
-image:mlrun_image16.png[""]
+image::mlrun_image16.png[mlrun image16]
 
 Comme nous avons enregistré la précision de l'étape d'entraînement à chaque série, nous avons un dossier de précision pour chaque expérience, tel qu'indiqué dans le dossier de précision de l'entraînement.
 
-image:mlrun_image17.png[""]
+image::mlrun_image17.png[mlrun image17]
 
 Si vous sélectionnez l'étape Snapshot, le nom de la copie Snapshot utilisée pour exécuter cette expérience s'affiche.
 
-image:mlrun_image18.png[""]
+image::mlrun_image18.png[mlrun image18]
 
 L'étape décrite présente des artéfacts visuels pour explorer les mesures que nous avons utilisées. Vous pouvez développer pour afficher le tracé complet comme illustré dans l'image suivante.
 
-image:mlrun_image19.png[""]
+image::mlrun_image19.png[mlrun image19]
 
 La base de données de l'API MLRun assure également le suivi des entrées, des sorties et des artefacts pour chaque exécution organisée par projet. L'image suivante présente un exemple d'entrées, de sorties et d'artefacts pour chaque séquence.
 
-image:mlrun_image20.png[""]
+image::mlrun_image20.png[mlrun image20]
 
 Pour chaque tâche, nous stockons des détails supplémentaires.
 
-image:mlrun_image21.png[""]
+image::mlrun_image21.png[mlrun image21]
 
 Il y a plus d'informations sur MLRun que ce document. Les artefacts al, y compris la définition des étapes et fonctions, peuvent être enregistrés dans la base de données API, versionnés et appelés individuellement ou en tant que projet complet. Les projets peuvent également être enregistrés et transmis à Git pour une utilisation ultérieure. Nous vous encourageons à en savoir plus sur le https://github.com/mlrun/mlrun["MLRun site GitHub"^].

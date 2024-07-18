@@ -41,26 +41,26 @@ Les performances du stockage jouent un rôle important dans les performances glo
 
 En reliant directement des LUN de stockage à la machine virtuelle invitée par NFS ou iSCSI pour les charges de travail de bases de données virtualisées, vous bénéficiez généralement de performances supérieures à celles du stockage alloué via VMDK. NetApp recommande l'organisation de stockage d'une importante base de données SQL Server sur les LUN décrits dans la figure suivante.
 
-image:storage_layout_sqlsvr_large.PNG[""]
+image::storage_layout_sqlsvr_large.PNG[disposition du stockage sqlsvr grand]
 
 La figure suivante présente l'organisation de stockage recommandée par NetApp pour les bases de données SQL Server de petite ou moyenne taille sur des LUN.
 
-image:storage_layout_sqlsvr_smallmedium.PNG[""]
+image::storage_layout_sqlsvr_smallmedium.PNG[disposition du stockage sqlsvr petit support]
 
 
 NOTE: Le répertoire des journaux est dédié à SnapCenter pour effectuer une synthèse du journal des transactions pour la récupération de la base de données. Pour une base de données très volumineuse, plusieurs LUN peuvent être allouées à un volume pour améliorer les performances.
 
 Pour les charges de travail de bases de données Oracle, SnapCenter prend en charge les environnements de bases de données bénéficiant d'un stockage ONTAP monté sur l'hôte en tant que périphériques physiques ou virtuels. Vous pouvez héberger toute la base de données sur un ou plusieurs périphériques de stockage en fonction du caractère stratégique de l'environnement. Généralement, les clients isolent les fichiers de données sur un système de stockage dédié de tous les autres fichiers comme les fichiers de contrôle, les fichiers de reprise et les fichiers journaux d'archivage. Cela permet aux administrateurs de restaurer rapidement (ONTAP Single-File SnapRestore) ou de cloner une grande base de données stratégique (de plusieurs pétaoctets) à l'aide de la technologie Snapshot en quelques secondes à quelques minutes.
 
-image:storage_layout_oracle_typical.PNG[""]
+image::storage_layout_oracle_typical.PNG[disposition du stockage typique d'oracle]
 
 Pour optimiser la latence, un volume de stockage dédié doit être déployé sur différents types de fichiers Oracle afin d'optimiser la latence. Pour une grande base de données, plusieurs LUN (NetApp recommande jusqu'à huit) par volume doivent être alloués aux fichiers de données.
 
-image:storage_layout_oracle_dedicated.PNG[""]
+image::storage_layout_oracle_dedicated.PNG[disposition du stockage dédiée oracle]
 
 Pour les bases de données Oracle plus petites, SnapCenter prend en charge les dispositions de stockage partagé dans lesquelles vous pouvez héberger plusieurs bases de données ou faire partie d'une base de données sur le même volume de stockage ou LUN. Par exemple, vous pouvez héberger des fichiers de données pour toutes les bases de données d'un groupe de disques + DATA ASM ou d'un groupe de volumes. Le reste des fichiers (fichiers de reprise, journaux d'archivage et fichiers de contrôle) peut être hébergé sur un autre groupe de disques ou groupe de volumes dédié (LVM). Un tel scénario de déploiement est illustré ci-dessous.
 
-image:storage_layout_oracle_shared.PNG[""]
+image::storage_layout_oracle_shared.PNG[disposition du stockage partagé oracle]
 
 Pour faciliter la relocalisation des bases de données Oracle, le binaire Oracle doit être installé sur un LUN distinct inclus dans la stratégie de sauvegarde régulière. Cela permet de garantir que, dans le cas du transfert de la base de données vers un nouvel hôte serveur, la pile Oracle peut être démarrée pour la restauration sans problèmes potentiels dus à un binaire Oracle désynchronisé.
 

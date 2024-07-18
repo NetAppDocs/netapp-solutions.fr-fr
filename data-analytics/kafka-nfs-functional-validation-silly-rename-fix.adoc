@@ -43,7 +43,7 @@ La configuration s'exécute sur AWS. Le tableau suivant présente les différent
 |===
 La figure suivante présente la configuration architecturale de cette solution.
 
-image:kafka-nfs-image1.png["Ces images présentent la topologie AWS contenant un VPC contenant trois sous-réseaux privés avec un swARM producteur, le cluster Kafka et l'instance CVO respectivement."]
+image::kafka-nfs-image1.png[Ces images présentent la topologie AWS contenant un VPC contenant trois sous-réseaux privés avec un swARM producteur, le cluster Kafka et l'instance CVO respectivement.]
 
 
 
@@ -78,13 +78,13 @@ aws-shantanclastrecall-aws::*> volume create -vserver kafka_svm -volume kafka_fg
 Cluster 1 :
 
 +
-image:kafka-nfs-image2.png["Cette capture d'écran présente la rubrique de démonstration créée sur le cluster 1."]
+image::kafka-nfs-image2.png[Cette capture d'écran présente la rubrique de démonstration créée sur le cluster 1.]
 
 +
 Cluster 2 :
 
 +
-image:kafka-nfs-image3.png["Cette capture d'écran montre la rubrique de démonstration créée sur le Cluster 2."]
+image::kafka-nfs-image3.png[Cette capture d'écran montre la rubrique de démonstration créée sur le Cluster 2.]
 
 . Les données ont été chargées dans ces rubriques nouvellement créées pour les deux clusters. Cette opération a été effectuée à l'aide du kit d'outils producteur-perf-test fourni avec le package Kafka par défaut :
 +
@@ -99,7 +99,7 @@ image:kafka-nfs-image3.png["Cette capture d'écran montre la rubrique de démons
 La capture d'écran suivante présente une vérification de l'état des courtiers sur les deux clusters :
 
 +
-image:kafka-nfs-image4.png["Cette capture d'écran montre la lecture d'un bilan de santé réussi sur les deux courtiers."]
+image::kafka-nfs-image4.png[Cette capture d'écran montre la lecture d'un bilan de santé réussi sur les deux courtiers.]
 
 
 
@@ -120,7 +120,7 @@ kafka-reassign-partitions --bootstrap-server=172.30.0.198:9092,172.30.0.163:9092
 
 . Après quelques minutes, une autre vérification de l'état des courtiers a révélé que le cluster utilisant des volumes de stockage NFSv3 présentait un problème de changement de nom et s'était écrasé, tandis que le cluster 1 utilisant des volumes de stockage NetApp ONTAP NFSv4.1 avec la correction continuait ses opérations sans aucune perturbation.
 +
-image:kafka-nfs-image5.png["Cette capture d'écran montre la sortie d'un courtier en panne."]
+image::kafka-nfs-image5.png[Cette capture d'écran montre la sortie d'un courtier en panne.]
 
 +
 ** Cluster1-Broker-1 est actif.
@@ -129,12 +129,12 @@ image:kafka-nfs-image5.png["Cette capture d'écran montre la sortie d'un courtie
 
 . Lors de la vérification des répertoires des journaux Kafka, il était évident que le cluster 1 utilisant des volumes de stockage NetApp ONTAP NFSv4.1 avec la correction avait une affectation de partition propre, tandis que le cluster 2 utilisant un stockage NFSv3 générique n'était pas dû à des problèmes de renommage, ce qui a entraîné la panne. L'image suivante montre le rééquilibrage des partitions du cluster 2, ce qui a provoqué un problème de renommage sur le stockage NFSv3.
 +
-image:kafka-nfs-image6.png["Cette capture d'écran montre la sortie du journal en cas de panne du cluster 2."]
+image::kafka-nfs-image6.png[Cette capture d'écran montre la sortie du journal en cas de panne du cluster 2.]
 
 +
 L'image suivante montre un rééquilibrage des partitions propres du cluster 1 avec un système de stockage NetApp NFSv4.1.
 
 +
-image:kafka-nfs-image7.png["Cette capture d'écran montre la sortie du journal pour une affectation de partition propre réussie pour le cluster 1 tandis que"]
+image::kafka-nfs-image7.png[Cette capture d'écran montre la sortie du journal pour une affectation de partition propre réussie pour le cluster 1 tandis que]
 
 

@@ -70,7 +70,7 @@ Vérifiez que les interfaces logiques requises ont été établies pour le rése
 
 . Depuis ONTAP System Manager, naviguez jusqu'à *Storage VM* dans le menu de gauche et cliquez sur le SVM à utiliser pour le trafic NFS. Dans l'onglet *vue d'ensemble*, sous *NETWORK IP INTERFACES*, cliquez sur la valeur numérique à droite de *NFS*. Vérifier dans la liste que les adresses IP LIF requises sont répertoriées.
 +
-image:vmware-vcf-aff-image03.png["Vérifier les LIF pour le SVM"]
+image::vmware-vcf-aff-image03.png[Vérifier les LIF pour le SVM]
 
 
 
@@ -99,21 +99,21 @@ Créez une export policy dans ONTAP System Manager afin de définir le contrôle
 . Dans ONTAP System Manager, cliquer sur *Storage VM* dans le menu de gauche et sélectionner un SVM dans la liste.
 . Dans l'onglet *Paramètres*, localisez *règles d'exportation* et cliquez sur la flèche pour y accéder.
 +
-image:vmware-vcf-aff-image06.png["Accéder aux règles d'exportation"]
+image::vmware-vcf-aff-image06.png[Accéder aux règles d'exportation]
 
 +
 {nbsp}
 
 . Dans la fenêtre *Nouvelle export policy*, ajoutez un nom pour la stratégie, cliquez sur le bouton *Ajouter de nouvelles règles*, puis sur le bouton *+Ajouter* pour commencer à ajouter une nouvelle règle.
 +
-image:vmware-vcf-aff-image07.png["Nouvelle règle d'export"]
+image::vmware-vcf-aff-image07.png[Nouvelle règle d'export]
 
 +
 {nbsp}
 
 . Indiquez les adresses IP, la plage d'adresses IP ou le réseau que vous souhaitez inclure dans la règle. Décochez les cases *SMB/CIFS* et *FlexCache* et effectuez les sélections pour les détails d'accès ci-dessous. La sélection des cases UNIX suffit pour l'accès à l'hôte ESXi.
 +
-image:vmware-vcf-aff-image08.png["Enregistrer une nouvelle règle"]
+image::vmware-vcf-aff-image08.png[Enregistrer une nouvelle règle]
 
 +
 
@@ -136,21 +136,21 @@ Créez un volume NFS sur le système de stockage ONTAP à utiliser comme datasto
 
 . Dans le Gestionnaire système ONTAP, accédez à *stockage > volumes* dans le menu de gauche et cliquez sur *+Ajouter* pour créer un volume.
 +
-image:vmware-vcf-aff-image09.png["Ajouter un nouveau volume"]
+image::vmware-vcf-aff-image09.png[Ajouter un nouveau volume]
 
 +
 {nbsp}
 
 . Ajoutez un nom au volume, remplissez la capacité souhaitée et sélectionnez la VM de stockage qui hébergera le volume. Cliquez sur *plus d'options* pour continuer.
 +
-image:vmware-vcf-aff-image10.png["Ajoutez des détails sur le volume"]
+image::vmware-vcf-aff-image10.png[Ajoutez des détails sur le volume]
 
 +
 {nbsp}
 
 . Sous autorisations d'accès, sélectionnez la politique d'exportation qui inclut le réseau de gestion VCF ou l'adresse IP et les adresses IP réseau NFS qui seront utilisées pour la validation du serveur NFS et du trafic NFS.
 +
-image:vmware-vcf-aff-image11.png["Ajoutez des détails sur le volume"]
+image::vmware-vcf-aff-image11.png[Ajoutez des détails sur le volume]
 
 +
 +
@@ -171,14 +171,14 @@ ANetwork Pool doit être créé dans SDDC Manager avant de mettre en service les
 
 . Dans l'interface Web du gestionnaire SDDC, naviguez jusqu'à *Paramètres réseau* dans le menu de gauche et cliquez sur le bouton *+ Créer un pool réseau*.
 +
-image:vmware-vcf-aff-image04.png["Créer un pool réseau"]
+image::vmware-vcf-aff-image04.png[Créer un pool réseau]
 
 +
 {nbsp}
 
 . Indiquez un nom pour le pool réseau, cochez la case NFS et renseignez tous les détails de la mise en réseau. Répétez cette opération pour les informations du réseau vMotion.
 +
-image:vmware-vcf-aff-image05.png["Configuration du pool réseau"]
+image::vmware-vcf-aff-image05.png[Configuration du pool réseau]
 
 +
 {nbsp}
@@ -196,21 +196,21 @@ Pour plus d'informations, voir link:https://docs.vmware.com/en/VMware-Cloud-Foun
 
 . Dans l'interface du gestionnaire SDDC, naviguez jusqu'à *hosts* dans le menu de gauche et cliquez sur le bouton *Commission hosts*.
 +
-image:vmware-vcf-aff-image16.png["Démarrer les hôtes de commission"]
+image::vmware-vcf-aff-image16.png[Démarrer les hôtes de commission]
 
 +
 {nbsp}
 
 . La première page est une liste de contrôle préalable. Cochez toutes les conditions préalables et cochez toutes les cases pour continuer.
 +
-image:vmware-vcf-aff-image17.png["Confirmer les conditions préalables"]
+image::vmware-vcf-aff-image17.png[Confirmer les conditions préalables]
 
 +
 {nbsp}
 
 . Dans la fenêtre *Ajout et validation d'hôte*, remplissez le champ *Nom de domaine hôte*, *Type de stockage*, le nom *Pool* qui inclut les adresses IP de stockage vMotion et NFS à utiliser pour le domaine de charge de travail, ainsi que les informations d'identification permettant d'accéder à l'hôte ESXi. Cliquez sur *Ajouter* pour ajouter l'hôte au groupe d'hôtes à valider.
 +
-image:vmware-vcf-aff-image18.png["Ajout et validation de l'hôte"]
+image::vmware-vcf-aff-image18.png[Ajout et validation de l'hôte]
 
 +
 {nbsp}
@@ -218,14 +218,14 @@ image:vmware-vcf-aff-image18.png["Ajout et validation de l'hôte"]
 . Une fois que tous les hôtes à valider ont été ajoutés, cliquez sur le bouton *Valider tout* pour continuer.
 . En supposant que tous les hôtes sont validés, cliquez sur *Suivant* pour continuer.
 +
-image:vmware-vcf-aff-image19.png["Validez tout et cliquez sur Suivant"]
+image::vmware-vcf-aff-image19.png[Validez tout et cliquez sur Suivant]
 
 +
 {nbsp}
 
 . Passez en revue la liste des hôtes à mettre en service et cliquez sur le bouton *Commission* pour lancer le processus. Surveiller le processus de mise en service à partir du volet des tâches du gestionnaire SDDC.
 +
-image:vmware-vcf-aff-image20.png["Validez tout et cliquez sur Suivant"]
+image::vmware-vcf-aff-image20.png[Validez tout et cliquez sur Suivant]
 
 
 
@@ -239,7 +239,7 @@ Pour obtenir des instructions détaillées sur le déploiement d'un domaine de c
 
 . Dans le tableau de bord SDDC Manager, cliquez sur *+ Workload Domain* dans le coin supérieur droit pour créer un nouveau Workload Domain.
 +
-image:vmware-vcf-aff-image12.png["Créez un nouveau domaine de charge de travail"]
+image::vmware-vcf-aff-image12.png[Créez un nouveau domaine de charge de travail]
 
 +
 {nbsp}
@@ -249,19 +249,18 @@ image:vmware-vcf-aff-image12.png["Créez un nouveau domaine de charge de travail
 
 Pour plus d'informations sur le remplissage des informations requises dans l'assistant de configuration VI, reportez-vous à la section link:https://docs.vmware.com/en/VMware-Cloud-Foundation/5.1/vcf-admin/GUID-E64CEFDD-DCA2-4D19-B5C5-D8ABE66407B8.html#GUID-E64CEFDD-DCA2-4D19-B5C5-D8ABE66407B8["Déployez un domaine de charge de travail VI à l'aide de l'interface utilisateur SDDC Manager"].
 
-+
-image:vmware-vcf-aff-image13.png["Assistant de configuration VI"]
++ image::vmware-vcf-aff-image13.png[Assistant de configuration VI]
 
 . Dans la section stockage NFS, indiquez le nom du datastore, le point de montage du dossier du volume NFS et l'adresse IP de la LIF de la machine virtuelle de stockage ONTAP NFS.
 +
-image:vmware-vcf-aff-image14.png["Ajoutez les informations de stockage NFS"]
+image::vmware-vcf-aff-image14.png[Ajoutez les informations de stockage NFS]
 
 +
 {nbsp}
 
 . Dans l'assistant de configuration VI, effectuez les étapes Configuration du commutateur et Licence, puis cliquez sur *Terminer* pour lancer le processus de création de domaine de charge de travail.
 +
-image:vmware-vcf-aff-image15.png["Assistant de configuration VI complet"]
+image::vmware-vcf-aff-image15.png[Assistant de configuration VI complet]
 
 +
 {nbsp}

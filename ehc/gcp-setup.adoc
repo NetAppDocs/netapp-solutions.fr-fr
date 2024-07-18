@@ -34,7 +34,7 @@ Conditions préalables :
 * Assurez-vous que la plage CIDR ne se chevauchent pas avec vos sous-réseaux locaux ou dans le cloud. La gamme CIDR doit être /27 ou supérieure.
 
 
-image:gcve-deploy-1.png[""]
+image::gcve-deploy-1.png[déploiement de gcve 1]
 
 Remarque : la création d'un cloud privé peut prendre entre 30 minutes et 2 heures.
 
@@ -46,19 +46,19 @@ Une fois le cloud privé provisionné, configurez l'accès privé au cloud priv�
 
 Cela permet de s'assurer que le réseau VPC dans lequel des instances Cloud Volumes ONTAP sont en cours d'exécution peut communiquer avec le Cloud privé GCVE. Pour ce faire, suivez le link:https://cloud.google.com/architecture/partners/netapp-cloud-volumes/quickstart["Documentation GCP"]. Pour le service de volume cloud, établissez une connexion entre VMware Engine et Cloud Volumes Service en effectuant un peering unique entre les projets hôtes du locataire. Pour obtenir des instructions détaillées, suivez cette procédure link:https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-service["lien"].
 
-image:gcve-access-1.png[""]
+image::gcve-access-1.png[accès gcve 1]
 
 Connectez-vous à vcenter à l'aide de l'utilisateur CloudOwner@gve.llocabmabl. Pour accéder aux identifiants, rendez-vous sur le portail VMware Engine, accédez à Ressources et sélectionnez le cloud privé approprié. Dans la section informations de base, cliquez sur le lien View pour accéder aux informations de connexion vCenter (vCenter Server, HCX Manager) ou aux informations de connexion NSX-T (NSX Manager).
 
-image:gcve-access-2.png[""]
+image::gcve-access-2.png[accès gcve 2]
 
 Dans une machine virtuelle Windows, ouvrez un navigateur et accédez à l'URL du client Web vCenter (`"https://10.0.16.6/"`) Et utilisez le nom d'utilisateur admin comme CloudOwner@gve.locl et collez le mot de passe copié. De même, NSX-T Manager est également accessible à l'aide de l'URL du client Web (`"https://10.0.16.11/"`) et utilisez le nom d'utilisateur admin et collez le mot de passe copié pour créer de nouveaux segments ou modifier les passerelles de niveau existantes.
 
 Pour la connexion à partir d'un réseau sur site vers un cloud privé VMware Engine, utilisez un VPN cloud ou une interconnexion de cloud pour assurer la connectivité appropriée et assurez-vous que les ports requis sont ouverts. Pour obtenir des instructions détaillées, suivez cette procédure link:https://ubuntu.com/server/docs/service-iscsi["lien"].
 
-image:gcve-access-3.png[""]
+image::gcve-access-3.png[accès gcve 3]
 
-image:gcve-access-4.png[""]
+image::gcve-access-4.png[accès gcve 4]
 
 ====
 .Déployez le datastore supplémentaire de NetApp Cloud Volume Service dans GCVE
