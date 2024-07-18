@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: rhhc/rhhc-dp-velero-backup.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OADP operator, Openshift Data Protection Application operator, Velero 
+summary: 'Protection des données d"application de conteneur Red Hat OpenShift avec NetApp ONTAP' 
+---
+= Création d'une sauvegarde à la demande pour les applications dans OpenShift Container Platform
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section décrit comment créer une sauvegarde à la demande pour les machines virtuelles dans OpenShift Virtualization.
+
+
+
+== Procédure de création d'une sauvegarde d'une application
+
+Pour créer une sauvegarde à la demande d'une application (métadonnées d'application et volumes persistants de l'application), cliquez sur l'onglet **sauvegarde** pour créer une ressource personnalisée de sauvegarde (CR). Un exemple de yaml est fourni pour créer la CR de sauvegarde. Grâce à ce yaml, l'application et son stockage persistant dans l'espace de noms spécifié seront sauvegardés. Des paramètres supplémentaires peuvent être définis comme indiqué dans le link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/oadp-creating-backup-cr.html["documentation"].
+
+Un instantané des volumes persistants et des ressources d'application dans l'espace de noms spécifié sera créé par le CSI. Cet instantané sera stocké dans l'emplacement de sauvegarde spécifié dans le yaml. La sauvegarde restera dans le système pendant 30 jours, comme spécifié dans le ttl.
+
+....
+spec:
+  csiSnapshotTimeout: 10m0s
+  defaultVolumesToFsBackup: false
+  includedNamespaces:
+    - postgresql ->namespace of the app
+  itemOperationTimeout: 4h0m0s
+  snapshotMoveData: false
+  storageLocation: velero-container-backup-ontap-1 -->this is the backupStorageLocation previously created when Velero is configured.
+  ttl: 720h0m0s
+....
+Une fois la sauvegarde terminée, sa phase s'affiche comme terminée.
+
+image::redhat_openshift_OADP_backup_image1.png[Sauvegarde terminée]
+
+Vous pouvez inspecter la sauvegarde dans le stockage objet à l'aide d'une application de navigateur S3. Le chemin de la sauvegarde apparaît dans le compartiment configuré avec le préfixe name (velero/container-demo-backup). Vous pouvez voir le contenu de la sauvegarde inclut les snapshots de volume, les journaux et d'autres métadonnées de l'application.
+
+
+NOTE: Dans StorageGRID, vous pouvez également utiliser la console S3 disponible dans le gestionnaire de locataires pour afficher les objets de sauvegarde.
+
+image::redhat_openshift_OADP_backup_image2.png[Objets de sauvegarde dans S3]
+
+
+
+== Création de sauvegardes planifiées pour les applications
+
+Pour créer des sauvegardes sur un planning, vous devez créer une demande de modification d'horaires. Le planning est simplement une expression cron qui vous permet de spécifier l'heure à laquelle vous souhaitez créer la sauvegarde. Un exemple de yaml pour créer une demande de modification d'horaire est présenté ci-dessous.
+
+....
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: schedule1
+  namespace: openshift-adp
+spec:
+  schedule: 0 7 * * *
+  template:
+    includedNamespaces:
+      - postgresql
+    storageLocation: velero-container-backup-ontap-1
+....
+L'expression Cron 0 7 * * * * signifie qu'une sauvegarde sera créée à 7:00 chaque jour.
+Les espaces de noms à inclure dans la sauvegarde et l'emplacement de stockage de la sauvegarde sont également spécifiés. Par conséquent, au lieu d'une CR de sauvegarde, la CR de planification est utilisée pour créer une sauvegarde à l'heure et à la fréquence spécifiées.
+
+Une fois le planning créé, il est activé.
+
+image::redhat_openshift_OADP_backup_image3.png[Programme créé]
+
+Les sauvegardes seront créées en fonction de ce planning et peuvent être affichées à partir de l'onglet sauvegarde.
+
+image::redhat_openshift_OADP_backup_image4.png[Sauvegarde planifiée terminée]

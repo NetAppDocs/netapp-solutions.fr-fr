@@ -1,0 +1,45 @@
+---
+sidebar: sidebar 
+permalink: rhhc/rhhc-dp-velero-delete.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OADP operator, Openshift Data Protection Application operator, Velero 
+summary: 'Protection des données d"application de conteneur Red Hat OpenShift avec NetApp ONTAP' 
+---
+= Suppression des sauvegardes et des restaurations dans à l'aide de Velero
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Cette section explique comment supprimer les sauvegardes et les restaurations d'applications dans la plateforme de conteneurs OpenShift à l'aide de Velero.
+
+
+
+== Répertorier toutes les sauvegardes
+
+Vous pouvez afficher la liste de toutes les demandes de service de sauvegarde à l'aide de l'outil CLI OC ou de l'outil CLI Velero. Téléchargez l'interface de ligne de commande de Velero comme indiqué dans les instructions de la link:https://velero.io/docs/v1.3.0/basic-install/#install-the-cli["Documentation Velero"].
+
+image::redhat_openshift_OADP_delete_image1.png[sauvegarde de liste]
+
+
+
+== Suppression d'une sauvegarde
+
+Vous pouvez supprimer une CR de sauvegarde sans supprimer les données de stockage d'objet à l'aide de l'outil CLI OC. La sauvegarde sera supprimée de la sortie CLI/Console. Toutefois, comme la sauvegarde correspondante n'est pas supprimée du stockage objet, elle réapparaît dans la sortie de l'interface de ligne de commande/de la console.
+
+image::redhat_openshift_OADP_delete_image2.png[supprimer la sauvegarde]
+
+**Si vous souhaitez supprimer la CR de sauvegarde ET les données de stockage d'objets associées, vous pouvez le faire en utilisant l'outil CLI Velero.**
+
+image::redhat_openshift_OADP_delete_image3.png[Supprimez la sauvegarde ET le stockage objet associé]
+
+
+
+== Suppression de la restauration
+
+Vous pouvez supprimer l'objet de restauration CR à l'aide de l'interface de ligne de commande OC ou de l'interface de ligne de commande Velero
+
+image::redhat_openshift_OADP_delete_image4.png[Supprimer la restauration]

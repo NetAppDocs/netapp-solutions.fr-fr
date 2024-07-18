@@ -81,13 +81,13 @@ Velero peut être configuré pour utiliser le stockage objet compatible S3. Vous
 Pour créer un secret à partir de la console Web, sélectionnez secrets, puis cliquez sur clé/valeur Secret. Indiquez les valeurs pour le nom, la clé et la valeur des informations d'identification, comme indiqué. Assurez-vous d'utiliser l'ID de clé d'accès et la clé d'accès secrète de votre utilisateur S3. Nommez le secret de manière appropriée. Dans l'exemple ci-dessous, un code secret associé aux informations d'identification d'utilisateur ONTAP S3 nommées identifiants ontap-s3 est créé.
 
 
-image::redhat_openshift_OADP_install_image4.jpg[Secret pour les informations d'identification d'utilisateur S3]
+image::redhat_openshift_OADP_install_image4.png[Secret pour les informations d'identification d'utilisateur S3]
 
-image::redhat_openshift_OADP_install_image5.jpg[Créer un secret pour les informations d'identification de l'utilisateur S3]
+image::redhat_openshift_OADP_install_image5.png[Créer un secret pour les informations d'identification de l'utilisateur S3]
 
 Pour créer un secret nommé sg-s3-credentials à partir de l'interface de ligne de commande, vous pouvez utiliser la commande suivante.
 
-image::redhat_openshift_OADP_install_image6.jpg[Créez le secret pour les informations d'identification d'utilisateur S3 à l'aide de l'interface de ligne]
+image::redhat_openshift_OADP_install_image6.png[Créez le secret pour les informations d'identification d'utilisateur S3 à l'aide de l'interface de ligne]
 
 * Ensuite, pour configurer Velero, sélectionnez opérateurs installés dans l'élément de menu sous opérateurs, cliquez sur opérateur OADP, puis sélectionnez l'onglet DataProtectionapplication.
 
@@ -107,11 +107,11 @@ spec:
   backupLocations:
     - velero:
         config:
-          insecureSkipTLSVerify: 'true' ->use this for https communication with ONTAP S3
+          insecureSkipTLSVerify: 'false' ->use this for https communication with ONTAP S3
           profile: default
-          region: us-east
+          region: us-east-1
           s3ForcePathStyle: 'True' ->This allows use of IP in s3URL
-          s3Url: 'https://10.xx.xx.xx' ->Ensure TLS certificate for S3 is configured
+          s3Url: 'https://10.xx.xx.xx' ->LIF to access S3. Ensure TLS certificate for S3 is configured
         credential:
           key: cloud
           name: ontap-s3-credentials ->previously created secret
