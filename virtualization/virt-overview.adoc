@@ -1,0 +1,87 @@
+---
+sidebar: sidebar 
+permalink: virtualization/virt-overview.html 
+keywords: virtualization, overview, compute, storage, vmware, openshift, hyper-v 
+summary: 'Ce document offre une vue d"ensemble de la virtualisation du point de vue du calcul, du réseau et du stockage.' 
+---
+= Présentation rapide de la virtualisation
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+La prédominance de la virtualisation a généré des résultats commerciaux depuis des décennies. Depuis les débuts des mainframes jusqu'à l'ère actuelle des cas d'utilisation très exigeants en stockage et des systèmes prêts pour l'IA, la virtualisation est devenue une composante intégrale de chaque environnement client.
+
+
+
+== Présentation
+
+Traditionnellement, les data centers se composaient de serveurs physiques, de réseaux et de stockage, chacun dédié à des tâches spécifiques. Cette approche a créé des silos de ressources souvent largement sous-utilisées. Au cœur de la virtualisation, la virtualisation implique de dissocier les ressources physiques des exigences et fonctions de l'organisation. Ceci est réalisé en créant des représentations virtuelles des trois principaux composants de l'infrastructure : *network*, *Compute* et *Storage*. Le déploiement de l'infrastructure virtuelle permet aux entreprises d'améliorer l'utilisation des ressources physiques sous-jacentes grâce à ces constructions logiques.
+
+image::virt-overview-image1.png[Diagramme des composants de virtualisation pour le calcul, le réseau et le stockage]
+
+La virtualisation est un cas où l'ensemble est supérieur à la somme des pièces grâce à l'automatisation, aux flux de travail basés sur des règles et à l'évolutivité. En améliorant l'efficacité, la flexibilité et en réduisant le coût total de possession de l'infrastructure INFORMATIQUE, la virtualisation permet aux entreprises d'optimiser leurs ressources technologiques dans une plus grande mesure. Une infrastructure virtuelle optimisée par NetApp hérite des principaux avantages de ONTAP :
+
+* Provisionnement, sauvegarde et protection des données avec des plug-ins et des intégrations leaders du secteur
+* Fonctionnalités d'efficacité du stockage haute performance
+* Prise en charge multiprotocole pour répondre à des besoins variés liés aux workloads
+* Configuration du stockage pilotée par les règles et qualité de service adaptative
+* Une prise en charge des applications et des workloads sur site ou dans les clouds publics avec un seul système d'exploitation du stockage
+
+
+Pour en savoir plus sur NetApp ONTAP, consultez les documents suivants :
+
+* link:https://www.netapp.com/data-management/ontap-data-management-software/["ONTAP : le système d'exploitation du stockage unifié leader du marché"]
+
+
+
+
+== Virtualisation du réseau
+
+La virtualisation du réseau fait référence à l'abstraction des composants du réseau physique (commutateurs, routeurs, pare-feu, interfaces, etc.) en constructions logiques. Ces constructions logiques, fonctionnant indépendamment de l'infrastructure physique sous-jacente, assurent une communication sécurisée entre les clients, le stockage et les autres composants du réseau. La virtualisation du réseau est essentielle au fonctionnement de l'entreprise car elle permet le partage des ressources tout en permettant la restriction du trafic réseau selon les stratégies.
+
+La virtualisation du réseau peut combiner plusieurs réseaux physiques en une structure virtuelle unique ou faciliter la division d'un réseau physique en réseaux virtuels distincts et discrets. Des réseaux multiples peuvent être créés et personnalisés pour répondre à des exigences INFORMATIQUES spécifiques. La virtualisation du réseau se réfère souvent à des cas d'utilisation basés sur Ethernet, mais dans de nombreux cas, les structures virtuelles peuvent être configurées selon les fonctionnalités du fabricant du switch. Qu'elles utilisent des réseaux locaux virtuels ou des réseaux SAN virtuels, les entreprises peuvent améliorer leur efficacité opérationnelle et leurs performances globales grâce à la virtualisation du réseau.
+
+Pour plus d'informations sur la virtualisation du réseau, consultez les documents suivants :
+
+* link:https://www.cisco.com/c/en/us/products/switches/virtual-networking/index.html["Mise en réseau virtuelle Cisco"]
+* link:https://www.vmware.com/topics/glossary/content/virtual-networking.html["Mise en réseau virtuelle VMware"]
+
+
+
+
+== Virtualisation du calcul
+
+La virtualisation du calcul ou des serveurs est peut-être la forme la plus connue de virtualisation. Grâce à la virtualisation du calcul, les hyperviseurs imitent les fonctions des serveurs physiques et permettent aux équipes opérationnelles d'exécuter plusieurs machines virtuelles sur un seul nœud physique. Grâce à la virtualisation du calcul, les ressources telles que la mémoire serveur et le processeur sont partagées. Ce partage permet de sursouscription des ressources sous-jacentes dans la mesure acceptable pour les charges de travail et les applications déployées.
+
+Avec la virtualisation du calcul, chaque machine virtuelle dispose de son propre système d'exploitation et d'applications et de ressources installées, fonctionnant indépendamment les unes des autres. Parmi les nombreux avantages de la virtualisation du calcul, citons l'augmentation de l'utilisation des serveurs, la réduction des dépenses matérielles, la simplification de la gestion à l'aide de l'interface utilisateur de l'hyperviseur et l'amélioration des fonctionnalités de reprise après incident. En outre, avec les plug-ins d'hyperviseur, vous pouvez configurer les relations entre l'administration du stockage, les sauvegardes et la protection pour simplifier davantage les tâches opérationnelles.
+
+Pour plus d'informations sur la virtualisation du calcul, consultez les documents suivants :
+
+* link:https://www.vmware.com/solutions/virtualization.html["VMware vSphere"]
+* link:https://www.redhat.com/en/technologies/cloud-computing/openshift/virtualization["Virtualisation Red Hat OpenShift"]
+* link:https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/hyper-v-on-windows-server["Microsoft Hyper-V"]
+
+
+
+
+== Virtualisation du stockage
+
+Tout comme la virtualisation du réseau et du calcul, la virtualisation du stockage est importante pour un data Center moderne. NetApp ONTAP facilite la virtualisation du stockage via des SVM (Storage Virtual machines) qui assurent le service des données aux clients et aux hôtes. Les SVM sont des entités logiques qui permettent aux ressources de stockage de ne pas être liées à un support physique. Les SVM peuvent être déployés en fonction du type de charge de travail, des besoins des applications et des groupes d'organisation pour l'accès.
+
+Il existe plusieurs types de SVM qui permettent d'accéder aux données, d'administrer et de réaliser des tâches au niveau du cluster et du système. Les SVM de données assurent le service des données aux clients et aux hôtes à partir d'un ou plusieurs volumes, via une ou plusieurs interfaces logiques réseau (LIF). Ces volumes et LIF constituent des constructions logiques et sont mappés via à des agrégats de stockage et à des ports réseau physiques ou logiques. Cet accès logique aux données permet de déplacer les volumes ou les LIF lors des scénarios de maintenance ou de rééquilibrage des ressources, comme les machines virtuelles de calcul.
+
+Pour plus d'informations sur la virtualisation du stockage, consultez les documents suivants :
+
+* link:https://docs.netapp.com/us-en/ontap/concepts/storage-virtualization-concept.html["Présentation de la virtualisation du stockage ONTAP"]
+
+
+
+
+== Conclusion
+
+Les composants de l'infrastructure virtuelle décrits ici : le réseau, le calcul et le stockage offrent les mêmes fonctionnalités que les ressources physiques classiques, mais au moyen de logiciels. L'allocation de ressources virtuelles sur des ressources physiques accélère le retour sur investissement et permet une configuration des ressources basée sur des règles. L'association de ONTAP au calcul et à la virtualisation du réseau permet aux clients et aux hôtes d'accéder aux ressources via une infrastructure virtuelle Software-defined.
