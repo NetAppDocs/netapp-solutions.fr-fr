@@ -1,0 +1,126 @@
+---
+sidebar: sidebar 
+permalink: rhhc/rhhc-dp-velero-migrate.html 
+keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OADP operator, Openshift Data Protection Application operator, Velero 
+summary: 'Protection des données d"application de conteneur Red Hat OpenShift avec NetApp ONTAP' 
+---
+= Migration d'une application d'un cluster à un autre
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+Les fonctionnalités de sauvegarde et de restauration de Velero en font un outil précieux pour la migration de vos données entre clusters. Cette section décrit comment migrer des applications d'un cluster à un autre en créant une sauvegarde de l'application dans le stockage objet à partir d'un cluster, puis en restaurant l'application à partir du même stockage objet vers un autre cluster. .
+
+.Sauvegarde depuis le premier cluster
+[%collapsible]
+====
+**Prérequis sur le Cluster 1**
+
+* ASTRA Trident doit être installé sur le cluster.
+* Un système back-end trident et une classe de stockage doivent être créés.
+* L'opérateur OADP doit être installé sur le cluster.
+* L'application DataProtectionApplication doit être configurée.
+
+
+Utilisez la spécification suivante pour configurer l'objet DataProtectionApplication.
+
+....
+spec:
+  backupLocations:
+    - velero:
+        config:
+          insecureSkipTLSVerify: 'false'
+          profile: default
+          region: us-east-1
+          s3ForcePathStyle: 'true'
+          s3Url: 'https://10.61.181.161'
+        credential:
+          key: cloud
+          name: ontap-s3-credentials
+        default: true
+        objectStorage:
+          bucket: velero
+          caCert: <base-64 encoded tls certificate>
+          prefix: container-backup
+        provider: aws
+  configuration:
+    nodeAgent:
+      enable: true
+      uploaderType: kopia
+    velero:
+      defaultPlugins:
+        - csi
+        - openshift
+        - aws
+        - kubevirt
+....
+* Créez une application sur le cluster et faites une sauvegarde de cette application. Par exemple, installez une application postgres.
+
+
+image::redhat_openshift_OADP_migrate_image1.png[installez l'application postgres]
+
+* Utilisez les spécifications suivantes pour la CR de secours :
+
+
+....
+spec:
+  csiSnapshotTimeout: 10m0s
+  defaultVolumesToFsBackup: false
+  includedNamespaces:
+    - postgresql
+  itemOperationTimeout: 4h0m0s
+  snapshotMoveData: true
+  storageLocation: velero-sample-1
+  ttl: 720h0m0s
+....
+image::redhat_openshift_OADP_migrate_image2.png[installez l'application postgres]
+
+Vous pouvez cliquer sur l'onglet **toutes les instances** pour voir les différents objets en cours de création et de déplacement à travers différentes phases pour finalement arriver à la phase de sauvegarde **terminé**.
+
+Une sauvegarde des ressources dans l'espace de noms postgresql sera stockée dans l'emplacement de stockage d'objet (ONTAP S3) spécifié dans l'emplacement de sauvegarde dans la spécification OADP.
+
+====
+.Restauration sur un second cluster
+[%collapsible]
+====
+**Prérequis sur le Cluster 2**
+
+* ASTRA Trident doit être installé sur le cluster 2.
+* L'application postgresql NE doit PAS être déjà installée dans l'espace de noms postgresql.
+* L'opérateur OADP doit être installé sur le cluster 2, et l'emplacement BackupStorage doit pointer vers le même emplacement de stockage d'objet où la sauvegarde a été stockée à partir du premier cluster.
+* La CR de sauvegarde doit être visible depuis le second cluster.
+
+
+image::redhat_openshift_OADP_migrate_image3.png[trident installé]
+
+image::redhat_openshift_OADP_migrate_image4.png[postgres n'est pas déjà installé]
+
+image::redhat_openshift_OADP_migrate_image5.png[OADP sur le cluster 2 installé]
+
+image::redhat_openshift_OADP_migrate_image6.png[emplacement de stockage de sauvegarde pointant vers le même magasin d'objets]
+
+Restaurez l'application sur ce cluster à partir de la sauvegarde. Utilisez le yaml suivant pour créer la CR de restauration.
+
+....
+apiVersion: velero.io/v1
+kind: Restore
+apiVersion: velero.io/v1
+metadata:
+  name: restore
+  namespace: openshift-adp
+spec:
+  backupName: backup
+  restorePVs: true
+....
+Une fois la restauration terminée, l'application postgresql s'exécute sur ce cluster et est associée à la demande de volume persistant et à un volume persistant correspondant. L'état de l'application est le même que celui de la sauvegarde.
+
+image::redhat_openshift_OADP_migrate_image7.png[restauration réussie]
+
+image::redhat_openshift_OADP_migrate_image7.png[postgres migré]
+
+====
