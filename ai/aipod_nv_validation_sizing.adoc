@@ -22,20 +22,46 @@ Cette section est consacrée aux conseils sur la validation et le dimensionnemen
 
 La configuration du stockage dans cette solution a été validée à l'aide d'une série de charges de travail synthétiques à l'aide de l'outil open source FIO. Ces tests incluent des modèles d'E/S de lecture et d'écriture destinés à simuler le workload de stockage généré par les systèmes DGX exécutant des tâches d'entraînement de deep learning. La configuration du stockage a été validée à l'aide d'un cluster de serveurs CPU à 2 sockets qui exécutent simultanément les workloads d'E/S pour simuler un cluster de systèmes DGX. Chaque client a été configuré avec la même configuration réseau décrite précédemment, avec l'ajout des détails suivants.
 
-Les options de montage suivantes ont été utilisées pour cette validation-
-• vers=4.1 # active pNFS pour l'accès parallèle à plusieurs nœuds de stockage
-• proto=rdma # définit le protocole de transfert sur RDMA au lieu du TCP par défaut
-• port=20049 # Indiquez le port approprié pour le service NFS RDMA
-• max_connect=16 # permet l'agrégation de la bande passante des ports de stockage via l'agrégation de sessions NFS
-• écrire=impatient # améliore les performances d'écriture des écritures mises en tampon
-• Rsize=262144,wsize=262144 # définit la taille du transfert d'E/S sur 256k
+Les options de montage suivantes ont été utilisées pour cette validation :
 
-En outre, les clients ont été configurés avec une valeur NFS max_session_slots de 1024. Comme la solution a été testée à l'aide de NFS sur RDMA, les ports des réseaux de stockage ont été configurés avec une liaison actif-passif. Les paramètres de liaison suivants ont été utilisés pour cette validation-
-• mode=sauvegarde-active # définit le lien en mode actif/passif
-• primaire=<interface name> # les interfaces principales de tous les clients ont été distribuées sur les commutateurs
-• intervalle-moniteur-mii=100 # spécifie un intervalle de surveillance de 100 ms.
-• failover-over-mac-policy=active # indique que l'adresse MAC de la liaison active est l'adresse MAC de la liaison. Ceci est nécessaire pour le bon fonctionnement de RDMA sur l'interface liée.
+[cols="30%, 70%"]
+|===
 
+
+| vers=4.1 | Active pNFS pour l'accès parallèle à plusieurs nœuds de stockage 
+
+
+| proto=rdma | Définit le protocole de transfert sur RDMA au lieu du TCP par défaut 
+
+
+| port=20049 | Spécifier le port correct pour le service NFS RDMA 
+
+
+| max_connect=16 | Permet l'agrégation de la bande passante des ports de stockage via l'agrégation de sessions NFS 
+
+
+| write=eager | améliore les performances d'écriture des écritures mises en tampon 
+
+
+| rsize=262144,wsize=262144 | Définit la taille du transfert d'E/S sur 256 Ko 
+|===
+En outre, les clients ont été configurés avec une valeur NFS max_session_slots de 1024. Comme la solution a été testée à l'aide de NFS sur RDMA, les ports des réseaux de stockage ont été configurés avec une liaison actif-passif. Les paramètres de liaison suivants ont été utilisés pour cette validation :
+
+[cols="30%, 70%"]
+|===
+
+
+| mode=sauvegarde-active | définit le lien en mode actif/passif 
+
+
+| primaire=<interface name> | les interfaces principales de tous les clients ont été distribuées sur les commutateurs 
+
+
+| intervalle-moniteur-mii=100 | spécifie un intervalle de surveillance de 100 ms. 
+
+
+| stratégie-de-basculement-mac=active | Indique que l'adresse MAC de la liaison active est l'adresse MAC de la liaison. Ceci est nécessaire pour le bon fonctionnement de RDMA sur l'interface liée. 
+|===
 Le système de stockage a été configuré comme décrit avec deux paires HA A900 (4 contrôleurs) et deux tiroirs disque NS224 de 24 disques NVMe de 1,9 To reliés à chaque paire haute disponibilité. Comme indiqué dans la section Architecture, la capacité de stockage de tous les contrôleurs a été combinée à l'aide d'un volume FlexGroup, et les données de tous les clients ont été distribuées sur l'ensemble des contrôleurs du cluster.
 
 
@@ -44,4 +70,6 @@ Le système de stockage a été configuré comme décrit avec deux paires HA A90
 
 NetApp a obtenu la certification DGX BasePOD et les deux paires HA A900 testées peuvent facilement prendre en charge un cluster de huit systèmes DGX H100. Pour les déploiements de plus grande envergure nécessitant des performances de stockage plus élevées, des systèmes AFF supplémentaires peuvent être ajoutés au cluster NetApp ONTAP jusqu'à 12 paires haute disponibilité (24 nœuds) dans un seul cluster. Grâce à la technologie FlexGroup décrite dans cette solution, un cluster à 24 nœuds peut fournir plus de 40 po et un débit pouvant atteindre 300 Gbit/s dans un seul namespace. D'autres systèmes de stockage NetApp, tels que les systèmes AFF A400, A250 et C800, offrent des performances inférieures et/ou des capacités supérieures pour les déploiements de moindre envergure et à moindre coût. Comme ONTAP 9 prend en charge les clusters à modèles mixtes, les clients peuvent commencer avec une empreinte réduite et ajouter au cluster des systèmes de stockage plus nombreux ou plus grands selon l'évolution des besoins en capacité et en performance. Le tableau ci-dessous présente une estimation approximative du nombre de GPU A100 et H100 pris en charge sur chaque modèle AFF.
 
-_Conseils de dimensionnement du système de stockage NetApp_ image::aipod_nv_sizing_New.png[]
+_Conseils de dimensionnement du système de stockage NetApp_
+
+image::aipod_nv_sizing_new.png[aipod nv nouveau dimensionnement]
