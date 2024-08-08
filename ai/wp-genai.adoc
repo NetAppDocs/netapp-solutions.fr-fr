@@ -39,11 +39,15 @@ L'IA générative révolutionne la façon dont nous créons du contenu, généro
 
 Les entreprises de tous les secteurs d'activité découvrent qu'elles ont de plus en plus de potentiel pour l'IA afin d'extraire et de produire de nouvelles formes de valeur à partir des données existantes pour les opérations métier, les ventes, le marketing et les services juridiques. Selon l'étude de marché IDC (International Data Corporation) sur les cas d'utilisation et les investissements mondiaux d'IA générative, la gestion des connaissances dans le développement de logiciels et la conception de produits doit être la plus impactée, suivie par la création de scénarios pour le marketing et la génération de code pour les développeurs. Dans le domaine de la santé, les organismes de recherche clinique font une percée dans la médecine. Des modèles préformés comme ProteinBERT intègrent des annotations d'ontologie génique (GO) pour concevoir rapidement des structures protéiques pour les médicaments médicaux, ce qui représente une étape importante dans la découverte de médicaments, la bioinformatique et la biologie moléculaire. Les entreprises de biotechnologie ont lancé des essais humains pour la médecine générative découverte par l'IA, qui vise à traiter des maladies comme la fibrose pulmonaire (FPI), une maladie pulmonaire qui provoque une cicatrisation irréversible des tissus pulmonaires.
 
-Figure 1 : cas d'utilisation de l'image Generative ai ::gen-ai-image1.png[« Figure 1 : cas d'utilisation de Generative ai »]
+Figure 1 : cas d'utilisation de l'IA générative
+
+image::gen-ai-image1.png[Figure 1 : cas d'utilisation de l'IA générative]
 
 L'adoption croissante de l'automatisation, stimulée par l'IA générative, modifie également l'offre et la demande d'activités professionnelles pour de nombreuses professions. Comme le cabinet de conseil McKinsey, le marché du travail américain (diagramme ci-dessous) a connu une transition rapide, qui ne peut se poursuivre qu’en tenant compte de l’impact de l’IA.
 
-Source : image McKinsey & Company ::gen-ai-image3.png[« Figure 2 : source : McKinsey & Company »]
+Source : McKinsey & Company
+
+image::gen-ai-image3.png[Figure 2 : source : McKinsey & Company]
 
 
 
@@ -57,7 +61,9 @@ Les LLMS reposent essentiellement sur le deep learning, les processeurs graphiqu
 
 Pour la plupart des entreprises, en fonction des tendances actuelles, l'approche de déploiement des LLMS peut être condensée en 3 scénarios de base. Comme décrit dans un récent link:https://hbr.org/2023/07/how-to-train-generative-ai-using-your-companys-data["« Harvard Business Review »"] article : (1) formation (pré-formation) un LLM à partir de zéro – coûteux et nécessitant des compétences spécialisées en IA/ML ; (2) affinement d'un modèle de base avec des données d'entreprise – complexe mais réalisable ; (3) utilisation de la génération augmentée de récupération (RAG) pour interroger des référentiels de documents, des API et des bases de données vectorielles qui contiennent des données d'entreprise. Chacun de ces éléments comporte des compromis entre l'effort, la vitesse d'itération, la rentabilité et la précision du modèle dans sa mise en œuvre, utilisés pour résoudre différents types de problèmes (diagramme ci-dessous).
 
-Figure 3 : image des types de problèmes ::gen-ai-image4.png[Figure 3 : types de problèmes]
+Figure 3 : types de problèmes
+
+image::gen-ai-image4.png[Figure 3 : types de problèmes]
 
 
 
@@ -71,7 +77,9 @@ Un modèle de base également connu sous le nom de modèle de base est un grand 
 
 L'une des pratiques courantes avec le déploiement LLM après la préparation des données et le pré-traitement des données consiste à sélectionner un modèle pré-entraîné qui a été entraîné sur un dataset volumineux et diversifié. Dans le contexte du réglage précis, il peut s'agir d'un modèle de langage large open source, par exemple link:https://ai.meta.com/llama/["Meta's Llama 2"] entraînement sur 70 milliards de paramètres et 2 billions de jetons. Une fois le modèle pré-entraîné sélectionné, l'étape suivante consiste à l'ajuster sur les données spécifiques au domaine. Pour ce faire, il faut ajuster les paramètres du modèle et l'entraîner à l'égard des nouvelles données pour qu'elles s'adaptent à un domaine et à une tâche spécifiques. Par exemple, BloombergGPT, un LLM propriétaire formé à un large éventail de données financières au service de l'industrie financière. Les modèles spécifiques à un domaine conçus et entraînés pour une tâche spécifique ont généralement une précision et des performances supérieures dans leur portée, mais une faible transférabilité entre les autres tâches ou domaines. Lorsque l'environnement commercial et les données évoluent sur une période donnée, la précision de prévision de la FM pourrait commencer à diminuer par rapport à ses performances pendant les tests. C'est lorsque le recyclage ou l'ajustement du modèle devient crucial. Le recyclage des modèles dans l'IA/ML classique consiste à mettre à jour un modèle de ML déployé avec de nouvelles données généralement réalisées pour éliminer deux types de dérives. (1) dérive du concept – lorsque le lien entre les variables d'entrée et les variables cibles change au fil du temps, puisque la description de ce que nous voulons prédire les changements, le modèle peut produire des prédictions inexactes. (2) dérive des données : survient lorsque les caractéristiques des données d'entrée changent, comme des changements dans les habitudes ou le comportement des clients au fil du temps, et donc l'incapacité du modèle à répondre à de tels changements. De la même manière, le recyclage s'applique aux FMS/LLMS. Cependant, il peut être beaucoup plus coûteux (en millions de dollars), donc pas quelque chose que la plupart des organisations pourraient envisager. Il fait l'objet de recherches actives, qui émergent encore dans le domaine du LLMOps. Ainsi, au lieu de réentraîner, lorsque la dégradation des modèles se produit dans un FMS ajusté, les entreprises peuvent choisir de procéder à des ajustements (beaucoup moins chers) avec un nouveau dataset. Pour ce qui est des coûts, vous trouverez ci-dessous un exemple de tableau des prix des modèles des services Azure-OpenAI. Les clients peuvent ajuster et évaluer les modèles de chaque catégorie de tâche à partir de datasets spécifiques.
 
-Source : image Microsoft Azure ::gen-ai-image5.png[Source : Microsoft Azure]
+Source : Microsoft Azure
+
+image::gen-ai-image5.png[Source : Microsoft Azure]
 
 
 
@@ -95,7 +103,9 @@ L'ingénierie rapide fait référence aux méthodes efficaces de communication a
 
 == Scénario client et NetApp
 
-Figure 3 : image du flux de production du modèle d'apprentissage machine/langage large ::gen-ai-image6.png[Figure 3 : flux de production du modèle d'apprentissage machine/langage large]
+Figure 3 : workflow de modèle d'apprentissage machine/langage large
+
+image::gen-ai-image6.png[Figure 3 : workflow de modèle d'apprentissage machine/langage large]
 
 *Sommes-nous en train de former ou de peaufiner?* la question de savoir si (a) former un modèle LLM à partir de zéro, peaufiner un FM pré-entraîné, ou utiliser RAG pour extraire des données des référentiels de documents en dehors d'un modèle de base et augmenter les invites, et (b) soit en exploitant des LLMS open source (par exemple, Llama 2), soit en utilisant des FMS propriétaires (par exemple, ChatGPT, Bard, AWS Bedrock) est une décision stratégique pour les entreprises. Chaque approche implique un compromis entre la rentabilité, la gravité des données, les opérations, la précision des modèles et la gestion des LLMS.
 
@@ -107,7 +117,9 @@ En tant qu'entreprise, NetApp adopte l'IA en interne dans sa culture du travail 
 
 Le déplacement et la gestion des données dans les applications d'IA générative telles que le chatbot, la génération de code, la génération d'images ou l'expression de modèle génomique peuvent s'étendre de la périphérie, au data Center privé et à l'écosystème multicloud hybride. Par exemple, un robot d'IA en temps réel qui aide un passager à mettre à niveau son billet d'avion pour passer à une classe affaires à partir d'une application utilisateur exposée via des API de modèles pré-entraînés tels que ChatGPT ne peut pas accomplir cette tâche en lui-même puisque les informations sur les passagers ne sont pas accessibles au public sur Internet. L'API requiert l'accès aux informations personnelles du passager et aux informations sur le billet de la compagnie aérienne, qui peuvent exister dans un écosystème hybride ou multicloud. Un scénario similaire peut s'appliquer aux scientifiques partageant une molécule de médicament et les données des patients via une application utilisateur qui utilise les LLM pour effectuer des essais cliniques dans le cadre de la découverte de médicaments impliquant un à plusieurs établissements de recherche biomédicale. Les données sensibles transmises au FMS ou au LLMS peuvent inclure des PII, des informations financières, des informations de santé, des données biométriques, des données de localisation, données de communication, comportement en ligne et informations juridiques. Dans ce cas, le rendu en temps réel, l'exécution rapide et l'inférence de périphérie font passer les données de l'application utilisateur final aux terminaux de stockage via des modèles LLM propriétaires ou open source vers un data Center sur des plateformes de cloud public ou sur site. Dans tous ces scénarios, la mobilité et la protection des données sont essentielles pour les opérations d'IA impliquant des LLMS qui s'appuient sur d'importants datasets d'entraînement et le déplacement de ces données.
 
-Figure 4 : image de pipeline de traitement de données Generative ai - LLM : :gen-ai-image7.png[Figure 4 : pipeline de données Generative ai-LLM]
+Figure 4 : pipeline de traitement de données LLM - IA générative
+
+image::gen-ai-image7.png[Figure 4 : pipeline de traitement de données Generative ai-LLM]
 
 Le portefeuille NetApp d'infrastructures de stockage, de données et de services cloud est optimisé par un logiciel de gestion intelligente des données.
 
