@@ -1,0 +1,47 @@
+---
+sidebar: sidebar 
+permalink: ai/aicp_example_mlflow_workflows_overview.html 
+keywords: AI, control plane, MLOps, MLflow 
+summary: MLOps open source avec NetApp - traçabilité du jeu de données au modèle avec NetApp et MLflow 
+---
+= Traçabilité Dataset-to-model avec NetApp et MLflow
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+[role="lead"]
+L' https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s["Kit NetApp DataOps pour Kubernetes"^] peut être utilisé en association avec les fonctionnalités de suivi d'expérience de MLflow afin d'implémenter la traçabilité entre les ensembles de données et les modèles ou entre les espaces de travail.
+
+Pour mettre en œuvre la traçabilité dataset à modèle ou espace de travail à modèle, il vous suffit de créer un instantané de votre volume de dataset ou d'espace de travail à l'aide de DataOps Toolkit dans le cadre de votre entraînement, comme illustré ci-dessous. Ce code enregistre le nom du volume de données et le nom de l'instantané en tant que balises associées à l'exécution d'entraînement spécifique que vous êtes en train de connecter à votre serveur de suivi d'expérience MLflow.
+
+[source]
+----
+...
+from netapp_dataops.k8s import create_volume_snapshot
+
+with mlflow.start_run() :
+    ...
+
+    namespace = "my_namespace" # Kubernetes namespace in which dataset volume PVC resides
+    dataset_volume_name = "project1" # Name of PVC corresponding to dataset volume
+    snapshot_name = "run1" # Name to assign to your new snapshot
+
+    # Create snapshot
+    create_volume_snapshot(
+        namespace=namespace,
+        pvc_name=dataset_volume_name,
+        snapshot_name=snapshot_name,
+        printOutput=True
+    )
+
+    # Log data volume name and snapshot name as "tags"
+    # associated with this training run in mlflow.
+    mlflow.set_tag("data_volume_name", dataset_volume_name)
+    mlflow.set_tag("snapshot_name", snapshot_name)
+
+    ...
+----

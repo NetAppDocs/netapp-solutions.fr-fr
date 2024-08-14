@@ -14,19 +14,65 @@ summary: MLOps open source avec NetApp - Architecture
 
 
 [role="lead"]
-Cette solution ne dépend pas de matériel spécifique. La solution est compatible avec toute appliance de stockage physique, instance Software-defined ou service cloud NetApp, prise en charge par Trident. Par exemple, un système de stockage NetApp AFF, Amazon FSX pour NetApp ONTAP, Azure NetApp Files ou une instance NetApp Cloud Volumes ONTAP. De plus, la solution peut être implémentée sur n'importe quel cluster Kubernetes tant que la version Kubernetes utilisée est prise en charge par Kubeflow et NetApp Astra Trident. Pour obtenir la liste des versions Kubernetes prises en charge par Kubeflow, voir la https://www.kubeflow.org/docs/started/getting-started/["Documentation officielle Kubeflow"^]. Pour obtenir la liste des versions de Kubernetes prises en charge par Trident, consultez le https://docs.netapp.com/us-en/trident/index.html["Documentation Trident"^]. Pour plus de détails sur l'environnement utilisé pour valider la solution, reportez-vous aux tableaux suivants.
+Cette solution ne dépend pas de matériel spécifique. La solution est compatible avec tout dispositif de stockage physique, instance Software-defined ou service cloud NetApp pris en charge par NetApp Astra Trident. Par exemple, un système de stockage NetApp AFF, Amazon FSX pour NetApp ONTAP, Azure NetApp Files, Google Cloud NetApp volumes ou une instance NetApp Cloud Volumes ONTAP. De plus, la solution peut être implémentée sur n'importe quel cluster Kubernetes tant que la version Kubernetes utilisée est prise en charge par NetApp Astra Trident et les autres composants de la solution implémentés. Pour obtenir la liste des versions Kubernetes prises en charge par Trident, consultez le https://docs.netapp.com/us-en/trident/index.html["Documentation Trident"^]. Pour plus d'informations sur les environnements utilisés pour valider les différents composants de cette solution, reportez-vous aux tableaux suivants.
+
+
+
+== Environnement Apache Airflow validation
 
 |===
 | Composant logiciel | Version 
 
 
-| Débit d'air Apache | 2.0.1 
+| Débit d'air Apache | 2.0.1, déployé via link:https://artifacthub.io/packages/helm/airflow-helm/airflow["Graphique Apache Airflow Helm"^] 8.0.8 
 
 
-| Graphique Helm à flux d'air Apache | 8.0.8 
+| Kubernetes | 1.18 
 
 
-| Kubeflow | 1.7, déployé via link:https://www.deploykf.org["DeployKF"] 0.1.1 
+| NetApp Astra Trident | 21.01 
+|===
+
+
+== Environnement de validation JupyterHub
+
+|===
+| Composant logiciel | Version 
+
+
+| JupyterHub | 4.1.5, déployé via link:https://hub.jupyter.org/helm-chart/["Graphique JupyterHub Helm"^] 3.3.7 
+
+
+| Kubernetes | 1.29 
+
+
+| NetApp Astra Trident | 24.02 
+|===
+
+
+== Environnement de validation MLflow
+
+|===
+| Composant logiciel | Version 
+
+
+| MLflow | 2.14.1, déployé via link:https://artifacthub.io/packages/helm/bitnami/mlflow["Diagramme d'aide MLflow"^] 1.4.12 
+
+
+| Kubernetes | 1.29 
+
+
+| NetApp Astra Trident | 24.02 
+|===
+
+
+== Environnement de validation Kubeflow
+
+|===
+| Composant logiciel | Version 
+
+
+| Kubeflow | 1.7, déployé via link:https://www.deploykf.org["DeployKF"^] 0.1.1 
 
 
 | Kubernetes | 1.26 
@@ -38,4 +84,4 @@ Cette solution ne dépend pas de matériel spécifique. La solution est compatib
 
 == Assistance
 
-NetApp n'offre pas de prise en charge d'entreprise pour Apache Airflow, Kubeflow ou Kubernetes. Si vous êtes intéressé par une plateforme MLOps entièrement prise en charge, link:https://www.netapp.com/us/contact-us/index.aspx?for_cr=us["Contactez NetApp"] Découvrez les solutions MLOps entièrement prises en charge proposées conjointement par NetApp et ses partenaires.
+NetApp ne propose pas de prise en charge d'entreprise pour Apache Airflow, JupyterHub, MLflow, Kubeflow ou Kubernetes. Si vous êtes intéressé par une plateforme MLOps entièrement prise en charge, link:https://www.netapp.com/us/contact-us/index.aspx?for_cr=us["Contactez NetApp"^] découvrez les solutions MLOps entièrement prises en charge que NetApp propose en collaboration avec ses partenaires.
