@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-Dans ce scénario, nous allons montrer comment déployer et utiliser les outils ONTAP pour VMware vSphere (OTV) pour configurer un datastore *vVols* pour un domaine de charge de travail VCF.
+Dans ce scénario, nous allons montrer comment déployer et utiliser les outils ONTAP pour VMware vSphere pour configurer un datastore *vVols* pour un domaine de charge de travail VCF.
 
 *ISCSI* est utilisé comme protocole de stockage pour le datastore vVols.
 
@@ -213,16 +213,16 @@ image::vmware-vcf-asa-image34.png[Vérifiez les sélections VMkernel]
 
 ==== Déployer et utiliser les outils ONTAP pour configurer le stockage
 
-Les étapes suivantes sont effectuées sur le cluster de domaine de gestion VCF à l'aide du client vSphere et impliquent le déploiement d'OTV, la création d'un datastore iSCSI vVols et la migration des machines virtuelles de gestion vers le nouveau datastore.
+Les étapes suivantes sont effectuées sur le cluster de domaine de gestion VCF à l'aide du client vSphere et impliquent le déploiement des outils ONTAP, la création d'un datastore iSCSI vVols et la migration des machines virtuelles de gestion vers le nouveau datastore.
 
-Pour les domaines de charge de travail VI, OTV est installé sur le cluster de gestion VCF, mais enregistré avec vCenter associé au domaine de charge de travail VI.
+Pour les domaines de charge de travail VI, les outils ONTAP sont installés sur le cluster de gestion VCF, mais enregistrés avec vCenter associé au domaine de charge de travail VI.
 
 Pour plus d'informations sur le déploiement et l'utilisation des outils ONTAP dans un environnement à plusieurs serveurs vCenter, reportez-vous à la section link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/configure/concept_requirements_for_registering_vsc_in_multiple_vcenter_servers_environment.html["Conditions requises pour l'enregistrement des outils ONTAP dans un environnement de plusieurs serveurs vCenter"].
 
 .Déployez les outils ONTAP pour VMware vSphere
 [%collapsible]
 ====
-Les outils ONTAP pour VMware vSphere (OTV) sont déployés en tant qu'appliance de machine virtuelle et fournissent une interface utilisateur vCenter intégrée pour la gestion du stockage ONTAP.
+Les outils ONTAP pour VMware vSphere sont déployés en tant qu'appliance de machine virtuelle et fournissent une interface utilisateur vCenter intégrée pour la gestion du stockage ONTAP.
 
 Procédez comme suit pour déployer les outils ONTAP pour VMware vSphere :
 
@@ -259,10 +259,10 @@ image::vmware-vcf-aff-image24.png[Sélectionnez réseau]
 
 . Sur la page Personnaliser le modèle, remplissez toutes les informations requises :
 +
-** Mot de passe à utiliser pour l'accès administratif à OTV.
+** Mot de passe à utiliser pour l'accès administratif aux outils ONTAP.
 ** Adresse IP du serveur NTP.
-** Mot de passe du compte de maintenance OTV.
-** Mot de passe OTV Derby DB.
+** Mot de passe du compte de maintenance des outils ONTAP.
+** ONTAP Outils Derby DB mot de passe.
 ** Ne cochez pas la case *Activer VMware Cloud Foundation (VCF)*. Le mode VCF n'est pas requis pour le déploiement de stockage supplémentaire.
 ** FQDN ou adresse IP de l'appliance vCenter pour le *VI Workload Domain*
 ** Informations d'identification pour l'appliance vCenter du *VI Workload Domain*
@@ -281,7 +281,7 @@ image::vmware-vcf-asa-image35.png[Personnaliser le modèle OTV 2]
 
 
 
-. Passez en revue toutes les informations de la page prêt à terminer et cliquez sur Terminer pour commencer à déployer l'appliance OTV.
+. Passez en revue toutes les informations de la page prêt à terminer et cliquez sur Terminer pour commencer à déployer l'appliance Outils ONTAP.
 
 
 ====
@@ -295,7 +295,7 @@ image::vmware-asa-image6.png[Outils NetApp ONTAP]
 +
 {nbsp}
 
-. Dans le menu déroulant *INSTANCE* de l'interface de l'outil ONTAP, sélectionnez l'instance OTV associée au domaine de charge de travail à gérer.
+. Dans le menu déroulant *INSTANCE* de l'interface de l'outil ONTAP, sélectionnez l'instance Outils ONTAP associée au domaine de charge de travail à gérer.
 +
 image::vmware-vcf-asa-image36.png[Sélectionnez instance OTV]
 

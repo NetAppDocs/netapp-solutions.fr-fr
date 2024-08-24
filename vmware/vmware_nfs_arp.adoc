@@ -1,0 +1,116 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmware_nfs_arp.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, ransomeware 
+summary:  
+---
+= Protection anti-ransomware autonome pour le stockage NFS
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./../media/
+
+
+
+
+== Protection anti-ransomware autonome pour le stockage NFS
+
+[role="lead"]
+Il est essentiel de détecter les ransomware dès que possible pour prévenir la propagation de ces attaques et éviter les temps d'indisponibilité coûteux. Une stratégie de détection des ransomwares efficace doit intégrer plusieurs couches de protection au niveau des machines virtuelles hôtes et hôtes ESXi. Même si plusieurs mesures de sécurité sont implémentées pour créer une défense complète contre les attaques par ransomware, ONTAP permet d'ajouter des couches de protection supplémentaires à l'approche de la défense globale. Pour n'en citer que quelques-unes, l'opération commence par les snapshots, la protection anti-ransomware autonome, les snapshots inviolables, etc.
+
+Voyons comment les fonctionnalités mentionnées ci-dessus fonctionnent avec VMware pour protéger et restaurer les données contre les ransomwares. Pour protéger vSphere et les ordinateurs virtuels invités contre les attaques, il est essentiel de prendre plusieurs mesures, notamment la segmentation, l'utilisation d'EDR/XDR/SIEM pour les terminaux, l'installation de mises à jour de sécurité et le respect des directives de renforcement appropriées. Chaque machine virtuelle résidant sur un datastore héberge également un système d'exploitation standard. Assurez-vous que des suites de produits contre les programmes malveillants sont installées sur vos serveurs d'entreprise et régulièrement mises à jour, ce qui constitue un composant essentiel de la stratégie de protection multicouche contre les ransomwares. Par ailleurs, activez la protection anti-ransomware autonome (ARP) sur le volume NFS qui alimente le datastore. ARP exploite le ML intégré DE LA MACHINE à ML qui analyse l'activité des workloads de volume et l'entropie des données pour détecter automatiquement les ransomware. Le protocole ARP est configurable via l'interface de gestion intégrée ONTAP ou le gestionnaire système. Il est activé par volume.
+
+image::nfs-arp-image1.png[image arp nfs 1]
+
+
+NOTE: Avec le nouveau NetApp ARP/ai, actuellement en préversion technique, il n'est pas nécessaire de disposer d'un mode d'apprentissage. Il peut plutôt passer directement en mode actif grâce à sa fonctionnalité de détection des ransomwares optimisée par l'IA.
+
+
+NOTE: Avec ONTAP One, tous ces ensembles de fonctionnalités sont entièrement gratuits. Accédez à la suite robuste NetApp de protection des données, de sécurité et à toutes les fonctionnalités d'ONTAP sans vous soucier des obstacles liés aux licences.
+
+Une fois en mode actif, il commence à rechercher l'activité de volume anormale qui pourrait être une attaque par ransomware. En cas d'activité anormale, une copie Snapshot automatique est immédiatement effectuée, ce qui fournit un point de restauration aussi proche que possible de l'infection par le fichier. ARP peut détecter les modifications des extensions de fichiers spécifiques à la machine virtuelle sur un volume NFS situé en dehors de la machine virtuelle lorsqu'une nouvelle extension est ajoutée au volume chiffré ou qu'une extension de fichier est modifiée.
+
+image::nfs-arp-image2.png[image arp nfs 2]
+
+Si une attaque par ransomware cible la machine virtuelle et altère les fichiers au sein de la machine virtuelle sans effectuer de modifications hors de la machine virtuelle, la protection avancée contre les ransomware (ARP) continue de détecter la menace si l'entropie par défaut de la machine virtuelle est faible, par exemple pour des fichiers de type .txt, .docx ou .mp4. Même si ARP crée un snapshot de protection dans ce scénario, il ne génère pas d'alerte de menace car les extensions de fichier en dehors de la machine virtuelle n'ont pas été falsifiées. Dans de tels scénarios, les couches de défense initiales identifieraient l'anomalie, mais ARP aide à créer un instantané basé sur l'entropie.
+
+Pour plus d’informations, reportez-vous à la section “ARP et machines virtuelles” dans link:https://docs.netapp.com/us-en/ontap/anti-ransomware/use-cases-restrictions-concept.html#supported-configurations["ARP usecas et considérations"].
+
+En passant des fichiers aux données de sauvegarde, les attaques par ransomware ciblent de plus en plus les sauvegardes et les points de restauration Snapshot en essayant de les supprimer avant de commencer à chiffrer des fichiers. Cependant, avec ONTAP, cela peut être empêché en créant des snapshots inviolables sur les systèmes primaires ou secondaires avec link:https://docs.netapp.com/us-en/ontap/snaplock/snapshot-lock-concept.html["Verrouillage des copies NetApp Snapshot™"].
+
+image::nfs-arp-image3.png[image arp nfs 3]
+
+Ces copies Snapshot ne peuvent pas être supprimées ou modifiées par des attaquants de ransomware ou des administrateurs peu scrupuleux, et elles sont disponibles même après une attaque. Si le datastore ou des machines virtuelles spécifiques sont affectés, SnapCenter peut restaurer les données des serveurs virtuels en quelques secondes, ce qui réduit au minimum le temps d'indisponibilité de l'entreprise.
+
+image::nfs-arp-image4.png[image de la gamme nfs arp 4]
+
+La démonstration ci-dessus montre comment le stockage ONTAP ajoute une couche supplémentaire aux techniques existantes pour améliorer la pérennisation de l'environnement.
+
+Pour plus d'informations, consultez le guide pour link:https://www.netapp.com/media/7334-tr4572.pdf["Solutions NetApp pour ransomware"].
+
+Si toutes ces questions doivent être orchestrées et intégrées avec des outils SIEM, il est possible d'utiliser le service OFFTAP tel que la protection contre les ransomware BlueXP . Il s'agit d'un service conçu pour protéger les données contre les ransomwares. Ce service protège les charges de travail basées sur les applications, comme Oracle, MySQL, les datastores de machines virtuelles et les partages de fichiers sur un stockage NFS sur site.
+
+Dans cet exemple, le datastore NFS « SRC_NFS_DS04 » est protégé grâce à la protection contre les ransomwares de BlueXP .
+
+image::nfs-arp-image5.png[image de la gamme nfs arp 5]
+
+image::nfs-arp-image6.png[image arp nfs 6]
+
+Pour plus d'informations sur la configuration de la protection contre les ransomwares BlueXP , reportez-vous aux sections link:https://docs.netapp.com/us-en/bluexp-ransomware-protection/rp-start-setup.html["Configurez la protection BlueXP  contre les ransomware"] et link:https://docs.netapp.com/us-en/bluexp-ransomware-protection/rp-use-settings.html#add-amazon-web-services-as-a-backup-destination["Configurez les paramètres de protection contre les ransomwares BlueXP"].
+
+Il est temps de citer un exemple. Dans cette procédure, le datastore “SRC_NFS_DS04” est affecté.
+
+image::nfs-arp-image7.png[image arp nfs 7]
+
+ARP a immédiatement déclenché un snapshot sur le volume lors de la détection.
+
+image::nfs-arp-image8.png[image arp nfs 8]
+
+image::nfs-arp-image9.png[image arp nfs 9]
+
+Une fois l'analyse approfondie terminée, les restaurations peuvent être effectuées rapidement et de manière transparente à l'aide de la protection contre les ransomware de SnapCenter ou de BlueXP . Avec SnapCenter, accédez aux machines virtuelles concernées et sélectionnez l'instantané approprié à restaurer.
+
+image::nfs-arp-image10.png[image arp nfs 10]
+
+Dans cette section, nous vous expliquera comment BlueXP  orchestre la protection contre les ransomwares en cas d'incident avec lequel les fichiers de la VM sont chiffrés.
+
+
+NOTE: Si la machine virtuelle est gérée par SnapCenter, la protection contre les ransomwares BlueXP  restaure la machine virtuelle à son état précédent en utilisant le processus cohérent avec les machines virtuelles.
+
+. Accédez à la protection contre les ransomware BlueXP  et une alerte s'affiche sur le tableau de bord de protection contre les ransomware de BlueXP .
+. Cliquez sur l'alerte pour consulter les incidents sur ce volume spécifique pour l'alerte générée
++
+image::nfs-arp-image11.png[image arp nfs 11]
+
+. Marquer l'incident de ransomware comme étant prêt pour la restauration (après neutralisation des incidents) en sélectionnant « Mark restore READY » (Marquer la restauration nécessaire)
++
+image::nfs-arp-image12.png[image arp nfs 12]
+
++
+
+NOTE: L'alerte peut être rejetée si l'incident s'avère être faux positif.
+
+. Accédez à l'onglet Recovery, consultez les informations de charge de travail sur la page Recovery, sélectionnez le volume de datastore à l'état Restore tionded et sélectionnez Restore.
++
+image::nfs-arp-image13.png[image arp nfs 13]
+
+. Dans ce cas, la portée de la restauration est « par machine virtuelle » (pour SnapCenter pour les machines virtuelles, la portée de la restauration est « par machine virtuelle »)
++
+image::nfs-arp-image14.png[image arp nfs 14]
+
+. Choisissez le point de restauration à utiliser pour restaurer les données, sélectionnez destination et cliquez sur Restaurer.
++
+image::nfs-arp-image15.png[image arp nfs 15]
+
+. Dans le menu supérieur, sélectionnez récupération pour examiner la charge de travail sur la page récupération, où l'état de l'opération se déplace dans les États. Une fois la restauration terminée, les fichiers VM sont restaurés comme indiqué ci-dessous.
++
+image::nfs-arp-image16.png[image arp nfs 16]
+
+
+
+
+NOTE: La restauration peut être effectuée à partir de SnapCenter pour VMware ou du plug-in SnapCenter, selon l'application.
+
+La solution NetApp fournit divers outils efficaces pour la visibilité, la détection et la résolution des problèmes, ce qui vous aide à détecter rapidement les ransomware, à prévenir cette propagation et à restaurer rapidement, si nécessaire, pour éviter les interruptions coûteuses. Les solutions de défense à plusieurs couches classiques restent répandues, tout comme les solutions tierces et partenaires pour la visibilité et la détection. Une solution efficace reste une partie essentielle de la réponse à toute menace.
