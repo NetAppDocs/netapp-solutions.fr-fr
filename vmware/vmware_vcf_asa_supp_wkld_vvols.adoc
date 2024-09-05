@@ -22,11 +22,7 @@ Auteur: Josh Powell
 
 
 
-== Utilisez les outils ONTAP pour configurer le stockage supplémentaire (vVols) pour les domaines de charge de travail VCF
-
-
-
-=== Présentation du scénario
+== Présentation du scénario
 
 Ce scénario couvre les étapes générales suivantes :
 
@@ -39,7 +35,7 @@ Ce scénario couvre les étapes générales suivantes :
 
 
 
-=== Prérequis
+== Prérequis
 
 Ce scénario nécessite les composants et configurations suivants :
 
@@ -65,13 +61,13 @@ Pour plus d'informations sur l'utilisation de datastores iSCSI VMFS avec VMware,
 
 
 
-=== Étapes de déploiement
+== Étapes de déploiement
 
 Pour déployer les outils ONTAP et les utiliser pour créer un datastore vVols sur le domaine de gestion VCF, effectuez les opérations suivantes :
 
 
 
-==== Créez un SVM et des LIF sur un système de stockage ONTAP
+=== Créez un SVM et des LIF sur un système de stockage ONTAP
 
 L'étape suivante s'effectue dans ONTAP System Manager.
 
@@ -114,7 +110,7 @@ image::vmware-vcf-asa-image04.png[Activer le compte SVM et Terminer]
 ====
 
 
-==== Configuration de la mise en réseau iSCSI sur les hôtes ESXi
+=== Configuration de la mise en réseau iSCSI sur les hôtes ESXi
 
 Les étapes suivantes sont effectuées sur le cluster VI Workload Domain à l'aide du client vSphere. Dans ce cas, l'authentification unique vCenter est utilisée, de sorte que le client vSphere est commun aux domaines de gestion et de charge de travail.
 
@@ -211,7 +207,7 @@ image::vmware-vcf-asa-image34.png[Vérifiez les sélections VMkernel]
 ====
 
 
-==== Déployer et utiliser les outils ONTAP pour configurer le stockage
+=== Déployer et utiliser les outils ONTAP pour configurer le stockage
 
 Les étapes suivantes sont effectuées sur le cluster de domaine de gestion VCF à l'aide du client vSphere et impliquent le déploiement des outils ONTAP, la création d'un datastore iSCSI vVols et la migration des machines virtuelles de gestion vers le nouveau datastore.
 
@@ -388,7 +384,7 @@ image::vmware-vcf-asa-image45.png[Page récapitulative]
 ====
 
 
-=== Informations supplémentaires
+== Informations supplémentaires
 
 Pour plus d'informations sur la configuration des systèmes de stockage ONTAP, reportez-vous au link:https://docs.netapp.com/us-en/ontap["Documentation ONTAP 9"] centre.
 
