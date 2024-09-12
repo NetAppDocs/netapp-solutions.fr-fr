@@ -101,30 +101,27 @@ La boîte à outils se compose d'un analyseur HTML basé sur le Web et de deux s
 ====
 . Ouvrez le module AWR de l'analyseur HTML.
 +
-image::db_sizing_ora_parser_01.png[Cette image fournit un écran d'analyseur HTML pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_01.png["Cette image fournit un écran d'analyseur HTML pour le dimensionnement Oracle"]
 
 . Vérifiez le format de sortie au format .csv et cliquez sur `Upload files` pour télécharger le rapport awr. L'analyseur renvoie les résultats dans une page HTML avec un résumé de tableau ainsi qu'un fichier output.csv dans `Download` dossier.
 +
-image::db_sizing_ora_parser_02.png[Cette image fournit un écran d'analyseur HTML pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_02.png["Cette image fournit un écran d'analyseur HTML pour le dimensionnement Oracle"]
 
 . Ouvrez le fichier de modèle Excel et copiez-collez le contenu csv dans la colonne A et la cellule 1 pour générer les informations de dimensionnement du serveur de base de données.
 +
-image::db_sizing_ora_parser_03_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_03_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"]
 
 . Mettez en surbrillance la colonne A et les champs 1 et 2, puis cliquez sur `Data`, alors `Text to Columns` Pour ouvrir l'Assistant texte. Choisissez `Delimited`, alors `Next` à l'écran suivant.
 +
-image::db_sizing_ora_parser_04_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_04_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"]
 
 . Fait `Other`, puis entrez '=' comme `Delimiters`. Cliquez sur `Next` à l'écran suivant.
 +
-image::db_sizing_ora_parser_05_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_05_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"]
 
 . Cliquez sur `Finish` pour terminer la conversion de chaîne en format de colonne lisible. Remarque : les champs de dimensionnement de la VM et d'ANF ont été renseignés avec les données récupérées dans le rapport Oracle AWR.
 +
-image::db_sizing_ora_parser_06_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
-
-+
-image::db_sizing_ora_parser_07_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_06_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"] image:db_sizing_ora_parser_07_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"]
 
 . Exécutez le script ora_db_data_size.sql, ora_db_logs_size.sql en tant que DBA dans sqlplus pour récupérer la taille des données de la base de données Oracle existante et la taille des journaux archivés avec le nombre de jours de la fenêtre de rétention.
 +
@@ -167,7 +164,7 @@ NOTE: Les informations de dimensionnement de base de données extraites à l'aid
 
 . Entrez le résultat dans le fichier Excel pour terminer le résultat du guide de dimensionnement.
 +
-image::db_sizing_ora_parser_08_anf.png[Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle]
+image:db_sizing_ora_parser_08_anf.png["Cette image fournit une capture d'écran du modèle Excel pour le dimensionnement Oracle"]
 
 . ANF utilise un niveau de services à trois tiers (Standard, Premium, Ultra) pour gérer la limite de débit du volume de la base de données. Reportez-vous à la section link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-service-levels["Niveaux de service pour Azure NetApp Files"^] pour plus d'informations. En fonction des résultats des conseils de dimensionnement, choisissez un niveau de service ANF qui fournit un débit qui répond à la demande pour la base de données.
 

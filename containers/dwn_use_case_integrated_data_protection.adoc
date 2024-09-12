@@ -26,7 +26,7 @@ L'une des utilisations les plus courantes des workflows DevOps est l'intégratio
 
 Dans ce cas d'utilisation, nous examinons de plus près un pipeline de promotion en production qui déploie une nouvelle version d'une application : d'abord dans un environnement intermédiaire, puis dans un environnement de production. Cet exemple s'applique aussi bien aux principaux clouds publics que à un environnement sur site. Bien que nous montrons le déploiement d'une version de l'app, le pipeline peut également être utilisé avec d'autres stratégies, telles que le déploiement bleu/vert ou canari. Dans le cadre du pipeline ci/CD, nous allons protéger l'application en créant une sauvegarde complète de l'application. De nombreux workflows DevOps peuvent être utiles pour une sauvegarde de l'application en production intégrant la cohérence applicative, ainsi que ses données, son état et sa configuration.
 
-image::dwn_image1.jpg[L'architecture DevOps avec NetApp Astra : utilisation 1]
+image:dwn_image1.jpg["L'architecture DevOps avec NetApp Astra : utilisation 1"]
 
 L'application utilisée pour valider ce cas d'utilisation était https://magento.com/["Magento"^], Une solution de commerce électronique avec un front-end basé sur le Web, une instance Elasticsearch pour des fonctions de recherche et d'analyse et une base de données MariaDB qui suit tous les détails de l'inventaire des achats et des transactions. Cette application conteneurisée a été installée sur un cluster Red Hat OpenShift. Chaque pod de l'application utilisait des volumes persistants pour stocker les données. Les volumes persistants ont été automatiquement créés par NetApp Astra Trident, l'orchestrateur de stockage conforme à l'interface de conteneur pour Kubernetes, qui permet de provisionner le stockage sur des systèmes de stockage NetApp. En outre, avec les fonctionnalités de protection des applications d'Astra Control Center, l'application en question a été gérée par Astra Control, qui a ensuite été utilisée pour déclencher les sauvegardes d'application qui stockaient l'état de l'application ainsi que les données stockées dans des volumes persistants. Nous avons utilisé https://github.com/NetApp/netapp-astra-toolkits["Kit de développement logiciel NetApp Astra Control Python"^] Automatiser le processus de déclenchement des sauvegardes d'applications ; celles-ci ont ensuite été intégrées ou CD dans un pipeline. Ce pipeline a été créé et exécuté à l'aide d'un outil ci/CD appelé [https://www.jenkins.io/["Jenkins"^]] automatiser le flux pour créer, protéger et déployer l'application.
 
@@ -87,7 +87,7 @@ magento-mariadb-0                                        1/1     Running   0    
 . Cliquez sur les points de suspension par rapport à l'application Magento dans l'environnement de production (`magento-prod`), puis cliquez sur gérer.
 . L'application Magento est désormais gérée par Astra Control Center. Toutes les opérations prises en charge par Astra Control peuvent être exécutées sur l'application. Notez également la version de l'application.
 +
-image::dwn_image2.jpg[Vérification de la version Magento avant la mise à niveau]
+image:dwn_image2.jpg["Vérification de la version Magento avant la mise à niveau"]
 
 . Répétez les étapes de gestion de l'application Magento dans l'environnement de staging (`magento-staging`).
 
@@ -102,7 +102,7 @@ Lorsque nous utilisons de nouvelles versions d'applications, nous utilisons un p
 . Accédez à Manage Jenkins > Manage Credentials et cliquez sur le domaine approprié.
 . Cliquez sur Ajouter des informations d'identification et définissez le type sur Nom d'utilisateur avec le mot de passe et la portée définis sur Global. Entrez le nom d'utilisateur, le mot de passe et un ID pour les informations d'identification, puis cliquez sur OK.
 +
-image::dwn_image8.jpg[Créer des informations d'identification]
+image:dwn_image8.jpg["Créer des informations d'identification"]
 
 . Répétez la même procédure pour les deux autres identifiants.
 . Retournez au tableau de bord, créez un pipeline en cliquant sur nouvel élément, puis cliquez sur Pipeline.
@@ -130,27 +130,27 @@ MAGENTO_MARIADB_ROOT_CREDS = credentials('magento-mariadb-root-cred')
 ----
 . Cliquez sur Créer maintenant. Le pipeline commence à exécuter et progresse à travers les étapes. L'image de l'application est d'abord créée et téléchargée dans le registre du conteneur.
 +
-image::dwn_image3.jpg[Progression du pipeline]
+image:dwn_image3.jpg["Progression du pipeline"]
 
 . Les sauvegardes d'applications sont lancées par Astra Control.
 +
-image::dwn_image4.jpg[Sauvegarde initiée]
+image:dwn_image4.jpg["Sauvegarde initiée"]
 
 . Une fois les étapes de sauvegarde terminées, vérifiez les sauvegardes à partir du centre de contrôle Astra.
 +
-image::dwn_image5.jpg[Sauvegarde réussie]
+image:dwn_image5.jpg["Sauvegarde réussie"]
 
 . La nouvelle version de l'application est ensuite déployée dans l'environnement temporaire.
 +
-image::dwn_image6.jpg[Déploiement de la phase intermédiaire initié]
+image:dwn_image6.jpg["Déploiement de la phase intermédiaire initié"]
 
 . Une fois cette étape terminée, le programme attend que l'utilisateur approuve le déploiement en production. À ce stade, supposons que l'équipe QA effectue des tests manuels et approuve la production. Vous pouvez ensuite cliquer sur approuver pour déployer la nouvelle version de l'application dans l'environnement de production.
 +
-image::dwn_image7.jpg[En attente de promotion]
+image:dwn_image7.jpg["En attente de promotion"]
 
 . Vérifiez que l'application de production est également mise à niveau vers la version souhaitée.
 +
-image::dwn_image11.jpg[Application Prod mise à niveau]
+image:dwn_image11.jpg["Application Prod mise à niveau"]
 
 
 

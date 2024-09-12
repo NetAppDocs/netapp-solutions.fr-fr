@@ -1,0 +1,47 @@
+---
+sidebar: sidebar 
+keywords: Cyber vault, cybervault, cyber-vault, data protection, security, ransomware, ONTAP, hardening 
+permalink: /cyber-vault/ontap-cyber-vault-interoperability.html 
+summary: Interopérabilité avec le cyber-coffre-fort 
+---
+= Interopérabilité avec le cyber-coffre-fort
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Le matériel et le logiciel ONTAP peuvent être utilisés pour créer une configuration de cyber-coffre.
+
+
+
+== Recommandations relatives au matériel ONTAP
+
+Toutes les baies physiques unifiées ONTAP peuvent être utilisées pour la mise en œuvre d'un cybercoffre.
+
+* Le stockage hybride FAS constitue la solution la plus économique.
+* La gamme AFF C-Series offre la plus efficace en termes de consommation électrique et de densité.
+* La gamme AFF A-Series est la plateforme la plus performante qui offre le meilleur RTO. Avec l'annonce récente de notre tout dernier système AFF A-Series, cette plateforme offrira la meilleure efficacité de stockage, sans compromis sur les performances.
+
+
+
+
+== Recommandations sur les logiciels ONTAP
+
+Depuis la version ONTAP 9.14.1, vous pouvez spécifier des périodes de conservation pour des étiquettes SnapMirror spécifiques dans la règle SnapMirror de la relation SnapMirror de sorte que les copies Snapshot répliquées du volume source vers le volume de destination soient conservées pendant la période de conservation spécifiée dans la règle. Si aucune période de conservation n'est spécifiée, la période de rétention par défaut du volume de destination est utilisée.
+
+À partir de ONTAP 9.13.1, vous pouvez restaurer instantanément une copie Snapshot verrouillée sur le volume SnapLock de destination d'une relation de coffre-fort SnapLock en créant une FlexClone avec l'option de type SnapLock définie sur non-SnapLock et en spécifiant la copie Snapshot comme « snapshot-parent » lors de l'exécution de l'opération de création du clone de volume. En savoir plus sur link:../../ontap/volumes/create-flexclone-task.html?q=volume+clone["Création d'un volume FlexClone avec un type SnapLock"^].
+
+
+
+== Configuration MetroCluster
+
+Pour les configurations MetroCluster, il est important de connaître les éléments suivants :
+
+* Vous pouvez créer une relation SnapVault uniquement entre des SVM source synchrone, et non entre un SVM source synchrone et une SVM de destination synchrone.
+* Vous pouvez créer une relation SnapVault depuis un volume d'un SVM source synchrone vers une SVM transmettant les données.
+* Vous pouvez créer une relation SnapVault depuis un volume d'une SVM diffusant les données vers un volume DP au sein d'un SVM source synchrone.
+

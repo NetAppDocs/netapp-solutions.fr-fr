@@ -78,15 +78,15 @@ Le logiciel Jetstream DR est constitué de trois composants principaux : le serv
 . Enregistrez le serveur vCenter avec MSA.pour effectuer l'installation, procédez comme suit :
 . Après le déploiement de JetStream DR MSA et l'enregistrement du serveur vCenter, accédez au plug-in JetStream DR à l'aide du client Web vSphere. Pour ce faire, accédez à Datacenter > configurer > JetStream DR.
 +
-image::vmware-dr-image8.png[image de reprise sur incident vmware 8]
+image:vmware-dr-image8.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans l'interface JetStream DR, sélectionnez le cluster approprié.
 +
-image::vmware-dr-image9.png[image de reprise sur incident vmware 9]
+image:vmware-dr-image9.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez le cluster avec le package de filtre d'E/S.
 +
-image::vmware-dr-image10.png[image dr vmware 10]
+image:vmware-dr-image10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Ajoutez un stockage Azure Blob Storage situé sur le site de reprise.
 . Déployez une appliance DR virtuelle (DRVA) depuis l'onglet Appliances.
@@ -97,14 +97,14 @@ NOTE: Les DRVAS peuvent être créés automatiquement par CPT, mais pour les tes
 
 JetStream DRVA est une appliance virtuelle qui facilite les principales fonctions du processus de réplication des données. Un cluster protégé doit contenir au moins un DRVA et, en général, un DRVA est configuré par hôte. Chaque DRVA peut gérer plusieurs domaines protégés.
 
-image::vmware-dr-image11.png[image de reprise après incident vmware 11]
+image:vmware-dr-image11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Dans cet exemple, quatre DRVA ont été créés pour 80 machines virtuelles.
 
 . Créez des volumes de journal de réplication pour chaque DRVA à l'aide de VMDK provenant des datastores disponibles ou des pools de stockage iSCSI partagés indépendants.
 . À partir de l'onglet domaines protégés, créez le nombre requis de domaines protégés à l'aide des informations concernant le site Azure Blob Storage, l'instance DRVA et le journal de réplication. Un domaine protégé définit un ordinateur virtuel ou un ensemble de serveurs virtuels dans le cluster qui sont protégés ensemble et se voit attribuer un ordre de priorité pour les opérations de basculement/retour arrière.
 +
-image::vmware-dr-image12.png[image de reprise sur incident vmware 12]
+image:vmware-dr-image12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez les machines virtuelles que vous souhaitez protéger et démarrez la protection des machines virtuelles du domaine protégé. La réplication des données commence alors dans le magasin d'objets blob désigné.
 
@@ -115,7 +115,7 @@ NOTE: Vérifier que le même mode de protection est utilisé pour toutes les VM 
 
 NOTE: Le mode Write- Back (VMDK) peut offrir de meilleures performances.
 
-image::vmware-dr-image13.png[image de reprise après incident vmware 13]
+image:vmware-dr-image13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Vérifier que les volumes des journaux de réplication sont placés sur un stockage haute performance.
 
@@ -153,15 +153,15 @@ NOTE: L'utilisateur CloudAdmin par défaut dans Azure VMware solution ne dispose
 La capture d'écran suivante montre l'installation à l'aide d'une adresse IP DHCP.
 
 +
-image::vmware-dr-image14.png[image de reprise après incident vmware 14]
+image:vmware-dr-image14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une fois l'installation de JetStream DR pour AVS terminée, actualisez le navigateur. Pour accéder à l'interface de reprise après incident JetStream, allez dans SDDC Datacenter > configurer > JetStream DR.
 +
-image::vmware-dr-image15.png[image de reprise sur incident vmware 15]
+image:vmware-dr-image15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . À partir de l'interface JetStream DR, ajoutez le compte Azure Blob Storage utilisé pour protéger le cluster sur site en tant que site de stockage, puis exécutez l'option Scan Domains.
 +
-image::vmware-dr-image16.png[image dr vmware 16]
+image:vmware-dr-image16.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une fois les domaines protégés importés, déployez les appareils DRVA. Dans cet exemple, la réhydratation continue est lancée manuellement à partir du site de restauration à l'aide de l'interface utilisateur JetStream DR.
 +
@@ -171,7 +171,7 @@ NOTE: Ces étapes peuvent également être automatisées à l'aide de plans cré
 . Créez des volumes du journal de réplication à l'aide des datastores VSAN ou ANF disponibles.
 . Importez les domaines protégés et configurez le va de restauration de manière à utiliser le datastore ANF pour le positionnement des VM.
 +
-image::vmware-dr-image17.png[image dr vmware 17]
+image:vmware-dr-image17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 
@@ -179,7 +179,7 @@ NOTE: Assurez-vous que DHCP est activé sur le segment sélectionné et qu'un no
 
 . Sélectionnez l'option de basculement appropriée (basculement continu ou basculement). Dans cet exemple, la réhydratation continue (basculement continu) est sélectionnée.
 +
-image::vmware-dr-image18.png[image dr vmware 18]
+image:vmware-dr-image18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -201,17 +201,17 @@ NOTE: CPT peut être utilisé pour exécuter le plan de basculement pour restaur
 NOTE: Après le basculement (pour la réhydratation en continu ou standard) lorsque les machines virtuelles protégées ont été lancées dans AVS, la protection reprend automatiquement et la reprise après incident JetStream continue de répliquer leurs données dans les conteneurs appropriés/originaux dans Azure Blob Storage.
 
 +
-image::vmware-dr-image19.png[image de reprise après incident vmware 19]
+image:vmware-dr-image19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
-image::vmware-dr-image20.png[image de reprise sur incident vmware 20]
+image:vmware-dr-image20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 La barre des tâches affiche la progression des activités de basculement.
 
 . Une fois la tâche terminée, accédez aux machines virtuelles récupérées et l'entreprise continue d'être opérationnelle normalement.
 +
-image::vmware-dr-image21.png[image de reprise après incident vmware 21]
+image:vmware-dr-image21.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 Une fois que le site primaire est à nouveau opérationnel, le retour arrière peut être effectué. La protection des machines virtuelles est reprise et la cohérence des données doit être vérifiée.
@@ -223,7 +223,7 @@ NOTE: Remarque : le `recovery_utility_prepare_failback` Le script fourni dans le
 
 . Accédez à l'environnement sur site restauré, accédez à l'interface utilisateur Jetstream DR et sélectionnez le domaine protégé approprié. Une fois que le site protégé est prêt à être restauré, sélectionnez l'option de retour arrière dans l'interface utilisateur.
 +
-image::vmware-dr-image22.png[image dr vmware 22]
+image:vmware-dr-image22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -244,4 +244,4 @@ Récupérer des données suite à un ransomware peut être une tâche extrêmeme
 
 Jetstream DR pour AVS avec les datastores Azure NetApp Files peut résoudre ces problèmes en permettant aux entreprises de récupérer les données à partir de points disponibles dans le temps, de sorte que les charges de travail soient récupérées sur un réseau fonctionnel et isolé si nécessaire. La récupération permet aux applications de fonctionner et de communiquer entre elles sans les exposer au trafic nord- sud, offrant ainsi aux équipes de sécurité un endroit sûr pour effectuer des analyses et autres corrections nécessaires.
 
-image::vmware-dr-image23.png[image de reprise après incident vmware 23]
+image:vmware-dr-image23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]

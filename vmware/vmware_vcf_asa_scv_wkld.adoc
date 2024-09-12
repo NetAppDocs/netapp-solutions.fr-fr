@@ -53,7 +53,7 @@ Pour plus d'informations sur la configuration des datastores VMFS iSCSI en tant 
 
 TIP: En plus de la réplication des sauvegardes effectuées avec SCV sur le stockage secondaire, des copies hors site des données peuvent être effectuées sur le stockage objet sur l'un des trois (3) principaux fournisseurs cloud à l'aide de la sauvegarde et de la restauration NetApp BlueXP pour les machines virtuelles. Pour plus d'informations, reportez-vous à la solution link:../ehc/bxp-scv-hybrid-solution.html["3-2-1 protection des données pour VMware avec le plug-in SnapCenter et sauvegarde et restauration BlueXP pour les VM"].
 
-image::vmware-vcf-asa-image108.png[stratégie de sauvegarde 3-2-1]
+image:vmware-vcf-asa-image108.png["stratégie de sauvegarde 3-2-1"]
 
 
 
@@ -77,14 +77,14 @@ Effectuez les étapes suivantes à partir du client vCenter pour déployer SCV d
 . Télécharger le fichier OVA pour le déploiement des distributeurs sélectifs à partir de la zone de téléchargement du site d'assistance NetApp link:https://mysupport.netapp.com/site/products/all/details/scv/downloads-tab["*ICI*"].
 . Dans le domaine de gestion vCenter client, sélectionnez *déployer le modèle OVF...*.
 +
-image::vmware-vcf-asa-image46.png[Déployer le modèle OVF...]
+image:vmware-vcf-asa-image46.png["Déployer le modèle OVF..."]
 
 +
 {nbsp}
 
 . Dans l'assistant *Deploy OVF Template*, cliquez sur le bouton radio *local file*, puis sélectionnez pour télécharger le modèle OVF précédemment téléchargé. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image47.png[Sélectionnez modèle OVF]
+image:vmware-vcf-asa-image47.png["Sélectionnez modèle OVF"]
 
 +
 {nbsp}
@@ -94,14 +94,14 @@ image::vmware-vcf-asa-image47.png[Sélectionnez modèle OVF]
 . Passez en revue l'information relative au modèle OVF sur la page *consulter les détails* et acceptez les conditions de licence sur la page *accords de licence*.
 . Sur la page *Select Storage*, choisissez le datastore sur lequel la machine virtuelle sera installée et sélectionnez *Virtual disk format* et *VM Storage Policy*. Dans cette solution, la machine virtuelle sera installée sur un datastore VMFS iSCSI situé sur un système de stockage ONTAP, comme précédemment déployé dans une section distincte de cette documentation. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image48.png[Sélectionnez modèle OVF]
+image:vmware-vcf-asa-image48.png["Sélectionnez modèle OVF"]
 
 +
 {nbsp}
 
 . Sur la page *Sélectionner réseau*, sélectionnez le réseau de gestion capable de communiquer avec l'appliance vCenter du domaine de charge de travail et les systèmes de stockage ONTAP principal et secondaire.
 +
-image::vmware-vcf-asa-image49.png[sélectionnez le réseau de gestion]
+image:vmware-vcf-asa-image49.png["sélectionnez le réseau de gestion"]
 
 +
 {nbsp}
@@ -117,13 +117,13 @@ image::vmware-vcf-asa-image49.png[sélectionnez le réseau de gestion]
 Cliquez sur *Suivant* pour continuer.
 
 +
-image::vmware-vcf-asa-image50.png[sélectionnez le réseau de gestion]
+image:vmware-vcf-asa-image50.png["sélectionnez le réseau de gestion"]
 
 +
-image::vmware-vcf-asa-image51.png[sélectionnez le réseau de gestion]
+image:vmware-vcf-asa-image51.png["sélectionnez le réseau de gestion"]
 
 +
-image::vmware-vcf-asa-image52.png[sélectionnez le réseau de gestion]
+image:vmware-vcf-asa-image52.png["sélectionnez le réseau de gestion"]
 
 +
 {nbsp}
@@ -141,28 +141,28 @@ Une fois le plug-in SnapCenter installé, procédez comme suit pour ajouter des 
 
 . Vous pouvez accéder à SCV à partir du menu principal du client vSphere.
 +
-image::vmware-vcf-asa-image53.png[Ouvrez le plug-in SnapCenter]
+image:vmware-vcf-asa-image53.png["Ouvrez le plug-in SnapCenter"]
 
 +
 {nbsp}
 
 . En haut de l'interface utilisateur SCV, sélectionnez l'instance SCV qui correspond au cluster vSphere à protéger.
 +
-image::vmware-vcf-asa-image54.png[Sélectionnez l'instance correcte]
+image:vmware-vcf-asa-image54.png["Sélectionnez l'instance correcte"]
 
 +
 {nbsp}
 
 . Accédez à *Storage Systems* dans le menu de gauche et cliquez sur *Add* pour commencer.
 +
-image::vmware-vcf-asa-image55.png[Ajout d'un nouveau système de stockage]
+image:vmware-vcf-asa-image55.png["Ajout d'un nouveau système de stockage"]
 
 +
 {nbsp}
 
 . Dans le formulaire *Ajouter un système de stockage*, entrez l'adresse IP et les informations d'identification du système de stockage ONTAP à ajouter, puis cliquez sur *Ajouter* pour terminer l'action.
 +
-image::vmware-vcf-asa-image56.png[Fournir les informations d'identification du système de stockage]
+image:vmware-vcf-asa-image56.png["Fournir les informations d'identification du système de stockage"]
 
 +
 {nbsp}
@@ -180,7 +180,7 @@ Pour créer une nouvelle règle de sauvegarde, procédez comme suit :
 
 . Dans le menu de gauche, sélectionnez *politiques* et cliquez sur *Créer* pour commencer.
 +
-image::vmware-vcf-asa-image57.png[Création de la règle]
+image:vmware-vcf-asa-image57.png["Création de la règle"]
 
 +
 {nbsp}
@@ -200,7 +200,7 @@ TIP: SnapMirror et la réplication SnapVault sont similaires dans la mesure où 
 Choisissez des options avancées supplémentaires et cliquez sur *Ajouter* pour créer la stratégie.
 
 +
-image::vmware-vcf-asa-image58.png[Remplissez les détails de la police]
+image:vmware-vcf-asa-image58.png["Remplissez les détails de la police"]
 
 
 
@@ -214,7 +214,7 @@ Pour créer un nouveau groupe de ressources, procédez comme suit :
 
 . Dans le menu de gauche, sélectionnez *groupes de ressources* et cliquez sur *Créer* pour commencer.
 +
-image::vmware-vcf-asa-image59.png[Créer un nouveau groupe de ressources]
+image:vmware-vcf-asa-image59.png["Créer un nouveau groupe de ressources"]
 
 +
 {nbsp}
@@ -226,49 +226,49 @@ image::vmware-vcf-asa-image59.png[Créer un nouveau groupe de ressources]
 TIP: Même si seules des machines virtuelles spécifiques sont sélectionnées, le datastore entier est toujours sauvegardé. En effet, ONTAP effectue des snapshots du volume hébergeant le datastore. Notez toutefois que la sélection de machines virtuelles spécifiques uniquement pour la sauvegarde limite la capacité de restauration de ces machines virtuelles uniquement.
 
 +
-image::vmware-vcf-asa-image60.png[Sélectionnez les ressources à sauvegarder]
+image:vmware-vcf-asa-image60.png["Sélectionnez les ressources à sauvegarder"]
 
 +
 {nbsp}
 
 . Sur la page *Spanning Disks*, sélectionnez l'option permettant de gérer les machines virtuelles avec des VMDK qui couvrent plusieurs datastores. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image61.png[Sélectionnez l'option Spanning datastores]
+image:vmware-vcf-asa-image61.png["Sélectionnez l'option Spanning datastores"]
 
 +
 {nbsp}
 
 . Sur la page *Policies*, sélectionnez une ou plusieurs stratégies créées précédemment qui seront utilisées avec ce groupe de ressources.  Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image62.png[Sélectionnez des stratégies]
+image:vmware-vcf-asa-image62.png["Sélectionnez des stratégies"]
 
 +
 {nbsp}
 
 . Sur la page *Schedules*, définissez la date d'exécution de la sauvegarde en configurant la récurrence et l'heure de la journée. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image63.png[Sélectionnez planification]
+image:vmware-vcf-asa-image63.png["Sélectionnez planification"]
 
 +
 {nbsp}
 
 . Enfin, passez en revue le *Résumé* et cliquez sur *Terminer* pour créer le groupe de ressources.
 +
-image::vmware-vcf-asa-image64.png[Passez en revue le résumé et créez un groupe de ressources]
+image:vmware-vcf-asa-image64.png["Passez en revue le résumé et créez un groupe de ressources"]
 
 +
 {nbsp}
 
 . Une fois le groupe de ressources créé, cliquez sur le bouton *Exécuter maintenant* pour exécuter la première sauvegarde.
 +
-image::vmware-vcf-asa-image65.png[Passez en revue le résumé et créez un groupe de ressources]
+image:vmware-vcf-asa-image65.png["Passez en revue le résumé et créez un groupe de ressources"]
 
 +
 {nbsp}
 
 . Accédez au *Tableau de bord* et, sous *activités récentes*, cliquez sur le numéro en regard de *ID travail* pour ouvrir le moniteur de travaux et afficher la progression du travail en cours.
 +
-image::vmware-vcf-asa-image66.png[Afficher la progression de la procédure de sauvegarde]
+image:vmware-vcf-asa-image66.png["Afficher la progression de la procédure de sauvegarde"]
 
 
 
@@ -298,21 +298,21 @@ Effectuer les étapes suivantes pour restaurer une machine virtuelle avec distri
 
 . Accédez à la machine virtuelle à restaurer dans le client vSphere, cliquez avec le bouton droit de la souris et naviguez jusqu'à *SnapCenter Plug-in pour VMware vSphere*.  Sélectionnez *Restaurer* dans le sous-menu.
 +
-image::vmware-vcf-asa-image67.png[Sélectionnez pour restaurer la machine virtuelle]
+image:vmware-vcf-asa-image67.png["Sélectionnez pour restaurer la machine virtuelle"]
 
 +
 
 TIP: Vous pouvez également naviguer jusqu'au datastore en inventaire, puis, sous l'onglet *configurer*, accédez à *Plug-in SnapCenter pour VMware vSphere > sauvegardes*. Dans la sauvegarde choisie, sélectionnez les machines virtuelles à restaurer.
 
 +
-image::vmware-vcf-asa-image68.png[Navigue les sauvegardes à partir du datastore]
+image:vmware-vcf-asa-image68.png["Navigue les sauvegardes à partir du datastore"]
 
 +
 {nbsp}
 
 . Dans l'assistant *Restore*, sélectionnez la sauvegarde à utiliser. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image69.png[Sélectionnez la sauvegarde à utiliser]
+image:vmware-vcf-asa-image69.png["Sélectionnez la sauvegarde à utiliser"]
 
 +
 {nbsp}
@@ -329,7 +329,7 @@ image::vmware-vcf-asa-image69.png[Sélectionnez la sauvegarde à utiliser]
 *** *Nom de la VM après la restauration*
 *** *Sélectionnez datastore:*
 +
-image::vmware-vcf-asa-image70.png[Sélectionnez les options de la portée de restauration]
+image:vmware-vcf-asa-image70.png["Sélectionnez les options de la portée de restauration"]
 
 +
 {nbsp}
@@ -343,21 +343,21 @@ Cliquez sur *Suivant* pour continuer.
 
 . Sur la page *Sélectionner un emplacement*, choisissez de restaurer la machine virtuelle à partir du système de stockage ONTAP principal ou secondaire. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image71.png[Sélectionnez l'emplacement de stockage]
+image:vmware-vcf-asa-image71.png["Sélectionnez l'emplacement de stockage"]
 
 +
 {nbsp}
 
 . Enfin, passez en revue le *Résumé* et cliquez sur *Terminer* pour lancer le travail de restauration.
 +
-image::vmware-vcf-asa-image72.png[Cliquez sur Terminer pour lancer la tâche de restauration]
+image:vmware-vcf-asa-image72.png["Cliquez sur Terminer pour lancer la tâche de restauration"]
 
 +
 {nbsp}
 
 . La progression de la tâche de restauration peut être surveillée à partir du volet *tâches récentes* du client vSphere et du moniteur de tâches de SCV.
 +
-image::vmware-vcf-asa-image73.png[Surveillez la tâche de restauration]
+image:vmware-vcf-asa-image73.png["Surveillez la tâche de restauration"]
 
 
 
@@ -371,21 +371,21 @@ Pour joindre un VMDK à partir d'une sauvegarde, procédez comme suit :
 
 . Dans le client vSphere, accédez à une machine virtuelle et, dans le menu *actions*, sélectionnez *SnapCenter Plug-in pour VMware vSphere > connecter un ou plusieurs disques virtuels*.
 +
-image::vmware-vcf-asa-image80.png[Sélectionner la connexion de disques virtuels]
+image:vmware-vcf-asa-image80.png["Sélectionner la connexion de disques virtuels"]
 
 +
 {nbsp}
 
 . Dans l'assistant *Attach Virtual Disk(s)*, sélectionnez l'instance de sauvegarde à utiliser et le VMDK à connecter.
 +
-image::vmware-vcf-asa-image81.png[Sélectionnez Paramètres de connexion de disque virtuel]
+image:vmware-vcf-asa-image81.png["Sélectionnez Paramètres de connexion de disque virtuel"]
 
 +
 
 TIP: Les options de filtre permettent de localiser les sauvegardes et d'afficher les sauvegardes des systèmes de stockage primaire et secondaire.
 
 +
-image::vmware-vcf-asa-image82.png[Filtre de connexion de disque(s) virtuel(s)]
+image:vmware-vcf-asa-image82.png["Filtre de connexion de disque(s) virtuel(s)"]
 
 +
 {nbsp}
@@ -393,7 +393,7 @@ image::vmware-vcf-asa-image82.png[Filtre de connexion de disque(s) virtuel(s)]
 . Après avoir sélectionné toutes les options, cliquez sur le bouton *joindre* pour lancer le processus de restauration et joindre le VMDK à l'hôte.
 . Une fois la procédure de connexion terminée, le disque est accessible à partir du système d'exploitation du système hôte. Dans ce cas, SCV connecté le disque avec son système de fichiers NTFS au lecteur E: De notre serveur Windows SQL Server et les fichiers de base de données SQL sur le système de fichiers sont accessibles via l'Explorateur de fichiers.
 +
-image::vmware-vcf-asa-image83.png[Accéder au système de fichiers Windows]
+image:vmware-vcf-asa-image83.png["Accéder au système de fichiers Windows"]
 
 
 
@@ -409,19 +409,19 @@ Pour effectuer une restauration du système de fichiers invité sur un système 
 
 . La première étape consiste à créer des informations d'identification Exécuter en tant que pour fournir un accès au système hôte Windows. Dans le client vSphere, accédez à l'interface du plug-in CSV et cliquez sur *Guest File Restore* dans le menu principal.
 +
-image::vmware-vcf-asa-image84.png[Ouvrez la restauration des fichiers invités]
+image:vmware-vcf-asa-image84.png["Ouvrez la restauration des fichiers invités"]
 
 +
 {nbsp}
 
 . Sous *Exécuter en tant qu'informations d'identification*, cliquez sur l'icône *+* pour ouvrir la fenêtre *Exécuter en tant qu'informations d'identification*.
-. Saisissez un nom pour l'enregistrement des informations d'identification, un nom d'utilisateur et un mot de passe administrateur pour le système Windows, puis cliquez sur le bouton *Sélectionner VM* pour sélectionner une machine virtuelle proxy facultative à utiliser pour la restauration. Image ::vmware-vcf-asa-image85.png[fenêtre Exécuter en tant qu'informations d'identification]
+. Saisissez un nom pour l'enregistrement des informations d'identification, un nom d'utilisateur et un mot de passe administrateur pour le système Windows, puis cliquez sur le bouton *Sélectionner VM* pour sélectionner une machine virtuelle proxy facultative à utiliser pour la restauration. image:vmware-vcf-asa-image85.png["Exécuter en tant que fenêtre d'informations d'identification"]
 +
 {nbsp}
 
 . Sur la page Proxy VM, indiquez le nom de la VM et recherchez-la en effectuant une recherche par hôte ESXi ou par nom. Une fois sélectionné, cliquez sur *Enregistrer*.
 +
-image::vmware-vcf-asa-image86.png[Localisez la machine virtuelle sur la page Proxy VM]
+image:vmware-vcf-asa-image86.png["Localisez la machine virtuelle sur la page Proxy VM"]
 
 +
 {nbsp}
@@ -429,21 +429,21 @@ image::vmware-vcf-asa-image86.png[Localisez la machine virtuelle sur la page Pro
 . Cliquez de nouveau sur *Enregistrer* dans la fenêtre *Exécuter en tant qu'informations d'identification* pour terminer l'enregistrement.
 . Ensuite, accédez à une machine virtuelle dans l'inventaire. Dans le menu *actions* ou en cliquant avec le bouton droit de la souris sur la machine virtuelle, sélectionnez *SnapCenter Plug-in pour VMware vSphere > Restauration des fichiers invités*.
 +
-image::vmware-vcf-asa-image87.png[Ouvrez l'assistant de restauration de fichiers invité]
+image:vmware-vcf-asa-image87.png["Ouvrez l'assistant de restauration de fichiers invité"]
 
 +
 {nbsp}
 
 . Sur la page *Restore Scope* de l'assistant *Guest File Restore*, sélectionnez la sauvegarde à partir de laquelle effectuer la restauration, le VMDK spécifique et l'emplacement (principal ou secondaire) à partir duquel restaurer le VMDK. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image88.png[Étendue de la restauration des fichiers invités]
+image:vmware-vcf-asa-image88.png["Étendue de la restauration des fichiers invités"]
 
 +
 {nbsp}
 
 . Sur la page *Guest Details*, sélectionnez pour utiliser *Guest VM* ou *Use Gues File Restore proxy VM* pour la restauration. Remplissez également les paramètres de notification par e-mail ici si vous le souhaitez. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image89.png[Détails du fichier invité]
+image:vmware-vcf-asa-image89.png["Détails du fichier invité"]
 
 +
 {nbsp}
@@ -451,17 +451,17 @@ image::vmware-vcf-asa-image89.png[Détails du fichier invité]
 . Enfin, consultez la page *Résumé* et cliquez sur *Terminer* pour commencer la session de restauration du système de fichiers invité.
 . De retour dans l'interface du plug-in SnapCenter, naviguez à nouveau jusqu'à *Restauration de fichier invité* et affichez la session en cours sous *moniteur de session invité*. Cliquez sur l'icône sous *Parcourir les fichiers* pour continuer.
 +
-image::vmware-vcf-asa-image90.png[Moniteur de session invité]
+image:vmware-vcf-asa-image90.png["Moniteur de session invité"]
 
 +
 {nbsp}
 
 . Dans l'assistant *Guest File Browse*, sélectionnez le ou les fichiers à restaurer et l'emplacement du système de fichiers dans lequel les restaurer. Enfin, cliquez sur *Restaurer* pour lancer le processus *Restaurer*.
 +
-image::vmware-vcf-asa-image91.png[Recherche de fichiers invités 1]
+image:vmware-vcf-asa-image91.png["Recherche de fichiers invités 1"]
 
 +
-image::vmware-vcf-asa-image92.png[Parcourir les fichiers invités 2]
+image:vmware-vcf-asa-image92.png["Parcourir les fichiers invités 2"]
 
 +
 {nbsp}

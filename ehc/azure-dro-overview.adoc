@@ -26,7 +26,7 @@ Avec la réplication de volume inter-régions Azure NetApp Files (ANF), les work
 
 L'orchestrateur de reprise après incident (DRO) (une solution basée sur des scripts avec interface utilisateur) peut être utilisé pour restaurer de manière fluide les workloads répliqués depuis un SDDC AVS. DRO automatise la restauration en rompant le peering de réplication, puis en montant le volume de destination en tant que datastore, via l'enregistrement de machine virtuelle vers AVS, en passant par les mappages du réseau directement sur NSX-T (inclus avec tous les clouds privés AVS).
 
-image::azure-dro-image1.png[image azure dro 1]
+image:azure-dro-image1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -69,7 +69,7 @@ https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-in
 
 La première étape consiste à configurer la réplication interrégionale pour les volumes de datastore souhaités du site principal AVS vers le site secondaire AVS avec les fréquences et les rétentions appropriées.
 
-image::azure-dro-image2.png[image azure dro 2]
+image:azure-dro-image2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Suivez les étapes de cette procédure https://learn.microsoft.com/en-us/azure/azure-netapp-files/cross-region-replication-create-peering["lien"^] pour configurer la réplication entre les régions en créant le peering de réplication. Le niveau de service du pool de capacité de destination peut correspondre à celui du pool de capacité source. Toutefois, pour ce cas d'utilisation spécifique, vous pouvez sélectionner le niveau de service standard, puis https://learn.microsoft.com/en-us/azure/azure-netapp-files/dynamic-change-volume-service-level["modifier le niveau de service"^] En cas d'incident réel ou de simulations de reprise sur incident.
 
@@ -123,7 +123,7 @@ sudo sh deploy.sh
 ** Nom d'utilisateur : `admin`
 ** Mot de passe : `admin`
 +
-image::azure-dro-image3.png[image azure dro 3]
+image:azure-dro-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -156,7 +156,7 @@ Vous devez avoir capturé ces informations lorsque vous avez créé l'applicatio
 
 . Confirmez les détails des nouvelles informations d'identification et cliquez sur Ajouter une information d'identification.
 +
-image::azure-dro-image4.png[image azure dro 4]
+image:azure-dro-image4.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 Après avoir ajouté les identifiants, il est temps de découvrir et d'ajouter les sites AVS principaux et secondaires (à la fois vCenter et le compte de stockage Azure NetApp Files) à DRO. Pour ajouter le site source et le site de destination, procédez comme suit :
@@ -174,7 +174,7 @@ Après avoir ajouté les identifiants, il est temps de découvrir et d'ajouter l
 ** VCenter SDDC
 ** Compte de stockage Azure NetApp Files
 +
-image::azure-dro-image5.png[image azure dro 5]
+image:azure-dro-image5.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -187,18 +187,18 @@ NOTE: À des fins de démonstration, l'ajout d'un site source est abordé dans c
 . DRO répertorie tous les SDDC disponibles dans la région. Sélectionnez l'URL de cloud privé désignée dans la liste déroulante.
 . Entrez le `cloudadmin@vsphere.local` informations d'identification de l'utilisateur. Vous pouvez y accéder depuis le portail Azure. Suivez les étapes mentionnées dans ce document https://learn.microsoft.com/en-us/azure/azure-vmware/tutorial-access-private-cloud["lien"^]. Une fois terminé, cliquez sur *Continuer*.
 +
-image::azure-dro-image6.png[image azure dro 6]
+image:azure-dro-image6.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez le groupe de ressources Azure et le compte NetApp dans les détails du stockage source (ANF).
 . Cliquez sur *Créer un site*.
 +
-image::azure-dro-image7.png[image azure dro 7]
+image:azure-dro-image7.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 Une fois ajouté, DRO effectue une détection automatique et affiche les VM qui ont des répliques inter-régions correspondantes du site source au site de destination. DRO détecte automatiquement les réseaux et les segments utilisés par les machines virtuelles et les remplit.
 
-image::azure-dro-image8.png[image azure dro 8]
+image:azure-dro-image8.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 L'étape suivante consiste à regrouper les VM requises dans leurs groupes fonctionnels en tant que groupes de ressources.
 
@@ -212,7 +212,7 @@ Pour commencer à créer des groupes de ressources, cliquez sur l'élément de m
 
 . Accédez à *Resource Grou*ps et cliquez sur *Create New Resource Group*.
 +
-image::azure-dro-image9.png[image azure dro 9]
+image:azure-dro-image9.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sous Nouveau groupe de ressources, sélectionnez le site source dans la liste déroulante et cliquez sur *Créer*.
 . Fournissez les détails du groupe de ressources et cliquez sur *Continuer*.
@@ -223,13 +223,13 @@ image::azure-dro-image9.png[image azure dro 9]
 ** Valeur par défaut
 ** Dernière machine virtuelle à mettre sous tension
 +
-image::azure-dro-image10.png[image azure dro 10]
+image:azure-dro-image10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 . Cliquez sur *Créer un groupe de ressources*.
 +
-image::azure-dro-image11.png[image azure dro 11]
+image:azure-dro-image11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -243,15 +243,15 @@ Pour commencer à créer un plan de réplication, procédez comme suit :
 
 . Naviguez jusqu'à *plans de réplication* et cliquez sur *Créer un nouveau plan de réplication*.
 +
-image::azure-dro-image12.png[image azure dro 12]
+image:azure-dro-image12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sur le *Nouveau plan de réplication*, indiquez un nom pour le plan et ajoutez des mappages de récupération en sélectionnant le site source, le vCenter associé, le site de destination et le vCenter associé.
 +
-image::azure-dro-image13.png[image azure dro 13]
+image:azure-dro-image13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une fois le mappage de récupération terminé, sélectionnez *Cluster Mapping*.
 +
-image::azure-dro-image14.png[image azure dro 14]
+image:azure-dro-image14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez *Détails du groupe de ressources* et cliquez sur *Continuer*.
 . Définissez l'ordre d'exécution du groupe de ressources. Cette option vous permet de sélectionner la séquence d'opérations lorsqu'il existe plusieurs groupes de ressources.
@@ -262,39 +262,39 @@ image::azure-dro-image14.png[image azure dro 14]
 NOTE: La réplication interrégionale (CRR) se situe au niveau du volume. Par conséquent, toutes les VM résidant sur le volume respectif sont répliquées vers la destination CRR. Assurez-vous de sélectionner toutes les machines virtuelles qui font partie du datastore, car seules les machines virtuelles qui font partie du plan de réplication sont traitées.
 
 +
-image::azure-dro-image15.png[image azure dro 15]
+image:azure-dro-image15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sous VM details, vous pouvez éventuellement redimensionner les paramètres CPU et RAM des VM. Cela peut s'avérer très utile lorsque vous récupérez de grands environnements sur des clusters cibles plus petits ou lorsque vous effectuez des tests de reprise après incident sans avoir à provisionner une infrastructure VMware physique individuelle. Modifiez également l'ordre de démarrage et le délai de démarrage (s) pour toutes les machines virtuelles sélectionnées dans les groupes de ressources. Il existe une option supplémentaire pour modifier l'ordre de démarrage si des modifications sont requises par rapport à ce que vous avez sélectionné lors de la sélection de l'ordre de démarrage ressource-groupe. Par défaut, l'ordre de démarrage sélectionné lors de la sélection de groupe de ressources est utilisé, mais toutes les modifications peuvent être effectuées à ce stade.
 +
-image::azure-dro-image16.png[image azure dro 16]
+image:azure-dro-image16.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur *Créer un plan de réplication*.une fois le plan de réplication créé, vous pouvez utiliser les options de basculement, de basculement ou de migration selon vos besoins.
 +
-image::azure-dro-image17.png[image azure dro 17]
+image:azure-dro-image17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 Au cours des options de basculement et de test, le snapshot le plus récent est utilisé ou un snapshot spécifique peut être sélectionné à partir d'un snapshot instantané. L'option instantanée peut être très avantageuse si vous êtes confronté à une situation de corruption, comme les ransomwares, où les réplicas les plus récents sont déjà compromis ou chiffrés. DRO affiche tous les points temporels disponibles.
 
-image::azure-dro-image18.png[image azure dro 18]
+image:azure-dro-image18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Pour déclencher le basculement ou tester le basculement avec la configuration spécifiée dans le plan de réplication, vous pouvez cliquer sur *basculement* ou *Test basculement*. Vous pouvez contrôler le plan de réplication dans le menu des tâches.
 
-image::azure-dro-image19.png[image azure dro 19]
+image:azure-dro-image19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Une fois le basculement déclenché, les éléments récupérés sont visibles sur le site secondaire AVS SDDC vCenter (VM, réseaux et datastores). Par défaut, les machines virtuelles sont restaurées dans le dossier Workload.
 
-image::azure-dro-image20.png[image azure dro 20]
+image:azure-dro-image20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 La restauration peut être déclenchée au niveau du plan de réplication. En cas de basculement de test, l'option de démontage peut être utilisée pour annuler les modifications et supprimer le nouveau volume créé. Les retours arrière liés au basculement sont un processus en deux étapes. Sélectionnez le plan de réplication et sélectionnez *Inverser la synchronisation des données*.
 
-image::azure-dro-image21.png[image azure dro 21]
+image:azure-dro-image21.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Une fois cette étape terminée, déclenchez la restauration pour revenir au site AVS principal.
 
-image::azure-dro-image22.png[image azure dro 22]
+image:azure-dro-image22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::azure-dro-image23.png[image azure dro 23]
+image:azure-dro-image23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Depuis le portail Azure, nous constatons que l'état de la réplication a été rompu pour les volumes appropriés mappés au SDDC AVS du site secondaire en tant que volumes de lecture/écriture. Pendant le basculement de test, DRO ne mappe pas le volume de destination ou de réplica. Elle crée un nouveau volume du snapshot de réplication interrégionale requis et expose le volume en tant que datastore, ce qui consomme de la capacité physique supplémentaire du pool de capacité et garantit que le volume source n'est pas modifié. Les tâches de réplication peuvent notamment se poursuivre pendant les tests de reprise d'activité ou les workflows de hiérarchisation. De plus, ce processus permet de s'assurer que la restauration peut être nettoyée sans risque de destruction de la réplique si des erreurs se produisent ou si des données corrompues sont récupérées.
 

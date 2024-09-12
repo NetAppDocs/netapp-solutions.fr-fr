@@ -97,7 +97,7 @@ Accédez au cluster ROSA en créant un utilisateur admin avec la commande suivan
 
 La commande fournit une sortie qui ressemble à ce qui suit. Connectez-vous au cluster à l'aide de `oc login` commande fournie dans la sortie.
 
-image::rhhc-rosa-cluster-admin-create.png[rhhc rosa cluster admin créer]
+image:rhhc-rosa-cluster-admin-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 NOTE: Vous pouvez également vous connecter au cluster à l'aide d'un jeton. Si vous avez déjà créé un administrateur au moment de la création du cluster, vous pouvez vous connecter au cluster depuis la console Red Hat OpenShift Hybrid Cloud à l'aide des informations d'identification de l'administrateur. Ensuite, en cliquant sur le coin supérieur droit où il affiche le nom de l'utilisateur connecté, vous pouvez obtenir le `oc login` commande (jeton de connexion) pour la ligne de commande.
@@ -114,17 +114,15 @@ Suivre les procédures link:https://docs.netapp.com/us-en/astra-control-service/
 
 Installer Astra Trident (dernière version) sur le cluster ROSA. Pour ce faire, vous pouvez suivre l'une des procédures données link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["ici"]. Pour installer Trident à l'aide de Helm à partir de la console du cluster, commencez par créer un projet appelé Trident.
 
-image::rhhc-trident-project-create.png[création du projet rhhc trident]
+image:rhhc-trident-project-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Ensuite, dans la vue Développeur, créez un référentiel de graphiques Helm. Pour le champ URL, utilisez `'https://netapp.github.io/trident-helm-chart'`. Créez ensuite une version de Helm pour l'opérateur Trident.
 
-image::rhhc-helm-repo-create.png[création de rhhc helm repo]
-
-image::rhhc-helm-release-create.png[création de la version rhhc helm]
+image:rhhc-helm-repo-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"] image:rhhc-helm-release-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Vérifiez que tous les pods trident sont en cours d'exécution en revenant à la vue de l'administrateur de la console et en sélectionnant les pods dans le projet trident.
 
-image::rhhc-trident-installed.png[rhhc trident installé]
+image:rhhc-trident-installed.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -135,7 +133,7 @@ Utilisez les fichiers yaml illustrés ci-dessous pour créer un objet back-end t
 
 NOTE: Vous pouvez utiliser la ligne de commande pour créer les objets ou les créer avec les fichiers yaml à partir de la console de cloud hybride.
 
-image::rhhc-fsx-details.png[détails rhhc fsx]
+image:rhhc-fsx-details.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 **Configuration back-end Trident**
 
@@ -192,13 +190,13 @@ deletionPolicy: Delete
 ----
 Vérifiez que le backend, la classe de stockage et les objets trident-snapshotclass sont créés à l'aide des commandes indiquées ci-dessous.
 
-image::rhhc-tbc-sc-verify.png[vérification rhhc tbc sc]
+image:rhhc-tbc-sc-verify.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Vous devez à présent modifier de façon importante : définir ontap-nas comme classe de stockage par défaut au lieu de gp3 de sorte que l'application postgresql que vous déployez ultérieurement puisse utiliser la classe de stockage par défaut. Dans la console OpenShift de votre cluster, sous stockage, sélectionnez classes de stockage. Editez l'annotation de la classe par défaut actuelle à false et ajoutez l'annotation storageclass.kubernetes.io/is-default-class set à true pour la classe de stockage ontap-nas.
 
-image::rhhc-change-default-sc.png[rhhc change sc par défaut]
+image:rhhc-change-default-sc.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::rhhc-default-sc.png[sc par défaut rhhc]
+image:rhhc-default-sc.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -208,22 +206,22 @@ Vous pouvez déployer l'application à partir de la ligne de commande comme suit
 
 `helm install postgresql bitnami/postgresql -n postgresql --create-namespace`
 
-image::rhhc-postgres-install.png[installation rhhc postgres]
+image:rhhc-postgres-install.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
-NOTE: Si vous ne voyez pas les modules d'application s'exécuter, une erreur peut survenir en raison de contraintes de contexte de sécurité. Image::rhhc-scc-error.png[] corriger l'erreur en modifiant les `runAsUser` champs et de `fsGroup` `statefuleset.apps/postgresql` l'objet avec l'uid qui se trouve dans la sortie de la `oc get project` commande comme indiqué ci-dessous. image::rhhc-scc-fix.png[]
+NOTE: Si vous ne voyez pas les modules d'application s'exécuter, une erreur peut survenir en raison de contraintes de contexte de sécurité. image:rhhc-scc-error.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"] Corrigez l'erreur en éditant les `runAsUser` `fsGroup` champs et de l' `statefuleset.apps/postgresql`objet avec l'UUID qui se trouve dans la sortie de la `oc get project` commande, comme indiqué ci-dessous. image:rhhc-scc-fix.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 L'application postgresql doit être en cours d'exécution et utiliser des volumes persistants pris en charge par le stockage Amazon FSX pour NetApp ONTAP.
 
-image::rhhc-postgres-running.png[rhhc postgres en cours d'exécution]
+image:rhhc-postgres-running.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::rhhc-postgres-pvc.png[pvc rhhc postgres]
+image:rhhc-postgres-pvc.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 ==== **6. Créer une base de données et ajouter un enregistrement**
 
-image::rhhc-postgres-db-create.png[création de la base de données rhhc postgres]
+image:rhhc-postgres-db-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -231,11 +229,11 @@ image::rhhc-postgres-db-create.png[création de la base de données rhhc postgre
 
 Connectez-vous à ACS. Sélectionnez cluster et cliquez sur Ajouter. Sélectionnez autre et téléchargez ou collez le fichier kubecconfig.
 
-image::rhhc-acs-add-1.png[rhhc acs ajouter 1]
+image:rhhc-acs-add-1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Cliquez sur *Suivant* et sélectionnez ontap-nas comme classe de stockage par défaut pour ACS. Cliquez sur *Suivant*, consultez les détails et *Ajouter* le cluster.
 
-image::rhhc-acs-add-2.png[rhhc acs ajouter 2]
+image:rhhc-acs-add-2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -243,7 +241,7 @@ image::rhhc-acs-add-2.png[rhhc acs ajouter 2]
 
 Définissez l'application postgresql dans ACS. Sur la page d'accueil, sélectionnez *applications*, *définir* et entrez les détails appropriés. Cliquez sur *Suivant* à plusieurs reprises, passez en revue les détails et cliquez sur *définir*. L'application est ajoutée à ACS.
 
-image::rhhc-acs-add-2.png[rhhc acs ajouter 2]
+image:rhhc-acs-add-2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -253,9 +251,9 @@ Il existe de nombreuses façons de créer un instantané dans ACS. Vous pouvez s
 
 Créez un instantané à la demande en cliquant simplement sur *Créer un instantané*, en fournissant un nom, en examinant les détails et en cliquant sur *instantané*. L'état de l'instantané passe à sain une fois l'opération terminée.
 
-image::rhhc-snapshot-create.png[création d'un snapshot rhhc]
+image:rhhc-snapshot-create.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::rhhc-snapshot-on-demand.png[snapshot rhhc à la demande]
+image:rhhc-snapshot-on-demand.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -263,7 +261,7 @@ image::rhhc-snapshot-on-demand.png[snapshot rhhc à la demande]
 
 Reconnectez-vous à postgresql, répertoriez les bases de données disponibles, supprimez celle que vous avez créée précédemment et répertoriez à nouveau pour vous assurer que la base de données a été supprimée.
 
-image::rhhc-postgres-db-delete.png[rhhc postgres db delete]
+image:rhhc-postgres-db-delete.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -271,11 +269,11 @@ image::rhhc-postgres-db-delete.png[rhhc postgres db delete]
 
 Pour restaurer l'application à partir d'un instantané, accédez à la page d'accueil de l'interface utilisateur ACS, sélectionnez l'application et sélectionnez Restaurer. Vous devez choisir un snapshot ou une sauvegarde à partir de laquelle effectuer la restauration. (En général, plusieurs d'entre elles sont créées en fonction d'une règle que vous avez configurée). Faites les choix appropriés dans les deux écrans suivants, puis cliquez sur *Restaurer*. L'état de l'application passe de la restauration à disponible après sa restauration à partir de l'instantané.
 
-image::rhhc-app-restore-1.png[restauration de l'application rhhc 1]
+image:rhhc-app-restore-1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::rhhc-app-restore-2.png[restauration de l'application rhhc 2]
+image:rhhc-app-restore-2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::rhhc-app-restore-3.png[restauration de l'application rhhc 3]
+image:rhhc-app-restore-3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -283,4 +281,4 @@ image::rhhc-app-restore-3.png[restauration de l'application rhhc 3]
 
 Connectez-vous au client postgresql et vous devriez maintenant voir la table et l'enregistrement dans la table que vous aviez précédemment.  C’est tout. En cliquant simplement sur un bouton, votre application a été restaurée à un état antérieur. C'est à ce niveau de simplicité que nous proposons à nos clients avec Astra Control.
 
-image::rhhc-app-restore-verify.png[vérification de la restauration de l'application rhhc]
+image:rhhc-app-restore-verify.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]

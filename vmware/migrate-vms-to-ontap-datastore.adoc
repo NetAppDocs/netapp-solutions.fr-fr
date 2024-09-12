@@ -38,11 +38,11 @@ On suppose que le réseau de stockage double est déjà en place pour le datasto
 
 La migration des machines virtuelles sur les hôtes vSphere est également gérée par l'interface VMKernel de l'hôte vSphere. Pour la migration à chaud (optimisée sur des machines virtuelles), l'interface VMKernel avec le service compatible vMotion est utilisée et, pour la migration à froid (hors machines virtuelles), l'interface VMKernel avec le service de provisionnement activé est utilisée pour le déplacement des données. Si aucune interface valide n'a été trouvée, elle utilise l'interface de gestion pour déplacer les données qui peuvent ne pas être souhaitables pour certaines utilisations.
 
-image::migrate-vms-to-ontap-image02.png[VMkernel avec services activés]
+image:migrate-vms-to-ontap-image02.png["VMkernel avec services activés"]
 
 Lorsque vous modifiez l'interface VMKernel, voici l'option permettant d'activer les services requis.
 
-image::migrate-vms-to-ontap-image01.png[Options du service VMkernel]
+image:migrate-vms-to-ontap-image01.png["Options du service VMkernel"]
 
 
 TIP: Assurez-vous qu'au moins deux cartes réseau de liaison montante active haut débit sont disponibles pour le groupe de ports utilisé par les interfaces vMotion et VMkernel de provisionnement.
@@ -64,23 +64,23 @@ Suivez la procédure ci-dessous pour migrer des machines virtuelles vers un nouv
 
 . Avec le client Web vSphere, sélectionnez le datastore dans l'inventaire du stockage et cliquez sur l'onglet VM.
 +
-image::migrate-vms-to-ontap-image03.png[Machines virtuelles sur un datastore spécifique]
+image:migrate-vms-to-ontap-image03.png["Machines virtuelles sur un datastore spécifique"]
 
 . Sélectionnez les machines virtuelles à migrer et cliquez avec le bouton droit de la souris pour sélectionner l'option migrer.
 +
-image::migrate-vms-to-ontap-image04.png[Machines virtuelles à migrer]
+image:migrate-vms-to-ontap-image04.png["Machines virtuelles à migrer"]
 
 . Choisissez l'option permettant de modifier uniquement le stockage, puis cliquez sur Suivant
 +
-image::migrate-vms-to-ontap-image05.png[Modifier le stockage uniquement]
+image:migrate-vms-to-ontap-image05.png["Modifier le stockage uniquement"]
 
 . Sélectionnez la stratégie de stockage VM souhaitée et choisissez le datastore compatible. Cliquez sur Suivant.
 +
-image::migrate-vms-to-ontap-image06.png[Datastore conforme à la stratégie de stockage VM]
+image:migrate-vms-to-ontap-image06.png["Datastore conforme à la stratégie de stockage VM"]
 
 . Vérifiez et cliquez sur Terminer.
 +
-image::migrate-vms-to-ontap-image07.png[Examen de la migration du stockage]
+image:migrate-vms-to-ontap-image07.png["Examen de la migration du stockage"]
 
 
 
@@ -117,23 +117,23 @@ Suivez la procédure ci-dessous pour migrer des machines virtuelles vers un nouv
 
 . Avec vSphere Web client, sélectionnez le cluster dans l'inventaire des hôtes et des clusters et cliquez sur l'onglet VM.
 +
-image::migrate-vms-to-ontap-image08.png[VM sur un cluster spécifique]
+image:migrate-vms-to-ontap-image08.png["VM sur un cluster spécifique"]
 
 . Sélectionnez les machines virtuelles à migrer et cliquez avec le bouton droit de la souris pour sélectionner l'option migrer.
 +
-image::migrate-vms-to-ontap-image04.png[Machines virtuelles à migrer]
+image:migrate-vms-to-ontap-image04.png["Machines virtuelles à migrer"]
 
 . Choisissez l'option permettant de modifier uniquement le stockage, puis cliquez sur Suivant
 +
-image::migrate-vms-to-ontap-image05.png[Modifier le stockage uniquement]
+image:migrate-vms-to-ontap-image05.png["Modifier le stockage uniquement"]
 
 . Sélectionnez la stratégie de stockage VM souhaitée et choisissez le datastore compatible. Cliquez sur Suivant.
 +
-image::migrate-vms-to-ontap-image06.png[Datastore conforme à la stratégie de stockage VM]
+image:migrate-vms-to-ontap-image06.png["Datastore conforme à la stratégie de stockage VM"]
 
 . Vérifiez et cliquez sur Terminer.
 +
-image::migrate-vms-to-ontap-image07.png[Examen de la migration du stockage]
+image:migrate-vms-to-ontap-image07.png["Examen de la migration du stockage"]
 
 
 
@@ -176,35 +176,35 @@ Suivez la procédure ci-dessous pour migrer des machines virtuelles vers un nouv
 
 . Avec vSphere Web client, sélectionnez le cluster dans l'inventaire des hôtes et des clusters et cliquez sur l'onglet VM.
 +
-image::migrate-vms-to-ontap-image08.png[VM sur un cluster spécifique]
+image:migrate-vms-to-ontap-image08.png["VM sur un cluster spécifique"]
 
 . Sélectionnez les machines virtuelles à migrer et cliquez avec le bouton droit de la souris pour sélectionner l'option migrer.
 +
-image::migrate-vms-to-ontap-image04.png[Machines virtuelles à migrer]
+image:migrate-vms-to-ontap-image04.png["Machines virtuelles à migrer"]
 
 . Choisissez une option pour modifier les ressources de calcul et de stockage, puis cliquez sur Suivant
 +
-image::migrate-vms-to-ontap-image09.png[Modifiez les ressources de calcul et de stockage]
+image:migrate-vms-to-ontap-image09.png["Modifiez les ressources de calcul et de stockage"]
 
 . Naviguez dans le cluster et choisissez celui qu'il vous faut pour migrer.
 +
-image::migrate-vms-to-ontap-image12.png[Sélectionnez le cluster cible]
+image:migrate-vms-to-ontap-image12.png["Sélectionnez le cluster cible"]
 
 . Sélectionnez la stratégie de stockage VM souhaitée et choisissez le datastore compatible. Cliquez sur Suivant.
 +
-image::migrate-vms-to-ontap-image13.png[Datastore conforme à la stratégie de stockage VM]
+image:migrate-vms-to-ontap-image13.png["Datastore conforme à la stratégie de stockage VM"]
 
 . Sélectionnez le dossier VM pour placer les VM cibles.
 +
-image::migrate-vms-to-ontap-image14.png[Sélection du dossier VM cible]
+image:migrate-vms-to-ontap-image14.png["Sélection du dossier VM cible"]
 
 . Sélectionnez le groupe de ports cible.
 +
-image::migrate-vms-to-ontap-image15.png[Sélection du groupe de ports cible]
+image:migrate-vms-to-ontap-image15.png["Sélection du groupe de ports cible"]
 
 . Vérifiez et cliquez sur Terminer.
 +
-image::migrate-vms-to-ontap-image07.png[Examen de la migration du stockage]
+image:migrate-vms-to-ontap-image07.png["Examen de la migration du stockage"]
 
 
 
@@ -247,35 +247,35 @@ NOTE: Pour connaître les exigences supplémentaires telles que les versions vCe
 
 . Avec vSphere Web client, sélectionnez le cluster dans l'inventaire des hôtes et des clusters et cliquez sur l'onglet VM.
 +
-image::migrate-vms-to-ontap-image08.png[VM sur un cluster spécifique]
+image:migrate-vms-to-ontap-image08.png["VM sur un cluster spécifique"]
 
 . Sélectionnez les machines virtuelles à migrer et cliquez avec le bouton droit de la souris pour sélectionner l'option migrer.
 +
-image::migrate-vms-to-ontap-image04.png[Machines virtuelles à migrer]
+image:migrate-vms-to-ontap-image04.png["Machines virtuelles à migrer"]
 
 . Choisissez une option pour modifier les ressources de calcul et de stockage, puis cliquez sur Suivant
 +
-image::migrate-vms-to-ontap-image09.png[Modifiez les ressources de calcul et de stockage]
+image:migrate-vms-to-ontap-image09.png["Modifiez les ressources de calcul et de stockage"]
 
 . Sélectionnez le cluster cible dans le serveur vCenter cible.
 +
-image::migrate-vms-to-ontap-image12.png[Sélectionnez le cluster cible]
+image:migrate-vms-to-ontap-image12.png["Sélectionnez le cluster cible"]
 
 . Sélectionnez la stratégie de stockage VM souhaitée et choisissez le datastore compatible. Cliquez sur Suivant.
 +
-image::migrate-vms-to-ontap-image13.png[Datastore conforme à la stratégie de stockage VM]
+image:migrate-vms-to-ontap-image13.png["Datastore conforme à la stratégie de stockage VM"]
 
 . Sélectionnez le dossier VM pour placer les VM cibles.
 +
-image::migrate-vms-to-ontap-image14.png[Sélection du dossier VM cible]
+image:migrate-vms-to-ontap-image14.png["Sélection du dossier VM cible"]
 
 . Sélectionnez le groupe de ports cible.
 +
-image::migrate-vms-to-ontap-image15.png[Sélection du groupe de ports cible]
+image:migrate-vms-to-ontap-image15.png["Sélection du groupe de ports cible"]
 
 . Vérifiez les options de migration et cliquez sur Terminer.
 +
-image::migrate-vms-to-ontap-image07.png[Examen de la migration du stockage]
+image:migrate-vms-to-ontap-image07.png["Examen de la migration du stockage"]
 
 
 
@@ -318,15 +318,15 @@ Suivez la procédure ci-dessous pour migrer des machines virtuelles vers un serv
 
 . Avec vSphere Web client, sélectionnez le serveur vCenter source et cliquez sur l'onglet VM.
 +
-image::migrate-vms-to-ontap-image10.png[Machines virtuelles sur le vCenter source]
+image:migrate-vms-to-ontap-image10.png["Machines virtuelles sur le vCenter source"]
 
 . Sélectionnez les machines virtuelles à migrer et cliquez avec le bouton droit de la souris pour sélectionner l'option migrer.
 +
-image::migrate-vms-to-ontap-image04.png[Machines virtuelles à migrer]
+image:migrate-vms-to-ontap-image04.png["Machines virtuelles à migrer"]
 
 . Choisissez l'option exportation Cross vCenter Server, puis cliquez sur Suivant
 +
-image::migrate-vms-to-ontap-image11.png[Exportation entre serveurs vCenter]
+image:migrate-vms-to-ontap-image11.png["Exportation entre serveurs vCenter"]
 
 +
 
@@ -334,31 +334,31 @@ TIP: La machine virtuelle peut également être importée depuis le serveur vCen
 
 . Indiquez les informations d'identification vCenter et cliquez sur connexion.
 +
-image::migrate-vms-to-ontap-image23.png[Informations d'identification vCenter]
+image:migrate-vms-to-ontap-image23.png["Informations d'identification vCenter"]
 
 . Confirmez et acceptez l'empreinte du certificat SSL du serveur vCenter
 +
-image::migrate-vms-to-ontap-image24.png[Empreinte SSL]
+image:migrate-vms-to-ontap-image24.png["Empreinte SSL"]
 
 . Développez vCenter cible et sélectionnez le cluster de calcul cible.
 +
-image::migrate-vms-to-ontap-image25.png[Sélectionnez le cluster de calcul cible]
+image:migrate-vms-to-ontap-image25.png["Sélectionnez le cluster de calcul cible"]
 
 . Sélectionnez le datastore cible en fonction de la stratégie de stockage VM.
 +
-image::migrate-vms-to-ontap-image26.png[sélectionnez le datastore cible]
+image:migrate-vms-to-ontap-image26.png["sélectionnez le datastore cible"]
 
 . Sélectionnez le dossier VM cible.
 +
-image::migrate-vms-to-ontap-image27.png[Sélectionnez le dossier VM cible]
+image:migrate-vms-to-ontap-image27.png["Sélectionnez le dossier VM cible"]
 
 . Sélectionnez le groupe de ports VM pour chaque mappage de carte d'interface réseau.
 +
-image::migrate-vms-to-ontap-image28.png[Sélectionnez le groupe de ports cible]
+image:migrate-vms-to-ontap-image28.png["Sélectionnez le groupe de ports cible"]
 
 . Vérifiez et cliquez sur Terminer pour démarrer vMotion sur les serveurs vCenter.
 +
-image::migrate-vms-to-ontap-image29.png[Revue des opérations Cross vMotion]
+image:migrate-vms-to-ontap-image29.png["Revue des opérations Cross vMotion"]
 
 
 
@@ -438,7 +438,7 @@ Les modèles VM peuvent être gérés par vCenter Server ou par une bibliothèqu
 ====
 . Dans le client Web vSphere, cliquez avec le bouton droit de la souris sur le modèle de machine virtuelle dans la vue du dossier VM et Templates et sélectionnez l'option à convertir en machine virtuelle.
 +
-image::migrate-vms-to-ontap-image16.png[Convertir le modèle de machine virtuelle en machine virtuelle]
+image:migrate-vms-to-ontap-image16.png["Convertir le modèle de machine virtuelle en machine virtuelle"]
 
 . Une fois la conversion effectuée en tant que VM, suivez les options de migration VM.
 
@@ -449,12 +449,12 @@ image::migrate-vms-to-ontap-image16.png[Convertir le modèle de machine virtuell
 ====
 . Dans vSphere Web client, sélectionnez bibliothèques de contenu
 +
-image::migrate-vms-to-ontap-image17.png[Sélection de la bibliothèque de contenu]
+image:migrate-vms-to-ontap-image17.png["Sélection de la bibliothèque de contenu"]
 
 . Sélectionnez la bibliothèque de contenu dans laquelle vous souhaitez cloner l'élément
 . Cliquez avec le bouton droit de la souris sur l'élément et cliquez sur Cloner l'élément ..
 +
-image::migrate-vms-to-ontap-image18.png[Cloner un élément de bibliothèque de contenu]
+image:migrate-vms-to-ontap-image18.png["Cloner un élément de bibliothèque de contenu"]
 
 +
 
@@ -462,11 +462,11 @@ WARNING: Si vous utilisez le menu d'action, assurez-vous que l'objet cible corre
 
 . Sélectionnez la bibliothèque de contenu cible et cliquez sur OK.
 +
-image::migrate-vms-to-ontap-image19.png[Sélection de la bibliothèque de contenu cible]
+image:migrate-vms-to-ontap-image19.png["Sélection de la bibliothèque de contenu cible"]
 
 . Vérifiez que l'élément est disponible dans la bibliothèque de contenu cible.
 +
-image::migrate-vms-to-ontap-image20.png[Vérification de l'élément de clone]
+image:migrate-vms-to-ontap-image20.png["Vérification de l'élément de clone"]
 
 
 
@@ -487,7 +487,7 @@ Get-ContentLibaryItem -ContentLibary (Get-ContentLibary 'CL01' -Server $sourcevc
 ====
 . Dans le client Web vSphere, sélectionnez la machine virtuelle et cliquez avec le bouton droit de la souris pour choisir Cloner comme modèle dans la bibliothèque
 +
-image::migrate-vms-to-ontap-image21.png[Clone de machine virtuelle en tant que modèle dans libary]
+image:migrate-vms-to-ontap-image21.png["Clone de machine virtuelle en tant que modèle dans libary"]
 
 +
 
@@ -495,7 +495,7 @@ TIP: Lorsque le modèle de machine virtuelle est sélectionné pour le clonage d
 
 . Confirmez que le type de modèle est sélectionné comme modèle VM et suivez les instructions de l'assistant pour terminer l'opération.
 +
-image::migrate-vms-to-ontap-image22.png[Sélection du type de modèle]
+image:migrate-vms-to-ontap-image22.png["Sélection du type de modèle"]
 
 +
 

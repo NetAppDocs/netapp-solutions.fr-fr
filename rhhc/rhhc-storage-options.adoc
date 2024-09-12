@@ -18,17 +18,17 @@ Que les conteneurs Red Hat Open Shift s'exécutent sur VMware ou dans les hypers
 
 Le schéma suivant décrit les différents systèmes de stockage NetApp back-end pouvant être intégrés avec des clusters OpenShift à l'aide de NetApp Astra Trident.
 
-image::a-w-n_astra_trident.png[découvrez astra trident]
+image:a-w-n_astra_trident.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 La SVM (Storage Virtual machine) de ONTAP assure une colocation sécurisée. Un cluster OpenShift peut se connecter à un seul SVM ou à plusieurs SVM, voire à plusieurs clusters ONTAP. Storage Class filtre le stockage back-end en fonction de paramètres ou de libellés. Les administrateurs du stockage définissent les paramètres de connexion au système de stockage à l'aide de la configuration back-end trident. Une fois la connexion établie, il crée le back-end trident et renseigne les informations que la classe de stockage peut filtrer.
 
 La relation entre le storageclass et le backend est présentée ci-dessous.
 
-image::rhhc-storage-options-sc2ontap.png[Relation entre la classe de stockage et ONTAP]
+image:rhhc-storage-options-sc2ontap.png["Relation entre la classe de stockage et ONTAP"]
 
 Le propriétaire de l'application demande un volume persistant en utilisant la classe de stockage. La classe de stockage filtre le stockage back-end. La relation entre le pod et le système de stockage back-end est présentée ci-dessous.
 
-image::rhhc_storage_opt_pod2vol.png[Relation pod/volume ONTAP]
+image:rhhc_storage_opt_pod2vol.png["Relation pod/volume ONTAP"]
 
 
 
@@ -58,6 +58,6 @@ Sur les environnements vSphere, les clients peuvent choisir le pilote VMware CSI
 
 Pour VMware CSI et Astra Trident CSI, ONTAP prend en charge nconnect, l'agrégation de sessions, kerberos, etc. Pour NFS et les chemins d'accès multiples, l'authentification chap, etc. Pour les protocoles en mode bloc.
 
-Dans AWS, FSX pour NetApp ONTAP (FSxN) peut être déployé dans une zone de disponibilité unique (AZ) ou dans plusieurs zones de disponibilité. Pour les workloads de production qui nécessitent une haute disponibilité, plusieurs zones de disponibilité offrent une tolérance aux pannes de niveau zonal et un meilleur cache de lecture NVMe qu'une zone de disponibilité unique. Pour plus d'informations, consultez link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/performance.html["Conseils sur les performances d'AWS"]. Pour réduire les coûts sur le site de reprise après incident, un seul serveur AZ FSX ONTAP peut être utilisé. Image::rhhc_Storage_options_fsxn_options.png["réplication entre plusieurs AZ et une-AZ"]
+Dans AWS, FSX pour NetApp ONTAP (FSxN) peut être déployé dans une zone de disponibilité unique (AZ) ou dans plusieurs zones de disponibilité. Pour les workloads de production qui nécessitent une haute disponibilité, plusieurs zones de disponibilité offrent une tolérance aux pannes de niveau zonal et un meilleur cache de lecture NVMe qu'une zone de disponibilité unique. Pour plus d'informations, consultez link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/performance.html["Conseils sur les performances d'AWS"]. Pour réduire les coûts sur le site de reprise après incident, un seul serveur AZ FSX ONTAP peut être utilisé. image:rhhc_storage_options_fsxn_options.png["Réplication entre plusieurs zones de disponibilité et une zone de disponibilité unique"]
 
 Pour connaître le nombre de SVM pris en charge par FSX ONTAP, reportez-vous à la section link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-svms.html#max-svms["Gestion de la machine virtuelle de stockage FSX ONTAP"]

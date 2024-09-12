@@ -73,7 +73,7 @@ La limite de débit d'un volume de base de données Oracle est déterminée par 
 
 Le diagramme suivant montre comment la limite de débit d'un volume de base de données Oracle est calculée.
 
-image::db_ora_azure_anf_factors_01.PNG[Cette image illustre l'équation appliquée aux trois niveaux de capacité afin de déterminer le débit brut.]
+image:db_ora_azure_anf_factors_01.png["Cette image illustre l'équation appliquée aux trois niveaux de capacité afin de déterminer le débit brut."]
 
 Dans l'exemple 1, un volume provenant d'un pool de capacité avec le niveau de stockage Premium auquel un quota de 2 Tio est affecté à un débit limité à 128 Mio (2Tio * 64 Mio). Cette scénario s'applique quelle que soit la taille du pool de capacité ou la consommation réelle du volume.
 
@@ -89,11 +89,11 @@ NetApp recommande l'infrastructure de stockage suivante :
 
 * Pour les petites bases de données, utiliser la disposition d'un seul volume pour tous les fichiers Oracle.
 +
-image::db_ora_azure_anf_factors_02.PNG[Cette image représente trois bases de données (DB1, DB2 et DB3) contenant chacune des fichiers de données, des journaux de reprise, des journaux d'archivage et des fichiers de contrôle, le tout dans un même pool de capacité.]
+image:db_ora_azure_anf_factors_02.png["Cette image représente trois bases de données (DB1, DB2 et DB3) contenant chacune des fichiers de données, des journaux de reprise, des journaux d'archivage et des fichiers de contrôle, le tout dans un même pool de capacité."]
 
 * Pour les bases de données volumineuses, la disposition des volumes recommandée est constituée de plusieurs volumes : un pour les données Oracle et un fichier de contrôle dupliqué, un pour le journal actif Oracle, le journal archivé et le fichier de contrôle. NetApp recommande vivement d'allouer un volume au binaire Oracle plutôt qu'au disque local, de sorte que la base de données puisse être déplacée vers un nouvel hôte et restaurée rapidement.
 +
-image::db_ora_azure_anf_factors_03.PNG[Cette image représente deux bases de données avec deux volumes chacun. Le premier volume contient des fichiers de données, tandis que le second volume de chaque base de données contient des journaux de reprise, des journaux d'archivage et des fichiers de contrôle. Le tout dans un pool de capacité unique.]
+image:db_ora_azure_anf_factors_03.png["Cette image représente deux bases de données avec deux volumes chacun. Le premier volume contient des fichiers de données, tandis que le second volume de chaque base de données contient des journaux de reprise, des journaux d'archivage et des fichiers de contrôle. Le tout dans un pool de capacité unique."]
 
 
 
@@ -107,7 +107,7 @@ En utilisant dNFS (disponible depuis Oracle 11g), une base de données Oracle ex
 
 Le schéma suivant présente le banc d'essai SLOB sur Azure NetApp Files avec Oracle dNFS.
 
-image::db_ora_azure_anf_factors_04.PNG[Ce graphique démontre considérablement que dNFS améliore la latence (ms) du fichier séquentiel de la base de données par rapport à KNFS.]
+image:db_ora_azure_anf_factors_04.png["Ce graphique démontre considérablement que dNFS améliore la latence (ms) du fichier séquentiel de la base de données par rapport à KNFS."]
 
 Autres facteurs à prendre en compte :
 
@@ -122,7 +122,7 @@ sysctl -a | grep tcp.*.slot_table
 ----
 * Le tableau suivant présente les options de montage NFS recommandées pour une instance unique de Linux NFSv3.
 +
-image::aws_ora_fsx_ec2_nfs_01.PNG[Ce tableau présente les options de montage NFS détaillées pour les types de fichiers suivants, les fichiers de contrôle, les fichiers de données, les journaux de reprise, ORACLE_HOME, Et ORACLE_BASE.]
+image:aws_ora_fsx_ec2_nfs_01.png["Ce tableau présente les options de montage NFS détaillées pour les types de fichiers suivants, les fichiers de contrôle, les fichiers de données, les journaux de reprise, ORACLE_HOME, Et ORACLE_BASE."]
 
 
 

@@ -16,7 +16,7 @@ summary:
 [role="lead"]
 Les datasets et les versions des datasets se trouvent généralement dans un data Lake, tel que le stockage objet StorageGRID de NetApp, ce qui permet de réduire les coûts et d'autres avantages opérationnels. Les data Scientists extraient ces datasets et les préparent en plusieurs étapes pour l'entraînement d'un modèle spécifique, créant souvent plusieurs versions tout au long du processus. À l'étape suivante, le data Scientist doit sélectionner des ressources de calcul optimisées (GPU, instances de processeurs haut de gamme, cluster sur site, etc.) pour exécuter le modèle. La figure suivante illustre l'absence de proximité du dataset dans un environnement de calcul DE ML.
 
-image::hcaios_image1.png[image hcaios 1]
+image:hcaios_image1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Toutefois, plusieurs expériences d'entraînement doivent être menées en parallèle dans différents environnements de calcul. Chacune d'entre elles nécessite le téléchargement du dataset depuis le data Lake, ce qui est un processus coûteux et chronophage. La proximité du dataset avec l'environnement de calcul (notamment dans le cloud hybride) n'est pas garantie. De plus, les autres membres de l'équipe qui exécutent leurs propres expériences avec le même dataset doivent suivre le même processus fastidieux. Au-delà de la lenteur évidente de l'accès aux données, le suivi des versions de dataset, le partage de dataset, la collaboration et la reproductibilité sont des difficultés autres.
 

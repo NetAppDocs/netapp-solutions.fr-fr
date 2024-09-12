@@ -43,21 +43,21 @@ Un instantané complet de la base de données inclut tous les fichiers Oracle, y
 
 . Connectez-vous à l'interface utilisateur SnapCenter et cliquez sur Ressources dans le menu gauche. Dans la liste déroulante vue, passez à la vue Groupe de ressources.
 +
-image::aws_rds_custom_deploy_snp_10.PNG[aws rds déploiement personnalisé snp 10]
+image:aws_rds_custom_deploy_snp_10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur le nom de la ressource de sauvegarde complète, puis sur l'icône Sauvegarder maintenant pour lancer une sauvegarde supplémentaire.
 +
-image::aws_rds_custom_deploy_snp_11.PNG[aws rds déploiement personnalisé snp 11]
+image:aws_rds_custom_deploy_snp_11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur Sauvegarder, puis confirmez la sauvegarde pour lancer une sauvegarde complète de la base de données.
 +
-image::aws_rds_custom_deploy_snp_12.PNG[aws rds déploiement personnalisé snp 12]
+image:aws_rds_custom_deploy_snp_12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 Dans la vue Ressources de la base de données, ouvrez la page de sauvegarde gérée de la base de données pour vérifier que la sauvegarde unique a bien été effectuée. Une sauvegarde complète de la base de données crée deux snapshots : un pour le volume de données et un pour le volume du journal.
 
 +
-image::aws_rds_custom_deploy_snp_13.PNG[aws rds déploiement personnalisé snp 13]
+image:aws_rds_custom_deploy_snp_13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -69,21 +69,21 @@ Un instantané du journal d'archivage est uniquement pris pour le volume du jour
 
 . Connectez-vous à l'interface utilisateur SnapCenter et cliquez sur l'onglet Ressources dans la barre de menus située à gauche. Dans la liste déroulante vue, passez à la vue Groupe de ressources.
 +
-image::aws_rds_custom_deploy_snp_10.PNG[aws rds déploiement personnalisé snp 10]
+image:aws_rds_custom_deploy_snp_10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur le nom de la ressource de sauvegarde du journal, puis sur l'icône Sauvegarder maintenant pour lancer une sauvegarde supplémentaire des journaux d'archivage.
 +
-image::aws_rds_custom_deploy_snp_14.PNG[aws rds déploiement personnalisé snp 14]
+image:aws_rds_custom_deploy_snp_14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur Sauvegarder, puis confirmez la sauvegarde pour lancer une sauvegarde du journal d'archivage.
 +
-image::aws_rds_custom_deploy_snp_15.PNG[aws rds déploiement personnalisé snp 15]
+image:aws_rds_custom_deploy_snp_15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 Dans la vue Ressources de la base de données, ouvrez la page de sauvegarde gérée de la base de données pour vérifier que la sauvegarde du journal d'archivage unique a bien été effectuée. Une sauvegarde du journal d'archivage crée un snapshot pour le volume du journal.
 
 +
-image::aws_rds_custom_deploy_snp_16.PNG[aws rds déploiement personnalisé snp 16]
+image:aws_rds_custom_deploy_snp_16.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -95,26 +95,23 @@ La restauration basée sur SnapCenter à un point dans le temps est exécutée s
 
 . Dans l'onglet Ressources SnapCenter > vue base de données, cliquez sur le nom de la base de données pour ouvrir la sauvegarde de la base de données.
 +
-image::aws_rds_custom_deploy_snp_17.PNG[aws rds déploiement personnalisé snp 17]
+image:aws_rds_custom_deploy_snp_17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez la copie de sauvegarde de la base de données et le point dans le temps souhaité pour la restauration. Marquez également le numéro SCN correspondant au point dans le temps. La restauration ponctuelle peut être effectuée à l'aide de l'heure ou du SCN.
 +
-image::aws_rds_custom_deploy_snp_18.PNG[aws rds déploiement personnalisé snp 18]
+image:aws_rds_custom_deploy_snp_18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Mettez en surbrillance l'instantané du volume du journal et cliquez sur le bouton Monter pour monter le volume.
 +
-image::aws_rds_custom_deploy_snp_19.PNG[aws rds déploiement personnalisé snp 19]
+image:aws_rds_custom_deploy_snp_19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez l'instance EC2 principale pour monter le volume du journal.
 +
-image::aws_rds_custom_deploy_snp_20.PNG[aws rds déploiement personnalisé snp 20]
+image:aws_rds_custom_deploy_snp_20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Vérifiez que le travail de montage s'est terminé correctement. Vérifiez également sur l'hôte de l'instance EC2 pour voir le volume du journal monté et le chemin du point de montage.
 +
-image::aws_rds_custom_deploy_snp_21_1.PNG[aws rds déploiement personnalisé snp 21 1]
-
-+
-image::aws_rds_custom_deploy_snp_21_2.PNG[aws rds déploiement personnalisé snp 21 2]
+image:aws_rds_custom_deploy_snp_21_1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"] image:aws_rds_custom_deploy_snp_21_2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Copiez les journaux d'archivage du volume du journal monté dans le répertoire du journal d'archivage en cours.
 +
@@ -124,39 +121,39 @@ image::aws_rds_custom_deploy_snp_21_2.PNG[aws rds déploiement personnalisé snp
 ----
 . Revenez à l'onglet ressource SnapCenter > page de sauvegarde de la base de données, mettez en surbrillance la copie Snapshot de données, puis cliquez sur le bouton Restaurer pour lancer le flux de travail de restauration de la base de données.
 +
-image::aws_rds_custom_deploy_snp_22.PNG[aws rds déploiement personnalisé snp 22]
+image:aws_rds_custom_deploy_snp_22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Vérifiez tous les fichiers de données et modifiez l'état de la base de données si nécessaire pour la restauration et la restauration, puis cliquez sur Next.
 +
-image::aws_rds_custom_deploy_snp_23.PNG[aws rds déploiement personnalisé snp 23]
+image:aws_rds_custom_deploy_snp_23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Choisissez une étendue de récupération à l'aide de SCN ou de Time. Plutôt que de copier les journaux d'archive montés dans le répertoire de journaux actuel comme indiqué à l'étape 6, le chemin du journal d'archivage monté peut être répertorié dans « spécifier des emplacements de fichiers journaux d'archive externes » pour la restauration.
 +
-image::aws_rds_custom_deploy_snp_24_1.PNG[aws rds déploiement personnalisé snp 24 1]
+image:aws_rds_custom_deploy_snp_24_1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Spécifiez un prescripteur facultatif à exécuter si nécessaire.
 +
-image::aws_rds_custom_deploy_snp_25.PNG[aws rds déploiement personnalisé snp 25]
+image:aws_rds_custom_deploy_snp_25.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Spécifiez un script de post-script facultatif à exécuter si nécessaire. Vérifiez la base de données ouverte après la récupération.
 +
-image::aws_rds_custom_deploy_snp_26.PNG[aws rds déploiement personnalisé snp 26]
+image:aws_rds_custom_deploy_snp_26.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Indiquez un serveur SMTP et une adresse e-mail si une notification de travail est nécessaire.
 +
-image::aws_rds_custom_deploy_snp_27.PNG[aws rds déploiement personnalisé snp 27]
+image:aws_rds_custom_deploy_snp_27.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Restaurez le récapitulatif du travail. Cliquez sur Terminer pour lancer la tâche de restauration.
 +
-image::aws_rds_custom_deploy_snp_28.PNG[aws rds déploiement personnalisé snp 28]
+image:aws_rds_custom_deploy_snp_28.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Valider la restauration à partir de SnapCenter.
 +
-image::aws_rds_custom_deploy_snp_29_1.PNG[aws rds déploiement personnalisé snp 29 1]
+image:aws_rds_custom_deploy_snp_29_1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Valider la restauration à partir de l'hôte de l'instance EC2.
 +
-image::aws_rds_custom_deploy_snp_29_2.PNG[aws rds déploiement personnalisé snp 29 2]
+image:aws_rds_custom_deploy_snp_29_2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Pour démonter le volume du journal de restauration, inversez les étapes de l'étape 4.
 
@@ -169,56 +166,53 @@ La section suivante explique comment utiliser le workflow de clonage SnapCenter 
 
 . Effectuer une sauvegarde instantanée complète de la base de données primaire à partir de SnapCenter en utilisant le groupe de ressources de sauvegarde complet.
 +
-image::aws_rds_custom_deploy_replica_02.PNG[réplique de déploiement personnalisé aws rds 02]
+image:aws_rds_custom_deploy_replica_02.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans l'onglet ressource SnapCenter > vue base de données, ouvrez la page gestion des sauvegardes de la base de données principale à partir de laquelle la réplique doit être créée.
 +
-image::aws_rds_custom_deploy_replica_04.PNG[réplique de déploiement personnalisé aws rds 04]
+image:aws_rds_custom_deploy_replica_04.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Montez le snapshot du volume de journal effectué à l'étape 4 sur l'hôte de l'instance EC2 de secours.
 +
-image::aws_rds_custom_deploy_replica_13.PNG[réplique de déploiement personnalisé aws rds 13]
-
-+
-image::aws_rds_custom_deploy_replica_14.PNG[réplique de déploiement personnalisé aws rds 14]
+image:aws_rds_custom_deploy_replica_13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"] image:aws_rds_custom_deploy_replica_14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Mettez en surbrillance la copie snapshot à cloner pour la réplique, puis cliquez sur le bouton Cloner pour lancer la procédure de clonage.
 +
-image::aws_rds_custom_deploy_replica_05.PNG[réplique de déploiement personnalisé aws rds 05]
+image:aws_rds_custom_deploy_replica_05.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Modifiez le nom de la copie du réplica afin qu'il soit différent du nom de la base de données principale. Cliquez sur Suivant.
 +
-image::aws_rds_custom_deploy_replica_06.PNG[réplique de déploiement personnalisé aws rds 06]
+image:aws_rds_custom_deploy_replica_06.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Remplacez l'hôte clone par l'hôte EC2 de secours, acceptez la dénomination par défaut et cliquez sur Next (Suivant).
 +
-image::aws_rds_custom_deploy_replica_07.PNG[réplique de déploiement personnalisé aws rds 07]
+image:aws_rds_custom_deploy_replica_07.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Modifiez vos paramètres Oracle Home pour qu'ils correspondent à ceux configurés pour l'hôte du serveur Oracle cible, puis cliquez sur Next (Suivant).
 +
-image::aws_rds_custom_deploy_replica_08.PNG[réplique de déploiement personnalisé aws rds 08]
+image:aws_rds_custom_deploy_replica_08.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Spécifiez un point de récupération à l'aide du temps ou du SCN et du chemin du journal d'archivage monté.
 +
-image::aws_rds_custom_deploy_replica_15.PNG[réplique de déploiement personnalisé aws rds 15]
+image:aws_rds_custom_deploy_replica_15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Si nécessaire, envoyez les paramètres de messagerie SMTP.
 +
-image::aws_rds_custom_deploy_replica_11.PNG[réplique de déploiement personnalisé aws rds 11]
+image:aws_rds_custom_deploy_replica_11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Clonez le récapitulatif des tâches, puis cliquez sur Terminer pour lancer la tâche de clonage.
 +
-image::aws_rds_custom_deploy_replica_12.PNG[réplique de déploiement personnalisé aws rds 12]
+image:aws_rds_custom_deploy_replica_12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Validez le clone de réplica en consultant le journal des travaux de clonage.
 +
-image::aws_rds_custom_deploy_replica_17.PNG[réplique de déploiement personnalisé aws rds 17]
+image:aws_rds_custom_deploy_replica_17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 La base de données clonée est enregistrée immédiatement dans SnapCenter.
 
 +
-image::aws_rds_custom_deploy_replica_18.PNG[réplique de déploiement personnalisé aws rds 18]
+image:aws_rds_custom_deploy_replica_18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Désactivez le mode de journal d'archivage Oracle. Connectez-vous à l'instance EC2 en tant qu'utilisateur oracle et exécutez la commande suivante :
 +

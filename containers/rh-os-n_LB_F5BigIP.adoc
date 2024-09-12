@@ -62,19 +62,19 @@ NOTE: Un système F5 BIG-IP peut être déployé sur un matériel dédié, dans 
 . Connectez-vous au système F5 BIG-IP, accédez à iApps > Package Management LX et cliquez sur Importer.
 . Cliquez sur choisir un fichier et sélectionnez le fichier RPM AS3 téléchargé, cliquez sur OK, puis cliquez sur Télécharger.
 +
-image::redhat_openshift_image109.jpg[Téléchargement iApps]
+image:redhat_openshift_image109.jpg["Téléchargement iApps"]
 
 . Vérifiez que l'extension AS3 est correctement installée.
 +
-image::redhat_openshift_image110.jpg[Validation de l'installation AS3]
+image:redhat_openshift_image110.jpg["Validation de l'installation AS3"]
 
 . Configurez ensuite les ressources requises pour la communication entre les systèmes OpenShift et BIG-IP. Commencez par créer un tunnel entre OpenShift et LE serveur BIG-IP en créant une interface de tunnel VXLAN sur le système BIG-IP pour OpenShift SDN. Naviguez jusqu'à réseau > tunnels > profils, cliquez sur Créer, puis définissez le profil parent sur vxlan et le type d'inondation sur Multicast. Entrez un nom pour le profil et cliquez sur terminé.
 +
-image::redhat_openshift_image111.jpg[Créer un profil VXLAN]
+image:redhat_openshift_image111.jpg["Créer un profil VXLAN"]
 
 . Naviguez jusqu'à réseau > tunnels > liste de tunnels, cliquez sur Créer, puis entrez le nom et l'adresse IP locale du tunnel. Sélectionnez le profil de tunnel créé à l'étape précédente et cliquez sur terminé.
 +
-image::redhat_openshift_image112.jpg[Créer un tunnel VXLAN]
+image:redhat_openshift_image112.jpg["Créer un tunnel VXLAN"]
 
 . Connectez-vous au cluster Red Hat OpenShift avec les privilèges cluster-admin.
 . Créez un sous-réseau d'hôtes sur OpenShift pour le serveur F5 BIG-IP, qui étend le sous-réseau du cluster OpenShift au serveur F5 BIG-IP. Téléchargez la définition YAML du sous-réseau hôte.
@@ -132,11 +132,11 @@ ocp-vmw-nszws-worker-wtgfw   ocp-vmw-nszws-worker-wtgfw   10.63.172.17    10.128
 ----
 . Créez un auto-IP sur OpenShift VXLAN avec un IP dans la plage de sous-réseau hôte d'OpenShift correspondant au serveur F5 BIG-IP. Connectez-vous au système F5 BIG-IP, accédez à réseau > Auto-IP et cliquez sur Créer. Entrez une adresse IP à partir du sous-réseau IP du cluster créé pour le sous-réseau hôte F5 BIG-IP, sélectionnez le tunnel VXLAN et entrez les autres détails. Cliquez ensuite sur terminé.
 +
-image::redhat_openshift_image113.jpg[Créer auto-IP pour VXLAN]
+image:redhat_openshift_image113.jpg["Créer auto-IP pour VXLAN"]
 
 . Créez une partition dans le système F5 BIG-IP à configurer et à utiliser avec CIS. Accédez à système > utilisateurs > liste de partitions, cliquez sur Créer et entrez les détails. Cliquez ensuite sur terminé.
 +
-image::redhat_openshift_image114.jpg[Créer une partition BIG-IP]
+image:redhat_openshift_image114.jpg["Créer une partition BIG-IP"]
 
 +
 
@@ -164,24 +164,24 @@ customresourcedefinition.apiextensions.k8s.io/ingresslinks.cis.f5.com created
 ----
 . Accédez à Operators > OperatorHub, recherchez le mot-clé F5, puis cliquez sur la mosaïque F5 Container Ingress Service.
 +
-image::redhat_openshift_image115.jpg[F5 CIS dans OperatorHub]
+image:redhat_openshift_image115.jpg["F5 CIS dans OperatorHub"]
 
 . Lisez les informations de l'opérateur et cliquez sur installer.
 +
-image::redhat_openshift_image116.jpg[F5 CIS Info dans OperatorHub]
+image:redhat_openshift_image116.jpg["F5 CIS Info dans OperatorHub"]
 
 . Sur l'écran de l'opérateur d'installation, conservez tous les paramètres par défaut, puis cliquez sur installer.
 +
-image::redhat_openshift_image117.jpg[Installer l'opérateur F5 CIS]
+image:redhat_openshift_image117.jpg["Installer l'opérateur F5 CIS"]
 
 . L'installation de l'opérateur prend un certain temps.
 +
-image::redhat_openshift_image118.jpg[F5 CIS - progression de l'installation de l'opérateur]
+image:redhat_openshift_image118.jpg["F5 CIS - progression de l'installation de l'opérateur"]
 
 . Une fois l'opérateur installé, le message installation réussie s'affiche.
 . Accédez à opérateurs > opérateurs installés, cliquez sur F5 Container Ingress Service, puis cliquez sur Créer une instance sous la mosaïque F5BigIpCtlr.
 +
-image::redhat_openshift_image119.jpg[Créez F5BigIpCtlr]
+image:redhat_openshift_image119.jpg["Créez F5BigIpCtlr"]
 
 . Cliquez sur vue YAML et collez le contenu suivant après la mise à jour des paramètres nécessaires.
 +
@@ -225,7 +225,7 @@ spec:
 ----
 . Après avoir collé ce contenu, cliquez sur Créer. Cela installe les modules CIS dans l'espace de noms du système kube.
 +
-image::redhat_openshift_image120.jpg[Valider les modules CIS F5]
+image:redhat_openshift_image120.jpg["Valider les modules CIS F5"]
 
 +
 
@@ -325,7 +325,7 @@ spec:
         - --log-level=DEBUG
         command:
         - /app/bin/f5-ipam-controller
-        image:: registry.connect.redhat.com/f5networks/f5-ipam-controller:latest
+        image: registry.connect.redhat.com/f5networks/f5-ipam-controller:latest
         imagePullPolicy: IfNotPresent
         name: f5-ipam-controller
       dnsPolicy: ClusterFirst
@@ -461,6 +461,6 @@ f5-demo-test-57c46f6f98-cl2m8   1/1     Running   0          27s
 ----
 . Vérifiez si le serveur virtuel correspondant est créé dans LE système BIG-IP pour le service de type LoadBalancer dans OpenShift. Accédez à trafic local > serveurs virtuels > liste de serveurs virtuels.
 +
-image::redhat_openshift_image121.jpg[Validez la création de serveurs virtuels BIG-IP pour le type de service correspondant LoadBalancer]
+image:redhat_openshift_image121.jpg["Validez la création de serveurs virtuels BIG-IP pour le type de service correspondant LoadBalancer"]
 
 

@@ -40,7 +40,7 @@ En fonction de vos besoins, installez toutes les bibliothèques et tous les pack
 
 Nous utilisons l'exemple d'un petit réseau neuronal formé sur les données MNIST. Le jeu de données MNIST se compose d'images manuscrites de chiffres compris entre 0 et 9. La taille des images est de 28 x 28 pixels. Le dataset est divisé en 60,000 images d'entraînement et 10,000 images de validation. Le réseau neuronal utilisé pour cette expérience est un réseau d'avance à 2 couches. L'entraînement est exécuté à l'aide de Kubeflow pipelines. Reportez-vous à la documentation https://www.kubeflow.org/docs/components/pipelines/v1/introduction/["ici"^] pour en savoir plus. Notre pipeline Kubeflow intègre l'image docker de la section Prerequisites.
 
-image::kubeflow_pipeline.png[Visualisation de l'exécution du pipeline Kubeflow]
+image:kubeflow_pipeline.png["Visualisation de l'exécution du pipeline Kubeflow"]
 
 
 
@@ -48,7 +48,7 @@ image::kubeflow_pipeline.png[Visualisation de l'exécution du pipeline Kubeflow]
 
 Une fois le modèle entraîné, nous pouvons visualiser les résultats à l'aide de Tensorboard. https://www.tensorflow.org/tensorboard["Tensorboard"^] Elle est disponible en tant que fonctionnalité dans le tableau de bord Kubeflow. Vous pouvez créer un tableau de tension personnalisé pour votre travail. Un exemple ci-dessous montre le tracé de la précision de l'entraînement par rapport à nombre de séries de tests et de pertes d'entraînement par rapport à nombre de séries de tests.
 
-image::tensorboard_graph.png[Graphique Tensorboard pour la perte d'entraînement et la précision]
+image:tensorboard_graph.png["Graphique Tensorboard pour la perte d'entraînement et la précision"]
 
 
 
@@ -56,9 +56,9 @@ image::tensorboard_graph.png[Graphique Tensorboard pour la perte d'entraînement
 
 https://www.kubeflow.org/docs/components/katib/hyperparameter/["Katib"^] Est un outil de Kubeflow qui peut être utilisé pour tester les hyperparamètres du modèle. Pour créer une expérience, définissez d'abord une mesure/un objectif souhaité. Il s'agit généralement de la précision du test. Une fois la mesure définie, choisissez les hyperparamètres que vous souhaitez utiliser (optimiseur/apprentissage_rate/nombre de couches). Katib effectue un balayage hyperparamètre avec les valeurs définies par l'utilisateur pour trouver la meilleure combinaison de paramètres qui répondent à la mesure souhaitée. Vous pouvez définir ces paramètres dans chaque section de l'interface utilisateur. Vous pouvez également définir un fichier *YAML* avec les spécifications nécessaires. Vous trouverez ci-dessous une illustration d'une expérience Katib -
 
-image::katib_experiment_1.png[Tableau de bord d'expérience Katib avec hyperparamètres]
+image:katib_experiment_1.png["Tableau de bord d'expérience Katib avec hyperparamètres"]
 
-image::katib_experiment_2.png[Vérification d'essai réussie]
+image:katib_experiment_2.png["Vérification d'essai réussie"]
 
 
 
@@ -66,6 +66,6 @@ image::katib_experiment_2.png[Vérification d'essai réussie]
 
 Lors de l'entraînement du modèle, nous pouvons enregistrer un instantané du dataset d'entraînement à des fins de traçabilité. Pour ce faire, nous pouvons ajouter une étape snapshot au pipeline, comme illustré ci-dessous. Pour créer le snapshot, nous pouvons utiliser le https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s["Kit NetApp DataOps pour Kubernetes"^].
 
-image::kubeflow_snapshot.png[Créez un pipeline Snapshot dans Kubeflow]
+image:kubeflow_snapshot.png["Créez un pipeline Snapshot dans Kubeflow"]
 
 Reportez-vous à la https://github.com/NetApp/netapp-dataops-toolkit/tree/main/netapp_dataops_k8s/Examples/Kubeflow["Exemple de kit NetApp DataOps pour Kubeflow"^] pour en savoir plus.

@@ -54,7 +54,7 @@ Les tests et la validation de cette solution ont été réalisés dans un enviro
 
 === Architecture
 
-image::automation_ora_c-series_nfs_archit.png[Cette image fournit une vue détaillée de la configuration du déploiement Oracle dans le cloud public AWS avec iSCSI et ASM.]
+image:automation_ora_c-series_nfs_archit.png["Cette image fournit une vue détaillée de la configuration du déploiement Oracle dans le cloud public AWS avec iSCSI et ASM."]
 
 
 
@@ -182,32 +182,23 @@ Cette section du guide de déploiement décrit les meilleures pratiques pour la 
 
 . Connectez-vous à ONTAP System Manager pour vérifier qu'après l'installation initiale du cluster ONTAP, les domaines de diffusion ont été configurés avec des ports ethernet correctement attribués à chaque domaine. En règle générale, il doit y avoir un broadcast domain pour le cluster, un broadcast domain pour la gestion et un broadcast domain pour des charges de travail telles que les données.
 +
-image::automation_ora_c-series_nfs_net_01.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_net_01.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Dans RÉSEAU - ports Ethernet, cliquez sur `Link Aggregate Group` Pour créer un groupe d'agrégats de liens LACP port a0a, qui fournit l'équilibrage de la charge et le basculement entre les ports membres du port group d'agrégats. 4 ports de données, e0e, e0f, e0g, e0h, sont disponibles sur les contrôleurs C400.
 +
-image::automation_ora_c-series_nfs_net_02.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_net_02.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Sélectionnez les ports ethernet dans le groupe, `LACP` pour le mode, et `Port` pour la distribution de charge.
 +
-image::automation_ora_c-series_nfs_net_03.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_net_03.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Valider le port LACP a0a créé et broadcast domain `Data` Fonctionne désormais sur le port LACP.
 +
-image::automation_ora_c-series_nfs_net_04.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
-
-+
-image::automation_ora_c-series_nfs_net_05.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_net_04.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"] image:automation_ora_c-series_nfs_net_05.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . De `Ethernet Ports`, cliquez sur `VLAN` Pour ajouter un VLAN sur chaque nœud de contrôleur pour la charge de travail Oracle sur le protocole NFS.
 +
-image::automation_ora_c-series_nfs_net_06.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
-
-+
-image::automation_ora_c-series_nfs_net_07.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
-
-+
-image::automation_ora_c-series_nfs_net_08.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_net_06.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"] image:automation_ora_c-series_nfs_net_07.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"] image:automation_ora_c-series_nfs_net_08.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Connectez-vous aux contrôleurs C-Series à partir de l'IP de gestion du cluster via ssh pour vérifier que les groupes de basculement du réseau sont configurés correctement. ONTAP crée et gère automatiquement les groupes de basculement.
 +
@@ -238,42 +229,39 @@ HCG-NetApp-C400-E9U9
 ....
 . De `STORAGE - Storage VMs`, Cliquer sur +Ajouter pour créer un SVM pour Oracle.
 +
-image::automation_ora_c-series_nfs_svm_01.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_svm_01.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Nommez votre SVM Oracle, vérifiez `Enable NFS` et `Allow NFS client access`.
 +
-image::automation_ora_c-series_nfs_svm_02.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_svm_02.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Ajouter une export policy NFS `Default` règles.
 +
-image::automation_ora_c-series_nfs_svm_03.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_svm_03.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Dans `NETWORK INTERFACE`, Renseignez l'adresse IP sur chaque nœud pour les adresses lif NFS.
 +
-image::automation_ora_c-series_nfs_svm_04.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_svm_04.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Vérifier que le SVM pour Oracle est opérationnel et que l'état des lif NFS est actif.
 +
-image::automation_ora_c-series_nfs_svm_05.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
-
-+
-image::automation_ora_c-series_nfs_svm_06.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_svm_05.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"] image:automation_ora_c-series_nfs_svm_06.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . De `STORAGE-Volumes` Pour ajouter des volumes NFS pour la base de données Oracle.
 +
-image::automation_ora_c-series_nfs_vol_01.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_vol_01.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Nommez votre volume, attribuez la capacité et le niveau de performance.
 +
-image::automation_ora_c-series_nfs_vol_02.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_vol_02.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Dans `Access Permission`, choisissez la stratégie par défaut créée à partir de l'étape précédente. Décochez `Enable Snapshot Copies` Comme nous préférons utiliser SnapCenter pour créer des snapshots cohérents avec les applications.
 +
-image::automation_ora_c-series_nfs_vol_03.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_vol_03.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 . Créez trois volumes DB pour chaque serveur DB : Server_name_u01 - binary, Server_name_u02 - data, Server_name_u03 - logs.
 +
-image::automation_ora_c-series_nfs_vol_04.png[Cette image fournit une capture d'écran pour la configuration du contrôleur c-series]
+image:automation_ora_c-series_nfs_vol_04.png["Cette image fournit une capture d'écran pour la configuration du contrôleur c-series"]
 
 +
 
@@ -665,13 +653,7 @@ DIRNAME
 ....
 . Connectez-vous à Oracle Enterprise Manager Express pour valider la base de données.
 +
-image::automation_ora_c-series_nfs_em_01.png[Cette image fournit un écran de connexion pour Oracle Enterprise Manager Express]
-
-+
-image::automation_ora_c-series_nfs_em_02.png[Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express]
-
-+
-image::automation_ora_c-series_nfs_em_03.png[Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express]
+image:automation_ora_c-series_nfs_em_01.png["Cette image fournit un écran de connexion pour Oracle Enterprise Manager Express"] image:automation_ora_c-series_nfs_em_02.png["Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express"] image:automation_ora_c-series_nfs_em_03.png["Cette image fournit une vue de la base de données de conteneurs à partir d'Oracle Enterprise Manager Express"]
 
 
 

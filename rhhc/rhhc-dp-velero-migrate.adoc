@@ -62,7 +62,7 @@ spec:
 * Créez une application sur le cluster et faites une sauvegarde de cette application. Par exemple, installez une application postgres.
 
 
-image::redhat_openshift_OADP_migrate_image1.png[installez l'application postgres]
+image:redhat_openshift_OADP_migrate_image1.png["installez l'application postgres"]
 
 * Utilisez les spécifications suivantes pour la CR de secours :
 
@@ -78,7 +78,7 @@ spec:
   storageLocation: velero-sample-1
   ttl: 720h0m0s
 ....
-image::redhat_openshift_OADP_migrate_image2.png[installez l'application postgres]
+image:redhat_openshift_OADP_migrate_image2.png["installez l'application postgres"]
 
 Vous pouvez cliquer sur l'onglet **toutes les instances** pour voir les différents objets en cours de création et de déplacement à travers différentes phases pour finalement arriver à la phase de sauvegarde **terminé**.
 
@@ -96,13 +96,13 @@ Une sauvegarde des ressources dans l'espace de noms postgresql sera stockée dan
 * La CR de sauvegarde doit être visible depuis le second cluster.
 
 
-image::redhat_openshift_OADP_migrate_image3.png[trident installé]
+image:redhat_openshift_OADP_migrate_image3.png["trident installé"]
 
-image::redhat_openshift_OADP_migrate_image4.png[postgres n'est pas déjà installé]
+image:redhat_openshift_OADP_migrate_image4.png["postgres n'est pas déjà installé"]
 
-image::redhat_openshift_OADP_migrate_image5.png[OADP sur le cluster 2 installé]
+image:redhat_openshift_OADP_migrate_image5.png["OADP sur le cluster 2 installé"]
 
-image::redhat_openshift_OADP_migrate_image6.png[emplacement de stockage de sauvegarde pointant vers le même magasin d'objets]
+image:redhat_openshift_OADP_migrate_image6.png["emplacement de stockage de sauvegarde pointant vers le même magasin d'objets"]
 
 Restaurez l'application sur ce cluster à partir de la sauvegarde. Utilisez le yaml suivant pour créer la CR de restauration.
 
@@ -119,8 +119,8 @@ spec:
 ....
 Une fois la restauration terminée, l'application postgresql s'exécute sur ce cluster et est associée à la demande de volume persistant et à un volume persistant correspondant. L'état de l'application est le même que celui de la sauvegarde.
 
-image::redhat_openshift_OADP_migrate_image7.png[restauration réussie]
+image:redhat_openshift_OADP_migrate_image7.png["restauration réussie"]
 
-image::redhat_openshift_OADP_migrate_image8.png[postgres migré]
+image:redhat_openshift_OADP_migrate_image8.png["postgres migré"]
 
 ====

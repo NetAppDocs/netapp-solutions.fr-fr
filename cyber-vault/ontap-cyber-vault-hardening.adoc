@@ -1,0 +1,36 @@
+---
+sidebar: sidebar 
+keywords: Cyber vault, cybervault, cyber-vault, data protection, security, ransomware, ONTAP, hardening 
+permalink: /cyber-vault/ontap-cyber-vault-hardening.html 
+summary: Étapes supplémentaires recommandées pour renforcer un cyber-coffre-fort pour ONTAP 
+---
+= Renforcement de la sécurité des coffres-forts
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Voici les recommandations supplémentaires pour renforcer un cyber-coffre-fort ONTAP. Veuillez consulter le guide de durcissement ONTAP ci-dessous pour plus de recommandations et de procédures.
+
+
+
+== Recommandations sur le renforcement du système Cyber Vault
+
+* Isoler les plans de gestion du cybercoffre
+* N'activez pas les LIFs de données sur le cluster de destination, car elles constituent un vecteur d'attaque supplémentaire
+* Sur le cluster de destination, limiter l'accès du LIF intercluster au cluster source avec une politique de services
+* Segmenter la LIF de gestion sur le cluster de destination pour un accès limité avec une politique de service et un hôte de base
+* Limitez l'ensemble du trafic de données du cluster source vers le cyber-coffre pour n'autoriser que les ports requis pour le trafic SnapMirror
+* Dans la mesure du possible, désactivez toutes les méthodes d'accès de gestion inutiles dans ONTAP pour réduire la surface d'attaque
+* Activer la journalisation des audits et le stockage des journaux à distance
+* Permettre une vérification multiadministrateur et exiger une vérification auprès d'un administrateur en dehors de vos administrateurs de stockage habituels (par exemple, le personnel du RSSI)
+* Mettez en œuvre des contrôles d'accès basés sur des rôles
+* Authentification multifacteur administrative requise pour System Manager et ssh
+* Utilisez l'authentification basée sur jeton pour les scripts et les appels de l'API REST
+
+
+Reportez-vous au link:../../ontap/ontap-security-hardening/security-hardening-overview.html["Guide de renforcement ONTAP"], link:../../ontap/multi-admin-verify/index.html["Présentation de la vérification multi-administrateur"^] et link:https://www.netapp.com/media/17055-tr4647.pdf["Guide d'authentification multifacteur ONTAP"^] au pour savoir comment effectuer ces étapes de durcissement.

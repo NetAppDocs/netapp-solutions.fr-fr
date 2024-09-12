@@ -20,12 +20,12 @@ Dans l'environnement, l'instance de calcul Oracle est déployée via une console
 
 En revanche, le stockage de base de données Oracle est déployé avec le service Azure NetApp Files disponible depuis la console Azure. Les volumes binaires, de données ou de journaux Oracle sont ensuite présentés et montés sur un hôte Linux d'instance de machine virtuelle Azure.
 
-image::db_ora_azure_anf_architecture.PNG[Cette image illustre la relation entre le site primaire, le site de secours et le peering vnet de chacun de ces sites. Ce formulaire forme quatre réseaux virtuels distincts.]
+image:db_ora_azure_anf_architecture.png["Cette image illustre la relation entre le site primaire, le site de secours et le peering vnet de chacun de ces sites. Ce formulaire forme quatre réseaux virtuels distincts."]
 
 Par bien des aspects, l'implémentation de Azure NetApp Files dans le cloud Azure s'apparente à une architecture de stockage de données ONTAP sur site avec de nombreuses redondances intégrées, comme RAID et doubles contrôleurs. Pour la reprise après incident, un site de secours peut être configuré dans différentes régions et la base de données peut être synchronisée avec le site principal à l'aide de la réplication au niveau de l'application (par exemple, Oracle Data Guard).
 
 Dans le cadre de notre validation de test pour le déploiement et la protection des données des bases de données Oracle, la base de données Oracle est déployée sur une seule machine virtuelle Azure, comme illustré dans le schéma ci-dessous :
 
-image::db_ora_azure_anf_architecture2.PNG[Cette image illustre l'organisation d'une seule machine virtuelle Azure avec le peering de vnet afin de faire deux réseaux virtuels distincts.]
+image:db_ora_azure_anf_architecture2.png["Cette image illustre l'organisation d'une seule machine virtuelle Azure avec le peering de vnet afin de faire deux réseaux virtuels distincts."]
 
 L'environnement Azure Oracle peut être géré avec un nœud de contrôleur Ansible pour l'automatisation à l'aide des kits d'outils fournis par NetApp pour le déploiement, la sauvegarde, la restauration et la migration de base de données. Toutes les mises à jour du noyau du système d'exploitation ou du correctif Oracle de l'instance de VM Oracle peuvent être effectuées en parallèle pour maintenir la synchronisation du système principal et du système de secours. En fait, les kits d'outils initiaux peuvent être facilement étendus pour effectuer des tâches Oracle quotidiennes si nécessaire. Si vous avez besoin d'aide pour configurer un contrôleur Ansible, reportez-vous à la section link:../automation/automation_introduction.html["Automatisation des solutions NetApp"^] pour commencer.

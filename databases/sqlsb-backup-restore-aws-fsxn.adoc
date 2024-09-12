@@ -44,7 +44,7 @@ Les étapes suivantes doivent être effectuées pour la configuration SnapCenter
 
 Configurez les informations d'identification pour la sauvegarde SQL Server et restaurez l'utilisateur avec les droits sysadmin.
 
-image::sqlsb-aws-image1.png[image aws sqlsb 1]
+image:sqlsb-aws-image1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 NetApp recommande d'utiliser le contrôle d'accès basé sur des rôles (RBAC) pour déléguer la protection et la gestion des données à des utilisateurs individuels sur les hôtes SnapCenter et Windows. L'utilisateur doit avoir accès au serveur SQL qui héberge la base de données. Pour plusieurs hôtes, le nom d'utilisateur et le mot de passe doivent être identiques sur les différents hôtes. De plus, pour permettre à SnapCenter de déployer le plug-in requis sur les hôtes SQL Server, vous devez enregistrer les informations de domaine pour SnapCenter afin de valider vos informations d'identification et vos hôtes.
 
@@ -55,11 +55,11 @@ Développez les sections suivantes pour voir les instructions détaillées sur l
 ====
 Accédez à *Paramètres*, sélectionnez *informations d'identification*, puis cliquez sur (*+*).
 
-image::sqlsb-aws-image2.png[image aws sqlsb 2]
+image:sqlsb-aws-image2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Le nouvel utilisateur doit disposer de droits d'administrateur sur l'hôte SQL Server.
 
-image::sqlsb-aws-image3.png[image aws sqlsb 3]
+image:sqlsb-aws-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 ====
 .Configurer le stockage
@@ -70,15 +70,15 @@ Pour configurer le stockage dans SnapCenter, procédez comme suit :
 . Dans l'interface utilisateur SnapCenter, sélectionnez *systèmes de stockage*. Il existe deux types de stockage : *ONTAP SVM* et *ONTAP Cluster*. Par défaut le type de stockage est *SVM ONTAP*.
 . Cliquez sur (*+*) pour ajouter les informations relatives au système de stockage.
 +
-image::sqlsb-aws-image4.png[image aws sqlsb 4]
+image:sqlsb-aws-image4.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Fournir le noeud final *FSX pour la gestion ONTAP*.
 +
-image::sqlsb-aws-image5.png[image aws sqlsb 5]
+image:sqlsb-aws-image5.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . La SVM est maintenant configurée dans SnapCenter.
 +
-image::sqlsb-aws-image6.png[image aws sqlsb 6]
+image:sqlsb-aws-image6.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -90,7 +90,7 @@ Pour ajouter un hôte SQL Server, procédez comme suit :
 
 . Dans l'onglet hôte, cliquez sur (*+*) pour ajouter l'hôte Microsoft SQL Server.
 +
-image::sqlsb-aws-image7.png[image aws sqlsb 7]
+image:sqlsb-aws-image7.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Indiquez le nom de domaine complet (FQDN) ou l'adresse IP de l'hôte distant.
 +
@@ -99,17 +99,17 @@ NOTE: Les informations d'identification sont renseignées par défaut.
 
 . Sélectionnez l'option pour Microsoft Windows et Microsoft SQL Server, puis soumettez.
 +
-image::sqlsb-aws-image8.png[image aws sqlsb 8]
+image:sqlsb-aws-image8.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 Les packages SQL Server sont installés.
 
-image::sqlsb-aws-image9.png[image aws sqlsb 9]
+image:sqlsb-aws-image9.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une fois l'installation terminée, accédez à l'onglet *ressource* pour vérifier si tous les volumes iSCSI FSX pour ONTAP sont présents.
 +
-image::sqlsb-aws-image10.png[sqlsb aws image10]
+image:sqlsb-aws-image10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -121,25 +121,25 @@ Pour configurer un répertoire de journaux hôte, procédez comme suit :
 
 . Cochez la case. Un nouvel onglet s'ouvre.
 +
-image::sqlsb-aws-image11.png[image aws sqlsb 11]
+image:sqlsb-aws-image11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur le lien *configure log Directory*.
 +
-image::sqlsb-aws-image12.png[image aws sqlsb 12]
+image:sqlsb-aws-image12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez le lecteur pour le répertoire du journal de l'hôte et le répertoire du journal de l'instance FCI. Cliquez sur *Enregistrer*. Répétez le même processus pour le second nœud du cluster. Fermez la fenêtre.
 +
-image::sqlsb-aws-image13.png[image aws sqlsb 13]
+image:sqlsb-aws-image13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 L'hôte est maintenant en cours d'exécution.
 
-image::sqlsb-aws-image14.png[image aws sqlsb 14]
+image:sqlsb-aws-image14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans l'onglet *Resources*, nous avons tous les serveurs et les bases de données.
 +
-image::sqlsb-aws-image15.png[sqlsb aws image15]
+image:sqlsb-aws-image15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -159,39 +159,39 @@ Pour configurer une règle de sauvegarde pour une base de données FCI, procéde
 
 . Accédez à *Paramètres* et sélectionnez *politiques* en haut à gauche. Cliquez ensuite sur *Nouveau*.
 +
-image::sqlsb-aws-image16.png[sqlsb aws image16]
+image:sqlsb-aws-image16.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Entrez le nom de la stratégie et une description. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image17.png[image aws sqlsb 17]
+image:sqlsb-aws-image17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez *sauvegarde complète* comme type de sauvegarde.
 +
-image::sqlsb-aws-image18.png[sqlsb aws image18]
+image:sqlsb-aws-image18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez la fréquence du planning (basée sur le SLA de la société). Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image19.png[image aws sqlsb 19]
+image:sqlsb-aws-image19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les paramètres de rétention pour la sauvegarde.
 +
-image::sqlsb-aws-image20.png[image aws sqlsb 20]
+image:sqlsb-aws-image20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les options de réplication.
 +
-image::sqlsb-aws-image21.png[image aws sqlsb 21]
+image:sqlsb-aws-image21.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Spécifiez un script d'exécution à exécuter avant et après l'exécution d'une tâche de sauvegarde (le cas échéant).
 +
-image::sqlsb-aws-image22.png[image aws sqlsb 22]
+image:sqlsb-aws-image22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Exécutez la vérification en fonction du planning de sauvegarde.
 +
-image::sqlsb-aws-image23.png[image aws sqlsb 23]
+image:sqlsb-aws-image23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . La page *Résumé* fournit des détails sur la stratégie de sauvegarde. Toutes les erreurs peuvent être corrigées ici.
 +
-image::sqlsb-aws-image24.png[image aws sqlsb 24]
+image:sqlsb-aws-image24.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -202,26 +202,26 @@ image::sqlsb-aws-image24.png[image aws sqlsb 24]
 
 . Configurez la date de début et la date d'expiration de la règle de sauvegarde.
 +
-image::sqlsb-aws-image25.png[sqlsb aws image25]
+image:sqlsb-aws-image25.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Définissez la planification de la sauvegarde. Pour ce faire, cliquez sur (*+*) pour configurer une planification. Entrez la *Date de début* et *expire le* date. Définissez l'heure en fonction du SLA de la société.
 +
-image::sqlsb-aws-image26.png[image aws sqlsb 26]
+image:sqlsb-aws-image26.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurer le serveur de vérification. Dans le menu déroulant, sélectionnez le serveur.
 +
-image::sqlsb-aws-image27.png[image aws sqlsb 27]
+image:sqlsb-aws-image27.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Confirmez le planning configuré en cliquant sur le signe plus et confirmez.
 . Fournir des informations pour la notification par e-mail. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image28.png[image aws sqlsb 28]
+image:sqlsb-aws-image28.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 Le résumé de la règle de sauvegarde pour la base de données SQL Server est maintenant configuré.
 
-image::sqlsb-aws-image29.png[sqlsb aws image29]
+image:sqlsb-aws-image29.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -231,15 +231,15 @@ Pour créer des sauvegardes SQL Server à la demande, procédez comme suit :
 
 . Dans la vue *ressource*, sélectionnez la ressource et sélectionnez *Sauvegarder maintenant*.
 +
-image::sqlsb-aws-image30.png[image aws sqlsb 30]
+image:sqlsb-aws-image30.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans la boîte de dialogue *Backup*, cliquez sur *Backup*.
 +
-image::sqlsb-aws-image31.png[image aws sqlsb 31]
+image:sqlsb-aws-image31.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Un écran de confirmation s'affiche. Cliquez sur *Oui* pour confirmer.
 +
-image::sqlsb-aws-image32.png[sqlsb aws image32]
+image:sqlsb-aws-image32.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -249,10 +249,10 @@ image::sqlsb-aws-image32.png[sqlsb aws image32]
 
 . Dans l'onglet *Monitor*, cliquez sur le travail et sélectionnez *Détails* à droite pour afficher les travaux.
 +
-image::sqlsb-aws-image33.png[image aws sqlsb 33]
+image:sqlsb-aws-image33.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
-image::sqlsb-aws-image34.png[image aws sqlsb 34]
+image:sqlsb-aws-image34.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -266,15 +266,15 @@ Pour configurer une stratégie de sauvegarde pour plusieurs bases de données SQ
 
 . Dans l'onglet *Resources* du menu *View*, passez à un groupe de ressources à l'aide du menu déroulant.
 +
-image::sqlsb-aws-image35.png[image aws sqlsb 35]
+image:sqlsb-aws-image35.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur (*+*) pour un nouveau groupe de ressources.
 +
-image::sqlsb-aws-image36.png[image aws sqlsb 36]
+image:sqlsb-aws-image36.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Indiquez un nom et une étiquette. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image37.png[image aws sqlsb 37]
+image:sqlsb-aws-image37.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Ajouter des ressources au groupe de ressources :
 +
@@ -282,47 +282,47 @@ image::sqlsb-aws-image37.png[image aws sqlsb 37]
 ** *Type de ressource.* dans le menu déroulant, sélectionnez *base de données*.
 ** *Instance SQL Server.* sélectionnez le serveur.
 +
-image::sqlsb-aws-image38.png[sqlsb aws image38]
+image:sqlsb-aws-image38.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 La fonction *option* sélection automatique de toutes les ressources du même volume de stockage* est sélectionnée par défaut. Désactivez l'option et sélectionnez uniquement les bases de données à ajouter au groupe de ressources, cliquez sur la flèche à ajouter et cliquez sur *Suivant*.
 
 +
-image::sqlsb-aws-image39.png[image aws sqlsb 39]
+image:sqlsb-aws-image39.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 . Sur les stratégies, cliquez sur (*+*).
 +
-image::sqlsb-aws-image40.png[image aws sqlsb 40]
+image:sqlsb-aws-image40.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Entrez le nom de la stratégie du groupe de ressources.
 +
-image::sqlsb-aws-image41.png[image aws sqlsb 41]
+image:sqlsb-aws-image41.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez *sauvegarde complète* et la fréquence de programmation en fonction du SLA de votre société.
 +
-image::sqlsb-aws-image42.png[image aws sqlsb 42]
+image:sqlsb-aws-image42.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les paramètres de rétention.
 +
-image::sqlsb-aws-image43.png[image aws sqlsb 43]
+image:sqlsb-aws-image43.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les options de réplication.
 +
-image::sqlsb-aws-image44.png[image aws sqlsb 44]
+image:sqlsb-aws-image44.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les scripts à exécuter avant d'effectuer une sauvegarde. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image45.png[sqlsb aws image45]
+image:sqlsb-aws-image45.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Confirmez la vérification pour les plannings de sauvegarde suivants.
 +
-image::sqlsb-aws-image46.png[image aws sqlsb 46]
+image:sqlsb-aws-image46.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sur la page *Résumé*, vérifiez les informations, puis cliquez sur *Terminer*.
 +
-image::sqlsb-aws-image47.png[image aws sqlsb 47]
+image:sqlsb-aws-image47.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -332,28 +332,28 @@ image::sqlsb-aws-image47.png[image aws sqlsb 47]
 
 . Cliquez sur le signe (*+*) pour configurer la date de début et la date d'expiration.
 +
-image::sqlsb-aws-image48.png[sqlsb aws image48]
+image:sqlsb-aws-image48.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Réglez l'heure.
 +
-image::sqlsb-aws-image49.png[image aws sqlsb 49]
+image:sqlsb-aws-image49.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
-image::sqlsb-aws-image50.png[image aws sqlsb 50]
+image:sqlsb-aws-image50.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans l'onglet *Vérification*, sélectionnez le serveur, configurez la planification et cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image51.png[image aws sqlsb 51]
+image:sqlsb-aws-image51.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurer les notifications pour envoyer un e-mail.
 +
-image::sqlsb-aws-image52.png[image aws sqlsb 52]
+image:sqlsb-aws-image52.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
 La règle est maintenant configurée pour la sauvegarde de plusieurs bases de données SQL Server.
 
-image::sqlsb-aws-image53.png[image aws sqlsb 53]
+image:sqlsb-aws-image53.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -361,20 +361,20 @@ image::sqlsb-aws-image53.png[image aws sqlsb 53]
 
 . Dans l'onglet *ressource*, sélectionnez vue. Dans le menu déroulant, sélectionnez *Groupe de ressources*.
 +
-image::sqlsb-aws-image54.png[image aws sqlsb 54]
+image:sqlsb-aws-image54.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez le nom du groupe de ressources.
 . Cliquez sur *Sauvegarder maintenant* en haut à droite.
 +
-image::sqlsb-aws-image55.png[image aws sqlsb 55]
+image:sqlsb-aws-image55.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une nouvelle fenêtre s'ouvre. Cochez la case *vérifier après la sauvegarde*, puis cliquez sur Sauvegarder.
 +
-image::sqlsb-aws-image56.png[image aws sqlsb 56]
+image:sqlsb-aws-image56.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Un message de confirmation est affiché. Cliquez sur *Oui*.
 +
-image::sqlsb-aws-image57.png[image aws sqlsb 57]
+image:sqlsb-aws-image57.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -384,11 +384,11 @@ image::sqlsb-aws-image57.png[image aws sqlsb 57]
 
 Dans la barre de navigation de gauche, cliquez sur *Monitor*, sélectionnez la tâche de sauvegarde, puis cliquez sur *Details* pour afficher la progression de la tâche.
 
-image::sqlsb-aws-image58.png[image aws sqlsb 58]
+image:sqlsb-aws-image58.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 Cliquez sur l'onglet *ressource* pour voir le temps nécessaire à la sauvegarde.
 
-image::sqlsb-aws-image59.png[image aws sqlsb 59]
+image:sqlsb-aws-image59.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -400,49 +400,49 @@ Pour effectuer une sauvegarde du journal de transactions, procédez comme suit :
 
 . Dans l'onglet *Ressources*, changez le menu Affichage de *base de données* à *Groupe de ressources*.
 +
-image::sqlsb-aws-image60.png[image aws sqlsb 60]
+image:sqlsb-aws-image60.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez la stratégie de sauvegarde du groupe de ressources créée.
 . Sélectionnez *Modifier le groupe de ressources* dans le coin supérieur droit.
 +
-image::sqlsb-aws-image61.png[image aws sqlsb 61]
+image:sqlsb-aws-image61.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . La section *Name* utilise par défaut le nom et la balise de la stratégie de sauvegarde. Cliquez sur *Suivant*.
 +
 L'onglet *Resources* met en évidence les bases vers lesquelles la règle de sauvegarde de transaction doit être configurée.
 
 +
-image::sqlsb-aws-image62.png[image aws sqlsb 62]
+image:sqlsb-aws-image62.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Entrez le nom de la stratégie.
 +
-image::sqlsb-aws-image63.png[image aws sqlsb 63]
+image:sqlsb-aws-image63.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez les options de sauvegarde SQL Server.
 . Sélectionnez log backup.
 . Définissez la fréquence de planification en fonction du RTO de votre entreprise. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image64.png[sqlsb aws image64]
+image:sqlsb-aws-image64.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurez les paramètres de conservation des sauvegardes du journal. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image65.png[image aws sqlsb 65]
+image:sqlsb-aws-image65.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . (Facultatif) configurez les options de réplication.
 +
-image::sqlsb-aws-image66.png[image aws sqlsb 66]
+image:sqlsb-aws-image66.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . (Facultatif) configurez tous les scripts à exécuter avant d'exécuter une tâche de sauvegarde.
 +
-image::sqlsb-aws-image67.png[sqlsb aws image67]
+image:sqlsb-aws-image67.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . (Facultatif) configurez la vérification de sauvegarde.
 +
-image::sqlsb-aws-image68.png[image aws sqlsb 68]
+image:sqlsb-aws-image68.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sur la page *Résumé*, cliquez sur *Terminer*.
 +
-image::sqlsb-aws-image69.png[image aws sqlsb 69]
+image:sqlsb-aws-image69.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -452,28 +452,28 @@ image::sqlsb-aws-image69.png[image aws sqlsb 69]
 
 . Cliquez sur la stratégie de sauvegarde du journal de transactions nouvellement créée.
 +
-image::sqlsb-aws-image70.png[image aws sqlsb 70]
+image:sqlsb-aws-image70.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Définissez la date *de début* et la date *d'expiration le*.
 . Entrez la fréquence de la règle de sauvegarde des journaux en fonction du SLA, du RTP et du RPO. Cliquez sur OK.
 +
-image::sqlsb-aws-image71.png[image aws sqlsb 71]
+image:sqlsb-aws-image71.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Vous pouvez afficher les deux règles. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image72.png[image aws sqlsb 72]
+image:sqlsb-aws-image72.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurer le serveur de vérification.
 +
-image::sqlsb-aws-image73.png[image aws sqlsb 73]
+image:sqlsb-aws-image73.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Configurer la notification par e-mail.
 +
-image::sqlsb-aws-image74.png[sqlsb aws image74]
+image:sqlsb-aws-image74.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sur la page *Résumé*, cliquez sur *Terminer*.
 +
-image::sqlsb-aws-image75.png[image aws sqlsb 75]
+image:sqlsb-aws-image75.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -485,16 +485,16 @@ Pour déclencher une sauvegarde à la demande du journal transactionnel pour plu
 
 . Sur la page de stratégie nouvellement créée, sélectionnez *Sauvegarder maintenant* en haut à droite de la page.
 +
-image::sqlsb-aws-image76.png[image aws sqlsb 76]
+image:sqlsb-aws-image76.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Dans la fenêtre contextuelle de l'onglet *Stratégie*, sélectionnez le menu déroulant, sélectionnez la règle de sauvegarde et configurez la sauvegarde du journal de transactions.
 +
-image::sqlsb-aws-image77.png[image aws sqlsb 77]
+image:sqlsb-aws-image77.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Cliquez sur *Backup*. Une nouvelle fenêtre s'affiche.
 . Cliquez sur *Oui* pour confirmer la stratégie de sauvegarde.
 +
-image::sqlsb-aws-image78.png[sqlsb aws image78]
+image:sqlsb-aws-image78.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -504,7 +504,7 @@ image::sqlsb-aws-image78.png[sqlsb aws image78]
 
 Accédez à l'onglet *Monitoring* et surveillez la progression de la tâche de sauvegarde.
 
-image::sqlsb-aws-image79.png[sqlsb aws image79]
+image:sqlsb-aws-image79.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -527,34 +527,34 @@ Pour restaurer une base de données SQL Server à un point dans le temps, procé
 
 . La capture d'écran suivante montre l'état initial de la base de données SQL Server avant les tables supprimées.
 +
-image::sqlsb-aws-image80.png[image aws sqlsb 80]
+image:sqlsb-aws-image80.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
 La capture d'écran montre que 20 lignes ont été supprimées du tableau.
 
 +
-image::sqlsb-aws-image81.png[image aws sqlsb 81]
+image:sqlsb-aws-image81.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Connectez-vous au serveur SnapCenter. Dans l'onglet *Resources*, sélectionnez la base de données.
 +
-image::sqlsb-aws-image82.png[image aws sqlsb 82]
+image:sqlsb-aws-image82.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez la sauvegarde la plus récente.
 . Sur la droite, sélectionnez *Restaurer*.
 +
-image::sqlsb-aws-image83.png[image aws sqlsb 83]
+image:sqlsb-aws-image83.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Une nouvelle fenêtre s'affiche. Sélectionnez l'option *Restaurer*.
 . Restaurez la base de données sur le même hôte que celui sur lequel la sauvegarde a été créée. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image84.png[sqlsb aws image84]
+image:sqlsb-aws-image84.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Pour le *Type de récupération*, sélectionnez *toutes les sauvegardes de journaux*. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image85.png[image aws sqlsb 85]
+image:sqlsb-aws-image85.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 +
-image::sqlsb-aws-image86.png[sqlsb aws image86]
+image:sqlsb-aws-image86.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -562,7 +562,7 @@ image::sqlsb-aws-image86.png[sqlsb aws image86]
 
 . Sélectionnez l'option *Ecraser la base de données avec le même nom pendant la restauration*. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image87.png[image aws sqlsb 87]
+image:sqlsb-aws-image87.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -570,15 +570,15 @@ image::sqlsb-aws-image87.png[image aws sqlsb 87]
 
 . Sélectionnez l'option *opérationnel, mais indisponible pour restaurer des journaux de transactions supplémentaires*. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image88.png[sqlsb aws image88]
+image:sqlsb-aws-image88.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Indiquez les paramètres de messagerie. Cliquez sur *Suivant*.
 +
-image::sqlsb-aws-image89.png[image aws sqlsb 89]
+image:sqlsb-aws-image89.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sur la page *Résumé*, cliquez sur *Terminer*.
 +
-image::sqlsb-aws-image90.png[sqlsb aws image90]
+image:sqlsb-aws-image90.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 
@@ -588,15 +588,15 @@ image::sqlsb-aws-image90.png[sqlsb aws image90]
 
 . Dans l'onglet *Monitoring*, cliquez sur les détails de la tâche de restauration pour afficher la progression de la tâche de restauration.
 +
-image::sqlsb-aws-image91.png[image aws sqlsb 91]
+image:sqlsb-aws-image91.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Restaurez les détails de la tâche.
 +
-image::sqlsb-aws-image92.png[image92 aws sqlsb]
+image:sqlsb-aws-image92.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Retour à l'hôte SQL Server > base de données > table présents.
 +
-image::sqlsb-aws-image93.png[image aws sqlsb 93]
+image:sqlsb-aws-image93.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 
 

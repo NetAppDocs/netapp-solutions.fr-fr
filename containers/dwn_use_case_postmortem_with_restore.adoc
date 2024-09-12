@@ -24,7 +24,7 @@ Dans le link:dwn_use_case_integrated_data_protection.html["première utilisation
 
 Dans un workflow classique, après avoir rencontré un échec lors de la mise à niveau de l'application vers une nouvelle version, l'équipe de développement tenterait de résoudre le problème en temps réel en fonction des rapports de bogues fournis par les clients. Au premier signe de problème, l'équipe pourrait également tenter de redéployer l'application vers un environnement de débogage parallèle pour mettre ce processus hors ligne. Ils pouvaient redéployer une ancienne base de codes depuis une version précédente vers la production, afin de restaurer l'application en bon état de fonctionnement.
 
-image::dwn_image9.jpg[Workflow classique]
+image:dwn_image9.jpg["Workflow classique"]
 
 Bien que cette approche fonctionne, l'équipe doit s'assurer que l'état de l'application de production défaillante correspond à celui de la version utilisée en production lorsque le problème survient. Il leur faudrait également consacrer du temps à promouvoir la version fiable en production en récupérant du code de leur référentiel et en redéployant les images de la machine pour restaurer l'application à un état de fonctionnement correct. De plus, dans ce scénario, nous ne voulions pas si la base de données de production elle-même était corrompue par le code défectueux. Idéalement, il existe des processus de sauvegarde distincts pour les données de la base de données, mais devons-nous supposer qu’ils sont cohérents avec l’état de l’application tel qu’il a été publié ? C'est là que les avantages offerts par Astra Control, notamment en matière de sauvegardes, de restaurations et de clones avec état et cohérents au niveau des applications, montrent véritablement leur valeur.
 
@@ -32,7 +32,7 @@ Nous pouvons tout d'abord utiliser Astra Control pour faciliter l'analyse post-m
 
 De plus, Astra Control prend en charge la fonctionnalité de restauration sur place qui nous permet de restaurer l'application de production vers une dernière sauvegarde acceptable (qui a précédé la version de code affligée). La version restaurée suppose la position de l'application de production buggy précédente, de façon cohérente avec les applications et avec état, y compris l'IP d'entrée précédemment attribuée. Par conséquent, les clients qui accèdent à l'environnement frontal ne connaissent pas la transition vers la version de sauvegarde.
 
-image::dwn_image10.jpg[Flux de travail post-mortem]
+image:dwn_image10.jpg["Flux de travail post-mortem"]
 
 
 
@@ -57,7 +57,7 @@ Les outils ou plates-formes suivants ont été déployés et configurés comme c
 
 Compte tenu du fait que l'application a été mise à niveau vers une nouvelle version, l'application dans l'environnement de production (`magento-prod`) ne se comporte pas comme prévu après la mise à niveau. Supposons que les données renvoyées par les requêtes frontales ne correspondent pas à la demande ou que la base de données a été endommagée. Pour cloner et restaurer le pipeline, effectuez la procédure suivante :
 
-image::dwn_image12.jpg[Echec de l'application]
+image:dwn_image12.jpg["Echec de l'application"]
 
 . Connectez-vous à Jenkins et créez un pipeline en cliquant sur nouvel élément, puis sur Pipeline.
 . Copiez le pipeline à partir du fichier Jenkinsfile https://github.com/NetApp/netapp-astra-toolkits/blob/main/ci_cd_examples/jenkins_pipelines/clone_for_postmortem_and_restore/Jenkinsfile["ici"^].
@@ -79,15 +79,15 @@ DEBUG_KUBERNETES_CLUSTER = 'ocp-vmw'
 ----
 . Cliquez sur Créer maintenant. Le pipeline commence à exécuter et progresse à travers les étapes. L'application est d'abord clonée dans l'état actuel dans un environnement de débogage, et l'application est ensuite restaurée dans la sauvegarde dont le fonctionnement a été vérifié.
 +
-image::dwn_image15.jpg[Pipeline post-mortem]
+image:dwn_image15.jpg["Pipeline post-mortem"]
 
 . Vérifiez que l'application clonée est la version contenant le bogue.
 +
-image::dwn_image13.jpg[Echec du clonage de l'application]
+image:dwn_image13.jpg["Echec du clonage de l'application"]
 
 . Vérifiez que l'environnement de production est restauré sur une sauvegarde de travail et que l'application en production fonctionne comme prévu.
 +
-image::dwn_image14.jpg[Application Prod restaurée]
+image:dwn_image14.jpg["Application Prod restaurée"]
 
 
 

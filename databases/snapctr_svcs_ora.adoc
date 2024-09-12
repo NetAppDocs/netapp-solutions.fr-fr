@@ -55,7 +55,7 @@ Le test et la validation de cette solution ont été réalisés dans un environn
 
 === Architecture
 
-image::snapctr_svcs_architecture.png[Cette image fournit une vue détaillée de la sauvegarde et de la restauration BlueXP pour les applications de la console BlueXP, y compris l'interface utilisateur, le connecteur et les ressources qu'elle gère.]
+image:snapctr_svcs_architecture.png["Cette image fournit une vue détaillée de la sauvegarde et de la restauration BlueXP pour les applications de la console BlueXP, y compris l'interface utilisateur, le connecteur et les ressources qu'elle gère."]
 
 Cette image fournit une vue détaillée de la sauvegarde et de la restauration BlueXP pour les applications de la console BlueXP, notamment l'interface utilisateur, le connecteur et les ressources qu'il gère.
 
@@ -143,7 +143,7 @@ Le déploiement nécessite les conditions préalables suivantes.
 . Utilisez le lien link:https://console.bluexp.netapp.com/["NetApp BlueXP"] Pour vous inscrire à l'accès à la console BlueXP.
 . Connectez-vous à votre compte AWS pour créer une politique IAM avec les autorisations appropriées et attribuer la règle au compte AWS qui sera utilisé pour le déploiement du connecteur BlueXP.
 +
-image::snapctr_svcs_connector_01-policy.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_01-policy.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 +
 La règle doit être configurée avec une chaîne JSON disponible dans la documentation de NetApp. La chaîne JSON peut également être extraite de la page lorsque la mise en service du connecteur est lancée et que vous êtes invité à indiquer les autorisations requises.
@@ -160,44 +160,44 @@ La règle doit être configurée avec une chaîne JSON disponible dans la docume
 ====
 . Connectez-vous à la console BlueXP. Pour un compte partagé, il est recommandé de créer un espace de travail individuel en cliquant sur *compte* > *gérer le compte* > *espace de travail* pour ajouter un nouvel espace de travail.
 +
-image::snapctr_svcs_connector_02-wspace.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_02-wspace.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Cliquez sur *Ajouter un connecteur* pour lancer le flux de production de provisionnement de connecteur.
 
 
-image::snapctr_svcs_connector_03-add.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_03-add.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez votre fournisseur de cloud (dans ce cas, *Amazon Web Services*).
 
 
-image::snapctr_svcs_connector_04-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_04-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Ignorez les étapes *permission*, *authentification* et *mise en réseau* si vous les avez déjà configurées dans votre compte AWS. Si ce n'est pas le cas, vous devez les configurer avant de continuer. À partir de là, vous pouvez également récupérer les autorisations pour la règle AWS référencée dans la section précédente.<<Intégration de la préparation à BlueXP>>."
 
 
-image::snapctr_svcs_connector_05-remind.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_05-remind.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Entrez l'authentification de votre compte AWS avec *Access Key* et *Secret Key*.
 +
-image::snapctr_svcs_connector_06-auth.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_06-auth.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Nommez l'instance de connecteur et sélectionnez *Créer un rôle* sous *Détails*.
 
 
-image::snapctr_svcs_connector_07-details.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_07-details.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Configurez le réseau avec les *VPC*, *Subnet* et SSH *Key pair* appropriés pour l'accès au connecteur.
 +
-image::snapctr_svcs_connector_08-network.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_08-network.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Définissez le *Groupe de sécurité* pour le connecteur.
 +
-image::snapctr_svcs_connector_09-security.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_09-security.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Passez en revue la page de résumé et cliquez sur *Ajouter* pour lancer la création du connecteur. Le déploiement prend généralement environ 10 minutes. Une fois la configuration terminée, l'instance de connecteur s'affiche dans le tableau de bord AWS EC2.
 
 
-image::snapctr_svcs_connector_10-review.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_connector_10-review.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 ====
 
@@ -208,33 +208,33 @@ image::snapctr_svcs_connector_10-review.png[Capture d'écran montrant cette éta
 ====
 . Tout d'abord, à partir de la console AWS EC2, créez un rôle dans le menu *Identity and Access Management (IAM)* *Roles*, *Create role* pour démarrer le workflow de création de rôles.
 +
-image::snapctr_svcs_credential_01-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_01-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Sur la page *Select Trusted entity*, choisissez *AWS account*, *autre compte AWS*, puis collez l'ID de compte BlueXP, qui peut être récupéré depuis la console BlueXP.
 +
-image::snapctr_svcs_credential_02-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_02-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Filtrez les stratégies d'autorisation par fsx et ajoutez *stratégies d'autorisations* au rôle.
 +
-image::snapctr_svcs_credential_03-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_03-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Dans la page *Role details*, nommez le rôle, ajoutez une description, puis cliquez sur *Create Role*.
 +
-image::snapctr_svcs_credential_04-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_04-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Retour à la console BlueXP, cliquez sur l'icône de paramètre en haut à droite de la console pour ouvrir la page *informations d'identification du compte*, cliquez sur *Ajouter des informations d'identification* pour démarrer le flux de travail de configuration des informations d'identification.
 +
-image::snapctr_svcs_credential_05-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_05-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez l'emplacement des informations d'identification comme - *Amazon Web Services - BlueXP*.
 +
-image::snapctr_svcs_credential_06-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_06-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Définissez les informations d'identification AWS avec le *rôle ARN* approprié, qui peut être récupéré à partir du rôle IAM AWS créé à l'étape 1 ci-dessus. BlueXP *ID de compte*, utilisé pour créer le rôle IAM AWS à l'étape 1.
 +
-image::snapctr_svcs_credential_07-aws.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_credential_07-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
-. Revoir et *Ajouter*. Image::snapctr_svcs_credential_08-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+. Revoir et *Ajouter*. image:snapctr_svcs_credential_08-aws.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 
 ====
@@ -249,72 +249,72 @@ Une fois le connecteur déployé et les informations d'identification ajoutées,
 . Dans *mon environnement de travail*, cliquez sur *Ajouter un environnement de travail* pour découvrir FSX déployé dans AWS.
 
 
-image::snapctr_svcs_setup_01.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_01.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez *Amazon Web Services* comme emplacement.
 
 
-image::snapctr_svcs_setup_02.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_02.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Cliquez sur *découvrir existant* en regard de *Amazon FSX pour ONTAP*.
 
 
-image::snapctr_svcs_setup_03.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_03.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Sélectionnez le *Nom d'identification* que vous avez créé dans la section précédente pour accorder à BlueXP les autorisations dont il a besoin pour gérer FSX pour ONTAP. Si vous n'avez pas ajouté d'informations d'identification, vous pouvez l'ajouter à partir du menu *Settings* situé dans le coin supérieur droit de la console BlueXP.
 +
-image::snapctr_svcs_setup_04.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_04.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez la région AWS dans laquelle Amazon FSX pour ONTAP est déployé, sélectionnez le cluster FSX qui héberge la base de données Oracle et cliquez sur Ajouter.
 
 
-image::snapctr_svcs_setup_05.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_05.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . L'instance Amazon FSX for ONTAP détectée apparaît désormais dans l'environnement de travail.
 
 
-image::snapctr_svcs_setup_06.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_06.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Vous pouvez vous connecter au cluster FSX à l'aide de vos informations d'identification de compte fsxadmin.
 
 
-image::snapctr_svcs_setup_07.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_07.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Une fois connecté à Amazon FSX pour ONTAP, vérifiez les informations relatives au stockage de votre base de données (comme les volumes de base de données).
 
 
-image::snapctr_svcs_setup_08.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_08.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Dans la barre latérale gauche de la console, passez votre souris sur l'icône de protection, puis cliquez sur *protection* > *applications* pour ouvrir la page de lancement applications. Cliquez sur *découvrir les applications*.
 
 
-image::snapctr_svcs_setup_09.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_09.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Sélectionnez *Cloud Native* comme type de source d'application.
 
 
-image::snapctr_svcs_setup_10.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_10.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez *Oracle* comme type d'application.
 
 
-image::snapctr_svcs_setup_13.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_13.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Renseignez les détails sur l'hôte d'application Oracle AWS EC2. Choisissez *en utilisant SSH* comme *Type d'installation hôte* pour l'installation du plug-in en une étape et la découverte de la base de données. Cliquez ensuite sur *Ajouter une clé privée SSH*.
 +
-image::snapctr_svcs_setup_14.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_14.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Collez votre clé SSH ec2-user pour l'hôte ec2 de la base de données et cliquez sur *Valider* pour continuer.
 +
-image::snapctr_svcs_setup_14-1.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_14-1.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Vous serez invité à indiquer *la validation de l'empreinte digitale* pour continuer.
 +
-image::snapctr_svcs_setup_14-2.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_14-2.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Cliquez sur *Suivant* pour installer un plug-in de base de données Oracle et découvrir les bases de données Oracle sur l'hôte EC2. Les bases de données découvertes sont ajoutées à *applications*. La base de données *Etat de protection* s'affiche sous la forme *non protégé* lors de la découverte initiale.
 +
-image::snapctr_svcs_setup_17.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_setup_17.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 
 
@@ -330,37 +330,37 @@ La configuration initiale des services SnapCenter pour Oracle est terminée. Les
 . Cliquez sur les trois points en regard de la base de données *Etat de la protection*, puis cliquez sur *stratégies* pour afficher les stratégies de protection de base de données préchargées par défaut qui peuvent être appliquées pour protéger vos bases de données Oracle.
 
 
-image::snapctr_svcs_bkup_01.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_01.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Vous pouvez également créer votre propre règle avec une fréquence de sauvegarde personnalisée et une fenêtre de conservation des données de sauvegarde personnalisée.
 
 
-image::snapctr_svcs_bkup_02.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_02.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Lorsque vous êtes satisfait de la configuration de la stratégie, vous pouvez ensuite attribuer la stratégie de votre choix pour protéger la base de données.
 
 
-image::snapctr_svcs_bkup_03.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_03.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez la stratégie à affecter à la base de données.
 
 
-image::snapctr_svcs_bkup_04.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_04.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Une fois la règle appliquée, l'état de protection de la base de données passe à *protégé* avec une coche verte.
 
 
-image::snapctr_svcs_bkup_05.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_05.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . La sauvegarde de la base de données s'exécute selon un planning prédéfini. Vous pouvez également exécuter une sauvegarde à la demande unique, comme illustré ci-dessous.
 
 
-image::snapctr_svcs_bkup_06.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_06.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Vous pouvez afficher les détails des sauvegardes de la base de données en cliquant sur *Afficher les détails* dans la liste de menus. Cela inclut le nom de la sauvegarde, le type de sauvegarde, le SCN et la date de sauvegarde. Un jeu de sauvegardes couvre un snapshot pour le volume de données et le volume de journaux. Un snapshot de volume de journaux a lieu juste après un snapshot de volume de base de données. Vous pouvez appliquer un filtre si vous recherchez une sauvegarde particulière dans une longue liste.
 
 
-image::snapctr_svcs_bkup_07.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_bkup_07.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 ====
 
@@ -372,24 +372,24 @@ image::snapctr_svcs_bkup_07.png[Capture d'écran montrant cette étape dans l'in
 . Pour une restauration de base de données, choisissez la sauvegarde appropriée, soit par le SCN, soit par le temps de sauvegarde. Cliquez sur les trois points de la sauvegarde des données de la base de données, puis cliquez sur *Restaurer* pour lancer la restauration et la récupération de la base de données.
 
 
-image::snapctr_svcs_restore_01.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_restore_01.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Choisissez votre paramètre de restauration. Si vous êtes sûr que rien n'a changé dans la structure de base de données physique après la sauvegarde (par exemple, l'ajout d'un fichier de données ou d'un groupe de disques), vous pouvez utiliser l'option *forcer la restauration en place*, qui est généralement plus rapide. Sinon, ne cochez pas cette case.
 
 
-image::snapctr_svcs_restore_02.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_restore_02.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Vérifiez et démarrez la restauration et la récupération de la base de données.
 
 
-image::snapctr_svcs_restore_03.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_restore_03.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 . Dans l'onglet *Job Monitoring*, vous pouvez afficher l'état de la tâche de restauration ainsi que tous les détails pendant son exécution.
 
 
-image::snapctr_svcs_restore_05.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_restore_05.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
-image::snapctr_svcs_restore_04.png[Capture d'écran montrant cette étape dans l'interface graphique.]
+image:snapctr_svcs_restore_04.png["Capture d'écran montrant cette étape dans l'interface graphique."]
 
 ====
 
@@ -403,34 +403,34 @@ Pour cloner une base de données, lancez le workflow de clonage à partir de la 
 . Sélectionnez la copie de sauvegarde de base de données appropriée, cliquez sur les trois points pour afficher le menu, puis choisissez l'option *Clone*.
 
 
-image::snapctr_svcs_clone_02.png[clone des services snapctr 02]
+image:snapctr_svcs_clone_02.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Sélectionnez l'option *Basic* si vous n'avez pas besoin de modifier les paramètres de base de données clonés.
 
 
-image::snapctr_svcs_clone_03.png[clone des services snapctr 03]
+image:snapctr_svcs_clone_03.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Vous pouvez également sélectionner *fichier de spécification*, ce qui vous donne la possibilité de télécharger le fichier init actuel, d'apporter des modifications, puis de le télécharger à nouveau dans le travail.
 
 
-image::snapctr_svcs_clone_03_1.png[clone des services snapctr 03 1]
+image:snapctr_svcs_clone_03_1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Vérifiez et lancez le travail.
 
 
-image::snapctr_svcs_clone_04.png[clone des services snapctr 04]
+image:snapctr_svcs_clone_04.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Surveillez l'état du travail de clonage à partir de l'onglet *Job Monitoring*.
 
 
-image::snapctr_svcs_clone_07-status.png[état du clone 07 des services snapctr]
+image:snapctr_svcs_clone_07-status.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 . Validez la base de données clonée sur l'hôte d'instance EC2.
 
 
-image::snapctr_svcs_clone_08-crs.png[snapctr svcs clone 08 crs]
+image:snapctr_svcs_clone_08-crs.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-image::snapctr_svcs_clone_08-db.png[snapctr svcs clone 08 db]
+image:snapctr_svcs_clone_08-db.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 ====
 

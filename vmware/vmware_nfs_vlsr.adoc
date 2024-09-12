@@ -42,9 +42,7 @@ Ce scénario couvre les étapes générales suivantes :
 
 Le schéma suivant présente une architecture VMware site Recovery type avec les outils ONTAP pour VMware vSphere 10 configurés dans une configuration haute disponibilité à 3 nœuds.
 
-image::vmware-nfs-srm-image05.png[Configurer l'appliance]
-
-{nbsp}
+image:vmware-nfs-srm-image05.png["Configurer l'appliance"] {nbsp}
 
 
 
@@ -99,14 +97,14 @@ Les étapes suivantes doivent être effectuées pour les sites principal et seco
 
 . Dans un navigateur Web, accédez à https://<SRM_appliance_IP>:5480*[] et connectez-vous. Cliquez sur *configurer l'appareil* pour commencer.
 +
-image::vmware-nfs-srm-image01.png[Configurer l'appliance]
+image:vmware-nfs-srm-image01.png["Configurer l'appliance"]
 
 +
 {nbsp}
 
 . Sur la page *Platform Services Controller* de l'assistant Configure site Recovery Manager, entrez les informations d'identification du serveur vCenter sur lequel SRM sera enregistré. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image02.png[contrôleur des services de plateforme]
+image:vmware-nfs-srm-image02.png["contrôleur des services de plateforme"]
 
 +
 {nbsp}
@@ -114,7 +112,7 @@ image::vmware-nfs-srm-image02.png[contrôleur des services de plateforme]
 . Sur la page *vCenter Server*, affichez le vServer connecté et cliquez sur *Suivant* pour continuer.
 . Sur la page *Nom et extension*, saisissez un nom pour le site SRM, une adresse e-mail d'administrateur et l'hôte local à utiliser par SRM. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image03.png[Configurer l'appliance]
+image:vmware-nfs-srm-image03.png["Configurer l'appliance"]
 
 +
 {nbsp}
@@ -131,7 +129,7 @@ Pour configurer SRA sur l'appliance SRM, procédez comme suit :
 . Téléchargez SRA pour ONTAP Tools 10 sur le https://mysupport.netapp.com/site/products/all/details/otv10/downloads-tab["Site de support NetApp"] et enregistrez le fichier tar.gz dans un dossier local.
 . Dans l'appliance de gestion SRM, cliquez sur *Storage Replication Adapters* dans le menu de gauche, puis sur *New adapter*.
 +
-image::vmware-nfs-srm-image04.png[Ajouter un nouvel adaptateur SRM]
+image:vmware-nfs-srm-image04.png["Ajouter un nouvel adaptateur SRM"]
 
 +
 {nbsp}
@@ -153,35 +151,35 @@ L'étape suivante s'effectue dans le client vCenter du site principal.
 
 . Dans le client vSphere, cliquez sur *site Recovery* dans le menu de gauche. Une nouvelle fenêtre de navigateur s'ouvre dans l'interface utilisateur de gestion SRM sur le site principal.
 +
-image::vmware-nfs-srm-image06.png[Récupération de site]
+image:vmware-nfs-srm-image06.png["Récupération de site"]
 
 +
 {nbsp}
 
 . Sur la page *site Recovery*, cliquez sur *NOUVEAU SITE PAIR*.
 +
-image::vmware-nfs-srm-image07.png[Récupération de site]
+image:vmware-nfs-srm-image07.png["Récupération de site"]
 
 +
 {nbsp}
 
 . Sur la page *Type de paire* de l'assistant *Nouvelle paire*, vérifiez que le serveur vCenter local est sélectionné et sélectionnez *Type de paire*. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image08.png[Type de paire]
+image:vmware-nfs-srm-image08.png["Type de paire"]
 
 +
 {nbsp}
 
 . Sur la page *Peer vCenter*, remplissez les informations d'identification du vCenter sur le site secondaire et cliquez sur *Find vCenter instances*. Vérifiez que l'instance vCenter a été découverte et cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image09.png[Peer vCenter]
+image:vmware-nfs-srm-image09.png["Peer vCenter"]
 
 +
 {nbsp}
 
 . Sur la page *Services*, cochez la case en regard du couplage de site proposé. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image10.png[Administratifs]
+image:vmware-nfs-srm-image10.png["Administratifs"]
 
 +
 {nbsp}
@@ -189,7 +187,7 @@ image::vmware-nfs-srm-image10.png[Administratifs]
 . Sur la page *prêt à terminer*, passez en revue la configuration proposée, puis cliquez sur le bouton *Terminer* pour créer le couplage de site
 . La nouvelle paire de sites et son résumé peuvent être affichés sur la page Résumé.
 +
-image::vmware-nfs-srm-image11.png[Récapitulatif des paires de sites]
+image:vmware-nfs-srm-image11.png["Récapitulatif des paires de sites"]
 
 
 
@@ -201,35 +199,35 @@ L'étape suivante est effectuée dans l'interface de récupération de site du s
 
 . Dans l'interface site Recovery, accédez à *Configure > Array Based Replication > Array pairs* dans le menu de gauche. Cliquez sur *AJOUTER* pour commencer.
 +
-image::vmware-nfs-srm-image12.png[Paires de baies]
+image:vmware-nfs-srm-image12.png["Paires de baies"]
 
 +
 {nbsp}
 
 . Sur la page *Storage Replication adapter* de l'assistant *Add Array pair*, vérifiez que l'adaptateur SRA est présent pour le site principal et cliquez sur *Next* pour continuer.
 +
-image::vmware-nfs-srm-image13.png[Ajouter une paire de matrices]
+image:vmware-nfs-srm-image13.png["Ajouter une paire de matrices"]
 
 +
 {nbsp}
 
 . Sur la page *local array Manager*, entrez le nom de la baie sur le site principal, le nom de domaine complet du système de stockage, les adresses IP du SVM servant NFS et éventuellement les noms de volumes spécifiques à découvrir. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image14.png[Gestionnaire local de baies]
+image:vmware-nfs-srm-image14.png["Gestionnaire local de baies"]
 
 +
 {nbsp}
 
 . Sur le *Remote array Manager*, remplissez les mêmes informations que la dernière étape pour le système de stockage ONTAP sur le site secondaire.
 +
-image::vmware-nfs-srm-image15.png[Gestionnaire de baie distant]
+image:vmware-nfs-srm-image15.png["Gestionnaire de baie distant"]
 
 +
 {nbsp}
 
 . Sur la page *paires de matrices*, sélectionnez les paires de matrices à activer et cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image16.png[Paires de baies]
+image:vmware-nfs-srm-image16.png["Paires de baies"]
 
 +
 {nbsp}
@@ -245,42 +243,42 @@ L'étape suivante est effectuée dans l'interface de récupération de site du s
 
 . Dans l'interface site Recovery, cliquez sur l'onglet *groupes de protection*, puis sur *Nouveau groupe de protection* pour commencer.
 +
-image::vmware-nfs-srm-image17.png[Récupération de site]
+image:vmware-nfs-srm-image17.png["Récupération de site"]
 
 +
 {nbsp}
 
 . Sur la page *Nom et direction* de l'assistant *Nouveau groupe de protection*, indiquez un nom pour le groupe et choisissez la direction du site pour la protection des données.
 +
-image::vmware-nfs-srm-image18.png[Nom et direction]
+image:vmware-nfs-srm-image18.png["Nom et direction"]
 
 +
 {nbsp}
 
 . Sur la page *Type*, sélectionnez le type de groupe de protection (datastore, VM ou vVol) et sélectionnez la paire de baies. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image19.png[Type]
+image:vmware-nfs-srm-image19.png["Type"]
 
 +
 {nbsp}
 
 . Sur la page *datastore Groups*, sélectionnez les datastores à inclure dans le groupe de protection. Les machines virtuelles qui résident actuellement sur le datastore s'affichent pour chaque datastore sélectionné. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image20.png[Groupes de datastores]
+image:vmware-nfs-srm-image20.png["Groupes de datastores"]
 
 +
 {nbsp}
 
 . Sur la page *Plan de récupération*, vous pouvez éventuellement ajouter le groupe de protection à un plan de récupération. Dans ce cas, le plan de récupération n'est pas encore créé, donc *ne pas ajouter au plan de récupération* est sélectionné. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image21.png[Plan de reprise d'activité]
+image:vmware-nfs-srm-image21.png["Plan de reprise d'activité"]
 
 +
 {nbsp}
 
 . Sur la page *prêt à terminer*, passez en revue les nouveaux paramètres du groupe de protection et cliquez sur *Terminer* pour créer le groupe.
 +
-image::vmware-nfs-srm-image22.png[Plan de reprise d'activité]
+image:vmware-nfs-srm-image22.png["Plan de reprise d'activité"]
 
 
 
@@ -292,28 +290,28 @@ L'étape suivante est effectuée dans l'interface de récupération de site du s
 
 . Dans l'interface de récupération de site, cliquez sur l'onglet *Plan de récupération*, puis sur *Nouveau Plan de récupération* pour commencer.
 +
-image::vmware-nfs-srm-image23.png[Nouveau plan de reprise d'activité]
+image:vmware-nfs-srm-image23.png["Nouveau plan de reprise d'activité"]
 
 +
 {nbsp}
 
 . Sur la page *Nom et direction* de l'assistant *Créer un plan de récupération*, indiquez un nom pour le plan de récupération et choisissez la direction entre les sites source et de destination. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image24.png[Nom et direction]
+image:vmware-nfs-srm-image24.png["Nom et direction"]
 
 +
 {nbsp}
 
 . Sur la page *groupes de protection*, sélectionnez les groupes de protection précédemment créés à inclure dans le plan de reprise. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image25.png[Groupes de protection]
+image:vmware-nfs-srm-image25.png["Groupes de protection"]
 
 +
 {nbsp}
 
 . Sur les *réseaux de test*, configurez des réseaux spécifiques qui seront utilisés pendant le test du plan. Si aucun mappage n'existe ou si aucun réseau n'est sélectionné, un réseau de test isolé est créé. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-nfs-srm-image26.png[Tester les réseaux]
+image:vmware-nfs-srm-image26.png["Tester les réseaux"]
 
 +
 {nbsp}
@@ -337,28 +335,28 @@ L'étape suivante est effectuée dans l'interface site Recovery.
 
 . Dans l'interface de récupération de site, cliquez sur l'onglet *Plan de récupération*, puis sélectionnez un plan de récupération. Cliquez sur le bouton *Test* pour commencer le test du basculement vers le site secondaire.
 +
-image::vmware-nfs-srm-image27.png[Tester le basculement]
+image:vmware-nfs-srm-image27.png["Tester le basculement"]
 
 +
 {nbsp}
 
 . Vous pouvez afficher la progression du test à partir du volet des tâches site Recovery ainsi que du volet des tâches vCenter.
 +
-image::vmware-nfs-srm-image28.png[tester le basculement dans le volet des tâches]
+image:vmware-nfs-srm-image28.png["tester le basculement dans le volet des tâches"]
 
 +
 {nbsp}
 
 . SRM envoie les commandes via SRA au système de stockage ONTAP secondaire. Une FlexClone du snapshot le plus récent est créée et montée sur le cluster vSphere secondaire. Le nouveau datastore monté peut être consulté dans l'inventaire du stockage.
 +
-image::vmware-nfs-srm-image29.png[Datastore nouvellement monté]
+image:vmware-nfs-srm-image29.png["Datastore nouvellement monté"]
 
 +
 {nbsp}
 
 . Une fois le test terminé, cliquez sur *Cleanup* pour démonter le datastore et revenir à l'environnement d'origine.
 +
-image::vmware-nfs-srm-image30.png[Datastore nouvellement monté]
+image:vmware-nfs-srm-image30.png["Datastore nouvellement monté"]
 
 
 
@@ -370,14 +368,14 @@ Effectuez une restauration complète et un basculement vers le site secondaire.
 
 . Dans l'interface de récupération de site, cliquez sur l'onglet *Plan de récupération*, puis sélectionnez un plan de récupération. Cliquez sur le bouton *Exécuter* pour commencer le basculement vers le site secondaire.
 +
-image::vmware-nfs-srm-image31.png[Exécuter le basculement]
+image:vmware-nfs-srm-image31.png["Exécuter le basculement"]
 
 +
 {nbsp}
 
 . Une fois le basculement terminé, vous pouvez voir le datastore monté et les machines virtuelles enregistrées sur le site secondaire.
 +
-image::vmware-nfs-srm-image32.png[Filover terminé]
+image:vmware-nfs-srm-image32.png["Filover terminé"]
 
 
 

@@ -72,14 +72,14 @@ Effectuer les étapes suivantes pour créer un SVM avec plusieurs LIF pour le tr
 
 . Dans le Gestionnaire système ONTAP, accédez à *Storage VMs* dans le menu de gauche et cliquez sur *+ Add* pour démarrer.
 +
-image::vmware-vcf-asa-image01.png[Cliquer sur +Ajouter pour commencer à créer une SVM]
+image:vmware-vcf-asa-image01.png["Cliquer sur +Ajouter pour commencer à créer une SVM"]
 
 +
 {nbsp}
 
 . Dans l'assistant *Add Storage VM*, indiquez un *Name* pour le SVM, sélectionnez *IP Space*, puis, sous *Access Protocol*, cliquez sur l'onglet *SMB/CIFS, NFS, S3* et cochez la case *Enable NFS*.
 +
-image::vmware-vcf-aff-image35.png[Assistant Add Storage VM : activez NFS]
+image:vmware-vcf-aff-image35.png["Assistant Add Storage VM : activez NFS"]
 
 +
 
@@ -88,14 +88,14 @@ Et no 160 ;
 
 . Dans la section *interface réseau*, remplissez les champs *adresse IP*, *masque de sous-réseau* et *domaine de diffusion et Port* pour la première LIF. Pour les LIF suivantes, la case à cocher peut être activée pour utiliser des paramètres communs à toutes les LIF restantes ou pour utiliser des paramètres distincts.
 +
-image::vmware-vcf-aff-image36.png[Renseignez les informations réseau des LIF]
+image:vmware-vcf-aff-image36.png["Renseignez les informations réseau des LIF"]
 
 +
 {nbsp}
 
 . Indiquez si vous souhaitez activer le compte Storage VM Administration (pour les environnements en colocation) et cliquez sur *Save* pour créer le SVM.
 +
-image::vmware-vcf-asa-image04.png[Activer le compte SVM et Terminer]
+image:vmware-vcf-asa-image04.png["Activer le compte SVM et Terminer"]
 
 
 
@@ -113,7 +113,7 @@ Pour créer un nouveau groupe de ports distribués pour le réseau qui transport
 
 . Dans le client vSphere , accédez à *Inventory > Networking* pour le domaine de charge de travail. Naviguez jusqu'au commutateur distribué existant et choisissez l'action pour créer *Nouveau groupe de ports distribués...*.
 +
-image::vmware-vcf-asa-image22.png[Choisissez de créer un nouveau groupe de ports]
+image:vmware-vcf-asa-image22.png["Choisissez de créer un nouveau groupe de ports"]
 
 +
 {nbsp}
@@ -121,7 +121,7 @@ image::vmware-vcf-asa-image22.png[Choisissez de créer un nouveau groupe de port
 . Dans l'assistant *Nouveau groupe de ports distribués*, entrez un nom pour le nouveau groupe de ports et cliquez sur *Suivant* pour continuer.
 . Sur la page *configurer les paramètres*, remplissez tous les paramètres. Si des VLAN sont utilisés, assurez-vous de fournir l'ID de VLAN correct. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-asa-image23.png[Remplir l'ID VLAN]
+image:vmware-vcf-asa-image23.png["Remplir l'ID VLAN"]
 
 +
 {nbsp}
@@ -129,14 +129,14 @@ image::vmware-vcf-asa-image23.png[Remplir l'ID VLAN]
 . Sur la page *prêt à terminer*, passez en revue les modifications et cliquez sur *Terminer* pour créer le nouveau groupe de ports distribués.
 . Une fois le groupe de ports créé, naviguez jusqu'au groupe de ports et sélectionnez l'action *Modifier les paramètres...*.
 +
-image::vmware-vcf-aff-image37.png[DPG - permet de modifier les paramètres]
+image:vmware-vcf-aff-image37.png["DPG - permet de modifier les paramètres"]
 
 +
 {nbsp}
 
 . Sur la page *Distributed Port Group - Edit Settings*, accédez à *Teaming and failover* dans le menu de gauche. Activez l'agrégation pour les liaisons montantes à utiliser pour le trafic NFS en vous assurant qu'elles sont regroupées dans la zone *Active uplinks*. Déplacez toutes les liaisons ascendantes inutilisées vers le bas jusqu'à *uplinks non utilisés*.
 +
-image::vmware-vcf-aff-image38.png[DPG - liaisons montantes TEAM]
+image:vmware-vcf-aff-image38.png["DPG - liaisons montantes TEAM"]
 
 +
 {nbsp}
@@ -152,21 +152,21 @@ Répétez ce processus sur chaque hôte ESXi du domaine de charge de travail.
 
 . À partir du client vSphere, accédez à l'un des hôtes ESXi de l'inventaire du domaine de charge de travail. Dans l'onglet *configurer*, sélectionnez *adaptateurs VMkernel* et cliquez sur *Ajouter réseau...* pour démarrer.
 +
-image::vmware-vcf-asa-image30.png[Démarrez l'assistant d'ajout de réseau]
+image:vmware-vcf-asa-image30.png["Démarrez l'assistant d'ajout de réseau"]
 
 +
 {nbsp}
 
 . Dans la fenêtre *Select connection type*, choisissez *VMkernel Network adapter* et cliquez sur *Next* pour continuer.
 +
-image::vmware-vcf-asa-image08.png[Choisissez VMkernel Network adapter]
+image:vmware-vcf-asa-image08.png["Choisissez VMkernel Network adapter"]
 
 +
 {nbsp}
 
 . Sur la page *Sélectionner le périphérique cible*, choisissez l'un des groupes de ports distribués pour NFS créés précédemment.
 +
-image::vmware-vcf-aff-image39.png[Choisissez le groupe de ports cible]
+image:vmware-vcf-aff-image39.png["Choisissez le groupe de ports cible"]
 
 +
 {nbsp}
@@ -174,14 +174,14 @@ image::vmware-vcf-aff-image39.png[Choisissez le groupe de ports cible]
 . Sur la page *Port properties*, conservez les valeurs par défaut (aucun service activé) et cliquez sur *Next* pour continuer.
 . Sur la page *IPv4 settings*, remplissez *adresse IP*, *masque de sous-réseau* et fournissez une nouvelle adresse IP de passerelle (uniquement si nécessaire). Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image40.png[Paramètres IPv4 VMkernel]
+image:vmware-vcf-aff-image40.png["Paramètres IPv4 VMkernel"]
 
 +
 {nbsp}
 
 . Consultez vos sélections sur la page *prêt à terminer* et cliquez sur *Terminer* pour créer l'adaptateur VMkernel.
 +
-image::vmware-vcf-aff-image41.png[Vérifiez les sélections VMkernel]
+image:vmware-vcf-aff-image41.png["Vérifiez les sélections VMkernel"]
 
 
 
@@ -207,14 +207,14 @@ Procédez comme suit pour déployer les outils ONTAP pour VMware vSphere :
 . Connectez-vous à l'appliance vCenter pour le domaine de gestion VCF.
 . Dans l'interface de l'appliance vCenter, cliquez avec le bouton droit de la souris sur le cluster de gestion et sélectionnez *déployer le modèle OVF…*
 +
-image::vmware-vcf-aff-image21.png[Déployer le modèle OVF...]
+image:vmware-vcf-aff-image21.png["Déployer le modèle OVF..."]
 
 +
 {nbsp}
 
 . Dans l'assistant *déployer modèle OVF*, cliquez sur le bouton radio *fichier local* et sélectionnez le fichier OVA des outils ONTAP téléchargé à l'étape précédente.
 +
-image::vmware-vcf-aff-image22.png[Sélectionnez fichier OVA]
+image:vmware-vcf-aff-image22.png["Sélectionnez fichier OVA"]
 
 +
 {nbsp}
@@ -222,14 +222,14 @@ image::vmware-vcf-aff-image22.png[Sélectionnez fichier OVA]
 . Pour les étapes 2 à 5 de l'assistant, sélectionnez un nom et un dossier pour la machine virtuelle, sélectionnez la ressource de calcul, vérifiez les détails et acceptez le contrat de licence.
 . Pour l'emplacement de stockage des fichiers de configuration et des fichiers disque, sélectionnez le datastore VSAN du cluster du domaine de gestion VCF.
 +
-image::vmware-vcf-aff-image23.png[Sélectionnez fichier OVA]
+image:vmware-vcf-aff-image23.png["Sélectionnez fichier OVA"]
 
 +
 {nbsp}
 
 . Sur la page Sélectionner le réseau, sélectionnez le réseau utilisé pour le trafic de gestion.
 +
-image::vmware-vcf-aff-image24.png[Sélectionnez réseau]
+image:vmware-vcf-aff-image24.png["Sélectionnez réseau"]
 
 +
 {nbsp}
@@ -248,10 +248,10 @@ image::vmware-vcf-aff-image24.png[Sélectionnez réseau]
 Cliquez sur *Suivant* pour continuer.
 
 +
-image::vmware-vcf-aff-image25.png[Personnaliser le modèle OTV 1]
+image:vmware-vcf-aff-image25.png["Personnaliser le modèle OTV 1"]
 
 +
-image::vmware-vcf-asa-image35.png[Personnaliser le modèle OTV 2]
+image:vmware-vcf-asa-image35.png["Personnaliser le modèle OTV 2"]
 
 +
 {nbsp}
@@ -267,28 +267,28 @@ image::vmware-vcf-asa-image35.png[Personnaliser le modèle OTV 2]
 ====
 . Accédez aux outils NetApp ONTAP en les sélectionnant dans le menu principal du client vSphere.
 +
-image::vmware-asa-image6.png[Outils NetApp ONTAP]
+image:vmware-asa-image6.png["Outils NetApp ONTAP"]
 
 +
 {nbsp}
 
 . Dans le menu déroulant *INSTANCE* de l'interface de l'outil ONTAP, sélectionnez l'instance OTV associée au domaine de charge de travail à gérer.
 +
-image::vmware-vcf-asa-image36.png[Sélectionnez instance OTV]
+image:vmware-vcf-asa-image36.png["Sélectionnez instance OTV"]
 
 +
 {nbsp}
 
 . Dans Outils ONTAP, sélectionnez *systèmes de stockage* dans le menu de gauche, puis appuyez sur *Ajouter*.
 +
-image::vmware-vcf-asa-image37.png[Ajout d'un système de stockage]
+image:vmware-vcf-asa-image37.png["Ajout d'un système de stockage"]
 
 +
 {nbsp}
 
 . Indiquez l'adresse IP, les informations d'identification du système de stockage et le numéro de port. Cliquez sur *Ajouter* pour lancer le processus de découverte.
 +
-image::vmware-vcf-asa-image38.png[Fournir les informations d'identification du système de stockage]
+image:vmware-vcf-asa-image38.png["Fournir les informations d'identification du système de stockage"]
 
 
 
@@ -300,7 +300,7 @@ Procédez comme suit pour déployer un datastore ONTAP, exécuté sur NFS, à l'
 
 . Dans Outils ONTAP, sélectionnez *Présentation* et dans l'onglet *mise en route*, cliquez sur *Provision* pour démarrer l'assistant.
 +
-image::vmware-vcf-asa-image41.png[Provisionner le datastore]
+image:vmware-vcf-asa-image41.png["Provisionner le datastore"]
 
 +
 {nbsp}
@@ -310,28 +310,28 @@ image::vmware-vcf-asa-image41.png[Provisionner le datastore]
 Remarque : la sélection de *distribuer les données du datastore à travers le cluster* crée le volume sous-jacent en tant que volume FlexGroup qui empêche l'utilisation des profils de capacité de stockage. Reportez-vous à la section https://docs.netapp.com/us-en/ontap/flexgroup/supported-unsupported-config-concept.html["Configurations prises en charge et non prises en charge pour les volumes FlexGroup"] Pour en savoir plus sur l'utilisation de FlexGroup volumes.
 
 +
-image::vmware-vcf-aff-image42.png[Page général]
+image:vmware-vcf-aff-image42.png["Page général"]
 
 +
 {nbsp}
 
 . Sur la page *système de stockage*, sélectionner le profil de capacité de stockage, le système de stockage et le SVM. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image43.png[Adieu les migrations de données onéreuses]
+image:vmware-vcf-aff-image43.png["Adieu les migrations de données onéreuses"]
 
 +
 {nbsp}
 
 . Sur la page *attributs de stockage*, sélectionnez l'agrégat à utiliser, puis cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image44.png[Les attributs de stockage]
+image:vmware-vcf-aff-image44.png["Les attributs de stockage"]
 
 +
 {nbsp}
 
 . Enfin, passez en revue le *Résumé* et cliquez sur Terminer pour commencer à créer le datastore NFS.
 +
-image::vmware-vcf-aff-image45.png[Passez en revue le résumé et terminez]
+image:vmware-vcf-aff-image45.png["Passez en revue le résumé et terminez"]
 
 
 
@@ -343,26 +343,26 @@ Pour créer un datastore vVols dans les outils ONTAP, procédez comme suit :
 
 . Dans Outils ONTAP, sélectionnez *Présentation* et dans l'onglet *mise en route*, cliquez sur *Provision* pour démarrer l'assistant.
 +
-image::vmware-vcf-asa-image41.png[Provisionner le datastore]
+image:vmware-vcf-asa-image41.png["Provisionner le datastore"]
 
 . Sur la page *général* de l'assistant Nouveau datastore, sélectionnez le centre de données vSphere ou la destination du cluster. Sélectionnez *vVols* comme type de datastore, indiquez un nom pour le datastore et sélectionnez *NFS* comme protocole. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image46.png[Page général]
+image:vmware-vcf-aff-image46.png["Page général"]
 
 . Sur la page *système de stockage*, sélectionner le profil de capacité de stockage, le système de stockage et le SVM. Cliquez sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image43.png[Adieu les migrations de données onéreuses]
+image:vmware-vcf-aff-image43.png["Adieu les migrations de données onéreuses"]
 
 . Sur la page *attributs de stockage*, sélectionnez pour créer un nouveau volume pour le datastore et remplissez les attributs de stockage du volume à créer. Cliquez sur *Ajouter* pour créer le volume, puis sur *Suivant* pour continuer.
 +
-image::vmware-vcf-aff-image47.png[Les attributs de stockage]
+image:vmware-vcf-aff-image47.png["Les attributs de stockage"]
 
 +
-image::vmware-vcf-aff-image48.png[Attributs de stockage - Suivant]
+image:vmware-vcf-aff-image48.png["Attributs de stockage - Suivant"]
 
 . Enfin, passez en revue le *Résumé* et cliquez sur *Terminer* pour lancer le processus de création du datastore vVol.
 +
-image::vmware-vcf-aff-image49.png[Page récapitulative]
+image:vmware-vcf-aff-image49.png["Page récapitulative"]
 
 
 

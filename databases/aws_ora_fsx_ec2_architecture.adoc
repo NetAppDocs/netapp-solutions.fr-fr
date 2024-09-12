@@ -20,7 +20,7 @@ Dans l'environnement, l'instance de calcul Oracle est déployée via une console
 
 Le stockage de base de données Oracle sur des volumes FSX, en revanche, est déployé avec la console FSX d'AWS ou l'interface de ligne de commande. Les volumes binaires, de données ou de journaux Oracle sont ensuite présentés et montés sur un hôte Linux d'instance EC2. Chaque volume de données ou de journaux peut disposer de plusieurs LUN allouées en fonction du protocole de stockage sous-jacent utilisé.
 
-image::aws_ora_fsx_ec2_arch.PNG[Cette image illustre un exemple d'architecture comprenant le cluster haute disponibilité principal (cluster haute disponibilité de secours, nœuds de gestion) et les nœuds de connexion associés.]
+image:aws_ora_fsx_ec2_arch.png["Cette image illustre un exemple d'architecture comprenant le cluster haute disponibilité principal (cluster haute disponibilité de secours, nœuds de gestion) et les nœuds de connexion associés."]
 
 Un cluster de stockage FSX est conçu avec une double redondance, afin que les clusters de stockage principal et de secours soient déployés dans deux zones de disponibilité différentes. Les volumes de base de données sont répliqués depuis un cluster FSX primaire vers un cluster FSX de secours à un intervalle configurable par l'utilisateur pour tous les volumes binaires, de données et de journaux Oracle.
 

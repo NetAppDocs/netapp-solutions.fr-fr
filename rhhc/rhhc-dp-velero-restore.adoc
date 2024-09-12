@@ -22,14 +22,14 @@ Cette section décrit comment restaurer des applications à partir d'une sauvega
 
 Pour effectuer une restauration à partir d'une sauvegarde, supposons que l'espace de noms dans lequel l'application existait a été accidentellement supprimé.
 
-image::redhat_openshift_OADP_app_deleted_image1.png[Application supprimée]
+image:redhat_openshift_OADP_app_deleted_image1.png["Application supprimée"]
 
 .Restaurer dans le même espace de noms
 [%collapsible]
 ====
 Pour restaurer à partir de la sauvegarde que nous venons de créer, nous devons créer une ressource personnalisée de restauration (CR). Nous devons lui fournir un nom, fournir le nom de la sauvegarde à partir de laquelle nous voulons restaurer et définir les PV de restauration sur true. Des paramètres supplémentaires peuvent être définis comme indiqué dans le link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/restoring-applications.html["documentation"]. Cliquez sur le bouton Créer.
 
-image::redhat_openshift_OADP_restore_image1.jpg[Créer une CR de restauration]
+image:redhat_openshift_OADP_restore_image1.jpg["Créer une CR de restauration"]
 
 ....
 apiVersion: velero.io/v1
@@ -44,9 +44,7 @@ spec:
 ....
 Lorsque la phase affiche terminé, vous pouvez voir que l'application a été restaurée à l'état au moment où l'instantané a été pris. L'application est restaurée dans le même espace de nom.
 
-image::redhat_openshift_OADP_restore_image2.jpg[Restauration terminée]
-
-image::redhat_openshift_OADP_restore_image2a.png[Restauré dans le même espace de noms]
+image:redhat_openshift_OADP_restore_image2.jpg["Restauration terminée"] image:redhat_openshift_OADP_restore_image2a.png["Restauré dans le même espace de noms"]
 
 ====
 .Restauration dans un autre espace de noms
@@ -72,7 +70,7 @@ spec:
 ....
 Lorsque la phase affiche terminé, vous pouvez voir que l'application a été restaurée à l'état au moment où l'instantané a été pris. L'application est restaurée dans un espace de noms différent, comme spécifié dans le yaml.
 
-image::redhat_openshift_OADP_restore_image3.png[Restauration terminée dans un nouvel espace de noms]
+image:redhat_openshift_OADP_restore_image3.png["Restauration terminée dans un nouvel espace de noms"]
 
 ====
 .Restauration vers une autre classe de stockage
@@ -82,9 +80,9 @@ Velero fournit une capacité générique de modifier les ressources pendant la r
 
 Dans l'exemple ci-dessous, l'application, lors du déploiement, utilise ontap-nas comme classe de stockage pour ses volumes persistants. Une sauvegarde de l'application nommée backup-postgresql-ontaps3 est créée.
 
-image::redhat_openshift_OADP_restore_image4.png[Machine virtuelle utilisant le nas ontap]
+image:redhat_openshift_OADP_restore_image4.png["Machine virtuelle utilisant le nas ontap"]
 
-image::redhat_openshift_OADP_restore_image5.png[Sauvegarde de machine virtuelle ontap-nas]
+image:redhat_openshift_OADP_restore_image5.png["Sauvegarde de machine virtuelle ontap-nas"]
 
 Simulez une perte de l'application en désinstallant l'application.
 
@@ -107,11 +105,11 @@ resourceModifierRules:
     path: "/spec/storageClassName"
     value: "ontap-nas-eco"
 ....
-image::redhat_openshift_OADP_restore_image6.png[interface de mappage de configuration]
+image:redhat_openshift_OADP_restore_image6.png["interface de mappage de configuration"]
 
 L'objet de mappage de configuration résultant doit ressembler à ceci (CLI) :
 
-image::redhat_openshift_OADP_restore_image7.png[Config map CLI]
+image:redhat_openshift_OADP_restore_image7.png["Config map CLI"]
 
 Cette carte de configuration applique la règle de modificateur de ressource lors de la création de la restauration. Un correctif sera appliqué pour remplacer le nom de classe de stockage par ontap-nas-eco pour toutes les demandes de volume persistant commençant par rhel.
 
@@ -125,6 +123,6 @@ Pour restaurer la machine virtuelle, utilisez la commande suivante depuis l'inte
 ....
 L'application est restaurée dans le même namespace avec les demandes de volume persistant créées à l'aide de la classe de stockage ontap-nas-eco.
 
-image::redhat_openshift_OADP_restore_image8.png[Restauration de machine virtuelle ontap-nas-ECO]
+image:redhat_openshift_OADP_restore_image8.png["Restauration de machine virtuelle ontap-nas-ECO"]
 
 ====
