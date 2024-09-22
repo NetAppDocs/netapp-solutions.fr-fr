@@ -1,0 +1,80 @@
+---
+sidebar: sidebar 
+permalink: cyber-vault/ontap-cyber-vault-powershell-considerations.html 
+keywords: Cyber vault, powershell, script, configuration, validation, hardening 
+summary: 'Il s"agit de la solution NetApp ONTAP pour la configuration, le renforcement et la validation d"un cyber-coffre basé sur ONTAP' 
+---
+= Autres considérations
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media
+
+
+[role="lead"]
+D'autres considérations sont à prendre en compte lors de la conception et du déploiement d'un cyber-coffre basé sur ONTAP.
+
+
+
+== Dimensionnement de la capacité
+
+La quantité d'espace disque requise pour un volume de destination de cyber-coffre ONTAP dépend de divers facteurs, dont le plus important est le taux de modification des données dans le volume source. La planification des sauvegardes et la planification Snapshot sur le volume de destination affectent à la fois l'utilisation du disque sur le volume de destination, et le taux de modification sur le volume source n'est probablement pas constant. Il est conseillé de fournir une réserve de capacité de stockage supplémentaire au-delà de celle requise pour s'adapter aux changements futurs du comportement de l'utilisateur final ou de l'application.
+
+Le dimensionnement d'une relation pour une durée de conservation d'un mois dans ONTAP nécessite le calcul des besoins en stockage en fonction de plusieurs facteurs, notamment la taille du jeu de données principal, le taux de modification des données (taux de modification quotidien) et les économies réalisées grâce à la déduplication et à la compression (le cas échéant).
+
+Voici l'approche étape par étape :
+
+La première étape consiste à connaître la taille du ou des volumes source que vous protégez avec le cyber-coffre. Il s'agit de la quantité de données de base qui sera initialement répliquée vers la destination du cybercoffre. Ensuite, estimez le taux de modification quotidien du jeu de données. Pourcentage de données qui changent chaque jour. Il est essentiel de bien comprendre la dynamique de vos données.
+
+Par exemple :
+
+* Taille du dataset primaire = 5 To
+* Taux de changement quotidien = 5 % (0.05)
+* Efficacité de la déduplication et de la compression = 50 % (0.50)
+
+
+Voyons maintenant le calcul :
+
+* Calculer le taux de modification des données quotidiennes :
++
+`Changed data per day = 5000 * 5% = 250GB`
+
+* Calculer le total des données modifiées pour 30 jours :
++
+`Total changed data in 30 days = 250 GB * 14 = 3.5TB`
+
+* Calculer le stockage total requis :
++
+`TOTAL = 5TB + 3.5TB = 8.5TB`
+
+* Appliquer les économies réalisées grâce à la déduplication et à la compression :
++
+`EFFECTIVE = 8.5TB * 50% = 4.25TB`
+
+
+
+*Résumé des besoins de stockage*
+
+* Sans efficacité : *8,5 To* seraient nécessaires pour stocker 30 jours de données de cyber-coffre.
+* Avec une efficacité de 50 % : après la déduplication et la compression, il aurait besoin de *4,25 To* de stockage.
+
+
+
+NOTE: La surcharge liée aux métadonnées peut s'avérer supplémentaire pour les copies Snapshot, mais cette opération est généralement mineure.
+
+
+NOTE: Si plusieurs sauvegardes sont effectuées par jour, ajustez le calcul en fonction du nombre de copies Snapshot effectuées chaque jour.
+
+
+NOTE: Prendre en compte la croissance des données au fil du temps pour garantir la pérennité du dimensionnement.
+
+
+
+== Impact sur les performances au niveau principal/source
+
+Comme le transfert de données est une opération de transfert, l'impact sur les performances du stockage primaire peut varier en fonction de la charge de travail, du volume de données et de la fréquence des sauvegardes. Cependant, l'impact global sur les performances du système principal est généralement modéré et gérable, car le transfert de données est conçu pour décharger les tâches de protection et de sauvegarde des données vers le système de stockage du coffre-fort virtuel. Lors de la configuration initiale de la relation et de la première sauvegarde complète, une quantité importante de données est transférée du système primaire vers le système de coffre-fort virtuel (le volume SnapLock Compliance). Cela peut entraîner une augmentation du trafic réseau et de la charge d'E/S sur le système principal. Une fois la sauvegarde complète initiale terminée, ONTAP doit uniquement suivre et transférer les blocs modifiés depuis la dernière sauvegarde. La charge d'E/S est donc bien inférieure à celle de la réplication initiale. Les mises à jour incrémentielles sont efficaces et ont un impact minimal sur les performances du stockage primaire. Le processus de copie s'exécute en arrière-plan, ce qui réduit les risques d'interférence avec les charges de travail de production du système principal.
+
+* L'impact sur les performances est limité par le fait que le système de stockage dispose de suffisamment de ressources (CPU, mémoire et IOPS) pour gérer la charge supplémentaire.
+

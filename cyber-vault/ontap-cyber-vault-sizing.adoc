@@ -14,11 +14,11 @@ summary: Conseils pour vous aider à dimensionner un cyber-coffre-fort ONTAP
 
 
 [role="lead"]
-Pour dimensionner un cybersystème, il est nécessaire de comprendre la quantité de données à restaurer dans un objectif de délai de restauration (RTO) donné. De nombreux facteurs jouent un rôle important dans la conception d'une solution de cyber-coffre adaptée.
+Pour dimensionner un cybersystème, il est nécessaire de comprendre la quantité de données à restaurer dans un objectif de délai de restauration (RTO) donné. De nombreux facteurs jouent un rôle important dans la conception d'une solution de cyber-coffre adaptée. Les performances et la capacité doivent être prises en compte lors du dimensionnement d'un cyber-coffre.
 
 
 
-== Dimensionnement
+== Considérations relatives au dimensionnement de la performance
 
 . Quels sont les modèles de plateforme source (FAS v AFF A-Series v AFF C-Series) ?
 . Quelle est la bande passante et la latence entre la source et le cyber-coffre ?
@@ -30,3 +30,65 @@ Pour dimensionner un cybersystème, il est nécessaire de comprendre la quantit�
 . Ces restaurations multiples auront-elles lieu sur le même système primaire ?
 . SnapMirror sera-t-il répliqué vers le coffre-fort pendant la restauration à partir d'un coffre-fort ?
 
+
+
+
+=== Exemples de dimensionnement
+
+Voici des exemples de différentes configurations de cyber-coffre.
+
+image:ontap-cyber-vault-sizing.png["Options de configuration du cyber-coffre-fort"]
+
+
+
+== Dimensionnement de la capacité
+
+La quantité d'espace disque requise pour un volume de destination de cyber-coffre ONTAP dépend de divers facteurs, dont le plus important est le taux de modification des données dans le volume source. La planification des sauvegardes et la planification Snapshot sur le volume de destination affectent à la fois l'utilisation du disque sur le volume de destination, et le taux de modification sur le volume source n'est probablement pas constant. Il est conseillé de fournir une réserve de capacité de stockage supplémentaire au-delà de celle requise pour s'adapter aux changements futurs du comportement de l'utilisateur final ou de l'application.
+
+Le dimensionnement d'une relation pour une durée de conservation d'un mois dans ONTAP nécessite le calcul des besoins en stockage en fonction de plusieurs facteurs, notamment la taille du jeu de données principal, le taux de modification des données (taux de modification quotidien) et les économies réalisées grâce à la déduplication et à la compression (le cas échéant).
+
+Voici l'approche étape par étape :
+
+La première étape consiste à connaître la taille du ou des volumes source que vous protégez avec le cyber-coffre. Il s'agit de la quantité de données de base qui sera initialement répliquée vers la destination du cybercoffre. Ensuite, estimez le taux de modification quotidien du jeu de données. Pourcentage de données qui changent chaque jour. Il est essentiel de bien comprendre la dynamique de vos données.
+
+Par exemple :
+
+* Taille du dataset primaire = 5 To
+* Taux de changement quotidien = 5 % (0.05)
+* Efficacité de la déduplication et de la compression = 50 % (0.50)
+
+
+Voyons maintenant le calcul :
+
+* Calculer le taux de modification des données quotidiennes :
++
+`Changed data per day = 5000 * 5% = 250GB`
+
+* Calculer le total des données modifiées pour 30 jours :
++
+`Total changed data in 30 days = 250 GB * 14 = 3.5TB`
+
+* Calculer le stockage total requis :
++
+`TOTAL = 5TB + 3.5TB = 8.5TB`
+
+* Appliquer les économies réalisées grâce à la déduplication et à la compression :
++
+`EFFECTIVE = 8.5TB * 50% = 4.25TB`
+
+
+
+*Résumé des besoins de stockage*
+
+* Sans efficacité : *8,5 To* seraient nécessaires pour stocker 30 jours de données de cyber-coffre.
+* Avec une efficacité de 50 % : après la déduplication et la compression, il aurait besoin de *4,25 To* de stockage.
+
+
+
+NOTE: La surcharge liée aux métadonnées peut s'avérer supplémentaire pour les copies Snapshot, mais cette opération est généralement mineure.
+
+
+NOTE: Si plusieurs sauvegardes sont effectuées par jour, ajustez le calcul en fonction du nombre de copies Snapshot effectuées chaque jour.
+
+
+NOTE: Prendre en compte la croissance des données au fil du temps pour garantir la pérennité du dimensionnement.

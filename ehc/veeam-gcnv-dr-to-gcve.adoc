@@ -1,0 +1,425 @@
+---
+sidebar: sidebar 
+permalink: ehc/veeam-gcnv-dr-to-gcve.html 
+keywords: disaster recovery, avs, google cloud, gcp, gcve, gcnv, google cloud netapp volumes, netapp volumes, dr, veeam, replication 
+summary:  
+---
+= Utilisation de la réplication Veeam et du datastore Google Cloud NetApp volumes pour la reprise d'activité vers Google Cloud VMware Engine
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+En temps de crise, un plan complet de reprise sur incident est essentiel pour les entreprises. De nombreuses entreprises exploitent le cloud computing pour leurs opérations quotidiennes et leur reprise après incident. Cette approche proactive peut réduire, voire éliminer les interruptions d'activité coûteuses.
+
+Cet article décrit comment utiliser Veeam Backup & Replication pour configurer la reprise d'activité pour les machines virtuelles VMware sur site vers Google Cloud VMware Engine (GCVE) avec Google Cloud NetApp volumes (NetApp volumes).
+
+
+
+== Présentation
+
+Google Cloud NetApp volumes est un service de stockage Google et NetApp disponible pour Google Cloud. Le service NetApp volumes fournit un stockage NFS/SMB haute performance. Le stockage NetApp volumes NFS certifié par VMware peut être utilisé en tant que datastore externe pour les hôtes ESXi dans GCVE. Les utilisateurs doivent établir une connexion de peering entre leur cloud privé GCVE et le projet NetApp volumes. Aucun frais réseau n'est facturé pour l'accès au stockage dans une région. Les utilisateurs peuvent créer des volumes NetApp volumes dans la console Google Cloud et activer la protection contre la suppression avant de monter des volumes en tant que datastores sur leurs hôtes ESXi.
+
+Les datastores NFS basés sur NetApp volumes peuvent être utilisés pour répliquer les données depuis les environnements sur site à l'aide d'une solution tierce validée qui fournit des fonctionnalités de réplication de machines virtuelles. En ajoutant les datastores NetApp volumes, il permet un déploiement optimisé des coûts au lieu de créer un SDDC basé sur Google Cloud VMware Engine (GCVE) avec un grand nombre d'hôtes ESXi pour prendre en charge le stockage. Cette approche est appelée « groupe de témoins lumineux ». Un cluster de pilotes légers est une configuration hôte GCVE minimale (3 hôtes GCVE ESXi) et la capacité des datastores NetApp volumes permet une évolutivité indépendante pour répondre aux besoins en capacité.
+
+L'objectif est de maintenir une infrastructure économique intégrant uniquement les composants de base pour gérer un basculement. Un cluster de pilotes peut se développer et ajouter d'autres hôtes GCVE en cas de basculement. Une fois le basculement résolu et le fonctionnement normal rétabli, le cluster voyant peut réduire sa taille et revenir à un mode de fonctionnement économique.
+
+
+
+== Objectifs du présent document
+
+Cet article décrit l'utilisation d'un datastore Google Cloud NetApp volumes avec Veeam Backup & Replication pour configurer la reprise d'activité pour les machines virtuelles VMware sur site vers GCVE à l'aide des fonctionnalités du logiciel de réplication de machine virtuelle Veeam.
+
+Veeam Backup & Replication est une application de sauvegarde et de réplication destinée aux environnements virtuels. Lors de la réplication des machines virtuelles, Veeam Backup & Replication crée une copie exacte des machines virtuelles au format VMware vSphere natif sur le cluster SDDC GCVE cible. Avec Veeam Backup & Replication, la copie reste synchronisée avec la machine virtuelle d'origine. La réplication offre le meilleur objectif de délai de restauration (RTO), car une copie montée d'une machine virtuelle sur le site de reprise est prête à démarrer.
+
+Ce mécanisme de réplication garantit que les charges de travail peuvent démarrer rapidement dans GCVE en cas d'incident. Le logiciel Veeam Backup & Replication optimise également la transmission du trafic pour la réplication sur WAN et les connexions lentes. Il filtre également les blocs de données dupliqués, les blocs de données nuls, les fichiers swap et les « fichiers exclus du système d'exploitation invité des machines virtuelles ». Le logiciel compresse également le trafic de réplica. Pour éviter que les tâches de réplication ne consomment la totalité de la bande passante réseau, les accélérateurs WAN et les règles de restriction réseau peuvent être utilisés.
+
+Dans Veeam Backup & Replication, le processus de réplication est piloté par des tâches, ce qui signifie que la réplication est effectuée via la configuration des tâches de réplication. En cas d'incident, le basculement peut être déclenché pour restaurer les machines virtuelles en basculant sur la copie de réplica. Lors d'un basculement, une machine virtuelle répliquée prend le rôle de la machine virtuelle d'origine. Le basculement peut être effectué vers l'état le plus récent d'une réplique ou vers l'un de ses points de restauration connus et corrects. La restauration est ainsi possible en cas d'attaque par ransomware ou de tests isolés les cas échéant. Veeam Backup & Replication propose plusieurs options pour gérer différents scénarios de reprise d'activité.
+
+
+
+== Présentation de la solution
+
+Cette solution couvre les étapes générales suivantes :
+
+. Créez un volume NFS à l'aide de Google Cloud NetApp volumes
+. Suivez le processus GCP pour créer un datastore GCVE à partir du volume NetApp volumes NFS.
+. Configuration d'une tâche de réplication pour créer des répliques de machine virtuelle à l'aide de Veeam Backup & Replication
+. Création d'un plan de basculement et basculement
+. Revenez aux machines virtuelles de production une fois l'incident terminé et le site principal en service.
+
+
+
+NOTE: Lors de la création d'un volume dans NetApp volumes, à utiliser en tant que datastore GCVE, seul NFS v3 est pris en charge.
+
+Pour plus d'informations sur l'utilisation de volumes NetApp NFS en tant que datastores pour GCVE, consultez https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-datastores-gcve["Utilisation d'un volume NFS en tant que datastore vSphere hébergé par Google Cloud NetApp volumes"] .
+
+
+
+== Architecture
+
+Le schéma suivant illustre l'architecture de la solution présentée dans cette documentation. Il est recommandé d'utiliser un serveur Veeam Backup & Replication situé à la fois sur le site et dans le SDDC GCVE. La sauvegarde et la restauration sont effectuées et gérées par le serveur Veeam sur site, et la réplication est gérée par le serveur Veeam dans le SDDC GCVE. Cette architecture offre la disponibilité la plus élevée en cas de défaillance dans le data Center principal.
+
+image::dr-veeam-gcnv-image01.png[diagramme d'architecture]
+
+
+
+== Pré-requis pour la réplication Veeam vers les datastores GCVE et NetApp volumes
+
+Cette solution requiert les configurations et composants suivants :
+
+. Les volumes NetApp disposent d'un pool de stockage disposant de suffisamment de capacité disponible pour prendre en charge le volume NFS à créer.
+. Le logiciel Veeam Backup and Replication s'exécute dans un environnement sur site avec une connectivité réseau appropriée.
+. Assurez-vous que la machine virtuelle de sauvegarde Veeam Backup & Replication est connectée à la source ainsi qu'aux clusters SDDC GCVE cibles.
+. Assurez-vous que la machine virtuelle de sauvegarde Veeam Backup & Replication est connectée aux machines virtuelles du serveur proxy Veeam au niveau des clusters GCVE source et cible.
+. Le serveur de sauvegarde doit pouvoir résoudre les noms abrégés et se connecter aux vCenters source et cible.
+
+
+Les utilisateurs doivent établir une connexion de peering entre leur cloud privé GCVE et le projet NetApp volumes à l'aide des pages de peering de réseau VPC ou de connexions privées de l'interface utilisateur de la console cloud du moteur VMware.
+
+
+NOTE: Veeam nécessite un compte utilisateur de solution GCVE avec un niveau élevé de Privileges lors de l'ajout du serveur GCVE vCenter à l'inventaire sauvegarde et réplication Veeam. Pour en savoir plus, consultez la documentation Google Cloud Platform (GCP), https://cloud.google.com/vmware-engine/docs/private-clouds/classic-console/howto-elevate-privilege["VMware Engine Privileges : une solution qui va sans effet"].
+
+Pour plus d'informations, reportez-vous à https://helpcenter.veeam.com/docs/backup/vsphere/replica_limitations.html?ver=120["Considérations et limitations"] la section de la documentation Veeam Backup & Replication.
+
+
+
+== Étapes de déploiement
+
+Les sections suivantes présentent les différentes étapes de déploiement pour créer et monter un datastore NFS à l'aide de Google Cloud NetApp volumes, et utilisent Veeam Backup and Replication pour implémenter une solution complète de reprise d'activité entre un data Center sur site et Google Cloud VMware Engine.
+
+
+
+=== Créez un volume NetApp volumes NFS et un datastore pour GCVE
+
+Pour plus d' https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-datastores-gcve["Utilisation d'un volume NFS en tant que datastore vSphere hébergé par Google Cloud NetApp volumes"]informations sur Google Cloud NetApp volumes en tant que datastore pour GCVE, reportez-vous au.
+
+Procédez comme suit pour créer et utiliser un datastore NFS pour GCVE à l'aide de NetApp volumes :
+
+.Créez un volume NetApp volumes NFS
+[%collapsible]
+====
+Google Cloud NetApp volumes est accessible depuis la console Google Cloud Platform (GCP).
+
+Pour https://cloud.google.com/netapp/volumes/docs/configure-and-use/volumes/create-volume["Créer un volume"] plus d'informations sur cette étape, reportez-vous à la documentation de Google Cloud NetApp volumes.
+
+. Dans un navigateur Web, accédez à https://console.cloud.google.com/[] et connectez-vous à votre console GCP. Recherchez *NetApp volumes* pour commencer.
+. Dans l'interface de gestion *NetApp volumes*, cliquez sur *Create* pour commencer à créer un volume NFS.
++
+image::dr-veeam-gcnv-image02.png[créer un volume]
+
++
+{nbsp}
+
+. Dans l'assistant *Créer un volume*, remplissez toutes les informations requises :
++
+** Nom du volume.
+** Pool de stockage sur lequel créer le volume.
+** Nom de partage utilisé lors du montage du volume NFS.
+** La capacité du volume en Gio.
+** Protocole de stockage à utiliser.
+** Cochez la case *bloquer le volume de la suppression lorsque les clients sont connectés* (requis par GCVE lors du montage en tant que datastore).
+** Règles d'export pour l'accès au volume. Il s'agit des adresses IP des adaptateurs ESXi sur le réseau NFS.
+** Planification de snapshots utilisée pour protéger le volume à l'aide de snapshots locaux.
+** Si vous le souhaitez, vous pouvez choisir de sauvegarder le volume et/ou de créer des étiquettes pour ce volume.
++
+
+NOTE: Lors de la création d'un volume dans NetApp volumes, à utiliser en tant que datastore GCVE, seul NFS v3 est pris en charge.
+
++
+image::dr-veeam-gcnv-image03.png[créer un volume]
+
++
+{nbsp}
+
++
+image::dr-veeam-gcnv-image04.png[créer un volume]
+
++
+{Nbsp} cliquez sur *Create* pour terminer la création du volume.
+
+
+
+. Une fois le volume créé, le chemin d'exportation NFS requis pour monter le volume peut être affiché à partir de la page de propriétés du volume.
++
+image::dr-veeam-gcnv-image05.png[propriétés du volume]
+
+
+
+====
+.Montez le datastore NFS dans GCVE
+[%collapsible]
+====
+Au moment d'écrire le processus de montage d'un datastore dans GCVE, vous devez ouvrir un ticket de support GCP pour que le volume soit monté en tant que datastore NFS.
+
+Pour plus d'informations, reportez-vous à la section https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-datastores-gcve["Utilisation d'un volume NFS en tant que datastore vSphere hébergé par Google Cloud NetApp volumes"] .
+
+====
+
+
+=== Répliquer les machines virtuelles vers GCVE et exécuter le plan de basculement et le retour arrière
+
+.Réplication de VM vers un datastore NFS dans GCVE
+[%collapsible]
+====
+Veeam Backup & Replication exploite les fonctionnalités Snapshot de VMware vSphere pendant la réplication. Veeam Backup & Replication demande à VMware vSphere de créer un Snapshot de machine virtuelle. Le snapshot de machine virtuelle est la copie instantanée d'une machine virtuelle, qui comprend des disques virtuels, l'état du système, la configuration et les métadonnées. Veeam Backup & Replication utilise le snapshot comme source de données pour la réplication.
+
+Pour répliquer des machines virtuelles, procédez comme suit :
+
+. Ouvrez Veeam Backup & Replication Console.
+. Dans l'onglet *Home*, cliquez sur *Replication Job > Virtual machine...*
++
+image::dr-veeam-gcnv-image06.png[créer une tâche de réplication de machine virtuelle]
+
++
+{nbsp}
+
+. Sur la page *Name* de l'assistant *New Replication Job*, spécifiez un nom de travail et cochez les cases de contrôle avancé appropriées.
++
+** Cochez la case amorçage du réplica si la connectivité entre le site et GCP a une bande passante limitée.
+** Cochez la case remappage réseau (pour les sites SDDC GCVE avec différents réseaux) si les segments du SDDC GCVE ne correspondent pas à ceux des réseaux de sites sur site.
+** Cochez la case Replica re-IP (pour les sites DR avec un schéma d'adressage IP différent) si le schéma d'adressage IP du site de production sur site diffère du schéma du site GCVE cible.
++
+image::dr-veeam-gcnv-image07.png[page nom]
+
++
+{nbsp}
+
+
+
+. Sur la page *machines virtuelles*, sélectionnez les machines virtuelles à répliquer dans le datastore NetApp volumes rattaché à un SDDC GCVE. Cliquez sur *Ajouter*, puis dans la fenêtre *Ajouter un objet*, sélectionnez les machines virtuelles ou les conteneurs VM nécessaires et cliquez sur *Ajouter*. Cliquez sur *Suivant*.
++
+
+NOTE: Les machines virtuelles peuvent être placées sur VSAN pour remplir la capacité de datastore VSAN disponible. Dans un cluster piloté, la capacité utilisable d'un cluster VSAN à 3 nœuds sera limitée. Le reste des données peut être facilement placé dans les datastores Google Cloud NetApp volumes afin de pouvoir restaurer les machines virtuelles. Par la suite, le cluster peut être étendu pour répondre aux exigences de processeur/mètre.
+
++
+image::dr-veeam-gcnv-image08.png[Sélectionnez les machines virtuelles à répliquer]
+
++
+{nbsp}
+
+. Sur la page *destination*, sélectionnez la destination en tant que cluster/hôtes SDDC GCVE et le pool de ressources, le dossier VM et le datastore GCNV appropriés pour les répliques VM. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image09.png[sélectionnez les détails de la destination]
+
++
+{nbsp}
+
+. Sur la page *réseau*, créez le mappage entre les réseaux virtuels source et cible selon vos besoins. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image10.png[mappage réseau]
+
++
+{nbsp}
+
+. Sur la page *Re-IP*, cliquez sur le bouton *Ajouter...* pour ajouter une nouvelle règle re-ip. Remplissez les plages d'adresses ip de la machine virtuelle source et cible pour spécifier la mise en réseau qui sera appliquée à la machine virtuelle source en cas de basculement. Utilisez des astérisques pour spécifier une plage d'adresses est indiquée pour cet octet. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image11.png[Page re-IP]
+
++
+{nbsp}
+
+. Sur la page *Paramètres du travail*, spécifiez le référentiel de sauvegarde qui stocke les métadonnées pour les répliques VM, la stratégie de rétention et sélectionnez le bouton en bas pour le bouton *Avancé...* en bas pour les paramètres de travail supplémentaires. Cliquez sur *Suivant* pour continuer.
+. Sur le *transfert de données*, sélectionnez les serveurs proxy qui résident sur les sites source et cible, et laissez l'option Direct sélectionnée. Les accélérateurs WAN peuvent également être sélectionnés ici, s'ils sont configurés. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image12.png[Transfert de données]
+
++
+{nbsp}
+
+. Sur la page *Guest Processing*, cochez la case *Enable application-Aware processing* selon les besoins et sélectionnez *Guest OS credentials*. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image13.png[Traitement des clients]
+
++
+{nbsp}
+
+. Sur la page *Schedule*, définissez les heures et la fréquence d'exécution de la tâche de réplication. Cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image14.png[Page Programme]
+
++
+{nbsp}
+
+. Enfin, passez en revue les paramètres du travail sur la page *Résumé*. Cochez la case *Exécuter le travail lorsque je clique sur Terminer*, puis cliquez sur *Terminer* pour terminer la création du travail de réplication.
+. Une fois exécutée, la tâche de réplication peut être affichée dans la fenêtre d'état de la tâche.
++
+image::dr-veeam-gcnv-image15.png[Fenêtre d'état du travail]
+
++
+Pour plus d'informations sur la réplication Veeam, reportez-vous à la section link:https://helpcenter.veeam.com/docs/backup/vsphere/replication_process.html?ver=120["Fonctionnement de la réplication"]
+
+
+
+====
+.Créer un plan de basculement
+[%collapsible]
+====
+Lorsque la réplication ou l'amorçage initial est terminé, créez le plan de basculement. Le plan de basculement permet d'effectuer automatiquement le basculement des machines virtuelles dépendantes une par une ou en tant que groupe. La planification de basculement est la référence pour l'ordre dans lequel les machines virtuelles sont traitées, y compris les retards de démarrage. Le plan de basculement permet également de s'assurer que les machines virtuelles dépendantes stratégiques sont déjà en cours d'exécution.
+
+Une fois la réplication ou l'amorçage initial terminé, créez un plan de basculement. Ce plan sert de référence stratégique pour l'orchestration du basculement des machines virtuelles dépendantes, individuellement ou en groupe. Il définit l'ordre de traitement des machines virtuelles, intègre les retards de démarrage nécessaires et veille à ce que les machines virtuelles dépendantes critiques soient opérationnelles avant les autres. En mettant en place un plan de basculement bien structuré, les entreprises peuvent rationaliser leur processus de reprise après incident, en réduisant les temps d'arrêt et en préservant l'intégrité des systèmes interdépendants lors d'un basculement.
+
+Lors de la création du plan, Veeam Backup & Replication identifie automatiquement les points de restauration les plus récents pour initier les répliques de machine virtuelle.
+
+
+NOTE: Le plan de basculement ne peut être créé qu'une fois la réplication initiale terminée et les répliques de machine virtuelle à l'état prêt.
+
+
+NOTE: Le nombre maximum de machines virtuelles pouvant être démarrées simultanément lors de l'exécution d'un plan de basculement est de 10.
+
+
+NOTE: Pendant le processus de basculement, les machines virtuelles source ne sont pas hors tension.
+
+Pour créer le *Plan de basculement*, procédez comme suit :
+
+. Dans la vue *Accueil*, cliquez sur le bouton *Plan de basculement* dans la section *Restaurer*. Dans la liste déroulante, sélectionnez *VMware vSphere...*
++
+image::dr-veeam-gcnv-image16.png[Création d'un plan de basculement]
+
++
+{nbsp}
+
+. Sur la page *général* de l'assistant *Nouveau plan de basculement*, indiquez un nom et une description du plan. Des scripts de pré et post-basculement peuvent être ajoutés si nécessaire. Par exemple, exécutez un script pour arrêter les machines virtuelles avant de démarrer les machines virtuelles répliquées.
++
+image::dr-veeam-gcnv-image17.png[Page général]
+
++
+{nbsp}
+
+. Sur la page *machines virtuelles*, cliquez sur le bouton *Ajouter VM* et sélectionnez *à partir des répliques...*. Choisissez les machines virtuelles à intégrer au plan de basculement, puis modifiez l'ordre de démarrage de la machine virtuelle et les délais de démarrage requis pour répondre aux dépendances des applications.
++
+image::dr-veeam-gcnv-image18.png[machines virtuelles]
+
++
+{nbsp}
+
++
+image::dr-veeam-gcnv-image19.png[Ordre de démarrage et retards]
+
++
+{nbsp}
+
++
+Cliquez sur *appliquer* pour continuer.
+
+. Enfin, passez en revue tous les paramètres du plan de basculement et cliquez sur *Terminer* pour créer le plan de basculement.
+
+
+Pour plus d'informations sur la création de tâches de réplication, reportez-vous link:https://helpcenter.veeam.com/docs/backup/vsphere/replica_job.html?ver=120["Création de travaux de réplication"]à la section .
+
+====
+.Exécutez le plan de basculement
+[%collapsible]
+====
+Lors du basculement, la machine virtuelle source du site de production bascule sur sa réplique sur le site de reprise après incident. Dans le cadre de ce processus, Veeam Backup & Replication restaure le réplica de la machine virtuelle vers le point de restauration requis et transfère toutes les activités d'E/S depuis la machine virtuelle source vers son réplica. Les réplicas servent non seulement pour les incidents réels, mais aussi pour la simulation des exercices de reprise après incident. Lors de la simulation de basculement, la machine virtuelle source continue de s'exécuter. Une fois les tests nécessaires terminés, le basculement peut être annulé et les opérations reprennent normalement.
+
+
+NOTE: Assurez-vous que la segmentation réseau est en place pour éviter les conflits d'adresses IP lors du basculement.
+
+Pour démarrer le plan de basculement, procédez comme suit :
+
+. Pour commencer, dans la vue *Accueil*, cliquez sur *répliques > plans de basculement* dans le menu de gauche, puis sur le bouton *Démarrer*. Vous pouvez également utiliser le bouton *Démarrer à...* pour basculer vers un point de restauration antérieur.
++
+image::dr-veeam-gcnv-image20.png[Démarrer le plan de basculement]
+
++
+{nbsp}
+
+. Surveillez la progression du basculement dans la fenêtre *exécution du plan de basculement*.
++
+image::dr-veeam-gcnv-image21.png[Surveiller la progression du basculement]
+
++
+{nbsp}
+
+
+
+
+NOTE: Veeam Backup & Replication arrête toutes les activités de réplication de la machine virtuelle source jusqu'à ce que son réplica revienne à l'état prêt.
+
+Pour plus d'informations sur les plans de basculement, reportez-vous à la section link:https://helpcenter.veeam.com/docs/backup/vsphere/failover_plan.html?ver=120["Plans de basculement"].
+
+====
+.Restauration vers le site de production
+[%collapsible]
+====
+La réalisation d'un basculement est considérée comme une étape intermédiaire et doit être finalisée en fonction de l'exigence. Les options sont les suivantes :
+
+* *Retour en production* - revenir à la machine virtuelle d'origine et synchroniser toutes les modifications apportées pendant la période active de la réplique vers la machine virtuelle source.
+
+
+
+NOTE: Pendant le rétablissement, les modifications sont transférées mais ne sont pas appliquées immédiatement. Sélectionnez *COMMIT. Retour arrière* une fois la fonctionnalité de la machine virtuelle d'origine vérifiée. Vous pouvez également choisir *Annuler le retour arrière* pour revenir à la réplique de la machine virtuelle si la machine virtuelle d'origine présente un comportement inattendu.
+
+* *Annuler le basculement* - revenir à la machine virtuelle d'origine, en abandonnant toutes les modifications apportées à la réplique de la machine virtuelle pendant sa période opérationnelle.
+* *Basculement permanent* - basculez de manière permanente de la machine virtuelle d'origine vers sa réplique, établissant la réplique comme nouvelle machine virtuelle primaire pour les opérations en cours.
+
+
+Dans ce scénario, l'option « revenir à la production » a été sélectionnée.
+
+Pour effectuer un retour arrière sur le site de production, procédez comme suit :
+
+. Dans la vue *Accueil*, cliquez sur *répliques > Active* dans le menu de gauche. Sélectionnez les machines virtuelles à inclure et cliquez sur le bouton *revenir à la production* dans le menu supérieur.
++
+image::dr-veeam-gcnv-image22.png[Démarrer le rétablissement]
+
++
+{nbsp}
+
+. Sur la page *Replica* de l'assistant *Failback*, sélectionnez les répliques à inclure dans le travail de restauration automatique.
+. Sur la page *destination*, sélectionnez *Retour arrière à la VM* d'origine et cliquez sur *Suivant* pour continuer.
++
+image::dr-veeam-gcnv-image23.png[Basculement vers la machine virtuelle d'origine]
+
++
+{nbsp}
+
+. Sur la page *Failback mode*, sélectionnez *Auto* pour lancer le retour arrière le plus rapidement possible.
++
+image::dr-veeam-gcnv-image24.png[Mode de restauration automatique]
+
++
+{nbsp}
+
+. Sur la page *Résumé*, choisissez si *mettre sous tension la machine virtuelle cible après la restauration*, puis cliquez sur Terminer pour démarrer le travail de restauration.
++
+image::dr-veeam-gcnv-image25.png[Résumé du travail de restauration]
+
++
+{nbsp}
+
+
+
+La validation du retour arrière finalise l'opération de restauration, confirmant ainsi l'intégration réussie des modifications dans la machine virtuelle de production. Lorsqu'elle est validée, Veeam Backup & Replication reprend les activités de réplication régulières pour la machine virtuelle de production restaurée. L'état de la réplique restaurée passe de _Failback_ à _Ready_.
+
+. Pour valider le retour arrière, accédez à *replicas > Active*, sélectionnez les VM à valider, cliquez avec le bouton droit de la souris et sélectionnez *commit retour arrière*.
++
+image::dr-veeam-gcnv-image26.png[Validation du retour arrière]
+
++
+{nbsp}
+
++
+image::dr-veeam-gcnv-image27.png[Validation du retour arrière réussie]
+
++
+{Nbsp} une fois le retour en production réussi, les machines virtuelles sont toutes restaurées sur le site de production d'origine.
+
+
+
+Pour plus d'informations sur le processus de restauration, reportez-vous à la documentation Veeam pour link:https://helpcenter.veeam.com/docs/backup/vsphere/failover_failback.html?ver=120["Basculement et retour arrière pour la réplication"].
+
+====
+
+
+== Conclusion
+
+Grâce à la fonctionnalité de datastore de Google Cloud NetApp volumes, Veeam et d'autres outils tiers validés sont en mesure de proposer des solutions économiques de reprise d'activité. En utilisant des clusters Pilot light au lieu de grands clusters dédiés pour les réplicas de machines virtuelles, les entreprises peuvent réduire considérablement leurs dépenses. Cette approche permet de mettre en place des stratégies de reprise après incident sur mesure qui exploitent les solutions de sauvegarde internes existantes pour la reprise après incident basée sur le cloud, sans recourir à d'autres data centers sur site. En cas d'incident, le basculement peut être initié en un seul clic ou configuré pour s'exécuter automatiquement, garantissant ainsi la continuité de l'activité avec un temps d'arrêt minimal.
+
+Pour en savoir plus sur ce processus, n'hésitez pas à suivre la vidéo de présentation détaillée.
+
+video::b2fb8597-c3fe-49e2-8a84-b1f10118db6d[panopto,width=Video walkthrough of the solution]

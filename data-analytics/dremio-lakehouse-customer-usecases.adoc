@@ -1,0 +1,40 @@
+---
+sidebar: sidebar 
+permalink: data-analytics/dremio-lakehouse-customer-usecases.html 
+keywords: customer use case details 
+summary: 'Cette section couvre les détails de cas d"utilisation client de Dremio avec stockage objet NetApp .' 
+---
+= Cas d'utilisation de clients
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+
+
+== Cas d'utilisation de NetApp ActiveIQ
+
+image:activeIQold.png["Ancienne architecture ActiveIQ"]
+
+*Défi* : la solution Active IQ interne de NetApp, initialement conçue pour prendre en charge de nombreux cas d'utilisation, est devenue une offre complète pour les utilisateurs internes et les clients. Cependant, l'infrastructure back-end sous-jacente Hadoop/MapR posait des problèmes de coûts et de performances, en raison de la croissance rapide des données et du besoin d'un accès efficace aux données. L'évolution du stockage nécessitait l'ajout de ressources informatiques inutiles, entraînant une augmentation des coûts.
+
+En outre, la gestion du cluster Hadoop prenait beaucoup de temps et nécessitait une expertise spécialisée. Les problèmes de performance et de gestion des données ont compliqué la situation, avec des requêtes qui prennent en moyenne 45 minutes et un manque de ressources dû à des configurations erronées. Pour relever ces défis, NetApp a cherché une alternative à l'environnement Hadoop existant et a déterminé qu'une nouvelle solution moderne basée sur Dremio permettrait de réduire les coûts, de découpler le stockage et le calcul, d'améliorer les performances, de simplifier la gestion des données, d'offrir des contrôles granulaires et de fournir des fonctionnalités de reprise d'activité.
+
+*Solution* : image:activeIQnew.png["ActiveIQ nouvelle architecture avec dremio"] Dremio a permis à NetApp de moderniser son infrastructure de données basée sur Hadoop selon une approche progressive, fournissant ainsi une feuille de route pour l'analyse unifiée. Contrairement à d'autres fournisseurs qui ont exigé des changements importants au niveau de Data Processing, Dremio s'intègre de manière transparente aux pipelines existants, ce qui permet de gagner du temps et de réduire les dépenses liées à la migration. En migrant vers un environnement entièrement conteneurisé, NetApp a réduit la surcharge administrative, amélioré la sécurité et amélioré la résilience. L'adoption par Dremio d'écosystèmes ouverts comme Apache Iceberg et Arrow a assuré la pérennité, la transparence et l'extensibilité.
+
+En remplacement de l'infrastructure Hadoop/Hive, Dremio a proposé des fonctionnalités pour des cas d'utilisation secondaires via la couche sémantique. Bien que les mécanismes ETL et d'ingestion de données basés sur Spark soient restés, Dremio a fourni une couche d'accès unifiée pour faciliter la découverte et l'exploration des données sans duplication. Cette approche a permis de réduire de manière significative les facteurs de réplication des données et de découpler le stockage et le calcul.
+
+*Avantages*: Avec Dremio, NetApp a réalisé des réductions de coûts importantes en minimisant la consommation de calcul et les besoins en espace disque dans leurs environnements de données. Le nouveau Data Lake de Active IQ comprend 8,900 tables contenant 3 pétaoctets de données, contre plus de 7 pétaoctets pour la précédente infrastructure. La migration vers Dremio a également impliqué le passage de 33 mini-clusters et 4,000 cœurs à 16 nœuds exécuteurs testamentaires dans des clusters Kubernetes. Même en cas de baisse significative des ressources informatiques, NetApp a connu des améliorations remarquables des performances. L'accès direct aux données via Dremio a permis de réduire le temps d'exécution des requêtes de 45 minutes à 2 minutes, ce qui a permis d'obtenir des informations exploitables 95 % plus rapidement pour la maintenance prédictive et l'optimisation. La migration a également permis de réduire de plus de 60 % les coûts de calcul, de multiplier par 20 les requêtes et de réduire le coût total de possession de plus de 30 %.
+
+
+
+== Cas d'utilisation du client de vente de pièces automobiles.
+
+*Défis* : au sein de cette société mondiale de vente de pièces automobiles, les groupes de planification et d'analyse financière de l'entreprise et de la direction n'ont pas pu obtenir une vue consolidée des rapports de ventes et ont été forcés de lire les rapports des indicateurs de ventes de chaque secteur d'activité et de tenter de les consolider. Les clients ont donc pris des décisions concernant des données datant d'au moins un jour. Les délais d'obtention de nouvelles informations analytiques prenaient généralement plus de quatre semaines. La résolution des problèmes liés aux pipelines de données demande encore plus de temps, ce qui représente au moins trois jours supplémentaires. La lenteur du processus de développement des rapports et la lenteur des performances des rapports ont poussé les analystes à attendre en permanence le traitement ou le chargement des données, au lieu de leur permettre de trouver de nouvelles informations sur l'entreprise et d'adopter de nouveaux comportements commerciaux. Ces environnements en difficulté se composaient de nombreuses bases de données différentes pour différents secteurs d'activité, ce qui a entraîné l'apparition de nombreux silos de données. L'environnement lent et fragmenté a compliqué la gouvernance des données car il y avait trop de façons pour les analystes de trouver leur propre version de la vérité plutôt qu'une seule source de vérité. Le coût de cette approche s'élève à plus de 1.9 millions de dollars en coûts de plateforme de données et de personnel. La maintenance de la plateforme existante et le traitement des demandes de données ont nécessité sept ingénieurs techniques (ETP) par an. Face à l'augmentation des demandes de données, l'équipe de veille stratégique ne pouvait pas faire évoluer l'environnement existant pour répondre aux besoins futurs
+
+*Solution* : stocker et gérer de manière rentable de grandes tables Iceberg dans le magasin d'objets NetApp. Créez des domaines de données à l'aide de la couche sémantique de Dremio, ce qui permet aux utilisateurs métiers de créer, rechercher et partager facilement des produits de données.
+
+*Avantages pour le client* : • amélioration et optimisation de l'architecture de données existante et réduction du temps d'accès aux informations de quatre semaines à seulement quelques heures • réduction du temps de dépannage de trois jours à seulement quelques heures • réduction des coûts de la plate-forme de données et de la gestion de plus de 380,000 000 $ • (2) équivalents temps plein d'efforts de veille de données économisés chaque année

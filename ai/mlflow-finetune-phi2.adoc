@@ -1,0 +1,63 @@
+---
+sidebar: sidebar 
+permalink: ai/aicp_example_notebooks_and_pipelines.html 
+keywords: Jupyter Notebook, MLFlow, NetApp DataOps Toolkit, LLM, 
+summary: 'Affinez le réglage d"un modèle de langage large avec MLFlow sur Jupyter Hub' 
+---
+= Prérequis
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Cette section décrit les étapes à suivre pour affiner le réglage d'un modèle LLM (large Language Model) avec MLFlow à l'aide de Jupyter Hub. L'objectif est de montrer un exemple de formation qui intègre le stockage NetApp et l'infrastructure de données intelligente NetApp pour des utilisations client telles que la génération augmentée de récupération (RAG).
+
+
+
+== Prérequis
+
+Cette section décrit les conditions préalables pour affiner un modèle de langage à l'aide de jupyter Hub. Pour ce faire, il est supposé que vous avez déjà installé les bibliothèques et les paquets nécessaires pour former ou affiner le modèle. Certaines des bibliothèques utilisées dans cet exemple incluent, mais ne sont pas limitées à: - Transformers - peft (paramètre efficace Fine Tuning) - Accelerate ce sont des bibliothèques appartenant à HuggingFace. Parmi les autres bibliothèques, on compte matplotlib, SciPy et Einops.
+
+Il est également supposé que vous avez accès au modèle de base et à ses poids par HuggingFace. Vous trouverez une liste des modèles disponibles sur https://huggingface.co/models["HuggingFace"].
+
+Enfin, vous devez également accéder à un compte Jupyter Hub avec le stockage approprié. Il est conseillé d'avoir accès à un serveur GPU (pour des besoins de calcul plus élevés).
+
+Cet exemple de réglage fin s'inspire d'une collection de guides et d'exemples pour ordinateurs portables développés par le https://github.com/brevdev/notebooks["l'équipe de brevdev"].
+
+
+
+== Chargement des données et configuration de l'expérience
+
+Stockez toutes les données (documents et texte) dans le même dossier partagé que le bloc-notes pour faciliter leur récupération. Convertissez les documents au format .json pour Data Processing et la formation.
+
+Une fois les données traitées, assurez-vous que le ou les GPU disposent de suffisamment de mémoire RAM pour pouvoir charger le modèle avec les données. Dans cet exemple, nous utilisons un processeur graphique NVIDIA TESLA T4 avec 16 Go de RAM pour ajuster les https://huggingface.co/microsoft/phi-2["phi-2"] paramètres Microsoft de 2.7 milliards de taille. En fonction du modèle utilisé et de la quantité de données, vous aurez peut-être besoin d'une quantité plus élevée de RAM/de GPU supplémentaires si vous souhaitez créer une configuration d'entraînement distribuée.
+
+image:tesla-t4.png["Spécifications GPU utilisées dans cet exemple"]
+
+Dans cet exemple, https://huggingface.co/docs/diffusers/main/en/training/lora["Lora"] est utilisé pour s'assurer que le modèle respecte les contraintes de ressources. Si le calcul n'est pas une contrainte, il est possible d'effectuer un réglage fin complet.
+
+
+
+== Résultats et travaux futurs
+
+Le tableau suivant indique la perte d'entraînement et la perte de validation correspondante pour phi-2 entraîné sur le jeu de données des solutions NetApp (blogs/articles internes d'ingénierie des solutions). Comme on l'a observé, la perte de validation diminue parallèlement à la perte d'entraînement à mesure que le nombre de séries augmente.
+
+image:phi2-results.png["Perte de formation et perte de validation pour Phi-2"]
+
+Voici quelques exemples d'invites utilisées pour évaluer le modèle de langage précis : *1. Décrivez les avantages de l'utilisation des volumes NetApp FlexGroup pour les datasets d'entraînement d'IA.*
+
+La réponse à cette invite est la suivante : « les volumes NetApp FlexGroup offrent de nombreux avantages lorsqu'ils sont utilisés pour les datasets d'entraînement d'IA : - *évolutivité* : les volumes FlexGroup peuvent évoluer horizontalement pour prendre en charge d'importants volumes de données et de ressources de calcul requis pour l'entraînement d'IA. Les entreprises peuvent ainsi entraîner des modèles sur des datasets plus volumineux sans se soucier des limites de ressources. - *Cohérence des données* : les volumes FlexGroup assurent la cohérence des données entre plusieurs nœuds d'un cluster en fournissant un espace de noms unique pour toutes les données. Les données sont ainsi toujours disponibles et cohérentes entre les différents nœuds, ce qui est essentiel pour les applications d'IA qui requièrent un accès aux données de plusieurs sources. - *Performances* : les volumes FlexGroup sont optimisés pour le stockage haute performance, ce qui les rend idéaux pour le stockage de datasets volumineux requis pour l'entraînement de l'IA. Les caractéristiques de performance du volume incluent une faible latence, un débit élevé et une haute disponibilité, garantissant ainsi un accès rapide et fiable aux données pendant l'entraînement. - *Sécurité* : les volumes FlexGroup fournissent des fonctionnalités de sécurité intégrées telles que le cryptage, le contrôle d'accès et la protection des données, garantissant la protection des données sensibles tout au long de leur cycle de vie. Cela est particulièrement important pour les applications d'IA qui traitent des données sensibles comme des données personnelles ou financières. Globalement, NetApp FlexGroup volumes constitue une solution évolutive, sécurisée et haute performance pour le stockage et la gestion des datasets d'entraînement d'IA. »
+
+*2. Quels avantages et fonctionnalités ONTAP 9 offre-t-il ? Donnez des instances spécifiques d'entre elles.*
+
+La réponse à cette invite est la suivante - "ONTAP 9 fournit les avantages et fonctionnalités suivants: - *Haute performance*, avec un débit jusqu'à 1 To/s par nœud pour le transfert de données entre les nœuds et les volumes de stockage. - *Haute disponibilité*, avec une disponibilité de 99.999 % et une haute disponibilité sur plusieurs nœuds. - *Évolutivité*, avec la possibilité d'évoluer horizontalement en ajoutant plus de nœuds ou en augmentant le nombre de disques sur chaque nœud. - *Flexibilité*, avec la possibilité d'utiliser différents types de volumes de stockage, tels que les SSD, les HDD ou les disques NVMe, en fonction des exigences des charges de travail. - *Sécurité*, avec la possibilité de mettre en œuvre diverses politiques de sécurité, telles que le cryptage, le contrôle d'accès et l'audit, pour protéger les données et les ressources du cluster. - Prise en charge de fonctionnalités avancées, telles que *la déduplication, la compression et la réplication de données*, pour optimiser les performances et réduire les coûts de stockage et de transfert de grands volumes de données."
+
+Les réponses montrent que le modèle ajusté présente un contexte plus riche à partir du dataset sur lequel il a été entraîné par rapport au modèle de base, ce qui permet d'obtenir un résultat plus pertinent.
+
+Cet exemple visait à montrer que l'entraînement d'un modèle linguistique sur des données personnalisées/propriétaires avec une petite quantité de ressources informatiques est toujours possible. Les travaux futurs incluent l'entraînement d'un modèle de langage plus large (par ordre de > 10 paramètres) sur les données de l'entreprise grâce à une configuration de GPU plus importante (réseau de GPU distribué).
+
+link:mlrun_configure_working_environment.adoc["Suivant : environnement de travail ML Run"]

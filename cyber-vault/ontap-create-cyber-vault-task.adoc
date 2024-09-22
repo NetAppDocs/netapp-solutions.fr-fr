@@ -26,10 +26,10 @@ Les étapes ci-dessous vous aideront à créer un cyber-coffre-fort avec ONTAP.
 .Description de la tâche
 L'illustration suivante montre la procédure d'initialisation d'une relation de coffre-fort SnapLock Compliance :
 
-image::ontap-cyber-vault-air-gap.png[Cyber-coffre à air comprimé avec NetApp ONTAP]
+image:ontap-cyber-vault-air-gap.png["Cyber-coffre à air comprimé avec NetApp ONTAP"]
 
 .Étapes
-. Identifiez la baie de destination devant devenir le cyber-coffre-fort pour recevoir les données air Gap.
+. Identifiez la baie de destination devant devenir le cyber-coffre-fort pour recevoir les données « air Gap ».
 . Sur la baie de destination, pour préparer le cyber-coffre-fort, link:https://docs.netapp.com/us-en/ontap/system-admin/install-license-task.html["Installez la licence ONTAP One"^], link:https://docs.netapp.com/us-en/ontap/snaplock/initialize-complianceclock-task.html["Initialiser l'horloge de conformité"^]et, si vous utilisez une version ONTAP antérieure à 9.10.1, link:https://docs.netapp.com/us-en/ontap/snaplock/create-snaplock-aggregate-task.html["Créer un agrégat SnapLock Compliance"^].
 . Sur la baie de destination, créer un volume de destination SnapLock Compliance de type DP :
 +
@@ -42,7 +42,7 @@ La commande suivante crée un volume SnapLock Compliance de 2 Go nommé `dstvolB
 +
 `cluster2::> volume create -vserver SVM2 -volume dstvolB -aggregate node01_aggr -snaplock-type compliance -type DP -size 2GG`
 
-. Sur le cluster de destination, pour créer l'airGap, définissez la période de rétention par défaut, comme décrit à la section link:https://docs.netapp.com/us-en/ontap/snaplock/set-default-retention-period-task.html["Définir la période de conservation par défaut"^]. Une période de conservation par défaut est affectée à un volume SnapLock cible du coffre-fort. La valeur pour cette période est initialement définie sur un minimum de 0 ans et un maximum de 30 ans pour les volumes SnapLock Compliance. À chaque copie NetApp Snapshot, toutes les copies NetApp Snapshot sont conservées pendant cette période de conservation par défaut. La période-conservation-par-défaut doit être modifiée. La période de conservation peut être prolongée ultérieurement, si nécessaire, mais jamais raccourcie. Pour plus d'informations, voir link:https://docs.netapp.com/us-en/ontap/snaplock/set-retention-period-task.html["Aperçu de la durée de conservation"^].
+. Sur le cluster de destination, pour créer l'air Gap, définissez la période de rétention par défaut, comme décrit à la section link:https://docs.netapp.com/us-en/ontap/snaplock/set-default-retention-period-task.html["Définir la période de conservation par défaut"^]. Une période de conservation par défaut est affectée à un volume SnapLock cible du coffre-fort. La valeur pour cette période est initialement définie sur un minimum de 0 ans et un maximum de 30 ans pour les volumes SnapLock Compliance. À chaque copie NetApp Snapshot, toutes les copies NetApp Snapshot sont conservées pendant cette période de conservation par défaut. La période-conservation-par-défaut doit être modifiée. La période de conservation peut être prolongée ultérieurement, si nécessaire, mais jamais raccourcie. Pour plus d'informations, voir link:https://docs.netapp.com/us-en/ontap/snaplock/set-retention-period-task.html["Aperçu de la durée de conservation"^].
 . link:https://docs.netapp.com/us-en/ontap/data-protection/create-replication-relationship-task.html["Créer une nouvelle relation de réplication"^] Entre la source non SnapLock et la nouvelle destination SnapLock que vous avez créée à l'étape 3.
 +
 Cet exemple crée une nouvelle relation SnapMirror avec le volume SnapLock de destination dstvolB à l'aide d'une règle XDPDefault pour archiver les copies Snapshot avec une étiquette quotidienne et hebdomadaire selon un planning horaire :

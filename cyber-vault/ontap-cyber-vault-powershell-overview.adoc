@@ -1,0 +1,91 @@
+---
+sidebar: sidebar 
+permalink: cyber-vault/ontap-cyber-vault-powershell-overview.html 
+keywords: Cyber vault, powershell, script, configuration, validation, hardening 
+summary: 'Il s"agit de la solution NetApp ONTAP pour la configuration, le renforcement et la validation d"un cyber-coffre basé sur ONTAP' 
+---
+= Présentation du cyber-coffre-fort ONTAP avec PowerShell
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media
+
+
+[role="lead"]
+Dans le monde digital d'aujourd'hui, la protection des données stratégiques d'une entreprise n'est pas qu'une bonne pratique, c'est un impératif commercial. Les cybermenaces évoluent à un rythme sans précédent et les mesures classiques de protection des données ne suffisent plus à sécuriser les informations sensibles. C'est là qu'intervient un cyber-coffre. La solution de pointe de NetApp basée sur ONTAP associe des techniques de rodage avancées à des mesures de protection des données robustes afin de créer une barrière impénétrable contre les cybermenaces. En isolant les données les plus précieuses à l'aide d'une technologie de renforcement sécurisé, un cyber-coffre minimise la surface d'attaque, afin que les données les plus stratégiques restent confidentielles, intactes et immédiatement disponibles en cas de besoin.
+
+Un cyber-coffre est une installation de stockage sécurisée qui se compose de plusieurs couches de protection, telles que des pare-feu, des réseaux et du stockage. Ces composants protègent les données de restauration essentielles nécessaires aux opérations métier critiques. Les composants du cyber-coffre se synchronisent régulièrement avec les données de production essentielles en fonction de la stratégie de coffre-fort, mais restent inaccessibles. Cette configuration isolée et déconnectée permet de garantir qu'en cas de cyber-attaque compromettant l'environnement de production, une récupération fiable et finale peut être facilement effectuée à partir du cyber-coffre.
+
+NetApp permet de créer facilement un air Gap pour le cyber-coffre en configurant le réseau, en désactivant les LIF, en mettant à jour les règles du pare-feu et en isolant le système des réseaux externes et d'Internet. Cette approche robuste déconnecte efficacement le système des réseaux externes et d'Internet, offrant une protection inégalée contre les cyber-attaques à distance et les tentatives d'accès non autorisées, ce qui rend le système à l'abri des menaces et des intrusions basées sur le réseau.
+
+En combinant ces fonctionnalités à la protection SnapLock Compliance, les données ne peuvent pas être modifiées ni supprimées, même par les administrateurs ONTAP ou le support NetApp. SnapLock fait l'objet d'audits réguliers en conformité avec les réglementations SEC et FINRA, garantissant ainsi que la résilience des données respecte ces réglementations strictes en matière de WORM et de conservation des données dans le secteur bancaire. NetApp est le seul stockage d'entreprise validé par NSA CSfC pour le stockage de données les plus secrètes.
+
+image:ontap-cyber-vault-logical-air-gap.png["Air Gap ONTAP Cyber Vault avec des copies SnapLock immuables et indélébiles"]
+
+Ce document décrit la configuration automatisée de la solution cyberVault de NetApp pour le stockage ONTAP sur site vers un autre stockage ONTAP désigné, avec des snapshots immuables, qui ajoutent une couche de protection supplémentaire en cas d'attaques informatiques croissantes pour une restauration rapide. Dans le cadre de cette architecture, l'ensemble de la configuration est appliquée conformément aux bonnes pratiques de ONTAP. La dernière section contient des instructions pour effectuer une récupération en cas d'attaque.
+
+
+NOTE: La même solution s'applique pour créer le coffre-fort virtuel désigné dans AWS à l'aide de FSX pour ONTAP.
+
+
+
+== Étapes de haut niveau pour créer un cyber-coffre ONTAP
+
+* Création de la relation de peering
++
+** Le site de production utilisant le stockage ONTAP est associé à un stockage ONTAP dédié au cybercoffre
+
+
+* Créer un volume SnapLock Compliance
+* Configurer la relation et la règle SnapMirror pour définir le libellé
++
+** La relation SnapMirror et les planifications appropriées sont configurées
+
+
+* Définissez les rétentions avant de lancer le transfert SnapMirror (coffre-fort)
++
+** Le verrouillage de conservation est appliqué aux données copiées, ce qui empêche également les données d'être internes ou d'échouer. Vous ne pouvez pas supprimer les données avant l'expiration de la période de conservation
+** Les entreprises peuvent conserver ces données pendant quelques semaines/mois, selon leurs besoins
+
+
+* Initialisation de la relation SnapMirror à partir d'étiquettes
++
+** L'amorçage initial et le transfert incrémentiel perpétuel s'effectue en fonction de la planification SnapMirror
+** Les données sont protégées (immuables et indélébiles) avec SnapLock Compliance, et elles peuvent être restaurées
+
+
+* Appliquez des contrôles stricts de transfert des données
++
+** Le cyber-coffre-fort est déverrouillé pendant une période limitée avec les données du site de production et synchronisé avec les données du coffre-fort. Une fois le transfert terminé, la connexion est déconnectée, fermée et verrouillée à nouveau
+
+
+* Restauration rapide
++
+** Si le stockage primaire est affecté sur le site de production, les données du cyber-coffre sont restaurées en toute sécurité dans la production d'origine ou dans un autre environnement choisi
+
+
+
+
+image:ontap-cyber-vault-air-gap.png["Étapes de haut niveau pour créer un cyber-coffre ONTAP"]
+
+
+
+== Composants de la solution
+
+NetApp ONTAP s'exécutant sur 9.15.1 clusters source et cible
+
+ONTAP One : la licence tout-en-un de NetApp ONTAP.
+
+Fonctionnalités utilisées à partir de la licence ONTAP One :
+
+* Conformité SnapLock
+* SnapMirror
+* Vérification multi-administrateurs
+* Toutes les fonctionnalités de renforcement exposées par ONTAP
+* Informations d'identification RBAC distinctes pour le cyber-coffre
+
+
+
+NOTE: Toutes les baies physiques unifiées ONTAP peuvent être utilisées pour une infrastructure informatique virtuelle, mais les systèmes Flash AFF C-Series basés sur la capacité et les systèmes Flash hybrides FAS constituent les plateformes idéales les plus économiques à cette fin. Veuillez consulter le link:./ontap-cyber-vault-sizing.html["Dimensionnement du cyber-coffre ONTAP"] pour obtenir des conseils de dimensionnement.

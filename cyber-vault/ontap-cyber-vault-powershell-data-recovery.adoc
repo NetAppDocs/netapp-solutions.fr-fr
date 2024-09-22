@@ -1,0 +1,29 @@
+---
+sidebar: sidebar 
+permalink: cyber-vault/ontap-cyber-vault-powershell-data-recovery.html 
+keywords: Cyber vault, powershell, script, configuration, validation, hardening 
+summary: 'Il s"agit de la solution NetApp ONTAP pour la configuration, le renforcement et la validation d"un cyber-coffre basé sur ONTAP' 
+---
+= Restauration des données ONTAP Cyber Vault
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media
+
+
+[role="lead"]
+Si des données sont détruites dans le data Center de production, les données du cyber-coffre peuvent être restaurées en toute sécurité dans l'environnement choisi. Contrairement à une solution physiquement à air Gap, le cyber-coffre ONTAP à air Gap est construit à l'aide de fonctionnalités natives de ONTAP telles que SnapLock Compliance et SnapMirror. Il en résulte un processus de restauration à la fois rapide et facile à exécuter.
+
+En cas d'attaque par ransomware et de nécessité de restaurer les données à partir du cybercoffre, le processus de restauration est simple et facile, car les copies Snapshot hébergées dans le cybercoffre sont utilisées pour restaurer les données chiffrées.
+
+image:ontap-cyber-vault-data-recovery.png["Restaurer la relation"]
+
+S'il s'agit d'un moyen plus rapide de remettre les données en ligne lorsque cela est nécessaire, afin de les valider, d'isoler et d'analyser rapidement les données à des fins de restauration. Ceci peut être facilement obtenu en utilisant avec FlexClone avec l'option SnapLock-type définie sur le type non-SnapLock.
+
+
+NOTE: Depuis ONTAP 9.13.1, la restauration d'une copie Snapshot verrouillée sur le volume SnapLock de destination d'une relation de copie SnapLock peut être instantanément restaurée en créant une FlexClone avec l'option de type SnapLock définie sur « non SnapLock ». Lors de l'exécution de l'opération de création du clone de volume, spécifiez la copie Snapshot en tant que « snapshot-parent ». Plus d'informations sur la création d'un volume FlexClone avec un type SnapLock link:https://docs.netapp.com/us-en/ontap/volumes/create-flexclone-task.html?q=volume+clone["ici."]
+
+
+NOTE: La mise en pratique des procédures de restauration à partir du cyber-coffre permet de s'assurer que les étapes appropriées sont établies pour la connexion au cyber-coffre et la récupération des données. La planification et le test de la procédure sont essentiels pour toute reprise lors d'une cyberattaque.
