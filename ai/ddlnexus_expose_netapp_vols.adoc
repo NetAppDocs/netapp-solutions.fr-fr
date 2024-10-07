@@ -30,9 +30,9 @@ L'utilisation de volumes NetApp en association avec Domino offre les avantages s
 
 
 
-== Exposez les volumes NFS existants qui n'ont pas été provisionnés par Astra Trident
+== Exposer les volumes NFS existants qui n'ont pas été provisionnés par Trident
 
-Si votre volume NFS NetApp ONTAP existant n'a pas été provisionné par Astra Trident, suivez les étapes décrites dans cette sous-section.
+Si votre volume NFS NetApp ONTAP existant n'a pas été provisionné par Trident, suivez les étapes décrites dans cette sous-section.
 
 
 
@@ -53,15 +53,15 @@ image:ddlnexus_image3.png["Figure montrant la boîte de dialogue entrée/sortie 
 
 
 
-== Exposez les volumes existants qui ont été provisionnés par Astra Trident
+== Exposer les volumes existants qui ont été provisionnés par Trident
 
-Si votre volume existant a été provisionné par Astra Trident, suivez les étapes décrites dans cette sous-section.
+Si votre volume existant a été provisionné par Trident, suivez les étapes décrites dans cette sous-section.
 
 
 
 === Editer la demande de volume persistant existante
 
-Si votre volume a été provisionné par Astra Trident, une demande de volume persistant est déjà associée à votre volume. Pour exposer ce volume à Domino, vous devez modifier la demande de volume et ajouter l'étiquette suivante à la liste des étiquettes de la `metadata.labels` champ :
+Si votre volume a été provisionné par Trident, une demande de volume persistant est déjà associée à votre volume. Pour exposer ce volume à Domino, vous devez modifier la demande de volume et ajouter l'étiquette suivante à la liste des étiquettes du `metadata.labels` champ :
 
 ....
 "dominodatalab.com/external-data-volume": "Generic"

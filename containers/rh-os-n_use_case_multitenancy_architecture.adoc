@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: containers/rh-os-n_use_case_multitenancy_architecture.html 
-keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, Multitenancy, Multi-tenancy 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, Multitenancy, Multi-tenancy 
 summary: 'Configuration d"une colocation sur Red Hat OpenShift avec NetApp' 
 ---
 = Architecture
@@ -14,13 +14,13 @@ summary: 'Configuration d"une colocation sur Red Hat OpenShift avec NetApp'
 
 
 [role="lead"]
-Bien que Red Hat OpenShift et Astra Trident avec NetApp ONTAP ne assurent pas l'isolation des charges de travail par défaut, ils offrent un large éventail de fonctionnalités qui peuvent être utilisées pour configurer la colocation. Pour mieux comprendre comment concevoir une solution mutualisée sur un cluster Red Hat OpenShift avec Astra Trident basée sur NetApp ONTAP, nous examinons un exemple d'exigences et nous présente la configuration qui l'entoure.
+Bien que Red Hat OpenShift et Trident avec NetApp ONTAP ne fournissent pas d'isolation entre les charges de travail par défaut, ils offrent un large éventail de fonctionnalités pour configurer la colocation. Pour mieux comprendre la conception d'une solution multilocataire sur un cluster Red Hat OpenShift avec Trident soutenu par NetApp ONTAP, examinons un exemple avec un ensemble d'exigences et décrivons la configuration qui l'entoure.
 
-Supposons qu'une entreprise exécute deux de ses charges de travail sur un cluster Red Hat OpenShift dans le cadre de deux projets sur lesquels deux équipes différentes travaillent. Les données de ces workloads résident sur des demandes de volume persistant qui sont provisionnées dynamiquement par Astra Trident sur un back-end NAS NetApp ONTAP. L'entreprise doit concevoir une solution mutualisée pour ces deux charges de travail et isoler les ressources utilisées pour ces projets afin de garantir la sécurité et la performance nécessaires. Elle est axée sur les données qui servent ces applications.
+Supposons qu'une entreprise exécute deux de ses charges de travail sur un cluster Red Hat OpenShift dans le cadre de deux projets sur lesquels deux équipes différentes travaillent. Les données de ces charges de travail résident sur des demandes de volume virtuel qui sont provisionnées dynamiquement par Trident sur un back-end NAS NetApp ONTAP. L'entreprise doit concevoir une solution mutualisée pour ces deux charges de travail et isoler les ressources utilisées pour ces projets afin de garantir la sécurité et la performance nécessaires. Elle est axée sur les données qui servent ces applications.
 
-La figure suivante décrit la solution mutualisée sur un cluster Red Hat OpenShift avec Astra Trident et NetApp ONTAP.
+La figure suivante illustre la solution multilocataire sur un cluster Red Hat OpenShift avec Trident et NetApp ONTAP.
 
-image:redhat_openshift_image40.jpg["Colocation sur le cluster Red Hat OpenShift avec Astra Trident et NetApp ONTAP"]
+image:redhat_openshift_image40.jpg["Colocation sur le cluster Red Hat OpenShift avec Trident soutenu par NetApp ONTAP"]
 
 
 
@@ -28,7 +28,7 @@ image:redhat_openshift_image40.jpg["Colocation sur le cluster Red Hat OpenShift 
 
 . Cluster de stockage NetApp ONTAP
 . Cluster Red Hat OpenShift
-. Astra Trident
+. Trident
 
 
 
@@ -47,7 +47,7 @@ Il est important d'isoler le service de stockage partagé en tant que fournisseu
 
 
 
-== Astra Trident
+== Trident
 
 Une fois que vous avez des SVM différents pour les projets créés sur NetApp ONTAP, vous devez mapper chaque SVM sur un back-end Trident différent. La configuration back-end de Trident entraîne l'allocation du stockage persistant aux ressources de cluster OpenShift, et elle requiert le mappage des détails de la SVM sur. Il doit s'agir du pilote de protocole pour le back-end au minimum. Vous pouvez également définir la manière dont les volumes sont provisionnés sur le stockage et définir des limites pour la taille des volumes ou l'utilisation des agrégats, etc. Vous trouverez des informations détaillées sur la définition des systèmes back-end Trident https://docs.netapp.com/us-en/trident/trident-use/backends.html["ici"^].
 

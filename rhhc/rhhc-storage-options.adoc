@@ -14,9 +14,9 @@ summary:
 
 
 [role="lead"]
-Que les conteneurs Red Hat Open Shift s'exécutent sur VMware ou dans les hyperscalers, NetApp Astra Trident peut être utilisé comme mécanisme de provisionnement CSI pour les différents types de stockage NetApp back-end pris en charge.
+Que les conteneurs Red Hat Open Shift s'exécutent sur VMware ou dans les hyperscalers, NetApp Trident peut être utilisé comme provisionneur CSI pour les différents types de stockage back-end NetApp qu'il prend en charge.
 
-Le schéma suivant décrit les différents systèmes de stockage NetApp back-end pouvant être intégrés avec des clusters OpenShift à l'aide de NetApp Astra Trident.
+Le schéma suivant décrit les différents systèmes de stockage NetApp back-end pouvant être intégrés aux clusters OpenShift à l'aide de NetApp Trident.
 
 image:a-w-n_astra_trident.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
@@ -34,7 +34,7 @@ image:rhhc_storage_opt_pod2vol.png["Relation pod/volume ONTAP"]
 
 == Options Container Storage interface (CSI)
 
-Sur les environnements vSphere, les clients peuvent choisir le pilote VMware CSI et/ou Astra Trident CSI pour s'intégrer à ONTAP. Avec VMware CSI, les volumes persistants sont utilisés en tant que disques SCSI locaux, tandis qu'avec Trident, ils sont utilisés avec le réseau. Étant donné que VMware CSI ne prend pas en charge les modes d'accès RWX avec ONTAP, les applications doivent utiliser Trident CSI si le mode RWX est requis. Pour les déploiements basés sur FC, VMware CSI est privilégié et SnapMirror Business Continuity (SMBC) offre une haute disponibilité au niveau de la zone.
+Dans les environnements vSphere, les clients peuvent choisir le pilote VMware CSI et/ou Trident CSI pour s'intégrer à ONTAP. Avec VMware CSI, les volumes persistants sont utilisés en tant que disques SCSI locaux, tandis qu'avec Trident, ils sont utilisés avec le réseau. Étant donné que VMware CSI ne prend pas en charge les modes d'accès RWX avec ONTAP, les applications doivent utiliser Trident CSI si le mode RWX est requis. Pour les déploiements basés sur FC, VMware CSI est privilégié et SnapMirror Business Continuity (SMBC) offre une haute disponibilité au niveau de la zone.
 
 
 
@@ -56,7 +56,7 @@ Sur les environnements vSphere, les clients peuvent choisir le pilote VMware CSI
 * ontap-nas-flexgroup (volume dédié à grande échelle)
 
 
-Pour VMware CSI et Astra Trident CSI, ONTAP prend en charge nconnect, l'agrégation de sessions, kerberos, etc. Pour NFS et les chemins d'accès multiples, l'authentification chap, etc. Pour les protocoles en mode bloc.
+Pour VMware CSI et Trident CSI, ONTAP prend en charge nconnect, l'agrégation de sessions, kerberos, etc. Pour NFS et les chemins d'accès multiples, l'authentification chap, etc. Pour les protocoles en mode bloc.
 
 Dans AWS, FSX pour NetApp ONTAP (FSxN) peut être déployé dans une zone de disponibilité unique (AZ) ou dans plusieurs zones de disponibilité. Pour les workloads de production qui nécessitent une haute disponibilité, plusieurs zones de disponibilité offrent une tolérance aux pannes de niveau zonal et un meilleur cache de lecture NVMe qu'une zone de disponibilité unique. Pour plus d'informations, consultez link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/performance.html["Conseils sur les performances d'AWS"]. Pour réduire les coûts sur le site de reprise après incident, un seul serveur AZ FSX ONTAP peut être utilisé. image:rhhc_storage_options_fsxn_options.png["Réplication entre plusieurs zones de disponibilité et une zone de disponibilité unique"]
 

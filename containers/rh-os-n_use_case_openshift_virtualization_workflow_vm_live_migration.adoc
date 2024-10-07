@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_vm_live_migration.html 
-keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
 summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
 ---
 = Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
@@ -20,7 +20,7 @@ Cette section explique comment migrer une machine virtuelle dans OpenShift Virtu
 
 == Migration en direct des machines virtuelles
 
-Live migration est un processus de migration d'une instance de VM d'un nœud vers un autre dans un cluster OpenShift sans aucun temps d'indisponibilité. Pour que la migration en direct puisse fonctionner dans un cluster OpenShift, les VM doivent être liés aux demandes de volume virtuel avec le mode d'accès ReadWriteMany partagé. Les systèmes back-end Astra Trident configurés à l'aide de pilotes ontap-nas prennent en charge le mode d'accès RWX pour les protocoles de systèmes de fichiers nfs et smb. Reportez-vous à la documentation link:https://docs.netapp.com/us-en/trident/trident-use/ontap-nas.html["ici"]. Les systèmes back-end Astra Trident configurés à l'aide de pilotes ontap-san prennent en charge le mode d'accès RWX pour les volumes de blocs pour les protocoles iSCSI et NVMe/TCP. Reportez-vous à la documentation link:https://docs.netapp.com/us-en/trident/trident-use/ontap-san.html["ici"].
+Live migration est un processus de migration d'une instance de VM d'un nœud vers un autre dans un cluster OpenShift sans aucun temps d'indisponibilité. Pour que la migration en direct puisse fonctionner dans un cluster OpenShift, les VM doivent être liés aux demandes de volume virtuel avec le mode d'accès ReadWriteMany partagé. Les systèmes back-end Trident configurés à l'aide de pilotes ONTAP-nas prennent en charge le mode d'accès RWX pour les protocoles de systèmes de fichiers nfs et smb. Reportez-vous à la documentation link:https://docs.netapp.com/us-en/trident/trident-use/ontap-nas.html["ici"]. Les systèmes back-end Trident configurés à l'aide de pilotes ONTAP-san prennent en charge le mode d'accès RWX pour le volume de blocs dans les protocoles iSCSI et NVMe/TCP. Reportez-vous à la documentation link:https://docs.netapp.com/us-en/trident/trident-use/ontap-san.html["ici"].
 
 Par conséquent, pour que la migration dynamique réussisse, les VM doivent être provisionnées avec des disques (disques de démarrage et disques hot-plug supplémentaires) avec des PVC utilisant les classes de stockage ontap-nas ou ontap-san (volumemode : bloc). Lorsque les demandes de volume persistant sont créées, Trident crée des volumes ONTAP dans un SVM activé sur NFS ou iSCSI.
 

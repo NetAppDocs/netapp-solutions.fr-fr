@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_clone_vm.html 
-keywords: OpenShift, OCP, Astra Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
 summary: Red Hat OpenShift Virtualization avec NetApp ONTAP 
 ---
 = Flux de travail : Red Hat OpenShift Virtualization avec NetApp ONTAP
@@ -20,7 +20,7 @@ Cette section explique comment cloner une machine virtuelle avec Red Hat OpenShi
 
 == Clonage de VM
 
-Le clonage d'une machine virtuelle existante dans OpenShift est réalisé avec la prise en charge de la fonctionnalité de clonage de volumes CSI d'Astra Trident. Le clonage de volumes CSI permet de créer une nouvelle demande de volume persistant en utilisant une demande de volume en tant que source de données en dupliquant son volume persistant. Une fois le nouveau PVC créé, il fonctionne comme une entité distincte et sans lien ou dépendance sur le PVC source.
+Le clonage d'une machine virtuelle existante dans OpenShift est possible grâce à la prise en charge de la fonctionnalité de clonage Volume CSI de Trident. Le clonage de volumes CSI permet de créer une nouvelle demande de volume persistant en utilisant une demande de volume en tant que source de données en dupliquant son volume persistant. Une fois le nouveau PVC créé, il fonctionne comme une entité distincte et sans lien ou dépendance sur le PVC source.
 
 image:redhat_openshift_image57.png["Architecture de clonage de VM"]
 
@@ -41,7 +41,7 @@ Les VM d'un cluster OpenShift peuvent être clonés de deux manières :
 
 === En cours d'arrêt de la machine virtuelle source
 
-Le clonage d'une machine virtuelle existante en fermant cette machine virtuelle est une fonctionnalité OpenShift native prise en charge d'Astra Trident. Procédez comme suit pour cloner une machine virtuelle.
+Le clonage d'une machine virtuelle existante en désactivant la machine virtuelle est une fonctionnalité OpenShift native implémentée avec la prise en charge de Trident. Procédez comme suit pour cloner une machine virtuelle.
 
 . Accédez à charges de travail > virtualisation > machines virtuelles, puis cliquez sur les points de suspension situés à côté de la machine virtuelle que vous souhaitez cloner.
 . Cliquez sur Cloner l'ordinateur virtuel et fournissez les détails concernant la nouvelle machine virtuelle.
