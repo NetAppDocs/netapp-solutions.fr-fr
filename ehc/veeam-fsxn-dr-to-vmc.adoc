@@ -1,10 +1,10 @@
 ---
 sidebar: sidebar 
 permalink: ehc/veeam-fsxn-dr-to-vmc.html 
-keywords: disaster recovery, vmc, vmware cloud, aws, amazon web services, fsxn, fsx for ontap, fsx for netapp ontap, disaster recovery, dr, veeam, replication 
+keywords: disaster recovery, vmc, vmware cloud, aws, amazon web services, fsxn, FSx ONTAP, FSx ONTAP, disaster recovery, dr, veeam, replication 
 summary:  
 ---
-= Utilisation de Veeam Replication et FSX for ONTAP pour la reprise d'activité vers VMware Cloud on AWS
+= Utilisation de Veeam Replication et FSX ONTAP pour la reprise d'activité vers VMware Cloud on AWS
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-L'intégration d'Amazon FSX for NetApp ONTAP à VMware Cloud on AWS est un datastore NFS externe géré par AWS basé sur le système de fichiers ONTAP de NetApp qui peut être relié à un cluster dans le SDDC. Elle fournit aux clients une infrastructure de stockage virtualisée flexible et haute performance qui peut évoluer indépendamment des ressources de calcul.
+L'intégration d'Amazon FSX ONTAP à VMware Cloud on AWS est un datastore NFS externe géré par AWS basé sur le système de fichiers ONTAP de NetApp qui peut être relié à un cluster dans le SDDC. Elle fournit aux clients une infrastructure de stockage virtualisée flexible et haute performance qui peut évoluer indépendamment des ressources de calcul.
 
 Auteur: Niyaz Mohamed - NetApp Solutions Engineering
 
@@ -22,15 +22,15 @@ Auteur: Niyaz Mohamed - NetApp Solutions Engineering
 
 == Présentation
 
-Pour les clients qui cherchent à utiliser VMware Cloud sur AWS SDDC comme cible de reprise d'activité, les datastores FSX pour ONTAP peuvent être utilisés pour répliquer les données depuis un environnement sur site à l'aide d'une solution tierce validée offrant des fonctionnalités de réplication de machines virtuelles. En ajoutant le datastore FSX for ONTAP, il permet un déploiement optimisé par les coûts que la création du cloud VMware sur un SDDC AWS avec un énorme nombre d'hôtes ESXi uniquement pour prendre en charge le stockage.
+Pour les clients qui cherchent à utiliser VMware Cloud sur AWS SDDC comme cible de reprise d'activité, les datastores FSX ONTAP peuvent être utilisés pour répliquer les données depuis un environnement sur site à l'aide d'une solution tierce validée offrant des fonctionnalités de réplication de machines virtuelles. En ajoutant le datastore FSX ONTAP, il permettra un déploiement optimisé par rapport aux coûts que la création du cloud VMware sur un SDDC AWS avec une quantité considérable d'hôtes ESXi uniquement pour prendre en charge le stockage.
 
-Cette approche aide également les clients à utiliser un cluster pilote dans VMC avec FSX pour les datastores ONTAP pour héberger les répliques de machine virtuelle. Le même processus peut également être étendu en tant qu'option de migration vers VMware Cloud sur AWS en basculant avec fluidité le plan de réplication.
+Cette approche aide également les clients à utiliser un cluster pilote dans VMC avec les datastores FSX ONTAP pour héberger les répliques de machine virtuelle. Le même processus peut également être étendu en tant qu'option de migration vers VMware Cloud sur AWS en basculant avec fluidité le plan de réplication.
 
 
 
 == Énoncé du problème
 
-Ce document décrit comment utiliser le datastore FSX pour ONTAP et Veeam Backup and Replication pour configurer la reprise d'activité pour les machines virtuelles VMware sur site vers VMware Cloud on AWS à l'aide de la fonctionnalité de réplication de machine virtuelle.
+Ce document décrit l'utilisation du datastore FSX ONTAP et de Veeam Backup and Replication pour configurer la reprise d'activité pour les machines virtuelles VMware sur site vers VMware Cloud on AWS à l'aide de la fonctionnalité de réplication de machine virtuelle.
 
 Veeam Backup & Replication permet la réplication sur site et à distance pour la reprise après incident. Lors de la réplication des machines virtuelles, Veeam Backup & Replication crée une copie exacte des machines virtuelles au format VMware vSphere natif sur le cluster SDDC cible VMware Cloud on AWS et synchronise la copie avec la machine virtuelle d'origine.
 
@@ -51,7 +51,7 @@ image:dr-veeam-fsx-image1.png["Diagramme du scénario de reprise d'activité ave
 === Marches de haut niveau
 
 . Le logiciel Veeam Backup and Replication s'exécute dans un environnement sur site avec une connectivité réseau appropriée.
-. Configurez VMware Cloud on AWS, consultez l'article VMware Cloud Tech zone link:https://vmc.techzone.vmware.com/fsx-guide["Guide de déploiement de l'intégration de VMware Cloud on AWS avec Amazon FSX for NetApp ONTAP"] Pour le déploiement, configurez VMware Cloud sur AWS SDDC et FSX pour ONTAP en tant que datastore NFS. (Un environnement de pilote léger configuré avec une configuration minimale peut être utilisé à des fins de reprise sur incident. Les machines virtuelles basculeront vers ce cluster en cas d'incident et d'autres nœuds pourront être ajoutés.)
+. Configurez VMware Cloud on AWS, consultez l'article VMware Cloud Tech zone link:https://vmc.techzone.vmware.com/fsx-guide["Guide de déploiement de l'intégration de VMware Cloud on AWS avec Amazon FSX ONTAP"]pour déployer et configurer VMware Cloud on AWS SDDC et FSX ONTAP en tant que datastore NFS. (Un environnement de pilote léger configuré avec une configuration minimale peut être utilisé à des fins de reprise sur incident. Les machines virtuelles basculeront vers ce cluster en cas d'incident et d'autres nœuds pourront être ajoutés.)
 . Configuration des tâches de réplication pour créer des répliques de machine virtuelle à l'aide de Veeam Backup and Replication
 . Création d'un plan de basculement et basculement
 . Revenez aux machines virtuelles de production une fois l'incident terminé et le site principal en marche.
@@ -59,11 +59,11 @@ image:dr-veeam-fsx-image1.png["Diagramme du scénario de reprise d'activité ave
 
 
 
-=== Pré-requis pour la réplication de VM Veeam vers VMC et FSX pour les datastores ONTAP
+=== Pré-requis pour la réplication de VM Veeam vers les datastores VMC et FSX ONTAP
 
 . Assurez-vous que la machine virtuelle de sauvegarde Veeam Backup & Replication est connectée au vCenter source et au cloud VMware cible sur les clusters SDDC AWS.
 . Le serveur de sauvegarde doit pouvoir résoudre les noms abrégés et se connecter aux vCenters source et cible.
-. Le datastore FSX pour ONTAP cible doit disposer de suffisamment d'espace libre pour stocker des VMDK de machines virtuelles répliquées
+. Le datastore FSX ONTAP cible doit disposer de suffisamment d'espace libre pour stocker des VMDK de machines virtuelles répliquées
 
 
 Pour plus d'informations, reportez-vous à la section « considérations et limitations » link:https://helpcenter.veeam.com/docs/backup/vsphere/replica_limitations.html?ver=120["ici"].
@@ -91,11 +91,11 @@ image:dr-veeam-fsx-image2.png["Figure montrant la boîte de dialogue entrée/sor
 
 
 
-. Sélectionnez les machines virtuelles qui doivent être répliquées vers le datastore FSX for ONTAP connecté au SDDC VMware Cloud on AWS à l'étape *machines virtuelles*. Les machines virtuelles peuvent être placées sur VSAN pour remplir la capacité de datastore VSAN disponible. Dans un cluster à voyants, la capacité utilisable d'un cluster à 3 nœuds sera limitée. Le reste des données peut être répliqué dans des datastores FSX for ONTAP. Cliquez sur *Ajouter*, puis dans la fenêtre *Ajouter un objet*, sélectionnez les machines virtuelles ou les conteneurs VM nécessaires et cliquez sur *Ajouter*. Cliquez sur *Suivant*.
+. Sélectionnez les machines virtuelles qui doivent être répliquées vers le datastore FSX ONTAP connecté au SDDC VMware Cloud on AWS à l'étape *machines virtuelles*. Les machines virtuelles peuvent être placées sur VSAN pour remplir la capacité de datastore VSAN disponible. Dans un cluster à voyants, la capacité utilisable d'un cluster à 3 nœuds sera limitée. Le reste des données peut être répliqué vers des datastores FSX ONTAP. Cliquez sur *Ajouter*, puis dans la fenêtre *Ajouter un objet*, sélectionnez les machines virtuelles ou les conteneurs VM nécessaires et cliquez sur *Ajouter*. Cliquez sur *Suivant*.
 +
 image:dr-veeam-fsx-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-. Ensuite, sélectionnez la destination en tant que cluster/hôte SDDC pour VMware Cloud sur AWS et le pool de ressources, le dossier VM et le datastore FSX pour ONTAP pour les répliques de VM. Cliquez ensuite sur *Suivant*.
+. Ensuite, sélectionnez la destination en tant que cluster/hôte SDDC pour VMware Cloud sur AWS et le pool de ressources, le dossier de machine virtuelle et le datastore FSX ONTAP pour les répliques de machine virtuelle. Cliquez ensuite sur *Suivant*.
 +
 image:dr-veeam-fsx-image4.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
@@ -221,7 +221,7 @@ image:dr-veeam-fsx-image19.png["Figure montrant la boîte de dialogue entrée/so
 
 == Conclusion
 
-La fonctionnalité de datastore FSX pour ONTAP permet à Veeam ou à tout outil tiers validé de fournir une solution de reprise après incident à faible coût avec un cluster Pilot light et sans avoir besoin de disposer d'un grand nombre d'hôtes dans le cluster uniquement pour prendre en charge la copie de réplica de la machine virtuelle. Cette solution puissante permet de gérer un plan de reprise d'activité personnalisé et de réutiliser les produits de sauvegarde existants en interne pour répondre aux besoins de reprise après incident. Ainsi, la reprise après incident basée sur le cloud est possible en quittant les data centers de reprise après incident sur site. Le basculement peut s'effectuer en cas de basculement planifié ou de basculement d'un simple clic en cas d'incident. La décision d'activer le site de reprise après incident est prise.
+La fonctionnalité de datastore FSX ONTAP permet à Veeam ou à tout outil tiers validé de fournir une solution de reprise après incident à faible coût avec un cluster Pilot light et sans avoir à activer un grand nombre d'hôtes dans le cluster uniquement pour prendre en charge la copie de réplica de la machine virtuelle. Cette solution puissante permet de gérer un plan de reprise d'activité personnalisé et de réutiliser les produits de sauvegarde existants en interne pour répondre aux besoins de reprise après incident. Ainsi, la reprise après incident basée sur le cloud est possible en quittant les data centers de reprise après incident sur site. Le basculement peut s'effectuer en cas de basculement planifié ou de basculement d'un simple clic en cas d'incident. La décision d'activer le site de reprise après incident est prise.
 
 Pour en savoir plus sur ce processus, n'hésitez pas à suivre la vidéo de présentation détaillée.
 

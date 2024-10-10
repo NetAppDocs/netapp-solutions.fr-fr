@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/migrate-vms-to-ec2-fsxn-arch.html 
 keywords: netapp, vmware, amazon, ec2, fsxn, migration, iscsi, 
-summary: 'Ce rapport technique explique comment migrer des machines virtuelles VMware vSphere sur site vers une instance Amazon EC2 avec des disques de données placés sur des LUN iSCSI FSX pour ONTAP à l"aide de la fonctionnalité « mobilité des données en tant que code » MigrationTM de Cirrus Migrate Cloud (CMC).' 
+summary: 'Ce rapport technique explique comment migrer des machines virtuelles VMware vSphere sur site vers une instance Amazon EC2 avec des disques de données placés sur des LUN iSCSI FSX ONTAP à l"aide de la fonctionnalité « mobilité des données en tant que code » MigrationTM de Cirrus Migrate Cloud (CMC).' 
 ---
-= Migrer des machines virtuelles vers Amazon EC2 à l'aide de FSxN : architecture et conditions préalables
+= Migrer des machines virtuelles vers Amazon EC2 en utilisant Amazon FSX pour NetApp ONTAP : architecture et conditions requises
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -22,11 +22,11 @@ Cet article présente les critères généraux d'architecture et de déploiement
 
 Le diagramme ci-dessous illustre l'architecture générale de la migration des données VMDK (Virtual machine Disk) sur VMware vers AWS à l'aide de CMC MigrateOps :
 
-image:migrate-ec2-fsxn-image01.png["Migration des machines virtuelles vers Amazon EC2 à l'aide du diagramme d'architecture FSxN"]
+image:migrate-ec2-fsxn-image01.png["Migration des serveurs virtuels vers Amazon EC2 à l'aide du diagramme d'architecture FSX ONTAP"]
 
 
 
-== Comment migrer vos machines virtuelles VMware vers AWS à l'aide d'Amazon EC2 et FSX pour ONTAP iSCSI
+== Comment migrer vos machines virtuelles VMware vers AWS à l'aide d'Amazon EC2 et FSX ONTAP iSCSI
 
 
 
@@ -37,12 +37,12 @@ Avant de commencer les étapes de présentation, assurez-vous que les conditions
 *Sur AWS*
 
 * D'un compte AWS. Cela inclut les autorisations pour les sous-réseaux, la configuration VPC, les tables de routage, la migration des règles de sécurité, les groupes de sécurité, et d'autres exigences en matière de mise en réseau, telles que l'équilibrage de charge. Comme pour toute migration, la plupart des efforts et des considérations doivent être consacrés à la mise en réseau.
-* Des rôles IAM appropriés qui vous permettent de provisionner à la fois les instances FSX pour ONTAP et Amazon EC2.
-* Les tables de routage et les groupes de sécurité sont autorisés à communiquer avec FSX pour ONTAP.
+* Des rôles IAM appropriés qui vous permettent de provisionner à la fois les instances FSX ONTAP et Amazon EC2.
+* Les tables de routage et les groupes de sécurité sont autorisés à communiquer avec FSX ONTAP.
 * Ajoutez une règle entrante au groupe de sécurité approprié (voir ci-dessous pour plus de détails) pour sécuriser le transfert des données de votre data Center sur site vers AWS.
 * Un DNS valide qui peut résoudre les noms de domaine Internet publics.
 * Vérifiez que votre résolution DNS est fonctionnelle et vous permet de résoudre les noms d'hôte.
-* Pour des performances optimales et un dimensionnement approprié, utilisez les données de performances de votre environnement source pour dimensionner correctement votre stockage FSX pour ONTAP.
+* Pour des performances optimales et un dimensionnement approprié, utilisez les données de performances de votre environnement source pour dimensionner correctement votre stockage FSX ONTAP.
 * Chaque session MigrateOps utilise un EIP, de sorte que le quota pour EIP doit être augmenté pour plus de parallélisme. Gardez à l'esprit que le quota EIP par défaut est 5.
 * (Si des charges de travail basées sur Active Directory sont en cours de migration) Un domaine Windows Active Directory sur Amazon EC2.
 

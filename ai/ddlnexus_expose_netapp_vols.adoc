@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: ai/ddlnexus_expose_netapp_vols.html 
-keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, Hybrid, Hybrid Cloud, Hybrid Multicloud, Cloud, AWS, Amazon, Amazon Web Services, FSx for NetApp ONTAP, FSx, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
+keywords: NetApp AI, AI, Artificial Intelligence, ML, Machine Learning, NVIDIA, Hybrid, Hybrid Cloud, Hybrid Multicloud, Cloud, AWS, Amazon, Amazon Web Services, FSx ONTAP, FSx, NetApp ONTAP, FlexCache, SnapMirror, BlueXP 
 summary: 'MLOps du multicloud hybride avec Domino Data Lab et NetApp : exposez les volumes NetApp existants à Domino' 
 ---
 = Exposer des volumes NetApp existants dans Domino
@@ -39,7 +39,7 @@ Si votre volume NFS NetApp ONTAP existant n'a pas été provisionné par Trident
 === Création du volume persistant et de la demande de volume persistant dans Kubernetes
 
 
-NOTE: Pour les volumes sur site, créez le volume persistant et la demande de volume persistant dans votre cluster Kubernetes sur site. Pour les volumes Amazon FSX for NetApp ONTAP, créez le volume persistant et la demande de volume persistant dans Amazon EKS.
+NOTE: Pour les volumes sur site, créez le volume persistant et la demande de volume persistant dans votre cluster Kubernetes sur site. Pour les volumes Amazon FSX ONTAP, créez le volume persistant et la demande de volume persistant dans Amazon EKS.
 
 Tout d'abord, vous devez créer un volume persistant et une demande de volume persistant dans votre cluster Kubernetes. Pour créer le volume persistant et la demande de volume persistant, utilisez le link:https://docs.dominodatalab.com/en/latest/admin_guide/4cdae9/set-up-kubernetes-pv-and-pvc/#_nfs_pvpvc_example["EXEMPLE NFS PV/PVC"] Dans le guide d'administration Domino et mettez à jour les valeurs afin qu'elles reflètent votre environnement. Assurez-vous de spécifier les valeurs correctes pour le `namespace`, `nfs.path`, et `nfs.server` champs. En outre, nous vous recommandons de donner à vos volumes PV et PVC des noms uniques représentant la nature des données stockées sur le volume NFS ONTAP correspondant. Par exemple, si le volume contient des images de défauts de fabrication, vous pouvez nommer le PV, `pv-mfg-defect-images`, Et le PVC, `pvc-mfg-defect-images`.
 

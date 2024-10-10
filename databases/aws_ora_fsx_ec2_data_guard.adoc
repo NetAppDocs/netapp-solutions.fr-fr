@@ -54,7 +54,7 @@ Le test et la validation de cette solution ont été effectués dans un environn
 
 === Architecture
 
-image:aws_ora_fsx_data_guard_architecture.png["Cette image fournit une vue détaillée de l'implémentation d'Oracle Data Guard dans AWS avec FSxN."]
+image:aws_ora_fsx_data_guard_architecture.png["Cette image fournit une vue détaillée de l'implémentation d'Oracle Data Guard dans AWS avec FSX ONTAP."]
 
 
 
@@ -117,7 +117,7 @@ image:aws_ora_fsx_data_guard_architecture.png["Cette image fournit une vue déta
 * *Gestion du stockage de la base de données.* pour plus de simplicité opérationnelle, Oracle recommande de configurer Oracle Automatic Storage Management (Oracle ASM) et Oracle Managed Files (OMF) dans une configuration Oracle Data Guard de manière symétrique sur la ou les bases de données primaires et de secours.
 * *Instances de calcul EC2.* dans ces tests et validations, nous avons utilisé une instance AWS EC2 t2.xlarge comme instance de calcul de base de données Oracle. NetApp recommande d'utiliser une instance EC2 de type M5 comme instance de calcul pour les déploiements Oracle en production, car elle est optimisée pour le workload de base de données. Vous devez dimensionner l'instance EC2 de manière appropriée en fonction du nombre de vCPU et de la quantité de RAM en fonction des exigences réelles des workloads.
 * *Clusters HA de stockage FSX déploiement sur une ou plusieurs zones.* lors de ces tests et validations, nous avons déployé un cluster HA FSX dans une zone de disponibilité AWS unique. Pour le déploiement de production, NetApp recommande de déployer une paire haute disponibilité FSX dans deux zones de disponibilité différentes. Un cluster FSX est alway provisionné dans une paire haute disponibilité qui est mise en miroir synchrone dans une paire de systèmes de fichiers actif-passif afin d'assurer la redondance au niveau du stockage. Un déploiement multizone améliore encore la haute disponibilité en cas de défaillance dans une même zone AWS.
-* *Dimensionnement des clusters de stockage FSX.* un système de fichiers de stockage Amazon FSX pour ONTAP fournit jusqu'à 160,000 000 IOPS SSD brutes, un débit allant jusqu'à 4 Gbit/s et une capacité maximale de 192 Tio. Cependant, vous pouvez dimensionner le cluster en termes d'IOPS provisionnées, de débit et de limite de stockage (au moins 1,024 Gio) en fonction de vos besoins réels au moment du déploiement. La capacité peut être ajustée dynamiquement à la volée sans affecter la disponibilité des applications.
+* *Dimensionnement du cluster de stockage FSX.* Un système de fichiers de stockage Amazon FSX ONTAP fournit jusqu'à 160,000 000 IOPS SSD brutes, un débit jusqu'à 4 Gbit/s et une capacité maximale de 192 Tio. Cependant, vous pouvez dimensionner le cluster en termes d'IOPS provisionnées, de débit et de limite de stockage (au moins 1,024 Gio) en fonction de vos besoins réels au moment du déploiement. La capacité peut être ajustée dynamiquement à la volée sans affecter la disponibilité des applications.
 
 
 
@@ -143,7 +143,7 @@ Le déploiement nécessite les conditions préalables suivantes.
 
 . Un compte AWS a été configuré et les segments de réseau et de VPC nécessaires ont été créés dans votre compte AWS.
 . Depuis la console AWS EC2, vous devez déployer au moins trois instances EC2 Linux, une étant l'instance principale de base de données Oracle, une instance de base de données Oracle en veille et une instance cible de base de données de clone pour le reporting, le développement, les tests, etc Pour plus d'informations sur la configuration de l'environnement, reportez-vous au schéma d'architecture de la section précédente. Examinez également AWS link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html["Guide de l'utilisateur pour les instances Linux"^] pour en savoir plus.
-. À partir de la console AWS EC2, déployez les clusters haute disponibilité de stockage Amazon FSX pour ONTAP pour héberger les volumes Oracle qui stockent la base de données de secours Oracle. Si vous ne connaissez pas le déploiement du stockage FSX, reportez-vous à la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de FSX pour les systèmes de fichiers ONTAP"^] pour obtenir des instructions détaillées.
+. À partir de la console AWS EC2, déployez des clusters haute disponibilité de stockage Amazon FSX ONTAP pour héberger des volumes Oracle qui stockent la base de données de secours Oracle. Si vous ne connaissez pas bien le déploiement du stockage FSX, consultez la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de systèmes de fichiers FSX ONTAP"^] pour obtenir des instructions détaillées.
 . Les étapes 2 et 3 peuvent être effectuées à l'aide du kit d'outils d'automatisation Terraform suivant, qui crée une instance EC2 nommée `ora_01` Et un système de fichiers FSX nommé `fsx_01`. Lisez attentivement les instructions et modifiez les variables en fonction de votre environnement avant de les exécuter. Ce modèle peut être facilement révisé en fonction de vos propres exigences de déploiement.
 +
 [source, cli]
@@ -998,7 +998,7 @@ link:https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/index.h
 +
 link:aws_ora_fsx_ec2_deploy_intro.html["Introduction"]
 
-* Amazon FSX pour NetApp ONTAP
+* Amazon FSX ONTAP
 +
 link:https://aws.amazon.com/fsx/netapp-ontap/["https://aws.amazon.com/fsx/netapp-ontap/"^]
 

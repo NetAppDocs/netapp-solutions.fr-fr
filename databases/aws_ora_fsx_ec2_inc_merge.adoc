@@ -57,7 +57,7 @@ Le test et la validation de cette solution ont été effectués dans un environn
 
 === Architecture
 
-image:aws_ora_fsx_ec2_vldb_architecture.png["Cette image fournit une vue détaillée de l'implémentation de la fusion incrémentielle Oracle VLDB dans le cloud public AWS avec FSxN."]
+image:aws_ora_fsx_ec2_vldb_architecture.png["Cette image fournit une vue détaillée de l'implémentation de la fusion incrémentielle Oracle VLDB dans le cloud public AWS avec FSX ONTAP."]
 
 
 
@@ -100,7 +100,7 @@ image:aws_ora_fsx_ec2_vldb_architecture.png["Cette image fournit une vue détail
 * *Copie d'image FlexClone Oracle VLDB du volume NFS pour d'autres utilisations.* AWS FSX ONTAP FlexClone fournit des copies partagées du même volume de données NFS inscriptible. Elles peuvent ainsi être utilisées dans de nombreux autres cas d'utilisation tout en conservant l'intégrité de la copie d'image Oracle VLDB intermédiaire, même lorsque la base de données Oracle est basculée. Cela permet de réaliser des économies considérables en réduisant considérablement l'empreinte du stockage VLDB. NetApp recommande de minimiser les activités FlexClone en cas de basculement de la base de données d'un stockage primaire vers une copie d'image de base de données afin de maintenir les performances Oracle à un niveau élevé.
 * *Instances de calcul EC2.* dans ces tests et validations, nous avons utilisé une instance AWS EC2 t2.xlarge comme instance de calcul de base de données Oracle. NetApp recommande d'utiliser une instance EC2 de type M5 comme instance de calcul pour les déploiements Oracle en production, car elle est optimisée pour le workload de base de données. Vous devez dimensionner l'instance EC2 de manière appropriée en fonction du nombre de vCPU et de la quantité de RAM en fonction des exigences réelles des workloads.
 * *Clusters HA de stockage FSX déploiement sur une ou plusieurs zones.* lors de ces tests et validations, nous avons déployé un cluster HA FSX dans une zone de disponibilité AWS unique. Pour le déploiement de production, NetApp recommande de déployer une paire haute disponibilité FSX dans deux zones de disponibilité différentes. Un cluster FSX HA est provisionné dans une paire haute disponibilité qui est mise en miroir synchrone dans une paire de systèmes de fichiers actifs-passifs afin d'assurer la redondance au niveau du stockage. Un déploiement multizone améliore encore la haute disponibilité en cas de défaillance dans une même zone AWS.
-* *Dimensionnement des clusters de stockage FSX.* un système de fichiers de stockage Amazon FSX pour ONTAP fournit jusqu'à 160,000 000 IOPS SSD brutes, un débit allant jusqu'à 4 Gbit/s et une capacité maximale de 192 Tio. Cependant, vous pouvez dimensionner le cluster en termes d'IOPS provisionnées, de débit et de limite de stockage (au moins 1,024 Gio) en fonction de vos besoins réels au moment du déploiement. La capacité peut être ajustée dynamiquement à la volée sans affecter la disponibilité des applications.
+* *Dimensionnement du cluster de stockage FSX.* Un système de fichiers de stockage Amazon FSX ONTAP fournit jusqu'à 160,000 000 IOPS SSD brutes, un débit jusqu'à 4 Gbit/s et une capacité maximale de 192 Tio. Cependant, vous pouvez dimensionner le cluster en termes d'IOPS provisionnées, de débit et de limite de stockage (au moins 1,024 Gio) en fonction de vos besoins réels au moment du déploiement. La capacité peut être ajustée dynamiquement à la volée sans affecter la disponibilité des applications.
 * *Configuration dNFS.* dNFS est intégré au noyau Oracle et augmente considérablement les performances des bases de données Oracle lorsqu'Oracle est déployé sur le stockage NFS. DNFS est fourni en binaire Oracle mais n'est pas activé par défaut. Il doit être activé pour tout déploiement de base de données Oracle sur NFS. Pour le déploiement de plusieurs systèmes de fichiers FSX pour un VLDB, le chemin d'accès multiple dNFS vers différents systèmes de fichiers FSX NFS doit être correctement configuré.
 
 
@@ -127,7 +127,7 @@ Le déploiement nécessite les conditions préalables suivantes.
 
 . Un compte AWS a été configuré et les segments de réseau et de VPC nécessaires ont été créés dans votre compte AWS.
 . À partir de la console AWS EC2, vous devez déployer deux instances Linux EC2, une en tant que serveur BDD Oracle principal et un serveur BDD cible de clone alternatif en option. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au diagramme de l'architecture de la section précédente. Consultez également le link:https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html["Guide de l'utilisateur pour les instances Linux"^] pour en savoir plus.
-. À partir de la console AWS EC2, déployez les clusters HA de stockage Amazon FSX pour ONTAP pour héberger les volumes NFS qui stockent la copie d'image de veille de la base de données Oracle. Si vous ne connaissez pas le déploiement du stockage FSX, reportez-vous à la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de FSX pour les systèmes de fichiers ONTAP"^] pour obtenir des instructions détaillées.
+. À partir de la console AWS EC2, déployez des clusters HA de stockage Amazon FSX ONTAP pour héberger les volumes NFS qui stockent la copie d'image de secours de la base de données Oracle. Si vous ne connaissez pas bien le déploiement du stockage FSX, consultez la documentation link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-file-systems.html["Création de systèmes de fichiers FSX ONTAP"^] pour obtenir des instructions détaillées.
 . Les étapes 2 et 3 peuvent être effectuées à l'aide du kit d'outils d'automatisation Terraform suivant, qui crée une instance EC2 nommée `ora_01` Et un système de fichiers FSX nommé `fsx_01`. Lisez attentivement les instructions et modifiez les variables en fonction de votre environnement avant de les exécuter. Ce modèle peut être facilement révisé en fonction de vos propres exigences de déploiement.
 +
 ....
@@ -218,7 +218,7 @@ mkdir /nfsfsxn/oracopy
 ----
 mkdir /nfsfsxn/archlog
 ----
-. Connectez-vous à la base de données Oracle via sqlplus, activez le suivi des changements de blocs pour une sauvegarde incrémentielle plus rapide et modifiez la zone de récupération flash Oracle sur le montage FSxN si elle se trouve actuellement sur le stockage primaire. Cela permet de sauvegarder les fichiers de contrôle par défaut RMAN/spfile autosauvegarde et les journaux archivés sur le support NFS FSxN pour la restauration.
+. Connectez-vous à la base de données Oracle via sqlplus, activez le suivi des changements de blocs pour une sauvegarde incrémentielle plus rapide et définissez la zone de récupération flash Oracle sur le montage ONTAP FSX si elle est actuellement sur le stockage primaire. Cela permet de sauvegarder les fichiers de contrôle par défaut RMAN/spfile autosauvegarde et les journaux archivés sur le montage NFS FSX ONTAP pour la restauration.
 +
 [source, cli]
 ----
@@ -924,7 +924,7 @@ SQL>
 
 [%collapsible]
 ====
-En cas de panne, lorsque le stockage primaire et l'hôte de l'instance de base de données EC2 sont perdus, la restauration ne peut pas être effectuée à partir du serveur d'origine. Heureusement, vous disposez toujours d'une copie d'image de sauvegarde de la base de données Oracle sur le système de fichiers FSxN NFS redondant. Vous pourriez provisionner rapidement une autre instance de base de données EC2 identique et monter facilement la copie d'image de votre VLDB sur le nouvel hôte de base de données EC2 via NFS pour exécuter la restauration. Dans cette section, nous allons présenter les procédures étape par étape pour ce faire.
+En cas de panne, lorsque le stockage primaire et l'hôte de l'instance de base de données EC2 sont perdus, la restauration ne peut pas être effectuée à partir du serveur d'origine. Heureusement, vous disposez toujours d'une copie d'image de sauvegarde de la base de données Oracle sur le système de fichiers NFS FSX ONTAP redondant. Vous pourriez provisionner rapidement une autre instance de base de données EC2 identique et monter facilement la copie d'image de votre VLDB sur le nouvel hôte de base de données EC2 via NFS pour exécuter la restauration. Dans cette section, nous allons présenter les procédures étape par étape pour ce faire.
 
 . Insérez une ligne dans la table de test que nous avons créée précédemment pour la restauration de la base de données Oracle sur une validation d'hôte alternative.
 +
@@ -955,7 +955,7 @@ SQL> alter session set container=db1_pdb1;
 Session altered.
 
 
-SQL> insert into test values(2, sysdate, 'test recovery on a new EC2 instance host with image copy on FSxN');
+SQL> insert into test values(2, sysdate, 'test recovery on a new EC2 instance host with image copy on FSx ONTAP');
 
 1 row created.
 
@@ -977,12 +977,12 @@ test oracle incremental merge switch to copy
 
          2
 30-MAY-23 05.23.11.000000 PM
-test recovery on a new EC2 instance host with image copy on FSxN
+test recovery on a new EC2 instance host with image copy on FSx ONTAP
 
 
 SQL>
 ....
-. En tant qu'utilisateur oracle, exécutez la sauvegarde incrémentielle RMAN et la fusion pour vider la transaction vers le jeu de sauvegarde sur le montage NFS FSxN.
+. En tant qu'utilisateur oracle, exécutez la sauvegarde incrémentielle RMAN et la fusion pour vider la transaction vers le jeu de sauvegarde sur le montage NFS de FSX ONTAP.
 +
 ....
 [oracle@ip-172-30-15-99 ~]$ rman target / nocatalog
@@ -1004,8 +1004,8 @@ RMAN> @rman_bkup_merge.cmd
 Kit d'outils : link:https://github.com/NetApp-Automation/na_oracle19c_deploy["na_oracle19c_deploy"^]
 Documentation : link:marketing_overview.html#awxtower-deployments["Déploiement automatisé d'Oracle19c pour ONTAP sur NFS"^]
 
-. Configurez l'environnement oracle de manière similaire sur l'hôte ora_01 de l'instance principale de base de données EC2, tel que oratab, oraInst.loc et l'utilisateur oracle .bash_profile. Il est recommandé de sauvegarder ces fichiers sur un point de montage NFS FSxN.
-. La copie de l'image de sauvegarde de la base de données Oracle sur le montage NFS FSxN est stockée dans un cluster FSX qui couvre les zones de disponibilité AWS pour assurer redondance, haute disponibilité et haute performance. Le système de fichiers NFS peut être facilement monté sur un nouveau serveur, tant que le réseau est accessible. Les procédures suivantes permettent de monter la copie d'image d'une sauvegarde Oracle VLDB sur un hôte d'instance de base de données EC2 nouvellement versionné pour la restauration.
+. Configurez l'environnement oracle de manière similaire sur l'hôte ora_01 de l'instance principale de base de données EC2, tel que oratab, oraInst.loc et l'utilisateur oracle .bash_profile. Il est recommandé de sauvegarder ces fichiers sur un point de montage NFS FSX ONTAP.
+. La copie de l'image de sauvegarde de la base de données Oracle sur le montage NFS FSX ONTAP est stockée dans un cluster FSX qui couvre les zones de disponibilité AWS pour assurer redondance, haute disponibilité et haute performance. Le système de fichiers NFS peut être facilement monté sur un nouveau serveur, tant que le réseau est accessible. Les procédures suivantes permettent de monter la copie d'image d'une sauvegarde Oracle VLDB sur un hôte d'instance de base de données EC2 nouvellement versionné pour la restauration.
 +
 En tant qu'utilisateur ec2, créez le point de montage.
 
@@ -1022,7 +1022,7 @@ En tant qu'utilisateur ec2, montez le volume NFS qui stockait la copie d'image d
 ----
 sudo mount 172.30.15.19:/ora_01_copy /nfsfsxn -o rw,bg,hard,vers=3,proto=tcp,timeo=600,rsize=262144,wsize=262144,nointr
 ----
-. Validez la copie de l'image de sauvegarde de la base de données Oracle sur le point de montage NFS FSxN.
+. Validez la copie de l'image de sauvegarde de la base de données Oracle sur le point de montage NFS FSX ONTAP.
 +
 ....
 [ec2-user@ip-172-30-15-124 ~]$ ls -ltr /nfsfsxn/oracopy
@@ -1097,7 +1097,7 @@ total 78940700
 -rw-r-----. 1 oracle 54331   11600384 May 30 17:54 bct_db1.ctf
 
 ....
-. Vérifiez les journaux archivés Oracle disponibles sur le montage NFS FSxN pour la restauration et notez le dernier numéro de séquence du journal. Dans ce cas, il est 175. Notre point de récupération peut atteindre le numéro de séquence du journal 176.
+. Vérifiez les journaux archivés Oracle disponibles sur le montage NFS de FSX ONTAP pour la restauration et notez le dernier numéro de séquence du journal. Dans ce cas, il est 175. Notre point de récupération peut atteindre le numéro de séquence du journal 176.
 +
 ....
  [ec2-user@ip-172-30-15-124 ~]$ ls -ltr /nfsfsxn/archlog/DB1/archivelog/2023_05_30
@@ -1142,7 +1142,7 @@ total 5714400
 
 ....
 . En tant qu'utilisateur oracle, définissez la variable ORACLE_HOME sur l'installation Oracle en cours sur le nouvel hôte de BD d'instance EC2 ora_02, ORACLE_SID sur le SID d'instance Oracle principal. Dans ce cas, c’est db1.
-. En tant qu'utilisateur oracle, créez un fichier Oracle init générique dans le répertoire $ORACLE_HOME/dbs avec les répertoires d'administration appropriés configurés. Plus important encore, avez Oracle `flash recovery area` Pointez sur le chemin de montage NFS FSxN tel que défini dans l'instance VLDB Oracle principale.  `flash recovery area` la configuration est illustrée à la section `Setup Oracle RMAN incremental merge to image copy on FSx`. Définissez le fichier de contrôle Oracle sur le système de fichiers NFS FSX ONTAP.
+. En tant qu'utilisateur oracle, créez un fichier Oracle init générique dans le répertoire $ORACLE_HOME/dbs avec les répertoires d'administration appropriés configurés. Plus important encore, avoir un point Oracle `flash recovery area` sur le chemin de montage NFS de FSX ONTAP tel que défini dans l'instance VLDB d'Oracle primaire.  `flash recovery area` la configuration est présentée à la section `Setup Oracle RMAN incremental merge to image copy on FSx`. Définissez le fichier de contrôle Oracle sur le système de fichiers NFS FSX ONTAP.
 +
 [source, cli]
 ----
@@ -1640,13 +1640,13 @@ SQL> select * from test;
         ID DT                                                                          EVENT
 ---------- --------------------------------------------------------------------------- ----------------------------------------------------------------------------------------------------
          1 18-MAY-23 02.35.37.000000 PM                                                test oracle incremental merge switch to copy
-         2 30-MAY-23 05.23.11.000000 PM                                                test recovery on a new EC2 instance host with image copy on FSxN
+         2 30-MAY-23 05.23.11.000000 PM                                                test recovery on a new EC2 instance host with image copy on FSx ONTAP
 ....
 . Autres tâches post-restauration
 +
 ....
 
-Add FSxN NFS mount to fstab so that the NFS file system will be mounted when EC2 instance host rebooted.
+Add FSx ONTAP NFS mount to fstab so that the NFS file system will be mounted when EC2 instance host rebooted.
 
 As EC2 user, vi /etc/fstab and add following entry:
 
@@ -1657,7 +1657,7 @@ Update the Oracle init file from primary databse init file backup that is restor
 ....
 
 
-Cette opération termine la restauration de la base de données Oracle VLDB à partir de la copie d'image de sauvegarde sur le système de fichiers NFS FSxN vers un nouvel hôte d'instance de BD EC2.
+Cette opération termine la restauration de la base de données Oracle VLDB à partir de la copie d'image de sauvegarde sur le système de fichiers NFS FSX ONTAP vers un nouvel hôte d'instance de base de données EC2.
 
 ====
 
@@ -1671,7 +1671,7 @@ Un autre avantage de l'utilisation d'AWS FSX ONTAP pour la copie d'image Oracle 
 . Nous commençons par insérer une ligne dans la même table de test que celle que nous avons créée auparavant.
 +
 ....
- SQL> insert into test values (3, sysdate, 'test clone on a new EC2 instance host with image copy on FSxN');
+ SQL> insert into test values (3, sysdate, 'test clone on a new EC2 instance host with image copy on FSx ONTAP');
 
 1 row created.
 
@@ -1689,7 +1689,7 @@ test oracle incremental merge switch to copy
 
          2
 30-MAY-23 05.23.11.000000 PM
-test recovery on a new EC2 instance host with image copy on FSxN
+test recovery on a new EC2 instance host with image copy on FSx ONTAP
 
         ID
 ----------
@@ -1700,7 +1700,7 @@ EVENT
 
          3
 05-JUN-23 03.19.46.000000 PM
-test clone on a new EC2 instance host with image copy on FSxN
+test clone on a new EC2 instance host with image copy on FSx ONTAP
 
 
 SQL>
@@ -2307,8 +2307,8 @@ SQL> select * from test;
         ID DT                                                                          EVENT
 ---------- --------------------------------------------------------------------------- ----------------------------------------------------------------
          1 18-MAY-23 02.35.37.000000 PM                                                test oracle incremental merge switch to copy
-         2 30-MAY-23 05.23.11.000000 PM                                                test recovery on a new EC2 instance host with image copy on FSxN
-         3 05-JUN-23 03.19.46.000000 PM                                                test clone on a new EC2 instance host with image copy on FSxN
+         2 30-MAY-23 05.23.11.000000 PM                                                test recovery on a new EC2 instance host with image copy on FSx ONTAP
+         3 05-JUN-23 03.19.46.000000 PM                                                test clone on a new EC2 instance host with image copy on FSx ONTAP
 
 SQL>
 
@@ -2477,7 +2477,7 @@ link:https://support.oracle.com/knowledge/Oracle%20Database%20Products/745798_1.
 +
 link:https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/getting-started-rman.html["https://docs.oracle.com/en/database/oracle/oracle-database/19/bradv/getting-started-rman.html"^]
 
-* Amazon FSX pour NetApp ONTAP
+* Amazon FSX ONTAP
 +
 link:https://aws.amazon.com/fsx/netapp-ontap/["https://aws.amazon.com/fsx/netapp-ontap/"^]
 

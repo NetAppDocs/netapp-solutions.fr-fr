@@ -57,7 +57,7 @@ Les systèmes ONTAP source et destination doivent se trouver dans des réseaux q
 Les étapes suivantes sont requises pour la configuration des relations SnapMirror entre un système ONTAP sur site et FSX ONTAP :
 
 
-NOTE: Reportez-vous à la https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/ONTAPGuide.pdf["FSX pour ONTAP – Guide de l'utilisateur ONTAP"^] Pour plus d'informations sur la création de relations SnapMirror avec FSX.
+NOTE: Pour plus d'informations sur la création de relations SnapMirror avec FSX, reportez-vous au https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/ONTAPGuide.pdf["FSX ONTAP – Guide de l'utilisateur ONTAP"^].
 
 .Enregistrer les interfaces logiques intercluster source et destination
 [%collapsible]
@@ -289,7 +289,7 @@ Pour obtenir des informations complètes sur la création de stratégies pour le
 
 * Au fur et à mesure que vous progressez dans l'assistant de création de règles, prenez note spéciale de la section réplication. Dans cette section, vous devez spécifier les types de copies SnapMirror secondaires que vous souhaitez effectuer pendant le processus de sauvegarde.
 * Le paramètre « mettre à jour SnapMirror après la création d'une copie Snapshot locale » fait référence à la mise à jour d'une relation SnapMirror lorsqu'il existe entre deux machines virtuelles de stockage résidant sur le même cluster.
-* Le paramètre « Update SnapVault après création d'une copie Snapshot locale » permet de mettre à jour une relation SnapMirror entre deux clusters distincts et entre un système ONTAP sur site et Cloud Volumes ONTAP ou FSxN.
+* Le paramètre mettre à jour SnapVault après la création d'une copie Snapshot locale permet de mettre à jour une relation SnapMirror qui existe entre deux clusters distincts et entre un système ONTAP sur site et Cloud Volumes ONTAP ou FSX ONTAP.
 
 
 L'image suivante montre les options ci-dessus et leur apparence dans l'assistant de stratégie de sauvegarde.
@@ -872,7 +872,7 @@ Pour continuer les étapes de récupération, suivez les conditions préalables 
 .Configurer FSX pour la restauration Oracle – interrompre la relation SnapMirror
 [%collapsible]
 ====
-Pour rendre les volumes de stockage secondaire hébergés sur l'instance FSxN accessibles aux serveurs Oracle, vous devez d'abord interrompre la relation SnapMirror existante.
+Pour rendre les volumes de stockage secondaires hébergés sur l'instance FSX ONTAP accessibles aux serveurs Oracle, vous devez d'abord interrompre la relation SnapMirror existante.
 
 . Après avoir ouvert une session dans la CLI FSX, exécutez la commande suivante pour afficher les volumes filtrés par le nom correct.
 +
@@ -938,9 +938,9 @@ NOTE: Pour rendre le montage NFS persistant au redémarrage, modifiez le `/etc/f
 
 === Du rétablissement
 
-Une fois le processus de basculement terminé avec succès dans cette solution, SnapCenter et Veeam reprendre leurs fonctions de sauvegarde s'exécutant dans AWS, et FSX pour ONTAP est désormais désigné comme stockage principal sans relation SnapMirror avec le data Center sur site d'origine. Une fois le fonctionnement normal rétabli sur site, vous pouvez utiliser un processus identique à celui décrit dans la présente documentation pour reproduire les données sur le système de stockage ONTAP sur site.
+Une fois le processus de basculement présenté dans cette solution terminé, SnapCenter et Veeam reprennent leurs fonctions de sauvegarde s'exécutant dans AWS. FSX ONTAP est désormais désigné comme stockage primaire sans relation SnapMirror avec le data Center sur site d'origine. Une fois le fonctionnement normal rétabli sur site, vous pouvez utiliser un processus identique à celui décrit dans la présente documentation pour reproduire les données sur le système de stockage ONTAP sur site.
 
-Comme indiqué dans cette documentation, vous pouvez configurer SnapCenter de manière à mettre en miroir les volumes de données d'application de FSX pour ONTAP vers un système de stockage ONTAP résidant sur site. De la même façon, vous pouvez configurer Veeam pour répliquer les copies de sauvegarde vers Amazon S3 à l'aide d'un référentiel de sauvegarde scale-out. Ainsi, ces sauvegardes sont accessibles à un serveur de sauvegarde Veeam résidant dans le data Center sur site.
+Comme indiqué dans cette documentation, vous pouvez configurer SnapCenter pour mettre en miroir les volumes de données d'application de FSX ONTAP vers un système de stockage ONTAP résidant sur site. De la même façon, vous pouvez configurer Veeam pour répliquer les copies de sauvegarde vers Amazon S3 à l'aide d'un référentiel de sauvegarde scale-out. Ainsi, ces sauvegardes sont accessibles à un serveur de sauvegarde Veeam résidant dans le data Center sur site.
 
 Le basculement automatique ne fait pas partie du périmètre de ces documents, mais le retour arrière diffère légèrement du processus détaillé présenté ici.
 
@@ -950,7 +950,7 @@ Le basculement automatique ne fait pas partie du périmètre de ces documents, m
 
 Le cas d'utilisation présenté dans cette documentation est axé sur les technologies de reprise sur incident qui ont fait leurs preuves et qui mettent en avant l'intégration entre NetApp et VMware. Les systèmes de stockage NetApp ONTAP fournissent des technologies de mise en miroir des données éprouvées qui permettent aux entreprises de concevoir des solutions de reprise après incident s'intégrant aux technologies ONTAP et sur site des principaux fournisseurs cloud.
 
-La solution FSX pour ONTAP sur AWS est un outil qui permet une intégration transparente avec SnapCenter et SyncMirror pour la réplication des données d'application vers le cloud. Veeam Backup & Replication est une autre technologie connue qui s'intègre bien aux systèmes de stockage NetApp ONTAP et peut fournir un basculement vers le stockage natif vSphere.
+FSX ONTAP sur AWS est une solution de ce type qui permet une intégration transparente avec SnapCenter et SyncMirror pour la réplication des données applicatives dans le cloud. Veeam Backup & Replication est une autre technologie connue qui s'intègre bien aux systèmes de stockage NetApp ONTAP et peut fournir un basculement vers le stockage natif vSphere.
 
 Cette solution de reprise après incident a présentée un stockage « Guest Connect » à partir d'un système ONTAP hébergeant les données d'applications SQL Server et Oracle. SnapCenter avec SnapMirror constitue une solution simple à gérer pour protéger les volumes d'applications dans les systèmes ONTAP et les répliquer vers FSX ou CVO résidant dans le cloud. SnapCenter est une solution de reprise d'activité pour le basculement de toutes les données applicatives vers VMware Cloud sur AWS.
 

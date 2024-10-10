@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-L'une des utilisations courantes de VMware Cloud (VMC) sur Amazon Web Services (AWS) et de son datastore NFS supplémentaire sur Amazon FSX pour NetApp ONTAP est la migration des charges de travail VMware. VMware HCX est l'option privilégiée : il offre plusieurs méthodes de migration pour déplacer des machines virtuelles sur site et leurs données, s'exécutant sur n'importe quel datastore VMware pris en charge, vers des datastores VMC, notamment des datastores NFS supplémentaires sur FSX pour ONTAP.
+La migration des workloads VMware est un cas d'utilisation courant de VMware Cloud (VMC) sur Amazon Web Services (AWS) avec son datastore NFS supplémentaire sur Amazon FSX ONTAP. VMware HCX est une option privilégiée qui fournit plusieurs méthodes de migration pour déplacer des machines virtuelles (VM) sur site et leurs données, s'exécutant sur n'importe quel datastore VMware pris en charge, vers des datastores VMC, notamment des datastores NFS supplémentaires sur FSX ONTAP.
 
 Auteur(s) : Ingénierie de solutions NetApp
 
@@ -54,7 +54,7 @@ Les étapes d'installation suivantes doivent être effectuées avant de procéde
 . Nous utilisons un SDDC VMC existant ou créons un SDDC après ce processus link:aws-setup.html["Lien NetApp"^] ou ceci https://docs.vmware.com/en/VMware-Cloud-on-AWS/services/com.vmware.vmc-aws.getting-started/GUID-EF198D55-03E3-44D1-AC48-6E2ABA31FF02.html["Lien VMware"^].
 . Le chemin réseau depuis l'environnement vCenter sur site vers le SDDC VMC doit prendre en charge la migration des VM à l'aide de vMotion.
 . Assurez-vous que le nécessaire https://docs.vmware.com/en/VMware-HCX/4.4/hcx-user-guide/GUID-A631101E-8564-4173-8442-1D294B731CEB.html["règles et ports de pare-feu"^] Sont autorisées pour le trafic vMotion entre vCenter Server sur site et SDDC vCenter.
-. Le volume FSX pour ONTAP NFS doit être monté en tant que datastore supplémentaire dans le SDDC VMC.  Pour attacher les datastores NFS au cluster approprié, suivez les étapes décrites dans ce document link:aws-native-overview.html["Lien NetApp"^] ou ceci https://docs.vmware.com/en/VMware-Cloud-on-AWS/services/com.vmware.vmc-aws-operations/GUID-D55294A3-7C40-4AD8-80AA-B33A25769CCA.html["Lien VMware"^].
+. Le volume NFS FSX ONTAP doit être monté en tant que datastore supplémentaire dans le SDDC VMC. Pour relier les datastores NFS au cluster approprié, suivez les étapes décrites dans ce  ou dans link:aws-native-overview.html["Lien NetApp"^]ce https://docs.vmware.com/en/VMware-Cloud-on-AWS/services/com.vmware.vmc-aws-operations/GUID-D55294A3-7C40-4AD8-80AA-B33A25769CCA.html["Lien VMware"^].
 
 
 ====
@@ -315,14 +315,14 @@ Pour plus d'informations sur les options de migration HCX et sur la façon de mi
 NOTE: VMware HCX vMotion nécessite un débit de 100 Mbit/s ou plus.
 
 
-NOTE: L'espace nécessaire au datastore VMC FSX cible pour ONTAP doit être suffisant pour prendre en charge la migration.
+NOTE: Le datastore VMC FSX ONTAP cible doit disposer d'un espace suffisant pour prendre en charge la migration.
 
 ====
 
 
 == Conclusion
 
-Que vous cibliez les clouds 100 % cloud ou hybrides et les données résidant sur un stockage de n'importe quel type ou fournisseur sur site, Amazon FSX pour NetApp ONTAP et HCX offrent d'excellentes options pour déployer et migrer les charges de travail tout en réduisant le coût total de possession grâce à une intégration transparente des données à la couche applicative. Quels que soient les cas d'utilisation, choisissez la solution VMC et la solution FSX pour ONTAP datastore pour bénéficier rapidement des avantages du cloud, d'une infrastructure cohérente et des opérations entre plusieurs clouds et sur site, de la portabilité bidirectionnelle des charges de travail, et de la capacité et des performances de grande qualité. Il s'agit du même processus et procédures que celui utilisé pour connecter le stockage et migrer les machines virtuelles à l'aide de la réplication VMware vSphere, de VMware vMotion ou même de la copie NFC.
+Que vous cibliez des clouds ou des clouds hybrides ainsi que des données résidant sur un système de stockage sur site de tout type ou fournisseur, Amazon FSX ONTAP et HCX offrent d'excellentes options de déploiement et de migration des workloads tout en réduisant le coût total de possession en rendant les besoins en données transparents pour la couche applicative. Quel que soit le cas d'utilisation, optez pour VMC et le datastore FSX ONTAP pour bénéficier rapidement des avantages du cloud, d'une infrastructure cohérente et des opérations sur site et dans plusieurs clouds, de la portabilité bidirectionnelle des charges de travail, ainsi que d'une capacité et de performances haute performance. Il s'agit du même processus et procédures que celui utilisé pour connecter le stockage et migrer les machines virtuelles à l'aide de la réplication VMware vSphere, de VMware vMotion ou même de la copie NFC.
 
 
 
@@ -331,7 +331,7 @@ Que vous cibliez les clouds 100 % cloud ou hybrides et les données résidant su
 Les points clés de ce document sont les suivants :
 
 * Il est désormais possible d'utiliser Amazon FSX ONTAP en tant que datastore avec VMC SDDC.
-* Vous pouvez facilement migrer des données depuis n'importe quel data Center sur site vers VMC exécuté avec FSX pour le datastore ONTAP
+* Vous pouvez facilement migrer les données de n'importe quel data Center sur site vers un VMC exécuté avec un datastore FSX ONTAP
 * Vous pouvez facilement étendre et réduire le datastore ONTAP FSX en vue de répondre aux exigences en termes de capacités et de performances lors de l'activité de migration.
 
 
@@ -345,7 +345,7 @@ Pour en savoir plus sur les informations fournies dans ce document, visitez nos 
 +
 https://docs.vmware.com/en/VMware-Cloud-on-AWS/["https://docs.vmware.com/en/VMware-Cloud-on-AWS/"^]
 
-* Documentation Amazon FSX pour NetApp ONTAP
+* Documentation d'Amazon FSX ONTAP
 +
 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide["https://docs.aws.amazon.com/fsx/latest/ONTAPGuide"^]
 

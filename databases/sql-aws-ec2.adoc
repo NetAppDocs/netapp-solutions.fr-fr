@@ -4,7 +4,7 @@ permalink: databases/sql-aws-ec2.html
 keywords: microsoft SQL server, AWS, EC2, FSx ONTAP 
 summary:  
 ---
-= Tr-4923 : SQL Server sur AWS EC2 avec Amazon FSX pour NetApp ONTAP
+= Tr-4923 : serveur SQL sur AWS EC2 utilisant Amazon FSX ONTAP
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-Cette solution couvre le déploiement de SQL Server sur AWS EC2 à l'aide d'Amazon FSX pour NetApp ONTAP.
+Cette solution couvre le déploiement de SQL Server sur AWS EC2 à l'aide d'Amazon FSX ONTAP.
 
 Auteurs : Pat Sinthusan et Niyaz Mohamed, NetApp
 
@@ -22,15 +22,15 @@ Auteurs : Pat Sinthusan et Niyaz Mohamed, NetApp
 
 == Introduction
 
-La plupart des entreprises qui souhaitent migrer leurs applications de l'infrastructure sur site vers le cloud computing trouvent que les solutions de stockage sur site et les services de stockage cloud offrent bien des différences. Dans ce cas, la migration des applications d'entreprise telles que Microsoft SQL Server est beaucoup plus problématique. En particulier, les écarts dans les services requis pour exécuter une application d'entreprise, tels que des snapshots robustes, des fonctionnalités d'efficacité du stockage, une haute disponibilité, une fiabilité et une performance cohérente, ont contraint les clients à faire des compromis en termes de conception ou à renoncer à la migration des applications. Grâce à FSX pour NetApp ONTAP, les clients n'ont plus à faire des compromis. FSX pour NetApp ONTAP est un service AWS natif (1er fournisseur) vendu, pris en charge, facturé et entièrement géré par AWS. Il utilise la puissance de NetApp ONTAP pour fournir les mêmes fonctionnalités haute performance de gestion du stockage et des données que celles fournies par NetApp sur site pendant trois décennies dans AWS sous la forme d'un service géré.
+La plupart des entreprises qui souhaitent migrer leurs applications de l'infrastructure sur site vers le cloud computing trouvent que les solutions de stockage sur site et les services de stockage cloud offrent bien des différences. Dans ce cas, la migration des applications d'entreprise telles que Microsoft SQL Server est beaucoup plus problématique. En particulier, les écarts dans les services requis pour exécuter une application d'entreprise, tels que des snapshots robustes, des fonctionnalités d'efficacité du stockage, une haute disponibilité, une fiabilité et une performance cohérente, ont contraint les clients à faire des compromis en termes de conception ou à renoncer à la migration des applications. Grâce à FSX ONTAP, les clients n'ont plus besoin de faire des compromis. FSX ONTAP est un service AWS natif (1er fournisseur) vendu, pris en charge, facturé et entièrement géré par AWS. Il utilise la puissance de NetApp ONTAP pour fournir les mêmes fonctionnalités haute performance de gestion du stockage et des données que celles fournies par NetApp sur site pendant trois décennies dans AWS sous la forme d'un service géré.
 
 Avec SQL Server sur des instances EC2, les administrateurs de bases de données peuvent accéder à leur environnement de base de données et le système d'exploitation sous-jacent, et les personnaliser. Une instance SQL Server sur EC2 en association avec https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["ONTAP AWS FSX"^] pour stocker les fichiers de base de données, assure des performances élevées, la gestion des données et un chemin de migration simple et facile à l'aide de la réplication au niveau des blocs. Vous pouvez donc exécuter votre base de données complexe sur AWS VPC avec une approche simplifiée du basculement, moins de clics et sans conversions de schéma.
 
 
 
-== Avantages liés à l'utilisation d'Amazon FSX pour NetApp ONTAP avec SQL Server
+== Avantages de l'utilisation d'Amazon FSX ONTAP avec SQL Server
 
-Amazon FSX pour NetApp ONTAP est le stockage de fichiers idéal pour les déploiements SQL Server dans AWS. Il présente les avantages suivants :
+Amazon FSX ONTAP est le stockage de fichiers idéal pour les déploiements SQL Server dans AWS. Il présente les avantages suivants :
 
 * Des performances élevées et prévisibles, avec une faible latence
 * Mise en cache intelligente avec cache NVMe pour améliorer les performances
@@ -45,13 +45,13 @@ Amazon FSX pour NetApp ONTAP est le stockage de fichiers idéal pour les déploi
 * Réduction du délai moyen de résolution des incidents en identifiant la cause première après une mise à jour d'une version majeure ou d'un correctif
 
 
-En déployant des bases de données SQL Server sur FSX ONTAP avec le protocole iSCSI, couramment utilisé sur site, vous disposez d'un environnement de stockage de base de données idéal offrant des performances, une efficacité du stockage et des fonctionnalités de gestion des données supérieures. En utilisant plusieurs sessions iSCSI, en supposant une taille de jeu de données de 5 %, une capacité Flash cache offre plus de 100 000 IOPS avec le service ONTAP FSX. Cette configuration permet un contrôle total des performances pour les applications les plus exigeantes. SQL Server s'exécutant sur de plus petites instances EC2 connectées à FSX pour ONTAP peut fonctionner de la même manière que SQL Server sur une instance EC2 beaucoup plus grande, car seules des limites de bande passante réseau sont appliquées à FSX pour ONTAP. La réduction de la taille des instances réduit également les coûts de calcul, ce qui assure un déploiement optimisé pour le TCO. L'association de SQL via iSCSI, SMB3.0 avec des partages de disponibilité continue multicanaux sur FSX pour ONTAP offre de nombreux avantages pour les charges de travail SQL.
+En déployant des bases de données SQL Server sur FSX ONTAP avec le protocole iSCSI, couramment utilisé sur site, vous disposez d'un environnement de stockage de base de données idéal offrant des performances, une efficacité du stockage et des fonctionnalités de gestion des données supérieures. En utilisant plusieurs sessions iSCSI, en supposant une taille de jeu de données de 5 %, une capacité Flash cache offre plus de 100 000 IOPS avec le service ONTAP FSX. Cette configuration permet un contrôle total des performances pour les applications les plus exigeantes. Le serveur SQL s'exécutant sur des instances EC2 plus petites connectées à FSX ONTAP peut fonctionner de la même manière que le serveur SQL Server s'exécutant sur une instance EC2 beaucoup plus grande, car seules les limites de bande passante réseau sont appliquées à FSX ONTAP. La réduction de la taille des instances réduit également les coûts de calcul, ce qui assure un déploiement optimisé pour le TCO. L'association de SQL utilisant iSCSI, SMB3.0 et de partages multicanaux à disponibilité continue sur FSX ONTAP offre des avantages considérables pour les workloads SQL.
 
 
 
 == Avant de commencer
 
-L'association d'Amazon FSX pour NetApp ONTAP et de SQL Server sur l'instance EC2 permet de créer des conceptions de stockage de bases de données d'entreprise capables de répondre aux exigences applicatives les plus exigeantes d'un jour. Afin d'optimiser ces deux technologies, il est essentiel de comprendre les modèles et caractéristiques d'E/S de SQL Server. Une infrastructure de stockage bien conçue pour une base de données SQL Server supporte les performances de SQL Server et la gestion de l'infrastructure SQL Server. Une bonne infrastructure de stockage permet également de mener à bien le déploiement initial et de faire évoluer l'environnement en toute transparence au fil du temps à mesure que l'entreprise se développe.
+L'association d'Amazon FSX ONTAP et de SQL Server sur l'instance EC2 permet de créer des conceptions de stockage de bases de données d'entreprise adaptées aux exigences des applications les plus exigeantes. Afin d'optimiser ces deux technologies, il est essentiel de comprendre les modèles et caractéristiques d'E/S de SQL Server. Une infrastructure de stockage bien conçue pour une base de données SQL Server supporte les performances de SQL Server et la gestion de l'infrastructure SQL Server. Une bonne infrastructure de stockage permet également de mener à bien le déploiement initial et de faire évoluer l'environnement en toute transparence au fil du temps à mesure que l'entreprise se développe.
 
 
 
@@ -60,7 +60,7 @@ L'association d'Amazon FSX pour NetApp ONTAP et de SQL Server sur l'instance EC2
 Avant de terminer les étapes de ce document, vous devez avoir les prérequis suivants :
 
 * Un compte AWS
-* Rôles IAM appropriés pour provisionner EC2 et FSX pour ONTAP
+* Rôles IAM appropriés pour provisionner EC2 et FSX ONTAP
 * Un domaine Windows Active Directory sur EC2
 * Tous les nœuds SQL Server doivent pouvoir communiquer entre eux
 * Assurez-vous que la résolution DNS fonctionne et que les noms d'hôte peuvent être résolus. Si ce n'est pas le cas, utilisez l'entrée de fichier hôte.
@@ -109,7 +109,7 @@ Avec FSX ONTAP, l'acquisition de stockage est la tâche la plus simple et peut �
 |===
 Avec cette configuration, la taille totale des volumes peut être supérieure au stockage réel disponible dans le système de fichiers. Si les LUN ou les copies Snapshot nécessitent plus d'espace que celui disponible dans le volume, les volumes augmentent automatiquement, ce qui prend plus d'espace à partir du système de fichiers contenant. Croissance automatique permet à FSX ONTAP d'augmenter automatiquement la taille du volume jusqu'à une taille maximale que vous prédéterminez. L'espace disponible dans le système de fichiers contenant doit être suffisant pour prendre en charge la croissance automatique du volume. Par conséquent, avec Autogrow activé, vous devez surveiller l'espace libre dans le système de fichiers contenant et mettre à jour le système de fichiers si nécessaire.
 
-En plus de cela, définissez le https://kb.netapp.com/Advice_and_Troubleshooting/Data_Storage_Software/ONTAP_OS/What_does_the_LUN_option_space_alloc_do%3F["allocation d'espace"^] Option sur LUN à activé pour que FSX ONTAP notifie l'hôte EC2 lorsque le volume a un manque d'espace et que la LUN du volume ne peut pas accepter les écritures. De plus, cette option permet à FSX pour ONTAP de récupérer automatiquement de l'espace lorsque SQL Server sur l'hôte EC2 supprime des données. L'option d'allocation d'espace est définie sur Désactivé par défaut.
+En outre, définissez https://kb.netapp.com/Advice_and_Troubleshooting/Data_Storage_Software/ONTAP_OS/What_does_the_LUN_option_space_alloc_do%3F["allocation d'espace"^] l'option sur LUN sur activé afin que FSX ONTAP notifie l'hôte EC2 lorsque le volume est à court d'espace et que la LUN du volume ne peut pas accepter les écritures. De plus, cette option permet à FSX ONTAP de récupérer de l'espace automatiquement lorsque le serveur SQL sur l'hôte EC2 supprime des données. L'option d'allocation d'espace est définie sur Désactivé par défaut.
 
 
 NOTE: Si une LUN réservée à l'espace est créée dans un volume non garanti, alors la LUN se comporte de la même manière qu'une LUN non réservée à l'espace. En effet, un volume sans garantie n'a pas d'espace à allouer à la LUN ; le volume lui-même ne peut allouer de l'espace que si celui-ci est écrit à cause de sa garantie aucune.
@@ -157,7 +157,7 @@ image:sql-awsec2-image2.png["Figure montrant la boîte de dialogue entrée/sorti
 +
 image:sql-awsec2-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-. Créez des volumes en suivant l'étape indiquée dans https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-volumes.html["Création d'un volume sur FSX pour NetApp ONTAP"^].
+. Créez des volumes en suivant l'étape indiquée dans https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/creating-volumes.html["Création d'un volume sur FSX ONTAP"^].
 +
 *Meilleures pratiques*
 
@@ -365,7 +365,7 @@ image:sql-awsec2-image13.png["Figure montrant la boîte de dialogue entrée/sort
 En plus de l'avantage de performances de séparer la disposition de la base de données utilisateur en différents volumes, la base de données affecte également de façon significative le temps nécessaire à la sauvegarde et à la restauration. La présence de volumes séparés pour les données et les fichiers journaux améliore considérablement la durée de restauration par rapport à un volume hébergeant plusieurs fichiers de données utilisateur. De même, les bases de données utilisateur équipées d'applications exigeantes en E/S peuvent augmenter le temps de sauvegarde. Une explication plus détaillée des pratiques de sauvegarde et de restauration est fournie plus loin dans ce document.
 
 
-NOTE: À partir de SQL Server 2012 (11.x), bases de données système (Master, Model, MSDB et TempDB), Et les bases de données utilisateur du moteur de base de données peuvent être installées avec un serveur de fichiers SMB comme option de stockage. Cela s'applique aux installations de cluster de basculement autonomes SQL Server et SQL Server. Cela vous permet d'utiliser FSX pour ONTAP avec toutes ses fonctionnalités de gestion des performances et des données, notamment la capacité de volumes, l'évolutivité des performances et les fonctionnalités de protection des données que SQL Server peut exploiter. Les partages utilisés par les serveurs d'applications doivent être configurés avec le jeu de propriétés disponible en continu et le volume doit être créé avec le style de sécurité NTFS. NetApp SnapCenter ne peut pas être utilisé avec les bases de données placées sur des partages SMB à partir de FSX pour ONTAP.
+NOTE: À partir de SQL Server 2012 (11.x), bases de données système (Master, Model, MSDB et TempDB), Et les bases de données utilisateur du moteur de base de données peuvent être installées avec un serveur de fichiers SMB comme option de stockage. Cela s'applique aux installations de cluster de basculement autonomes SQL Server et SQL Server. Vous pouvez ainsi utiliser FSX ONTAP avec toutes ses performances et capacités de gestion des données, y compris la capacité de volume, l'évolutivité des performances et les fonctionnalités de protection des données dont SQL Server peut tirer parti. Les partages utilisés par les serveurs d'applications doivent être configurés avec le jeu de propriétés disponible en continu et le volume doit être créé avec le style de sécurité NTFS. NetApp SnapCenter ne peut pas être utilisé avec les bases de données placées sur des partages SMB à partir de FSX ONTAP.
 
 
 NOTE: Pour les bases de données SQL Server qui n'utilisent pas SnapCenter pour effectuer des sauvegardes, Microsoft recommande de placer les données et les fichiers journaux sur des disques distincts. Pour les applications qui mettent à jour et demandent simultanément des données, le fichier journal est très gourmand en écriture et le fichier de données (selon votre application) consomme beaucoup de ressources en lecture/écriture. Pour la récupération des données, le fichier journal n'est pas nécessaire. Par conséquent, les demandes de données peuvent être satisfaites à partir du fichier de données placé sur son propre disque.
@@ -385,7 +385,7 @@ Après l'installation de SnapCenter, procédez comme suit pour le configurer.
 +
 image:sql-awsec2-image14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-. Ajoutez le système de stockage en sélectionnant systèmes de stockage > Nouveau et fournissez les informations FSX appropriées pour le stockage ONTAP.
+. Ajoutez le système de stockage en sélectionnant systèmes de stockage > Nouveau et fournissez les informations de stockage FSX ONTAP appropriées.
 +
 image:sql-awsec2-image15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
@@ -520,7 +520,7 @@ Outre la sauvegarde complète, NetApp recommande de configurer une sauvegarde du
 ====
 Pour restaurer une base de données sur un autre emplacement d'un environnement de développement ou de test, ou pour créer une copie à des fins d'analyse commerciale, il est recommandé d'utiliser la méthodologie de clonage afin de créer une copie de la base de données sur la même instance ou une autre instance.
 
-Le clonage des bases de données de 500 Go sur un disque iSCSI hébergé sur un système FSX pour ONTAP prend généralement moins de cinq minutes. Une fois le clonage terminé, l'utilisateur peut effectuer toutes les opérations de lecture/écriture requises sur la base de données clonée. La plupart du temps est utilisé pour l'analyse des disques (diskpart). La procédure de clonage NetApp prend généralement moins de 2 minutes, quelle que soit la taille des bases de données.
+Le clonage de bases de données de 500 Go sur un disque iSCSI hébergé dans un environnement FSX ONTAP prend généralement moins de cinq minutes. Une fois le clonage terminé, l'utilisateur peut effectuer toutes les opérations de lecture/écriture requises sur la base de données clonée. La plupart du temps est utilisé pour l'analyse des disques (diskpart). La procédure de clonage NetApp prend généralement moins de 2 minutes, quelle que soit la taille des bases de données.
 
 Le clonage d'une base de données peut être effectué à l'aide de la méthode double : vous pouvez créer un clone à partir de la dernière sauvegarde. Vous pouvez aussi utiliser la gestion du cycle de vie des clones pour rendre la copie la plus récente disponible sur l'instance secondaire.
 
@@ -544,7 +544,7 @@ Les étapes suivantes peuvent être utilisées pour cloner les bases de données
 L'étape suivante sert à cloner les bases de données vers la nouvelle instance de serveur SQL exécutée sur EC2 :
 
 . Créez un nouveau SQL Server sur EC2 sur le même VPC.
-. Activez le protocole iSCSI et MPIO, puis configurez la connexion iSCSI à FSX pour ONTAP en suivant les étapes 3 et 4 de la section « Créer des volumes et des LUN pour SQL Server ».
+. Activez le protocole iSCSI et MPIO, puis configurez la connexion iSCSI à FSX ONTAP en suivant les étapes 3 et 4 de la section « création de volumes et de LUN pour SQL Server ».
 . Ajoutez un nouveau serveur SQL sous EC2 dans SnapCenter en suivant l'étape 3 de la section « installation et configuration pour SnapCenter ».
 . Sélectionnez ressource > Afficher l'instance, puis Actualiser la ressource.
 . Sélectionnez Ressources, puis la base de données à cloner.
@@ -705,12 +705,12 @@ Exécutez le fichier `EnableMPIO.ps1` le premier et le second script s'exécute 
 
 == Où trouver des informations complémentaires
 
-* Amazon FSX pour NetApp ONTAP
+* Amazon FSX ONTAP
 
 
 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html"^]
 
-* Mise en route de FSX pour NetApp ONTAP
+* Mise en route de FSX ONTAP
 
 
 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started.html["https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started.html"^]
