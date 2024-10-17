@@ -26,24 +26,16 @@ NOTE: Cette solution a été vérifiée en utilisant deux clusters ROSA dans deu
 Le processus de configuration peut être divisé en plusieurs étapes :
 
 .Installer les clusters ROSA
-[%collapsible]
-====
 * Créez deux VPC et configurez la connectivité de peering VPC entre les VPC.
 * Reportez-vous à link:https://docs.openshift.com/rosa/welcome/index.html["ici"] Pour obtenir des instructions sur l'installation des clusters ROSA.
 
 
-====
 .Installez FSX ONTAP
-[%collapsible]
-====
 * Installez FSX ONTAP sur les VPC à partir de BlueXP . Reportez-vous à  la section link:https://docs.netapp.com/us-en/cloud-manager-setup-admin/index.html["ici"]création de compte BlueXP  et pour commencer. Reportez-vous  à la section link:https://docs.netapp.com/us-en/cloud-manager-fsx-ontap/index.html["ici"]installation de FSX ONTAP. Reportez-vous  à la section link:https://docs.netapp.com/us-en/cloud-manager-setup-admin/index.html["ici"]création d'un connecteur dans AWS pour gérer FSX ONTAP.
 * Déployez FSX ONTAP à l'aide d'AWS. Voir link:https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started-step1.html["ici"] pour le déploiement à l'aide de la console AWS.
 
 
-====
 .Installation de Trident sur les clusters ROSA (à l'aide du graphique Helm)
-[%collapsible]
-====
 * Utilisez le tableau Helm pour installer Trident sur les clusters ROSA. Lien vers la documentation : https://docs.NetApp.com/US-en/Trident/Trident-get-Started/kubernetes-Deploy-Helm.html[ici].
 
 
@@ -54,20 +46,14 @@ NOTE: Les GitOps OpenShift peuvent être utilisés pour déployer Trident CSI su
 
 image:rhhc-trident-helm.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-====
 .Création de classes de stockage et back-end à l'aide de Trident (pour FSX ONTAP)
-[%collapsible]
-====
 * Reportez-vous link:https://docs.netapp.com/us-en/trident/trident-use/backends.html["ici"] à pour plus d'informations sur la création des classes back-end et de stockage.
 * Créez la classe de stockage créée pour FsxN avec Trident CSI par défaut depuis la console OpenShift. Voir la capture d'écran ci-dessous :
 
 
 image:rhhc-default-storage-class.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
-====
 .Déployer une application à l'aide d'OpenShift GitOps (Argo CD)
-[%collapsible]
-====
 * Installez l'opérateur OpenShift GitOps sur le cluster. Reportez-vous aux instructions link:https://docs.openshift.com/container-platform/4.10/cicd/gitops/installing-openshift-gitops.html["ici"].
 * Configurez une nouvelle instance Argo CD pour le cluster. Reportez-vous aux instructions link:https://docs.openshift.com/container-platform/4.10/cicd/gitops/setting-up-argocd-instance.html["ici"].
 
@@ -75,5 +61,3 @@ image:rhhc-default-storage-class.png["Figure montrant la boîte de dialogue entr
 Ouvrez la console du CD Argo et déployez une application. Par exemple, vous pouvez déployer une application Jenkins à l'aide du CD Argo avec Helm Chart. Lors de la création de l'application, les détails suivants ont été fournis : Project: Default cluster: 'https://kubernetes.default.svc'[] (Sans les guillemets) namespace: Jenkins l'url du Helm Chart: 'https://charts.bitnami.com/bitnami'[] (Sans les guillemets)
 
 Paramètres Helm : global.storageClass : fsxn-nas
-
-====
