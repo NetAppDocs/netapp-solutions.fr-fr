@@ -48,7 +48,7 @@ NOTE: Le cluster du cybercoffre-fort peut se trouver dans le même data Center o
 
 
 
-NOTE: La rétention par défaut est définie sur minimum. Une période de conservation par défaut est affectée à un volume SnapLock cible du coffre-fort. La valeur pour cette période est initialement définie sur un minimum de 0 ans et un maximum de 30 ans pour les volumes SnapLock Compliance. À chaque copie NetApp Snapshot, toutes les copies NetApp Snapshot sont conservées pendant cette période de conservation par défaut. La période de conservation peut être prolongée ultérieurement, si nécessaire, mais jamais raccourcie.
+NOTE: La rétention par défaut est définie sur minimum. Une période de conservation par défaut est affectée à un volume SnapLock cible du coffre-fort. La valeur de cette période est initialement définie sur un minimum de 0 ans et un maximum de 100 ans (à partir de ONTAP 9.10.1. Pour les versions précédentes de ONTAP, la valeur est comprise entre 0 et 70.) pour les volumes SnapLock Compliance. À chaque copie NetApp Snapshot, toutes les copies NetApp Snapshot sont conservées pendant cette période de conservation par défaut. La période de conservation peut être prolongée ultérieurement, si nécessaire, mais jamais raccourcie. Pour plus d'informations, voir link:https://docs.netapp.com/us-en/ontap/snaplock/set-retention-period-task.html["Aperçu de la durée de conservation"^].
 
 Les étapes ci-dessus comprennent les étapes manuelles. Les experts en sécurité conseillent d'automatiser le processus pour éviter la gestion manuelle, ce qui génère une marge d'erreur importante. Vous trouverez ci-dessous l'extrait de code qui automatise complètement les prérequis et la configuration de SnapLock Compliance et l'initialisation de l'horloge.
 
