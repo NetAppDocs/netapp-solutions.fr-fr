@@ -1,0 +1,69 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_rosa_solution_clone_from_snapshot.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift Service on AWS, 
+summary: Red Hat OpenShift Service sur AWS avec NetApp ONTAP 
+---
+= Red Hat OpenShift Service sur AWS avec NetApp ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+**1. Restaurer à partir de l'instantané** dans cette section, nous allons montrer comment restaurer une application à partir de l'instantané Trident du volume d'application.
+
+**a. Créer un clone de volume à partir de l'instantané**
+
+Pour restaurer le volume à son état précédent, vous devez créer une nouvelle demande de volume persistant basée sur les données de l'instantané que vous avez pris. Pour ce faire, enregistrez le manifeste suivant dans un fichier nommé pvc-clone.yaml
+
+[source]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: postgresql-volume-clone
+spec:
+ accessModes:
+   - ReadWriteOnce
+ storageClassName: trident-csi
+ resources:
+   requests:
+     storage: 8Gi
+ dataSource:
+   name: postgresql-volume-snap-01
+   kind: VolumeSnapshot
+   apiGroup: snapshot.storage.k8s.io
+----
+Créez un clone du volume en créant une demande de volume persistant en utilisant le snapshot comme source à l'aide du manifeste ci-dessus. Appliquez le manifeste et assurez-vous que le clone est créé.
+
+image:redhat_openshift_container_rosa_image24.png["clonage postgresql à partir du snapshot"]
+
+**b. Supprimez l'installation postgresql d'origine**
+
+image:redhat_openshift_container_rosa_image25.png["suppression de l'application postgresql"]
+
+**c. Créez une nouvelle application postgresql en utilisant le nouveau clone PVC**
+
+[source]
+----
+$ helm install postgresql bitnami/postgresql --set primary.persistence.enabled=true --set primary.persistence.existingClaim=postgresql-volume-clone -n postgresql
+----
+image:redhat_openshift_container_rosa_image26.png["nouvelle installation de postgresql"]
+
+**d. Vérifiez que le pod d'application est à l'état d'exécution**
+
+image:redhat_openshift_container_rosa_image27.png["nouvelle installation de postgresql"]
+
+**e. Vérifiez que le pod utilise le clone comme PVC**
+
+image:redhat_openshift_container_rosa_image28.png["description de la nouvelle installation postgresql"]
+
+image:redhat_openshift_container_rosa_image29.png["la nouvelle demande de volume persistant est le clone"]
+
+f) pour vérifier que la base de données a été restaurée comme prévu, revenez à la console du conteneur et affichez les bases de données existantes
+
+image:redhat_openshift_container_rosa_image30.png["base de données restaurée"]

@@ -1,0 +1,89 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_deployment_rosa_initial_setup.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization sur ROSA 
+---
+= Configuration initiale
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Cette section explique comment configurer la classe de stockage par défaut pour Trident-csi et la classe VolumeSnapshotClass par défaut pour qu'elle soit la classe d'instantané de volume FSX. Vous apprendrez ensuite à créer une machine virtuelle à partir d'un modèle, puis à vous y connecter à l'aide des informations d'identification de l'invité.
+
+Assurez-vous que la classe de stockage par défaut est définie sur Trident-csi image:redhat_openshift_ocpv_rosa_image1.png["Classe de stockage par défaut OCP-v"]
+
+Assurez-vous que VolumeSnapShotClasses par défaut est défini comme indiqué image:redhat_openshift_ocpv_rosa_image2.png["Classe VolumeSnapshot par défaut OCP-v"]
+
+Si les valeurs par défaut ne sont pas définies, vous pouvez les configurer à partir de la console ou de la ligne de commande
+
+[source]
+----
+$ oc patch storageclass trident-csi -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+----
+[source]
+----
+$ oc patch VolumeSnapshotClasses fsx-snapclass -p '{"metadata": {"annotations": {"snapshot.storage.kubernetes.io/is-default-class": "true"}}}'
+----
+
+
+= Créer une machine virtuelle à partir du modèle
+
+Utilisez la console Web pour créer une machine virtuelle à partir d'un modèle. À partir de RedHat OpenShiftService sur la console AWS, créez une machine virtuelle. Des modèles disponibles dans le cluster peuvent être utilisés pour créer la machine virtuelle. Dans la capture d'écran ci-dessous, nous choisissons fedora VM dans cette liste. Donnez un nom à la machine virtuelle, puis cliquez sur **Personnaliser la machine virtuelle**. Sélectionnez l'onglet **disques** et cliquez sur **Ajouter des disques**. Changez le nom du disque de préférence pour quelque chose de significatif, assurez-vous que **Trident-csi** est sélectionné pour la classe de stockage. Cliquez sur **Enregistrer**. Cliquez sur **Créer Virtualmachine**
+
+Au bout de quelques minutes, la machine virtuelle est en cours d'exécution image:redhat_openshift_ocpv_rosa_image3.png["OCP-v Créer une VM à partir d'un modèle"]
+
+image:redhat_openshift_ocpv_rosa_image4.png["Sources de modèles OCP-v disponibles"]
+
+image:redhat_openshift_ocpv_rosa_image5.png["OCP-v Personnaliser VM"]
+
+image:redhat_openshift_ocpv_rosa_image6.png["Onglet disques OCP-v"]
+
+image:redhat_openshift_ocpv_rosa_image7.png["OCP-v Ajouter un disque"]
+
+image:redhat_openshift_ocpv_rosa_image8.png["OCP-v VM en cours d'exécution"]
+
+
+
+= Examiner tous les objets créés pour la machine virtuelle
+
+Les disques de stockage. image:redhat_openshift_ocpv_rosa_image9.png["Disques de stockage OCP-v"]
+
+Les systèmes de fichiers de la machine virtuelle affichent les partitions, le type de système de fichiers et les points de montage. image:redhat_openshift_ocpv_rosa_image10.png["Systèmes de fichiers OCP-v"]
+
+2 ESV sont créées pour la machine virtuelle, l'une à partir du disque de démarrage et l'autre pour le disque hot-plug. image:redhat_openshift_ocpv_rosa_image11.png["ESV OCP-v VM"]
+
+Le PVC du disque d'amorçage indique que le mode d'accès est ReadWriteMaly et que la classe de stockage est Trident-csi. image:redhat_openshift_ocpv_rosa_image12.png["Disque de démarrage OCP-v VM PVC"]
+
+De même, le PVC pour le disque hot-plug indique que le mode d'accès est ReadWriteMaly et que la classe de stockage est Trident-csi. image:redhat_openshift_ocpv_rosa_image13.png["Disque enfichable à chaud OCP-v VM PVC"]
+
+Dans la capture d'écran ci-dessous, nous pouvons voir que le pod pour la machine virtuelle a un statut d'exécution. image:redhat_openshift_ocpv_rosa_image14.png["OCP-v VM en cours d'exécution"]
+
+Ici, nous voyons les deux volumes associés au pod de machine virtuelle et les 2 ESV associés. image:redhat_openshift_ocpv_rosa_image15.png["ESV OCP-v VM et PVS"]
+
+
+
+= Se connecter à la machine virtuelle
+
+Cliquez sur le bouton ‘Ouvrir la console Web’ et connectez-vous à l'aide des informations d'identification invité image:redhat_openshift_ocpv_rosa_image16.png["Connexion OCP-v VM"]
+
+image:redhat_openshift_ocpv_rosa_image17.png["Connexion OCP-v"]
+
+Exécutez les commandes suivantes
+
+[source]
+----
+$ df (to display information about the disk space usage on a file system).
+----
+[source]
+----
+$ dd if=/dev/urandom of=random.dat bs=1M count=10240 (to create a file called random.dat in the home dir and fill it with random data).
+----
+Le disque est rempli de 11 Go de données. image:redhat_openshift_ocpv_rosa_image18.png["OCP-v VM remplit le disque"]
+
+Utilisez vi pour créer un exemple de fichier texte que nous utiliserons pour tester. image:redhat_openshift_ocpv_rosa_image19.png["OCP-v crée un fichier"]

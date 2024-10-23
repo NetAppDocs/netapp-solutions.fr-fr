@@ -1,0 +1,57 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_rosa_solution_snapshot_app.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift Service on AWS, 
+summary: Red Hat OpenShift Service sur AWS avec NetApp ONTAP 
+---
+= Red Hat OpenShift Service sur AWS avec NetApp ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+**1. Créer un instantané du volume d'app** dans cette section, nous allons montrer comment créer un instantané Trident du volume associé à l'app. Il s'agit d'une copie ponctuelle des données d'app. En cas de perte des données de l'application, nous pouvons récupérer les données à partir de cette copie instantanée. REMARQUE : ce snapshot est stocké dans le même agrégat que le volume d'origine dans ONTAP (sur site ou dans le cloud). Par conséquent, en cas de perte de l'agrégat de stockage ONTAP, nous ne pouvons pas restaurer les données d'application à partir de son snapshot.
+
+**a. Créez un VolumeSnapshotClass Enregistrez le manifeste suivant dans un fichier appelé volume-snapshot-class.yaml
+
+[source]
+----
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+ name: fsx-snapclass
+driver: csi.trident.netapp.io
+deletionPolicy: Delete
+----
+Créez un snapshot à l'aide du manifeste ci-dessus.
+
+image:redhat_openshift_container_rosa_image20.png["classe snapshot"]
+
+**b. Ensuite, créez un snapshot** Créez un snapshot de la demande de volume existante en créant VolumeSnapshot pour créer une copie ponctuelle de vos données PostgreSQL. Cela crée un snapshot FSX qui ne prend quasiment pas d'espace dans le système de fichiers back-end. Enregistrez le manifeste suivant dans un fichier appelé volume-snapshot.yaml :
+
+[source]
+----
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+ name: postgresql-volume-snap-01
+spec:
+ volumeSnapshotClassName: fsx-snapclass
+ source:
+   persistentVolumeClaimName: data-postgresql-0
+----
+**c. Créer l'instantané de volume et confirmer qu'il est créé**
+
+Supprimer la base de données pour simuler la perte de données (la perte de données peut se produire pour diverses raisons, nous la simulons simplement en supprimant la base de données)
+
+image:redhat_openshift_container_rosa_image21.png["snapshot de volume"]
+
+**d. Supprimer la base de données pour simuler la perte de données (la perte de données peut se produire pour diverses raisons, nous la simulons simplement en supprimant la base de données)**
+
+image:redhat_openshift_container_rosa_image22.png["connexion à la base de données"]
+
+image:redhat_openshift_container_rosa_image23.png["supprimer la base de données"]

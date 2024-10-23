@@ -1,0 +1,33 @@
+---
+sidebar: sidebar 
+permalink: containers/rh-os-n_use_case_openshift_virtualization_workflow_rosa_vm_live_migration.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift Virtualization sur ROSA 
+---
+= Migration en direct des machines virtuelles
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Dans cette section, nous allons effectuer une migration dynamique de machine virtuelle, puis examiner le contenu des disques. La migration dynamique consiste à déplacer un ordinateur virtuel en cours d'exécution d'un hôte physique vers un autre hôte sans perturber le fonctionnement normal des opérations, ni entraîner de temps d'indisponibilité, ni d'autres effets néfastes pour l'utilisateur final. La migration dynamique est considérée comme une étape majeure de la virtualisation. Il permet de déplacer une machine virtuelle entière avec un système d'exploitation, une mémoire, un stockage et une connectivité réseau en cours d'exécution depuis le nœud actuel vers la destination. Ci-dessous, nous allons voir comment effectuer une migration dynamique de la machine virtuelle du nœud actuel vers un nouveau nœud.
+
+Notez le nœud sur lequel la machine virtuelle s'exécute image:redhat_openshift_ocpv_rosa_image24.png["Nœud courant OCP-v VM"]
+
+Cliquez sur les 3 points et sélectionnez migrer image:redhat_openshift_ocpv_rosa_image25.png["Migration dynamique des VM OCP-v"]
+
+Sur la page vue d'ensemble, vous pouvez voir que la migration a réussi et que l'état est passé à réussi. image:redhat_openshift_ocpv_rosa_image26.png["Migration VM OCP-v réussie"]
+
+Une fois la migration dynamique terminée, la machine virtuelle se trouve à présent sur un nœud différent. image:redhat_openshift_ocpv_rosa_image27.png["OCP-v VM sur un nœud différent"]
+
+Ouvrez la console Web et affichez le contenu des disques. Il contient toujours les 2 mêmes fichiers que ceux que nous avons créés avant la migration dynamique. image:redhat_openshift_ocpv_rosa_image28.png["OCP-v VM mêmes fichiers après migration en direct 1"] image:redhat_openshift_ocpv_rosa_image29.png["OCP-v VM mêmes fichiers après migration en direct 2"]
+
+Le stockage de la machine virtuelle sur le nouveau nœud affiche toujours les mêmes disques image:redhat_openshift_ocpv_rosa_image30.png["OCP-v VM mêmes disques après migration dynamique"]
+
+Les ESV sont également identiques. image:redhat_openshift_ocpv_rosa_image31.png["OCP-v VM mêmes ESV après migration dynamique"]
+
+Les volumes associés au pod VM sont également les mêmes (2 ESV) qu'auparavant. image:redhat_openshift_ocpv_rosa_image32.png["OCP-v VM mêmes ESV après migration dynamique"]
