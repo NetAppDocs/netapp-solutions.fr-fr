@@ -1,0 +1,137 @@
+---
+sidebar: sidebar 
+keywords: Cyber vault, cybervault, cyber-vault, data protection, security, ransomware, ONTAP, FAQ 
+permalink: cyber-vault/ontap-cyber-vault-faq.html 
+summary: Ce document contient les questions les plus fréquemment posées sur la solution de cyber-coffre NetApp ONTAP. 
+---
+= Foire aux questions sur le cyber-coffre-fort
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Cette FAQ s'adresse aux clients et partenaires NetApp. Il répond aux questions les plus fréquemment posées sur l'architecture de référence de cybercoffre basée sur ONTAP de NetApp.
+
+
+
+== Qu'est-ce qu'un cyber-coffre NetApp ?
+
+Le cybercoffre est une technique spécifique de protection des données qui implique de stocker les données dans un environnement isolé et séparé de l'infrastructure INFORMATIQUE principale.
+
+Le cybercoffre est un référentiel de données « à air Gap », immuable et indélébile, à l'abri des menaces qui affectent les données primaires, telles que les logiciels malveillants, les ransomware ou les menaces internes. Vous pouvez créer un coffre-fort cybernétique avec des copies Snapshot NetApp ONTAP immuables et indélébiles grâce à NetApp SnapLock Compliance. Sous la protection SnapLock Compliance, les données ne peuvent pas être modifiées ou supprimées, même par les administrateurs ONTAP ou le support NetApp.
+
+Les sauvegardes de « air gapping » utilisant des méthodes traditionnelles impliquent la création d'espace et la séparation physique des supports principal et secondaire. Le « air Gap » avec le « cyber-coffre » consiste à utiliser un réseau de réplication des données distinct en dehors des réseaux d'accès aux données standard pour répliquer les copies Snapshot vers une destination indélébile.
+
+Pour aller plus loin que les réseaux à air Gap, vous devez désactiver tous les protocoles d'accès aux données et de réplication sur le cyber-coffre lorsqu'ils ne sont pas nécessaires. Cela empêche l'accès aux données et leur exfiltration sur le site de destination. Avec SnapLock Compliance, la séparation physique n'est pas nécessaire. SnapLock Compliance protège vos copies Snapshot en lecture seule, à un point dans le temps, pour une restauration rapide des données, à l'abri de la suppression et des immuables.
+
+
+
+== L'approche de NetApp en matière de cyber-coffre
+
+Le cyber-coffre NetApp, optimisé par SnapLock, offre aux entreprises une solution complète et flexible pour protéger leurs données les plus stratégiques. En tirant parti des technologies de renforcement dans ONTAP, NetApp vous permet de créer un coffre-fort cybernétique, isolé et sécurisé, à l'abri des cyber-menaces en constante évolution. Avec NetApp, vous pouvez assurer la confidentialité, l'intégrité et la disponibilité de vos données tout en conservant l'agilité et l'efficacité de votre infrastructure de stockage.
+
+Les principales fonctionnalités de l'architecture de référence NetApp pour un coffre-fort virtuel sont les suivantes :
+
+* Infrastructure de stockage sécurisée et isolée (p. ex., systèmes de stockage à air Gap)
+* Des copies de sauvegarde de vos données sont à la fois immuables et indélébiles
+* Contrôles d'accès stricts et séparés, vérification multiadministrateur et authentification multifacteur
+* Fonctionnalités de restauration rapide des données
+
+
+
+
+== Foire aux questions sur le cyber-coffre-fort
+
+.Le cyber-coffre-fort est-il un produit de NetApp ?
+[%collapsible%open]
+====
+Non, le terme « cyber-coffre-fort » est utilisé à l'échelle de l'industrie. NetApp a créé une architecture de référence qui permet aux clients de créer facilement leurs propres coffres-forts informatiques et d'exploiter les dizaines de fonctionnalités de sécurité d'ONTAP pour protéger leurs données contre les cybermenaces. Plus d'informations sont disponibles sur le link:https://docs.netapp.com/us-en/netapp-solutions/cyber-vault/ontap-cyber-vault-overview.html["Site de documentation ONTAP"^].
+
+====
+.Le cybercoffre avec NetApp est-il juste un autre nom pour LockVault ou SnapVault ?
+[%collapsible%open]
+====
+LockVault était une fonctionnalité de Data ONTAP 7-Mode qui n'est pas disponible dans les versions actuelles de ONTAP.
+
+SnapVault était un terme hérité de ce qui est désormais accompli avec la règle de copie de SnapMirror. Cette règle permet à la destination de conserver une quantité différente de copies Snapshot par rapport au volume source.
+
+Le cybercoffre utilise SnapMirror avec la règle de copie Vault et SnapLock Compliance ensemble pour créer une copie immuable et indélébile des données.
+
+====
+.Quel matériel NetApp puis-je utiliser pour un cybercoffre, un FAS, le Flash à capacité ou le Flash à performance ?
+[%collapsible%open]
+====
+Cette architecture de référence pour la cyber-copie s'applique à l'ensemble du portefeuille matériel ONTAP. Les clients peuvent utiliser les plateformes AFF A-Series, AFF C-Series ou FAS comme coffre-fort. Les plateformes Flash offrent les délais de restauration les plus courts, tandis que les plateformes sur disque constituent la solution la plus économique. Selon la quantité de données récupérées et si plusieurs restaurations se produisent en parallèle, l'utilisation de systèmes sur disque (FAS) peut prendre plusieurs jours, voire plusieurs semaines. Contactez un représentant NetApp ou un représentant partenaire pour dimensionner correctement une solution de cyber-sécurité en fonction des besoins de l'entreprise.
+
+====
+.Puis-je utiliser Cloud Volumes ONTAP en tant que source de cyber-coffre-fort ?
+[%collapsible%open]
+====
+Oui. Cependant, l'utilisation de CVO comme source nécessite la réplication des données vers une destination de cybercopie sur site, car SnapLock Compliance est une exigence pour un cyber-coffre ONTAP. La réplication des données à partir d'une instance CVO basée sur un hyperscaler peut entraîner des frais de sortie.
+
+====
+.Puis-je utiliser Cloud Volumes ONTAP comme destination de cyber-sécurité ?
+[%collapsible%open]
+====
+L'architecture du Cyber Vault repose sur l'indélébilité SnapLock Compliance de ONTAP et est conçue pour les implémentations sur site. Les architectures Cyber Vault basées sur le cloud sont actuellement à l'étude pour publication ultérieure.
+
+====
+.Puis-je utiliser ONTAP Select en tant que source de cyber-coffre-fort ?
+[%collapsible%open]
+====
+Oui, ONTAP Select peut être utilisé comme source pour un environnement matériel sur site de destination de cybercopie.
+
+====
+.Puis-je utiliser ONTAP Select comme destination de cyber-sécurité ?
+[%collapsible%open]
+====
+Non, ONTAP Select ne doit pas être utilisé comme destination de cyber-coffre, car il ne peut pas utiliser SnapLock Compliance.
+
+====
+.Un cybercoffre avec NetApp utilise-t-il uniquement SnapMirror ?
+[%collapsible%open]
+====
+Non, une architecture de cyber-coffre NetApp exploite de nombreuses fonctionnalités ONTAP pour créer une copie sécurisée, isolée, air Gap et renforcée de données. Pour plus d'informations sur les informations techniques supplémentaires à utiliser, reportez-vous à la question suivante.
+
+====
+.Existe-t-il d'autres technologies ou configurations utilisées pour le cyber-coffre-fort ?
+[%collapsible%open]
+====
+La base d'un cyber-coffre NetApp est SnapMirror et SnapLock Compliance. Cependant, l'utilisation de fonctionnalités ONTAP supplémentaires, telles que les copies Snapshot inviolables, l'authentification multifacteur (MFA), la vérification multiadministrateur, le contrôle d'accès basé sur les rôles et la journalisation des audits locale et distante, améliore la sécurité et la sécurité de vos données.
+
+====
+.En quoi les copies ONTAP Snapshot sont-elles meilleures que les autres pour un cybercoffre ?
+[%collapsible%open]
+====
+Les copies Snapshot ONTAP sont immuables par défaut et peuvent être rendues indélébiles grâce à SnapLock Compliance. Même la prise en charge de NetApp ne peut pas supprimer les copies Snapshot SnapLock. La meilleure question à se poser est de savoir ce qui rend le cyber-coffre NetApp meilleur que les autres cyber-coffres de l'industrie. Tout d'abord, ONTAP est le stockage le plus sécurisé au monde et a obtenu la validation CSfC qui permet le stockage de données secrètes et les plus secrètes au repos sur les couches matérielles et logicielles. Plus d'informations sur link:https://www.netapp.com/esg/trust-center/compliance/CSfC-Program/["CSFC est disponible ici"^]. De plus, ONTAP peut être air Gap au niveau de la couche de stockage, le système de cyber-coffre contrôlant la réplication permettant de créer un air Gap au sein du réseau de cyber-coffre.
+
+====
+.Est-il possible que le volume source d'un cyber-coffre soit un volume compatible avec ONTAP Fabric Pool (volume hiérarchisé vers ONTAP S3 ou StorageGRID) ?
+[%collapsible%open]
+====
+Non, Un volume source FabricPool indépendamment de la règle utilisée ne peut pas être répliqué vers une destination SnapLock Compliance.
+
+====
+.Le cyber-coffre-fort NetApp fonctionne-t-il sur un profil ou une personnalité ONTAP différente ?
+[%collapsible%open]
+====
+Non, il s'agit d'une architecture de référence. Les clients peuvent utiliser le link:ontap-create-cyber-vault-task.html["architecture de référence"] et créer un cyber-coffre-fort ou utiliser link:ontap-cyber-vault-powershell-overview.html["Scripts PowerShell pour créer, renforcer et valider"]un cyber-coffre-fort.
+
+====
+.Puis-je activer les protocoles de données tels que NFS, SMB et S3 dans un cybercoffre-fort ?
+[%collapsible%open]
+====
+Par défaut, les protocoles de données doivent être désactivés sur le cyber-coffre-fort pour le sécuriser. Cependant, les protocoles de données peuvent être activés sur le cyber-coffre pour accéder aux données à des fins de restauration ou lorsque cela est nécessaire. Cette opération doit être effectuée de façon temporaire et désactivée une fois la récupération terminée.
+
+====
+.Pouvez-vous convertir un environnement SnapVault existant en cyber-coffre ou tout réamorcer ?
+[%collapsible%open]
+====
+Oui. On peut prendre un système qui est une destination SnapMirror (avec la stratégie de coffre-fort), désactiver les protocoles de données, renforcer le système selon le link:https://docs.netapp.com/us-en/ontap/ontap-security-hardening/security-hardening-overview.html["Guide de renforcement ONTAP"^], l'isoler un emplacement sécurisé, et suivre les autres procédures de l'architecture de référence pour en faire un cyber-coffre sans avoir à réalimenter la destination.
+
+====
+*Vous avez des questions supplémentaires?* Veuillez envoyer un e-mail à mailto:ng-cyber-vault@NetApp.com[ng-cyber-vault@NetApp.com^,questions sur le cybercoffre,J'aimerais en savoir plus sur : ] avec vos questions! Nous répondrons et ajouterons vos questions à la FAQ.
