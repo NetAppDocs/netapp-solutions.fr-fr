@@ -25,7 +25,7 @@ Le processus de configuration peut être divisé en plusieurs étapes :
 ====
 Pour configurer un environnement GCVE dans GCP, connectez-vous à la console GCP et accédez au portail VMware Engine.
 
-Cliquez sur le bouton "Nouveau Cloud privé" et entrez la configuration souhaitée pour le Cloud privé GCVE. Sur « Location », veillez à déployer le Cloud privé dans la même région/zone où CVS/CVO est déployé, afin d'assurer les meilleures performances et la plus faible latence.
+Cliquez sur le bouton "Nouveau Cloud privé" et entrez la configuration souhaitée pour le Cloud privé GCVE. Sur « emplacement », veillez à déployer le cloud privé dans la même région/zone où NetApp volumes/CVO est déployé, afin d'assurer les meilleures performances et la latence la plus faible.
 
 Conditions préalables :
 
@@ -44,7 +44,7 @@ Remarque : la création d'un cloud privé peut prendre entre 30 minutes et 2 heu
 ====
 Une fois le cloud privé provisionné, configurez l'accès privé au cloud privé pour obtenir un débit élevé et une connexion à faible latence du chemin d'accès aux données.
 
-Cela permet de s'assurer que le réseau VPC dans lequel des instances Cloud Volumes ONTAP sont en cours d'exécution peut communiquer avec le Cloud privé GCVE. Pour ce faire, suivez le link:https://cloud.google.com/architecture/partners/netapp-cloud-volumes/quickstart["Documentation GCP"]. Pour le service de volume cloud, établissez une connexion entre VMware Engine et Cloud Volumes Service en effectuant un peering unique entre les projets hôtes du locataire. Pour obtenir des instructions détaillées, suivez cette procédure link:https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-service["lien"].
+Cela permet de s'assurer que le réseau VPC dans lequel des instances Cloud Volumes ONTAP sont en cours d'exécution peut communiquer avec le Cloud privé GCVE. Pour ce faire, suivez la link:https://cloud.google.com/architecture/partners/netapp-cloud-volumes/quickstart["Documentation GCP"]. Pour le service Cloud Volume, établissez une connexion entre VMware Engine et Google Cloud NetApp volumes en effectuant un peering unique entre les projets hôtes locataires. Pour des étapes détaillées, suivez cette link:https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-cloud-volumes-service["lien"].
 
 image:gcve-access-1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
@@ -61,9 +61,9 @@ image:gcve-access-3.png["Figure montrant la boîte de dialogue entrée/sortie ou
 image:gcve-access-4.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
 ====
-.Déployez le datastore supplémentaire de NetApp Cloud Volume Service dans GCVE
+.Déployez le datastore supplémentaire de Google Cloud NetApp volumes dans GCVE
 [%collapsible]
 ====
-Reportez-vous à link:gcp-ncvs-datastore.html["Procédure de déploiement d'un datastore NFS supplémentaire avec NetApp CVS dans GCVE"]
+Reportez-vous à link:gcp-ncvs-datastore.html["Procédure de déploiement d'un datastore NFS supplémentaire avec NetApp volumes dans GCVE"]
 
 ====

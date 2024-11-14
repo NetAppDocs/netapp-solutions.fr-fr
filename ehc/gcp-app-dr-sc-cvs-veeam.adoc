@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: ehc/gcp-app-dr-sc-cvs-veeam.html 
-keywords: gcp, gcve, snapcenter, cvo, cvs, iscsi, guest connect, dr, disaster recovery 
+keywords: gcp, gcve, snapcenter, cvo, gcnv, iscsi, guest connect, dr, disaster recovery 
 summary: 'La reprise d"activité dans le cloud est une solution résiliente et économique qui protège les charges de travail contre les pannes sur site et la corruption des données, comme les attaques par ransomware. NetApp SnapMirror permet de répliquer les charges de travail VMware sur site utilisant un stockage connecté à l"invité vers NetApp Cloud Volumes ONTAP exécuté dans Google Cloud.' 
 ---
 = Reprise d'activité cohérente avec les applications avec NetApp SnapCenter et Veeam Replication
@@ -92,7 +92,7 @@ video::395e33db-0d63-4e48-8898-b01200f006ca[panopto]
 ====
 Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont la taille du cluster SDDC dans la solution GCVE et le temps de maintenance du SDDC. Ces deux considérations clés à prendre en compte dans une solution de reprise sur incident permettent de réduire les coûts d'exploitation globaux. Le SDDC peut héberger jusqu'à trois hôtes, tout comme un cluster multi-hôtes dans un déploiement à grande échelle.
 
-Le datastore NetApp Cloud Volume Service pour NFS et le journal et les bases de données Cloud Volumes ONTAP pour SQL peuvent être déployés sur n'importe quel VPC et GCVE doivent disposer d'une connexion privée à ce VPC pour monter le datastore NFS et se connecter aux LUN iSCSI par un VM.
+Le datastore Google Cloud NetApp volumes pour NFS et le journal Cloud Volumes ONTAP pour les bases de données et les journaux SQL peuvent être déployés sur n'importe quel VPC et GCVE doivent disposer d'une connexion privée à ce VPC pour monter le datastore NFS et se connecter aux LUN iSCSI par un VM.
 
 Pour configurer GCVE SDDC, voir link:gcp-setup.html["Déploiement et configuration de l'environnement de virtualisation sur Google Cloud Platform (GCP)"^]. Avant cela, vérifiez que les VM invités résidant sur les hôtes GCVE peuvent consommer des données de Cloud Volumes ONTAP une fois la connectivité établie.
 

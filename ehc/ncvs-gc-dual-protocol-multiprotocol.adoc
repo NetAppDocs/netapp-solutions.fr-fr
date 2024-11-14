@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: ehc/ncvs-gc-dual-protocol-multiprotocol.html 
 keywords: access control, user mapping, permission model 
-summary: 'Cloud Volumes Service permet de partager les mêmes datasets avec les clients SMB et NFS tout en maintenant les autorisations d"accès adéquates protocole double. Pour ce faire, le mappage d"identités entre les protocoles et un serveur LDAP back-end centralisé permettent de fournir les identités UNIX à Cloud Volumes Service. Vous pouvez utiliser Windows Active Directory pour fournir à la fois aux utilisateurs Windows et UNIX la facilité d"utilisation.' 
+summary: 'Google Cloud NetApp volumes permet de partager les mêmes datasets avec les clients SMB et NFS tout en conservant les autorisations d"accès appropriées à un double protocole. Il coordonne le mappage des identités entre les protocoles et l"utilisation d"un serveur LDAP back-end centralisé afin de fournir les identités UNIX aux volumes Google Cloud NetApp. Vous pouvez utiliser Windows Active Directory pour fournir à la fois aux utilisateurs Windows et UNIX la facilité d"utilisation.' 
 ---
 = Double protocole/multiprotocole
 :hardbreaks:
@@ -14,13 +14,13 @@ summary: 'Cloud Volumes Service permet de partager les mêmes datasets avec les 
 
 
 [role="lead"]
-Cloud Volumes Service permet de partager les mêmes datasets avec les clients SMB et NFS tout en maintenant les autorisations d'accès adéquates (https://cloud.google.com/architecture/partners/netapp-cloud-volumes/managing-dual-protocol-access["double protocole"^]). Pour ce faire, le mappage d'identités entre les protocoles et un serveur LDAP back-end centralisé permettent de fournir les identités UNIX à Cloud Volumes Service. Vous pouvez utiliser Windows Active Directory pour fournir à la fois aux utilisateurs Windows et UNIX la facilité d'utilisation.
+Google Cloud NetApp volumes permet de partager les mêmes datasets avec les clients SMB et NFS tout en conservant les autorisations d'accès appropriées (https://cloud.google.com/architecture/partners/netapp-cloud-volumes/managing-dual-protocol-access["double protocole"^]). Il coordonne le mappage des identités entre les protocoles et l'utilisation d'un serveur LDAP back-end centralisé afin de fournir les identités UNIX aux volumes Google Cloud NetApp. Vous pouvez utiliser Windows Active Directory pour fournir à la fois aux utilisateurs Windows et UNIX la facilité d'utilisation.
 
 
 
 == Contrôle d'accès
 
-* *Partage des contrôles d'accès.* déterminer quels clients et/ou utilisateurs et groupes peuvent accéder à un partage NAS. Dans le cas de NFS, les export-policy et les règles contrôlent l'accès client aux exports. Les exportations NFS sont gérées à partir de l'instance Cloud Volumes Service. SMB utilise les partages CIFS/SMB et les listes de contrôle d'accès de partage pour fournir un contrôle plus granulaire au niveau de l'utilisateur et du groupe. Vous pouvez uniquement configurer des listes de contrôle d'accès de niveau partage à partir de clients SMB en utilisant https://library.netapp.com/ecmdocs/ECMP1401220/html/GUID-C1772CDF-8AEE-422B-AB87-CFCB7E50FF94.html[MMC/Computer Management^] avec un compte disposant de droits d'administrateur sur l'instance Cloud Volumes Service (voir la section link:ncvs-gc-smb.html#comptes avec des droits d'administrateur/de sauvegarde local/BUILTIN[« comptes avec des droits d'administrateur/de sauvegarde local/BUILTIN »]).
+* *Partager les contrôles d'accès.* Déterminez quels clients et/ou utilisateurs et groupes peuvent accéder à un partage NAS. Dans le cas de NFS, les export-policy et les règles contrôlent l'accès client aux exports. Les exportations NFS sont gérées à partir de l'instance Google Cloud NetApp volumes. SMB utilise les partages CIFS/SMB et les listes de contrôle d'accès de partage pour fournir un contrôle plus granulaire au niveau de l'utilisateur et du groupe. Vous ne pouvez configurer des listes de contrôle d'accès de niveau partage qu'à partir des clients SMB en utilisant https://library.NetApp.com/ecmdocs/ECMP1401220/html/GUID-C1772CDF-8AEE-422B-AB87-CFCB7E50FF94.html[gestion des ordinateurs/MMC^] avec un compte disposant de droits d'administrateur sur l'instance de Google Cloud NetApp volumes (voir la section comptes de sauvegarde locale/BIN/BIN).
 * *Contrôles d'accès aux fichiers.* les autorisations de contrôle au niveau d'un fichier ou d'un dossier sont toujours gérées à partir du client NAS. Les clients NFS peuvent utiliser les bits de mode classiques (rwx) ou les listes de contrôle d'accès NFSv4. Les clients SMB exploitent les autorisations NTFS.
 
 
@@ -30,11 +30,11 @@ Le contrôle d'accès pour les volumes qui fournissent des données à la fois a
 
 == Mappage d'utilisateurs
 
-Lorsqu'un client accède à un volume, Cloud Volumes Service tente de mapper l'utilisateur entrant vers un utilisateur valide dans la direction opposée. Cela est nécessaire pour que l'accès soit déterminé dans l'ensemble des protocoles et pour s'assurer que l'utilisateur qui demande l'accès est bien celui qu'il prétend être.
+Lorsqu'un client accède à un volume, Google Cloud NetApp volumes tente de mapper l'utilisateur entrant à un utilisateur valide dans la direction opposée. Cela est nécessaire pour que l'accès soit déterminé dans l'ensemble des protocoles et pour s'assurer que l'utilisateur qui demande l'accès est bien celui qu'il prétend être.
 
-Par exemple, si un utilisateur Windows nommé `joe` Tente d'accéder à un volume avec des autorisations UNIX via SMB, puis Cloud Volumes Service effectue une recherche pour trouver un utilisateur UNIX correspondant nommé `joe`. Le cas échéant, les fichiers qui sont écrits dans un partage SMB en tant qu'utilisateur Windows `joe` S'affiche en tant qu'utilisateur UNIX `joe` À partir de clients NFS.
+Par exemple, si un utilisateur Windows appelé `joe` tente d'accéder à un volume avec des autorisations UNIX via SMB, Google Cloud NetApp volumes effectue une recherche pour trouver l'utilisateur UNIX correspondant nommé `joe`. S'il en existe un, les fichiers écrits sur un partage SMB en tant qu'utilisateur Windows apparaissent en tant `joe` qu'utilisateur UNIX `joe` à partir de clients NFS.
 
-Sinon, si un utilisateur UNIX nommé `joe` Tente d'accéder à un volume Cloud Volumes Service avec des autorisations Windows, puis l'utilisateur UNIX doit pouvoir mapper un utilisateur Windows valide. Dans le cas contraire, l'accès au volume est refusé.
+Sinon, si un utilisateur UNIX appelé `joe` tente d'accéder à un volume Google Cloud NetApp volumes avec des autorisations Windows, l'utilisateur UNIX doit pouvoir le mapper à un utilisateur Windows valide. Dans le cas contraire, l'accès au volume est refusé.
 
 Actuellement, seul Active Directory est pris en charge pour la gestion externe des identités UNIX avec LDAP. Pour plus d'informations sur la configuration de l'accès à ce service, reportez-vous à la section https://cloud.google.com/architecture/partners/netapp-cloud-volumes/creating-smb-volumes["Création d'une connexion AD"^].
 
@@ -42,10 +42,10 @@ Actuellement, seul Active Directory est pris en charge pour la gestion externe d
 
 == Modèle d'autorisation
 
-Lors de l'utilisation de configurations à double protocole, Cloud Volumes Service utilise des styles de sécurité pour les volumes afin de déterminer le type de liste de contrôle d'accès. Ces styles de sécurité sont définis en fonction du protocole NAS spécifié, ou dans le cas d'un double protocole, en fait l'option choisie au moment de la création du volume Cloud Volumes Service.
+Lors de l'utilisation de configurations à double protocole, Google Cloud NetApp volumes utilise les styles de sécurité pour les volumes afin de déterminer le type de liste de contrôle d'accès. Ces styles de sécurité sont définis en fonction du protocole NAS spécifié, ou dans le cas d'un double protocole, il est possible de choisir lors de la création du volume Google Cloud NetApp volumes.
 
-* Si vous utilisez uniquement NFS, les volumes Cloud Volumes Service utilisent des autorisations UNIX.
-* Si vous utilisez uniquement SMB, les volumes Cloud Volumes Service utilisent des autorisations NTFS.
+* Si vous utilisez uniquement NFS, les volumes Google Cloud NetApp utilisent des autorisations UNIX.
+* Si vous utilisez uniquement SMB, les volumes Google Cloud NetApp utilisent des autorisations NTFS.
 
 
 Si vous créez un volume à double protocole, vous pouvez choisir le style ACL lors de la création du volume. Cette décision doit être prise en fonction de la gestion des autorisations souhaitée. Si vos utilisateurs gèrent les autorisations des clients Windows/SMB, sélectionnez NTFS. Si vos utilisateurs préfèrent utiliser des clients NFS et chmod/chown, utilisez des styles de sécurité UNIX.

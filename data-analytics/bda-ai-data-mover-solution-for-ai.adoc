@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: data-analytics/bda-ai-data-mover-solution-for-ai.html 
 keywords: data mover, ai, hadoop, nipam, nfs, azure, 
-summary: 'La solution de transfert de données pour l"IA repose sur les besoins des utilisateurs en matière de traitement des données Hadoop à partir d"opérations d"IA. NetApp déplace les données de HDFS vers NFS à l"aide de NIPAM. Dans un cas d"utilisation, le client devait déplacer les données vers NFS sur site et un autre client devait déplacer les données de Windows Azure Storage Blob vers Cloud Volumes Service pour traiter les données des instances cloud GPU dans le cloud.' 
+summary: 'La solution de transfert de données pour l"IA repose sur les besoins des utilisateurs en matière de traitement des données Hadoop à partir d"opérations d"IA. NetApp déplace les données de HDFS vers NFS à l"aide de NIPAM. Pour une utilisation, le client avait besoin de déplacer les données vers NFS sur site et un autre client avait besoin de déplacer les données de Windows Azure Storage Blob vers Google Cloud NetApp volumes afin de traiter les données des instances cloud GPU dans le cloud.' 
 ---
 = Solution de transfert de données pour l'IA
 :hardbreaks:
@@ -14,7 +14,7 @@ summary: 'La solution de transfert de données pour l"IA repose sur les besoins 
 
 
 [role="lead"]
-La solution de transfert de données pour l'IA repose sur les besoins des utilisateurs en matière de traitement des données Hadoop à partir d'opérations d'IA. NetApp déplace les données de HDFS vers NFS à l'aide de NIPAM. Dans un cas d'utilisation, le client devait déplacer les données vers NFS sur site et un autre client devait déplacer les données de Windows Azure Storage Blob vers Cloud Volumes Service pour traiter les données des instances cloud GPU dans le cloud.
+La solution de transfert de données pour l'IA repose sur les besoins des utilisateurs en matière de traitement des données Hadoop à partir d'opérations d'IA. NetApp déplace les données de HDFS vers NFS à l'aide de NIPAM. Pour une utilisation, le client avait besoin de déplacer les données vers NFS sur site et un autre client avait besoin de déplacer les données de Windows Azure Storage Blob vers Google Cloud NetApp volumes afin de traiter les données des instances cloud GPU dans le cloud.
 
 Le schéma suivant illustre les détails de la solution de transfert de données.
 
@@ -28,8 +28,8 @@ Les étapes suivantes sont requises pour créer la solution de transfert de donn
 . Les données d'une LUN SAN HDFS sont copiées dans un volume NFS avec NIPAM et l' `hadoop distcp` commande. NIPAM utilise la bande passante de plusieurs interfaces réseau pour transférer des données. Ce processus réduit le temps de copie des données afin de pouvoir transférer davantage de données.
 . Les deux volumes NFS sont provisionnés sur le cluster d'IA pour les opérations d'IA.
 . Pour traiter les données NFS sur site avec des GPU dans le cloud, les volumes NFS sont mis en miroir vers NetApp Private Storage (NPS) avec la technologie NetApp SnapMirror et montés sur les fournisseurs de services cloud pour les GPU.
-. Le client souhaite traiter des données dans des services EC2/EMR, HDInsight ou DataProc dans des GPU provenant de fournisseurs de services cloud. Le mécanisme de déplacement des données Hadoop déplace les données des services Hadoop vers les services Cloud volumes avec NIPAM et le `hadoop distcp` commande.
-. Les données Cloud Volumes Service sont provisionnées à l'IA via le protocole NFS.les données traitées via l'IA peuvent être envoyées sur un emplacement sur site à des fins d'analytique Big Data, en plus du cluster NVIDIA via NIPAM, SnapMirror et NPS.
+. Le client souhaite traiter des données dans des services EC2/EMR, HDInsight ou DataProc dans des GPU provenant de fournisseurs de services cloud. Le mécanisme de déplacement des données Hadoop déplace les données des services Hadoop vers les volumes Google Cloud NetApp avec NIPAM et la `hadoop distcp` commande.
+. Les données de Google Cloud NetApp volumes sont provisionnées pour l'IA via le protocole NFS.les données traitées via l'IA peuvent être envoyées sur un emplacement sur site à des fins d'analytique Big Data en plus du cluster NVIDIA via NIPAM, SnapMirror et NPS.
 
 
 Dans ce scénario, le client dispose de données volumineuses dans le système NAS à un emplacement distant, requises pour le traitement d'IA sur le contrôleur de stockage NetApp sur site. Dans ce scénario, il est préférable d'utiliser l'outil de migration XCP pour migrer les données plus rapidement.

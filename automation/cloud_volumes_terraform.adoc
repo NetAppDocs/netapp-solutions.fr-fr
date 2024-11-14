@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: automation/cloud_volumes_terraform.html 
-keywords: AWS, Azure, GCP, FSX, CVO, ANF, CVS, Terraform, automation 
+keywords: AWS, Azure, GCP, FSX, CVO, ANF, NetApp Volumes, Terraform, automation 
 summary: 'Cette page présente la méthode automatisée de déploiement de volumes NetApp sur des fournisseurs cloud (AWS, Azure, GCP) utilisant terraform.' 
 ---
 = Cloud volumes Automation via Terraform
@@ -1698,10 +1698,10 @@ Variables Terraform pour les instances NetApp CVO dans paire HA sur GCP
 | *gcp_cvo_gcp_volume_size_unit* | Chaîne | (Facultatif) ['Go' ou 'To']. La valeur par défaut est 'TB'. 
 |===
 --
-.Volume CVS
+.Volume NetApp volumes
 --
-.Fichiers de configuration Terraform pour le déploiement de NetApp CVS Volume sur GCP
-Cette section contient plusieurs fichiers de configuration Terraform pour déployer/configurer NetApp CVS (Cloud volumes Services) sur GCP (Google Cloud Platform).
+.Fichiers de configuration Terraform pour le déploiement de NetApp volumes Volume sur GCP
+Cette section contient plusieurs fichiers de configuration Terraform pour le déploiement et la configuration du volume NetApp volumes (Google Cloud NetApp volumes) sur GCP (Google Cloud Platform).
 
 Documentation Terraform : https://registry.terraform.io/providers/NetApp/netapp-gcp/latest/docs[]
 
@@ -1755,25 +1755,25 @@ Pour supprimer le déploiement
     terraform destroy
 ----
 .Précipitations :
-`CVS Volume`
+`NetApp Volumes Volume`
 
-Variables Terraform pour le volume CVS de NetApp GCP
+Variables Terraform pour le volume NetApp volumes NetApp GCP.
 
 [cols="20%, 10%, 70%"]
 |===
 | *Nom* | *Type* | *Description* 
 
 
-| *gcp_nom_cvs* | Chaîne | (Requis) le nom du volume NetApp CVS. 
+| *gcp_nom_cvs* | Chaîne | (Obligatoire) nom du volume NetApp volumes. 
 
 
-| *gcp_cvs_id_projet* | Chaîne | (Requis) ID_projet GCP dans lequel le volume CVS sera créé. 
+| *gcp_cvs_id_projet* | Chaîne | (Obligatoire) ID_projet GCP dans lequel le volume NetApp volumes sera créé. 
 
 
-| *gcp_cvs_gcp_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service est utilisé pour créer le volume CVS dans GCP. 
+| *gcp_cvs_gcp_service_account_path* | Chaîne | (Requis) le chemin d'accès local du fichier JSON de compte_service pour l'autorisation GCP. Ce compte de service permet de créer le volume NetApp volumes dans GCP. 
 
 
-| *gcp_cvs_région* | Chaîne | (Obligatoire) zone GCP dans laquelle le volume CVS sera créé. 
+| *gcp_cvs_région* | Chaîne | (Obligatoire) zone GCP dans laquelle le volume NetApp volumes sera créé. 
 
 
 | *gcp_cvs_réseau* | Chaîne | (Requis) le VPC réseau du volume. 
