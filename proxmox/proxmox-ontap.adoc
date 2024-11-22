@@ -16,7 +16,7 @@ summary: 'Le stockage partagé dans Proxmox Virtual Environment(VE) réduit le t
 [role="lead"]
 Le stockage partagé dans Proxmox Virtual Environment(VE) réduit le temps de migration dynamique des ordinateurs virtuels et améliore la cible des sauvegardes et des modèles cohérents dans l'environnement. Le stockage ONTAP peut répondre aux besoins des environnements hôtes Proxmox VE ainsi qu'aux demandes de stockage de fichiers invités, de blocs et d'objets.
 
-Les hôtes Proxmox VE doivent disposer de FC, Ethernet ou d'autres interfaces prises en charge câblées aux commutateurs et avoir une communication avec les interfaces logiques ONTAP.
+Les hôtes Proxmox VE doivent disposer de FC, Ethernet ou d'autres interfaces prises en charge câblées aux commutateurs et avoir une communication avec les interfaces logiques ONTAP. Vérifiez toujours les https://mysupport.netapp.com/matrix/#welcome["Matrice d'interopérabilité"] configurations prises en charge.
 
 
 
@@ -142,6 +142,8 @@ Pour utiliser les partages de fichiers SMB/CIFS, certaines tâches doivent être
 
 NOTE: Le mot de passe sera enregistré dans un fichier texte clair et accessible uniquement à l'utilisateur root. Reportez-vous à la link:https://pve.proxmox.com/pve-docs/chapter-pvesm.html#storage_cifs["Documentation Proxmox VE"].
 
+.Pool de stockage partagé SMB avec ONTAP
+video::5b4ae54a-08d2-4f7d-95ec-b22d015f6035[panopto,width=360]
 .<strong> – tâche d'administration du disque </strong>
 [%collapsible]
 ====
@@ -200,6 +202,8 @@ ONTAP prend en charge toutes les versions NFS prises en charge par Proxmox VE. P
 
 S'il s'agit d'une première utilisation de ONTAP, utilisez l'interface du gestionnaire système pour effectuer ces tâches et améliorer ainsi l'expérience.
 
+.Option NFS nconnect avec ONTAP
+video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
 .<strong> – tâche d'administration du disque </strong>
 [%collapsible]
 ====
@@ -248,12 +252,14 @@ image:proxmox-ontap-image12.png["Fichier de configuration du stockage pour NFS"]
 
 == LVM avec iSCSI
 
+.Pool partagé LVM avec iSCSI via ONTAP
+video::d66ef67f-bcc2-4ced-848e-b22e01588e8c[panopto,width=360]
 Pour configurer le gestionnaire de volumes logiques pour le stockage partagé sur des hôtes Proxmox, effectuez les tâches suivantes :
 
 .<strong> – tâche d'administration du disque </strong>
 [%collapsible]
 ====
-. Assurez-vous que deux ponts linux sur sa propre carte réseau ethernet sont configurés (idéalement sur des VLAN différents).
+. Assurez-vous que deux interfaces vlan linux sont disponibles.
 . Assurez-vous que les outils multivoies sont installés sur tous les hôtes Proxmox VE. Assurez-vous qu'il démarre au démarrage.
 +
 [source, shell]
@@ -319,14 +325,16 @@ image:proxmox-ontap-image19.png["configuration iscsi lvm"]
 ====
 
 
-=== LVM avec NVMe/TCP
+== LVM avec NVMe/TCP
 
+.Pool partagé LVM avec NVMe/TCP via ONTAP
+video::80164fe4-06db-4c21-a25d-b22e0179c3d2[panopto,width=360]
 Pour configurer le gestionnaire de volumes logiques pour le stockage partagé sur des hôtes Proxmox, effectuez les tâches suivantes :
 
 .<strong> – tâche d'administration du disque </strong>
 [%collapsible]
 ====
-. Assurez-vous que deux ponts linux, chacun avec son propre périphérique ethernet, sont configurés (idéalement sur des VLAN différents).
+. Assurez-vous que deux interfaces vlan linux sont disponibles.
 . Sur chaque hôte Proxmox du cluster, exécutez la commande suivante pour collecter les informations sur l'initiateur hôte.
 +
 [source, shell]
