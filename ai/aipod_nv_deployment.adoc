@@ -40,7 +40,7 @@ Le tableau ci-dessous présente des exemples d'affectations de câblage pour 16 
 | ports switch1 37-40 | AFF-A90-01 à -04 | port e11a 
 
 
-| ports switch1 41-44 | AFF-A90-01 à -04 | orifice e8a 
+| ports switch1 41-44 | AFF-A90-01 à -04 | orifice e2a 
 
 
 | ports switch1 57-64 | ISL vers switch2 | orifices 57-64 
@@ -61,7 +61,7 @@ Le tableau ci-dessous présente des exemples d'affectations de câblage pour 16 
 | ports switch2 37-40 | AFF-A90-01 à -04 | port e11b 
 
 
-| ports switch2 41-44 | AFF-A90-01 à -04 | port e8b 
+| ports switch2 41-44 | AFF-A90-01 à -04 | orifice e2b 
 
 
 | ports switch2 57-64 | ISL vers le commutateur 1 | orifices 57-64 
@@ -100,7 +100,7 @@ Les étapes de base utilisées pour configurer les commutateurs SN4600 sont déc
 . Configurez LACP MLAG pour chaque paire de ports client et de ports de stockage sur les deux commutateurs
 +
 ** Port swp17 sur chaque switch pour DGX-H100-01 (enp170s0f1np1 et enp41s0f1np1), port swp18 pour DGX-H100-02, etc (bond1-16)
-** Port swp41 sur chaque commutateur pour AFF-A90-01 (e8a et e8b), port swp42 pour AFF-A90-02, etc (bond17-20)
+** Port swp41 sur chaque commutateur pour AFF-A90-01 (e2a et e2b), port swp42 pour AFF-A90-02, etc (bond17-20)
 ** nv set interface bondX bond member swpX
 ** nv set interface bondx bond mlag ID X
 
@@ -201,7 +201,7 @@ Les étapes de base utilisées pour configurer le système de stockage sont déc
 . Configurer les ifgrps sur chaque contrôleur
 +
 ** net port ifgrp create -node <node> -ifgrp a1a -mode multimode_lacp -distr-function port
-** net port ifgrp add-port -node <node> -ifgrp <ifgrp> -ports <node>:e8a,<node>:e8b
+** net port ifgrp add-port -node <node> -ifgrp <ifgrp> -ports <node>:e2a,<node>:e2b
 
 
 . Configurer le port vlan de gestion sur ifgrp de chaque contrôleur
@@ -245,7 +245,7 @@ Les étapes de base utilisées pour configurer le système de stockage sont déc
 +
 ** Configurer le SVM pour la prise en charge de RDMA
 +
-*** vserver modify -vserver basepod-data -rdma activé
+*** vserver nfs modify -vserver basepod-data -rdma activé
 
 
 ** Créer des LIF
