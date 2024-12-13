@@ -1,0 +1,657 @@
+---
+sidebar: sidebar 
+permalink: vm-migrate/migrate-overview.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox 
+summary:  
+---
+= Migration des machines virtuelles entre différents environnements de virtualisation (Shift Toolkit)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Avec le kit NetApp Shift, la migration des machines virtuelles n'est plus un problème. Ce produit autonome permet une migration rapide et efficace des machines virtuelles de VMware ESXi vers Microsoft Hyper-V. de plus, il prend en charge les conversions au niveau des disques entre différents formats de disques virtuels.
+
+
+
+== Usecase
+
+Chaque entreprise bénéficie désormais de l'avantage d'un environnement à plusieurs hyperviseurs. Suite à de récentes évolutions sur le marché, chaque entreprise décide de la meilleure solution en pesant sur les risques techniques et commerciaux, notamment la migration des machines virtuelles de charges de travail vers d'autres hyperviseurs et en se concentrant sur la réalisation d'objectifs définis pour l'entreprise et le contrôle de la dépendance vis-à-vis d'un seul fournisseur. Ainsi, elle peut gérer de manière optimisée les coûts de licence et étendre le budget INFORMATIQUE dans les domaines appropriés, plutôt que de dépenser pour les cœurs inutilisés sur un hyperviseur spécifique. Toutefois, le défi a toujours porté sur le temps de migration et les temps d'indisponibilité associés.
+
+Avec le kit NetApp Shift, la migration des machines virtuelles n'est plus un problème. Ce produit autonome permet une migration rapide et efficace des machines virtuelles de VMware ESXi vers Microsoft Hyper-V. de plus, il prend en charge les conversions au niveau des disques entre différents formats de disques virtuels. Les fonctionnalités clé en main de ONTAP permettent une migration extrêmement rapide et une interruption minimale. Par exemple, la conversion d'un fichier VMDK de 1 To prend généralement quelques heures, mais avec la boîte à outils Shift, elle peut être effectuée en quelques secondes.
+
+
+
+== Présentation de la boîte à outils
+
+Le kit NetApp Shift est une solution d'interface graphique utilisateur facile à utiliser qui permet de migrer des machines virtuelles entre différents hyperviseurs et de convertir des formats de disques virtuels. Il utilise la technologie NetApp FlexClone® pour convertir rapidement les disques durs des machines virtuelles. Il gère en outre la création et la configuration des machines virtuelles de destination.
+
+Le kit de basculement offre de la flexibilité dans un environnement à plusieurs hyperviseurs en prenant en charge une conversion bidirectionnelle entre les hyperviseurs suivants :
+
+* De VMware ESXi à Microsoft Hyper-V.
+* Microsoft Hyper-V vers VMware ESXi (version à venir)
+
+
+Le kit d'outils Shift prend en charge les conversions de disques virtuels entre hyperviseurs pour les formats de disques suivants :
+
+* VMware ESX vers Microsoft Hyper-V (VMDK [Virtual machine Disk] vers VHDX [Virtual Hard Disk])
+* Hyperviseurs compatibles VMware ESX vers KVM (VMDK vers QCOW2)
+
+
+La boîte à outils Shift peut être téléchargée link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["ici"] et n'est disponible que pour les systèmes Windows.
+
+
+
+=== Avantages de la portabilité des machines virtuelles
+
+ONTAP est idéal pour tous les hyperviseurs et tous les hyperscalers. Grâce à la technologie FlexClone. La portabilité des machines virtuelles en quelques minutes n'est plus qu'une attente pour des temps d'indisponibilité plus longs ou une autre possibilité de passer à une autre.
+
+Boîte à outils de quart :
+
+* minimise les temps d'indisponibilité et améliore la productivité de l'entreprise.
+* offre choix et flexibilité en réduisant les coûts de licence, la dépendance et les engagements envers un seul fournisseur.
+* Permet aux entreprises qui cherchent à optimiser les coûts de licence des machines virtuelles et à étendre leurs budgets INFORMATIQUES.
+* Elle réduit les coûts de virtualisation grâce à la portabilité des machines virtuelles. Elle est proposée gratuitement par NetApp.
+
+
+
+
+=== Fonctionnement de la boîte à outils Shift
+
+Au moment de la conversion, le kit d'outils Shift se connecte aux hôtes Microsoft Hyper-V et VMware ESXi, ainsi qu'au stockage NetApp partagé. Shift Toolkit exploite FlexClone pour convertir des disques durs de machine virtuelle d'un hyperviseur à un autre en utilisant trois technologies NetApp clés :
+
+* Volume unique et protocoles multiples
++
+Avec NetApp ONTAP, plusieurs protocoles peuvent facilement être utilisés pour accéder à un seul volume. Par exemple, VMware ESXi peut accéder à un volume activé avec le protocole NFS (Network File System) et Microsoft Hyper-V peut accéder au même volume avec le protocole CIFS/SMB.
+
+* Technologie FlexClone
++
+FlexClone permet de cloner rapidement des fichiers ou des volumes entiers sans copier les données. Les blocs communs du système de stockage sont partagés entre plusieurs fichiers ou volumes. Il est ainsi possible de cloner très rapidement des disques VM de grande taille.
+
+* Conversion de disque de machine virtuelle
++
+Le kit NetApp PowerShell et le kit Shift contiennent un grand nombre de flux de travail qui peuvent être utilisés pour effectuer diverses actions sur un contrôleur de stockage NetApp. Des applets de commande PowerShell permettent de convertir des disques virtuels dans différents formats sont inclus. Par exemple, le VMDK VMware peut être converti en Microsoft VHDX, et inversement. Ces conversions sont effectuées avec FlexClone, ce qui permet un clonage et une conversion très rapides des formats de disque en une seule étape.
+
+
+
+image:shift-toolkit-image1.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+==== Protocoles et méthodes de communication
+
+Le kit d'outils Shift utilise les protocoles suivants lors des opérations de conversion ou de migration.
+
+* HTTPS : utilisé par le kit d'outils Shift pour communiquer avec le cluster Data ONTAP.
+* VI Java (VI SDK), VMware PowerCLI : utilisé pour communiquer avec VMware ESXi.
+* Module Windows PowerShell - utilisé pour communiquer avec Microsoft Hyper-V.
+
+
+
+
+== Installation et configuration de la boîte à outils Shift
+
+Pour commencer à utiliser la boîte à outils, utilisez un système d'exploitation Windows sur une machine virtuelle désignée et assurez-vous de respecter les conditions préalables, puis installez le package.
+
+La boîte à outils Shift peut être exécutée sous Windows 2019 et 2022. Téléchargez le package de la boîte à outils Shift à partir delink:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["Boîte à outils NetApp"], puis décompressez le package et exécutez le fichier de commandes pour installer et démarrer le service.
+
+Le kit d'outils Shift peut être installé sur un serveur Microsoft Hyper-V ou sur un serveur autonome (physique ou virtuel). Il est recommandé d'installer le kit d'outils Shift sur sa propre machine virtuelle. Cette approche vous permet de cibler différents serveurs Microsoft Hyper-V ou VMware ESXi à l'aide d'un seul serveur Shift Toolkit.
+
+
+
+=== Conditions préalables :
+
+
+
+==== Configuration matérielle requise
+
+Assurez-vous que l'hôte du serveur Shift répond à la configuration matérielle minimale requise.
+
+* CPU - 2vCPUs
+* Mémoire : 4 Go minimum
+* Espace disque : 10 Go minimum
+
+
+
+
+==== Les besoins en connectivité
+
+* Assurez-vous que l'hyperviseur et l'environnement de stockage sont configurés de manière à ce que le kit d'outils Shift puisse interagir correctement avec tous les composants de l'environnement.
+* La boîte à outils Shift peut être installée sur un serveur Microsoft Hyper-V ou sur un serveur Windows autonome (physique ou virtuel).
+* Le serveur Shift, le serveur CIFS Data ONTAP, le serveur Hyper-V et les systèmes d'exploitation invités doivent se trouver sur le même domaine Windows.
+* Plusieurs LIF pour CIFS et NFS sont prises en charge pour une utilisation avec Storage Virtual machine lors des conversions de machines virtuelles. Le serveur Hyper-V et les hôtes ESXi accèdent à la machine virtuelle de stockage (SVM) aux adresses IP de ces LIFs.
+* Pour les opérations CIFS, les paramètres de temps du contrôleur de domaine Windows et du contrôleur de stockage NetApp doivent être synchronisés.
+
+
+
+
+=== Création d'un SVM (recommandé)
+
+Déplacez les machines virtuelles à migrer ou à convertir vers un nouveau SVM (Storage Virtual machine) Data ONTAP désigné à l'aide de Storage vMotion. Il est recommandé de configurer un nouveau SVM pour les VM, afin d'être sûr de ne pas convertir les VM sur un SVM de production. Utiliser l'interface de ligne de commandes ONTAP ou System Manager pour créer le nouveau SVM.
+
+Suivez les étapes indiquées dans ce link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["lien"]document pour provisionner un nouveau SVM autorisant à la fois le protocole NFS et SMB.
+
+Pour la conversion ESX vers Hyper-V, spécifie le chemin d'accès complet du partage CIFS (en particulier qtree CIFS sur le contrôleur) comme chemin de destination.
+
+Remarque : il est recommandé de créer un nouveau SVM afin de s'assurer que ce dernier répond aux exigences de Shift Toolkit sans avoir à modifier le SVM de production d'une manière susceptible d'entraîner des perturbations. Remarque : le chemin de destination doit se trouver sur le même volume de la machine virtuelle source. Remarque : le kit d'outils Shift ne prend en charge que la conversion des machines virtuelles résidant dans un environnement NAS (NFS). Il ne prend pas en charge la conversion des serveurs virtuels résidant dans des environnements SAN (LUN).
+
+
+
+==== Systèmes d'exploitation pris en charge
+
+Assurez-vous qu'une version prise en charge de Windows et Linux pour les systèmes d'exploitation invités est utilisée pour la conversion et que la boîte à outils Shift prend en charge la version de ONTAP.
+
+*Systèmes d'exploitation VM invités pris en charge*
+
+Les versions suivantes de Windows sont prises en charge en tant que systèmes d'exploitation invités pour les conversions de machines virtuelles :
+
+* Windows Server 2016
+* Windows Server 2019
+* Windows Server 2022
+
+
+Les versions suivantes de Linux sont prises en charge en tant que systèmes d'exploitation invités pour les conversions VM :
+
+* Red Hat Enterprise Linux 6.7 ou version ultérieure
+* Red Hat Enterprise Linux 7.2 ou version ultérieure
+* Red Hat Enterprise Linux 8.x
+* Red Hat Enterprise Linux 9.x
+* Ubuntu 2018
+* Ubuntu 2022
+* Ubuntu 2024
+* Debian 10
+* Debian 11
+* Debian 12
+
+
+
+NOTE: CentOS Linux/RedHat pour Red Hat Enterprise Linux 5 n'est pas pris en charge.
+
+*Versions supportées de ONTAP*
+
+Le kit d'outils Shift prend en charge les plateformes qui exécutent ONTAP 9.14.1 ou une version ultérieure.
+
+
+
+=== Installation
+
+. Télécharger link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["Kit de boîte à outils de quart"].
++
+image:shift-toolkit-image2.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Extrayez le package dans le dossier désigné.
++
+image:shift-toolkit-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Exécutez le package de la boîte à outils Shift en cliquant sur le fichier de commandes *install*.
++
+image:shift-toolkit-image4.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Le programme d'installation lance le processus d'installation. L'invite de commande s'ouvre et vous commencez à installer les prérequis, notamment MongoDB, Windows PowerShell 7, le kit d'outils NetApp ONTAP PowerShell, le module Hyper-V pour Windows PowerShell, le package VMware.PowerCLI et Java inclus dans le package.
++
+image:shift-toolkit-image5.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Après cela, CredSSP est activé, qui se trouve dans l'invite interactive. Appuyez sur y et continuez.
++
+image:shift-toolkit-image6.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Après avoir activé CredSSP, le programme d'installation installe le package JAVA (requis pour la conversion qcow).
++
+image:shift-toolkit-image7.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Une fois l'opération terminée, le programme d'installation vous invite à saisir l'adresse IP qui sera utilisée pour accéder à l'interface utilisateur de la boîte à outils Shift.
++
+image:shift-toolkit-image8.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Lorsque vous avez terminé, “appuyez sur une touche pour continuer” pour fermer l’invite de commande.
++
+image:shift-toolkit-image9.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+NOTE: L'installation peut prendre entre 8 et 10 minutes.
+
+
+
+=== À l'aide du système GUI
+
+
+
+==== Exécuter la boîte à outils Shift
+
+* À l'aide du navigateur, accédez à l'interface utilisateur de la boîte à outils Shift en entrant le `http://<IP address specified during installation>:3001`.
+* Accédez à l'interface utilisateur en utilisant les informations d'identification par défaut comme suit : Nom d'utilisateur : Mot de passe administrateur : admin
+
+
+
+NOTE: Les informations d'identification admin peuvent être modifiées à l'aide de l'option « changer le mot de passe ».
+
+image:shift-toolkit-image10.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Acceptez le CLUF en cliquant sur « accepter et continuer »
+
+image:shift-toolkit-image11.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+==== Configuration de la boîte à outils Shift
+
+Une fois le stockage et la connectivité aux hyperviseurs source et de destination configurés correctement, commencez à configurer Shift Toolkit pour automatiser la migration ou la conversion du VMDK de la machine virtuelle au format approprié, en exploitant la fonctionnalité FlexClone.
+
+
+
+===== Ajouter des sites
+
+La première étape consiste à découvrir et à ajouter le vCenter source, puis les informations Hyper-V cibles (hyperviseurs et stockage) dans le kit Shift. Ouvrez la boîte à outils Shift dans un navigateur pris en charge et utilisez le nom d'utilisateur et le mot de passe par défaut (admin/admin) et Ajouter des sites.
+
+image:shift-toolkit-image12.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: Vous pouvez également ajouter des sites à l'aide de l'option découvrir.
+
+Ajoutez les plates-formes suivantes :
+
+*Source*
+
+* Détails du site source
++
+** Nom du site : indiquez un nom pour le site
+** Hyperviseur : sélectionnez VMware comme source (option disponible uniquement pendant la prévisualisation)
+** Emplacement du site : sélectionnez l'option par défaut
+** Connecteur – sélectionnez la sélection par défaut
+** Type de stockage : sélectionnez l'option par défaut
+
+
+
+
+Une fois rempli, cliquez sur Continuer.
+
+image:shift-toolkit-image13.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* VCenter source
++
+** Point final : saisissez l'adresse IP ou le nom de domaine complet du serveur vCenter
+** Username : username pour accéder au vCenter (au format UPN : username@domain.com)
+** Mot de passe vCenter : mot de passe permettant d'accéder à vCenter pour effectuer l'inventaire des ressources.
+** Empreinte SSL vCenter (en option)
+
+
+
+
+Sélectionnez « accepter le certificat auto-signé » et cliquez sur Continuer.
+
+image:shift-toolkit-image14.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Informations d'identification du système de stockage ONTAP
+
+
+image:shift-toolkit-image15.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Une fois ajouté, le kit d'outils Shift effectue une découverte automatique et affiche les machines virtuelles avec les informations de métadonnées pertinentes. La boîte à outils Shift détecte automatiquement les réseaux et les groupes de ports utilisés par les machines virtuelles et les remplit.
+
+image:shift-toolkit-image16.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Pour afficher les données d'un vCenter spécifique, accédez au tableau de bord, cliquez sur « Afficher la liste des VM » en regard du nom de site approprié. La page affiche l'inventaire des machines virtuelles ainsi que les attributs des machines virtuelles.
+
+image:shift-toolkit-image17.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: L'inventaire des machines virtuelles est actualisé toutes les 24 heures.
+
+
+NOTE: Le kit d'outils Shift prend en charge ESXi version 7.0 et ultérieures
+
+L'étape suivante consiste à ajouter l'hyperviseur de destination.
+
+*Destination*
+
+image:shift-toolkit-image18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Détails du site de destination
++
+** Nom du site : indiquez un nom pour le site
+** Hyperviseur : sélectionnez Hyper-V ou KVM comme cible
+** Emplacement du site : sélectionnez l'option par défaut
+** Connecteur – sélectionnez la sélection par défaut
+
+
+
+
+Une fois rempli, cliquez sur Continuer.
+
+image:shift-toolkit-image19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+En fonction de la sélection de l'hyperviseur, renseignez les informations nécessaires.
+
+* Détails Hyper-V de destination
++
+** Adresse IP ou FQDN du gestionnaire de cluster de basculement ou autonome Hyper-V
+** Nom d'utilisateur - nom d'utilisateur pour accéder à Hyper-V (au format UPN : username@domain.com) Mot de passe – Mot de passe pour accéder à Hyper-V pour effectuer l'inventaire des ressources.
+
+
+
+
+image:shift-toolkit-image20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Lorsque vous avez terminé, cliquez sur Continuer
+
+
+NOTE: La boîte à outils Shift ne communique pas directement avec System Center dans la version actuelle.
+
+
+NOTE: Dans la version actuelle, la migration des ordinateurs virtuels de bout en bout est prise en charge avec Hyper-V uniquement.
+
+
+NOTE: Dans la version actuelle, pour KVM comme destination, la conversion VMDK en qcow2 est le seul flux de production pris en charge. Par conséquent, si KVM est sélectionné dans la liste déroulante, les détails de l'hyperviseur ne sont pas requis. Le disque qcow2 peut être utilisé pour provisionner une machine virtuelle sur les variantes KVM.
+
+*Système de stockage ONTAP*
+
+image:shift-toolkit-image21.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: Le système de stockage source et le système de destination doivent être identiques à ceux de la conversion du format de disque au niveau du volume.
+
+image:shift-toolkit-image22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+L'étape suivante consiste à regrouper les machines virtuelles requises dans leurs groupes de migration en tant que groupes de ressources.
+
+
+
+==== Regroupements de ressources
+
+Une fois les plates-formes ajoutées, regroupez les VM que vous souhaitez migrer ou convertir en groupes de ressources. Les groupes de ressources du kit d'outils Shift vous permettent de regrouper un ensemble de machines virtuelles dépendantes en groupes logiques contenant leurs ordres de démarrage, leurs délais de démarrage ainsi que des validations d'applications facultatives pouvant être exécutées lors de la restauration.
+
+Pour commencer à créer des groupes de ressources, cliquez sur l’élément de menu “Créer un nouveau groupe de ressources”.
+
+. Accédez aux groupes de ressources, cliquez sur "Créer un nouveau groupe de ressources".
++
+image:shift-toolkit-image23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Dans le « Nouveau groupe de ressources », sélectionnez le site source dans la liste déroulante et cliquez sur « Créer ».
+. Fournissez les détails du groupe de ressources et sélectionnez le flux de travail. Le flux de travail offre deux options
++
+.. Migration basée sur les clones : effectue la migration de bout en bout de la machine virtuelle, depuis l'hyperviseur source vers l'hyperviseur de destination.
+.. Conversion basée sur les clones : effectue la conversion du format de disque au type d'hyperviseur sélectionné.
++
+image:shift-toolkit-image24.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+. Cliquez sur « Continuer ».
+. Sélectionnez les machines virtuelles appropriées à l'aide de l'option de recherche. L'option de filtre par défaut est « datastore ».
++
+
+NOTE: Déplacer les machines virtuelles à convertir ou migrer vers un datastore désigné sur un nouveau SVM ONTAP avant la conversion. Cela permet d'isoler le datastore NFS de production et le datastore désigné peut être utilisé pour l'entreposage temporaire des machines virtuelles.
+
++
+image:shift-toolkit-image25.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Mettez à jour les détails de la migration en sélectionnant « site de destination », entrée Hyper-V de destination » et mappage du datastore vers qtree.
++
+image:shift-toolkit-image26.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: Assurez-vous que le chemin de destination (où sont stockés les VM convertis) est défini sur un qtree lors de la conversion de VM d'ESX vers Hyper-V. définissez le chemin de destination sur le qtree approprié.
+
+. Sélectionnez l'ordre de démarrage et le délai de démarrage (s) pour toutes les machines virtuelles sélectionnées. Définissez l'ordre de mise sous tension en sélectionnant chaque machine virtuelle et en définissant la priorité. 3 est la valeur par défaut pour toutes les machines virtuelles.
++
+Les options sont les suivantes :
+
++
+1 – première machine virtuelle à mettre sous tension 3 – valeur par défaut 5 – dernière machine virtuelle à mettre sous tension
+
++
+image:shift-toolkit-image27.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Cliquez sur “Créer un groupe de ressources”.
++
+image:shift-toolkit-image28.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+
+===== Plans
+
+Pour migrer ou convertir des machines virtuelles, un plan est nécessaire. Sélectionnez les plateformes d'hyperviseur source et de destination dans la liste déroulante et choisissez les groupes de ressources à inclure dans ce modèle, ainsi que le regroupement de la mise sous tension des applications (par exemple, les contrôleurs de domaine, puis les groupes de ressources 1, puis 2, etc.). Ils sont aussi souvent appelés plans de migration. Pour définir le photocalque, accédez à l'onglet « Blueprints » et cliquez sur « Create New Blueprint ».
+
+Pour commencer à créer un plan de référence, cliquez sur Create New Blueprint (Créer un nouveau plan de référence).
+
+. Accédez aux Blueprints, cliquez sur Create New Blueprint (Créer un nouveau modèle).
++
+image:shift-toolkit-image29.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Dans le nouveau modèle, indiquez un nom pour le plan et ajoutez les mappages d'hôte nécessaires en sélectionnant site source, vCenter associé, site de destination et l'hyperviseur Hyper-V associé.
+. Une fois les mappages effectués, sélectionnez le mappage entre le cluster et l'hôte.
++
+image:shift-toolkit-image30.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Sélectionnez Resource Group Details et cliquez sur continue.
++
+image:shift-toolkit-image31.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Définir l'ordre d'exécution pour le groupe de ressources. Cette option permet de sélectionner la séquence d'opérations lorsque plusieurs groupes de ressources existent.
+. Une fois l'opération terminée, sélectionnez mappage réseau vers le commutateur virtuel approprié. Les commutateurs virtuels doivent déjà être provisionnés dans Hyper-V.
++
+
+NOTE: Le type de commutateur virtuel “externe” est la seule option prise en charge pour la sélection du réseau.
+
++
+
+NOTE: Bien que le mappage réseau soit disponible dans l'interface graphique, la boîte à outils Shift n'effectue pas d'affectation d'adresse IP dans la version actuelle. Toutefois, dans la prochaine version, la fonction « conserver IP » sera disponible en option. Dans la version actuelle, "ne pas configurer le réseau" est la sélection par défaut. Une fois le disque converti et l'ordinateur virtuel acheté côté Hyper-V, affectez manuellement les commutateurs réseau pour qu'ils correspondent aux groupes de ports et aux VLAN appropriés côté VM ware.
+
++
+image:shift-toolkit-image32.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. En fonction de la sélection de machines virtuelles, les mappages de stockage sont sélectionnés automatiquement. Remarque : assurez-vous que le qtree est provisionné au préalable et que les autorisations nécessaires sont attribuées pour que le serveur virtuel puisse être créé et mis sous tension à partir du partage SMB.
+. Dans la section Détails des machines virtuelles, fournissez les détails des comptes de service pour chaque type de système d'exploitation. Il permet de se connecter à la machine virtuelle pour créer et exécuter certains scripts nécessaires à la suppression des outils VMware et à la sauvegarde des détails de configuration IP.
++
+image:shift-toolkit-image33.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Encore une fois, sous VM details, sélectionnez l'option IP config. Cette version ne prend pas en charge l'attribution d'adresses IP. Par conséquent, "ne pas configurer" est sélectionné par défaut.
+. L'étape suivante est la configuration des machines virtuelles.
++
+** Vous pouvez également redimensionner les paramètres CPU/RAM des machines virtuelles, ce qui peut s'avérer très utile pour le redimensionnement.
+** Remplacement de l'ordre de démarrage : permet également de modifier l'ordre de démarrage et le délai de démarrage (s) pour toutes les machines virtuelles sélectionnées dans les groupes de ressources. Il s'agit d'une option supplémentaire permettant de modifier l'ordre de démarrage si des modifications sont requises par rapport à ce qui a été sélectionné lors de la sélection de l'ordre de démarrage du groupe de ressources. Par défaut, l'ordre de démarrage sélectionné lors de la sélection du groupe de ressources est utilisé, mais toutes les modifications peuvent être effectuées à ce stade. *Mise sous tension : décochez cette option si le flux de travail ne doit pas mettre la machine virtuelle sous tension. L'option par défaut est ON, ce qui signifie que la machine virtuelle sera sous tension.
+** Suppression des outils VMware : le kit d'outils Shift supprime les outils VMware avant la conversion. Cette option est sélectionnée par défaut.
+** Génération : la boîte à outils SHIFT utilise la règle de pouce suivante et utilise par défaut la règle appropriée - Gen1 > BIOS et Gen2 > EFI. Aucune sélection n'est possible pour cette option.
+** Conserver MAC : l'adresse MAC des machines virtuelles respectives peut être conservée pour surmonter les problèmes de licence pour ces applications qui reposent sur MAC. Cette option est désactivée car le réseau n'est pas modifiable dans cette version.
+** Remplacement du compte de service : cette option permet de spécifier un compte de service distinct si le compte global ne peut pas être utilisé.
++
+image:shift-toolkit-image34.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+. Cliquez sur Create Blueprint.
+
+
+
+
+==== Migration
+
+Une fois le projet créé, il est possible d'utiliser l'option « migrer ». Lors de l'option de migration, SHIFT Toolkit effectue une série d'étapes pour convertir le format de disque et utiliser le disque converti pour créer une machine virtuelle sur l'hôte Hyper-V comme défini dans le photocalque. Les étapes de haut niveau effectuées sont les suivantes :
+
+* Déclenchez des snapshots de machine virtuelle pour Blueprint, à la source
+* Déclenchez des snapshots de volume
+* Préparer la machine virtuelle en clonant la configuration réseau et en supprimant VMware Tools pour toutes les machines virtuelles
++
+** En fonction du type de système d'exploitation, les pilotes Hyper-V nécessaires sont ajoutés à <optional>
+
+
+
+
+
+NOTE: Pour plus d'informations, consultez l'article système stuc en drahaut après la migration d'une machine virtuelle RHEL vers hyper-v
+
+* Mettez hors tension les VM du groupe de protection, à la source
+* Supprimez les snapshots existants pour toutes les machines virtuelles du photocalque
+* Cloner et convertir des fichiers VMDK au format VHDx pour toutes les machines virtuelles
+* METTEZ les machines virtuelles sous TENSION dans le groupe de protection, au niveau de la cible
+
+
+Pour déclencher le flux de travail Migrate avec la configuration spécifiée dans Blueprint en l'état, cliquez sur Migrate.
+
+image:shift-toolkit-image35.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Une fois déclenché, l'étape de préparation démarre et le processus de conversion passe par les étapes mentionnées ci-dessus.
+
+
+NOTE: Nous vous recommandons de ne pas déclencher plus de dix conversions de la même source ESXi vers la même destination Hyper-V.
+
+image:shift-toolkit-image36.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+La conversion de VMDK en VHDx s'effectue en quelques secondes, ce qui fait de cette approche la plus rapide de toutes les options disponibles pour un coût supplémentaire. Cela permet également de réduire les temps d'indisponibilité des machines virtuelles lors de la migration.
+
+image:shift-toolkit-image37.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Une fois le travail terminé, l'état du modèle passe à « migration terminée ».
+
+image:shift-toolkit-image38.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Une fois la migration terminée, il est temps de valider les serveurs virtuels côté Hyper-V. La capture d'écran ci-dessous présente les machines virtuelles s'exécutant sur l'hôte Hyper-V qui ont été spécifiées lors de la création du photocalque.
+
+image:shift-toolkit-image39.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: Après la conversion, tous les disques de la machine virtuelle, à l'exception du disque du système d'exploitation, seront hors ligne. Ceci est dû au fait que le paramètre NewDiskPolicy est défini sur offlineALL sur les machines virtuelles VMware par défaut.
+
+
+
+==== Conversion
+
+L'option de conversion basée sur les clones permet de convertir simplement le disque virtuel entre des hyperviseurs pour les formats de disque suivants :
+
+* VMware ESX vers Microsoft Hyper-V (VMDK à VHDX)
+* VMware ESX vers Red Hat KVM (VMDK à QCOW2)
+
+
+
+
+===== Convertir au format QCOW2
+
+Pour convertir les disques virtuels au format QCOW2 à l'aide de la boîte à outils NetApp Shift, procédez comme suit :
+
+* Créez un type de site de destination en spécifiant Hyper-V ou KVM comme hyperviseur. Remarque : les détails de l'hyperviseur ne sont pas requis pour KVM.
++
+image:shift-toolkit-image40.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez un groupe de ressources avec les machines virtuelles pour lesquelles la conversion de disque est requise
++
+image:shift-toolkit-image41.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image42.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez le photocalque pour convertir le disque virtuel au format QCOW2.
++
+image:shift-toolkit-image43.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image44.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Sélectionnez Convert (convertir) lorsque le temps d'indisponibilité nécessaire est levé pour les machines virtuelles.
++
+image:shift-toolkit-image45.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* L'opération de conversion exécute chaque opération sur la machine virtuelle et le disque correspondant pour générer le format approprié.
++
+image:shift-toolkit-image46.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image47.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Utilisez le disque converti en créant manuellement la machine virtuelle et en y attachant le disque.
++
+image:shift-toolkit-image48.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+NOTE: Le kit d'outils Shift ne prend en charge que les conversions de disques. Ils ne prennent pas en charge la conversion des machines virtuelles. Pour utiliser le disque converti dans une machine virtuelle, la machine virtuelle doit être créée manuellement et le disque doit y être rattaché.
+
+
+NOTE: La boîte à outils Shift ne prend pas en charge les conversions au niveau de la machine virtuelle pour l'hyperviseur KVM. Cependant, il prend en charge les conversions de disques au format de disque QCOW2, format de disque virtuel utilisé par l'hyperviseur KVM.
+
+
+
+===== Convertir au format VHDX
+
+Pour convertir les disques virtuels au format VHDX en utilisant le kit NetApp Shift, suivez ces étapes générales :
+
+* Créez un type de site de destination en spécifiant Hyper-V ou KVM comme hyperviseur.
++
+
+NOTE: Les détails de l'hyperviseur ne sont pas requis pour KVM.
+
++
+image:shift-toolkit-image49.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez un groupe de ressources avec les machines virtuelles pour lesquelles la conversion de disque est requise
++
+image:shift-toolkit-image50.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez le modèle pour convertir le disque virtuel au format VHDX.
++
+image:shift-toolkit-image51.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Sélectionnez Convert (convertir) lorsque le temps d'indisponibilité nécessaire est levé pour les machines virtuelles.
++
+image:shift-toolkit-image52.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* L'opération de conversion exécute chaque opération sur le serveur virtuel et le disque correspondant afin de générer le format VHDX approprié.
++
+image:shift-toolkit-image53.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Utilisez le disque converti en créant manuellement la machine virtuelle et en y attachant le disque.
++
+image:shift-toolkit-image54.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+NOTE: Pour utiliser le disque VHDX converti dans un serveur virtuel, celui-ci doit être créé manuellement via le gestionnaire Hyper-V ou les commandes PowerShell et le disque doit être attaché à celui-ci. En outre, le réseau doit également être mappé manuellement.
+
+
+
+==== Surveillance et tableau de bord
+
+Surveillez l'état des travaux à l'aide de Job Monitoring.
+
+image:shift-toolkit-image55.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Grâce à une interface utilisateur intuitive, évaluez en toute confiance l'état de la migration, de la conversion et des modèles. Les administrateurs peuvent ainsi identifier rapidement les plans qui ont réussi, échoué ou partiellement défaillants, ainsi que le nombre de machines virtuelles migrées ou converties.
+
+image:shift-toolkit-image56.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+==== Environnements SAN
+
+Comme l'une des principales exigences de la boîte à outils Shift, les machines virtuelles à convertir doivent résider dans un environnement NAS (NFS pour ESX). Si les machines virtuelles résident dans un environnement SAN (iSCSI, FC, FCoE, NVMeFC), elles doivent être migrées vers un environnement NAS avant la conversion.
+
+image:shift-toolkit-image57.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+La méthode ci-dessus décrit un environnement SAN classique dans lequel les machines virtuelles sont stockées dans un datastore SAN. Les machines virtuelles à convertir d'ESX vers Hyper-V avec leurs disques sont d'abord migrées vers un magasin de données NFS avec VMware vSphere Storage vMotion. Le kit d'outils Shift utilise FlexClone pour convertir les machines virtuelles d'ESX en Hyper-V. les machines virtuelles converties (ainsi que leurs disques) résident sur un partage CIFS. Les machines virtuelles converties (ainsi que leurs disques) sont remigrées vers le fichier CSV compatible SAN avec Hyper-V Storage Live migration.
+
+
+
+== Conclusion
+
+Le kit NetApp Shift aide un administrateur à convertir rapidement et en toute transparence les machines virtuelles de VMware en Hyper-V. il peut également convertir uniquement les disques virtuels entre les différents hyperviseurs. Avec Shift Toolkit, vous économisez plusieurs heures d'efforts à chaque fois que vous souhaitez déplacer des workloads d'un hyperviseur à un autre. Les entreprises peuvent désormais héberger des environnements à plusieurs hyperviseurs sans avoir à se soucier de savoir si les charges de travail sont liées à un seul hyperviseur. Cette fonctionnalité augmente la flexibilité et réduit les coûts de licence, la dépendance et l'engagement envers un seul fournisseur.
+
+
+
+== Étapes suivantes
+
+Libérez le potentiel de Data ONTAP en téléchargeant le package de boîte à outils Shift et commencez à migrer ou convertir les machines virtuelles ou les fichiers disque pour simplifier et rationaliser les migrations.
+
+Pour en savoir plus sur ce processus, n'hésitez pas à suivre la procédure détaillée.
+
+.Copiez moins la migration d'ESX vers Hyper-V.
+video::dc0d9627-0399-45d9-a843-b1d8010fff80[panopto,width=360]

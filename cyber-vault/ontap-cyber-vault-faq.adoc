@@ -110,10 +110,27 @@ La base d'un cyber-coffre NetApp est SnapMirror et SnapLock Compliance. Cependan
 Les copies Snapshot ONTAP sont immuables par défaut et peuvent être rendues indélébiles grâce à SnapLock Compliance. Même la prise en charge de NetApp ne peut pas supprimer les copies Snapshot SnapLock. La meilleure question à se poser est de savoir ce qui rend le cyber-coffre NetApp meilleur que les autres cyber-coffres de l'industrie. Tout d'abord, ONTAP est le stockage le plus sécurisé au monde et a obtenu la validation CSfC qui permet le stockage de données secrètes et les plus secrètes au repos sur les couches matérielles et logicielles. Plus d'informations sur link:https://www.netapp.com/esg/trust-center/compliance/CSfC-Program/["CSFC est disponible ici"^]. De plus, ONTAP peut être air Gap au niveau de la couche de stockage, le système de cyber-coffre contrôlant la réplication permettant de créer un air Gap au sein du réseau de cyber-coffre.
 
 ====
-.Est-il possible que le volume source d'un cyber-coffre soit un volume compatible avec ONTAP Fabric Pool (volume hiérarchisé vers ONTAP S3 ou StorageGRID) ?
+.Un volume d'un cyber-coffre-fort peut-il utiliser ONTAP FabricPool ?
 [%collapsible%open]
 ====
-Non, Un volume source FabricPool indépendamment de la règle utilisée ne peut pas être répliqué vers une destination SnapLock Compliance.
+Non, un volume de cyber-coffre (destination SnapLock Compliance SnapMirror) ne peut pas être hiérarchisé à l'aide de FabricPool, indépendamment de la règle.
+
+image:ontap-cyber-vault-fabric-pool-configurations.png["Configurations prises en charge par le pool de structure Cyber Vault"]
+
+
+NOTE: Il existe plusieurs scénarios dans lesquels Fabric pool *ne peut pas* être utilisé avec un cyber-coffre.
+
+. Les niveaux inactifs de FabricPool *ne peuvent pas* utiliser un cluster de cyber-coffre. En effet, l'activation du protocole S3 invalide la nature sécurisée de l'architecture de référence du cybercoffre. En outre, le compartiment S3 utilisé pour le pool Fabric ne peut pas être protégé.
+. Les volumes SnapLock Compliance du cyberVault *ne peuvent pas* être hiérarchisés dans un compartiment S3 lorsque les données sont verrouillées dans le volume.
+
+
+image:ontap-cyber-vault-fabric-pool-configurations-p-s-cv.png["Configurations prises en charge pour les relations en cascade par le pool de structure Cyber Vault"]
+
+====
+.L'application ONTAP S3 Worm est-elle disponible sur un cyber-coffre-fort ?
+[%collapsible%open]
+====
+Non, S3 est un protocole d'accès aux données qui invalide la nature sécurisée de l'architecture de référence.
 
 ====
 .Le cyber-coffre-fort NetApp fonctionne-t-il sur un profil ou une personnalité ONTAP différente ?
