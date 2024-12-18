@@ -1,0 +1,1164 @@
+---
+sidebar: sidebar 
+permalink: databases/azure_ora_anf_data_guard.html 
+keywords: Oracle, Azure, ANF, Database, Oracle 19c, Data Guard 
+summary: 'La solution offre un aperçu et des détails sur la configuration d"Oracle Data Guard à l"aide de Microsoft Azure NetApp Files (ANF) en tant que stockage de base de données primaire et de secours afin de réduire les coûts de licence et d"exploitation de la solution haute disponibilité/reprise après incident Oracle Data Guard dans le cloud Azure.' 
+---
+= Tr-5002 : réduction des coûts du service Oracle Active Data Guard avec Azure NetApp Files
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+[role="lead"]
+La solution offre un aperçu et des détails sur la configuration d'Oracle Data Guard à l'aide de Microsoft Azure NetApp Files (ANF) en tant que stockage de base de données primaire et de secours afin de réduire les coûts de licence et d'exploitation de la solution haute disponibilité/reprise après incident Oracle Data Guard dans le cloud Azure.
+
+
+
+== Objectif
+
+Oracle Data Guard assure la haute disponibilité, la protection des données et la reprise après incident pour les données d'entreprise dans une base de données primaire et une configuration de réplication de base de données de secours. Oracle Active Data Guard permet aux utilisateurs d'accéder aux bases de données de secours alors que la réplication des données est active depuis la base de données primaire vers les bases de données de secours. Data Guard est une fonctionnalité d'Oracle Database Enterprise Edition. Aucune licence distincte n'est requise. En revanche, Active Data Guard est une option Oracle Database Enterprise Edition, qui nécessite donc une licence séparée. Plusieurs bases de données de secours peuvent recevoir la réplication de données d'une base de données primaire dans la configuration Active Data Guard. Cependant, chaque base de données de secours supplémentaire requiert une licence Active Data Guard et un espace de stockage supplémentaire comme taille de la base de données primaire. Les coûts d'exploitation s'additionent rapidement.
+
+Si vous souhaitez réduire les coûts liés à votre opération de base de données Oracle et que vous prévoyez de configurer Active Data Guard dans le cloud Azure, envisagez une autre solution. À la place d'Active Data Guard, utilisez Data Guard pour le réplication depuis la base de données primaire vers une seule base de données physique de secours sur un système de stockage Azure NetApp Files. Par la suite, il est possible de cloner et d'ouvrir plusieurs copies de cette base de données de secours pour accéder en lecture/écriture afin de prendre en charge de nombreux autres cas d'utilisation, tels que le reporting, le développement, les tests, etc. Les résultats nets fournissent efficacement les fonctionnalités d'Active Data Guard tout en éliminant la licence Active Data Guard. Cette documentation explique comment configurer Oracle Data Guard avec votre base de données primaire existante et votre base de données physique de secours sur un système de stockage ANF. La base de données de secours est sauvegardée et clonée pour un accès en lecture/écriture aux cas d'usage souhaités via l'outil de gestion de la base de données NetApp SnapCenter. L'équipe d'ingénierie des solutions NetApp propose également un kit d'outils d'automatisation pour actualiser le clonage selon un calendrier défini par l'utilisateur afin de gérer de façon complète et automatisée le cycle de vie des clones de base de données sans intervention de l'utilisateur.
+
+Cette solution répond aux cas d'utilisation suivants :
+
+* Mise en œuvre d'Oracle Data Guard entre une base de données primaire et une base de données physique de secours sur un système de stockage Microsoft Azure NetApp Files dans les régions Azure.
+* Sauvegarde et clonage de la base de données physique de secours pour des utilisations telles que le reporting, le développement, les tests, etc
+* Gestion du cycle de vie des mises à jour des clones de bases de données Oracle via l'automatisation
+
+
+
+
+== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* Administrateur de bases de données qui configure Oracle Active Data Guard dans le cloud Azure pour la haute disponibilité, la protection des données et la reprise après incident.
+* Architecte de solutions de bases de données intéressé par la configuration d'Oracle Active Data Guard dans le cloud Azure.
+* Administrateur du stockage qui gère le stockage Azure NetApp Files qui prend en charge Oracle Data Guard.
+* Propriétaire d'applications qui aime mettre en place Oracle Data Guard dans un environnement cloud Azure.
+
+
+
+
+== Environnement de test et de validation de la solution
+
+Les tests et la validation de cette solution ont été réalisés dans un laboratoire cloud Azure qui ne correspond pas toujours à l'environnement de déploiement réel de l'utilisateur. Pour plus d'informations, reportez-vous à la section <<Facteurs clés à prendre en compte lors du déploiement>>.
+
+
+
+=== Architecture
+
+image:azure_ora_anf_data_guard_architecture.png["Cette image fournit une vue détaillée de l'implémentation d'Oracle Data Guard dans le cloud Azure sur ANF."]
+
+
+
+=== Composants matériels et logiciels
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+| *Matériel* 
+
+
+| Azure NetApp Files | Version actuelle proposée par Microsoft | Deux pools de capacité de 3 Tio, niveau de services Standard, Auto QoS 
+
+
+| Machines virtuelles Azure pour serveurs de base de données | Standard B4ms (4 vcpu, 16 Gio de mémoire) | Trois VM de base de données, l'une en tant que serveur de base de données principal, l'autre en tant que serveur de base de données de secours et l'autre en tant que serveur de base de données de clone 
+
+
+3+| *Logiciel* 
+
+
+| Red Hat Linux | Red Hat Enterprise Linux 8.6 (LVM) - x64 Gen2 | Déploiement de l'abonnement Red Hat pour les tests 
+
+
+| Base de données Oracle | Version 19.18 | Patch RU appliqué p34765931_190000_Linux-x86-64.zip 
+
+
+| OPICH Oracle | Version 12.2.0.1.36 | Dernier correctif p6880880_190000_Linux-x86-64.zip 
+
+
+| SnapCenter | Version 6.0.1 | Version 6.0.1.4487 
+
+
+| NFS | Version 3.0 | DNFS activé pour Oracle 
+|===
+
+
+=== Configuration d'Oracle Data Guard avec configuration hypothétique de LA reprise sur incident de NY à LA
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+|  
+
+
+| *Base de données* | *DB_UNIQUE_NAME* | *Nom du service Oracle Net* 
+
+
+| Primaire | NTAP_NY | NTAP_NY.internal.cloudapp.net 
+
+
+| Veille | NTAP_LA | NTAP_LA.internal.cloudapp.net 
+|===
+
+
+=== Facteurs clés à prendre en compte lors du déploiement
+
+* *Clonage de la base de données de secours.* Lors de la réception et de l'application des journaux de transactions à partir de la base de données primaire, la base de données physique de secours peut être clonée et montée sur une machine virtuelle de base de données pour prendre en charge d'autres charges de travail, telles que le DÉVELOPPEMENT, les TESTS ou le rapport. Le clone peut être un clone fin ou non fin. À l'heure actuelle, ANF prend uniquement en charge le clone lourd, qui est une copie complète de la base de données de secours. L'option de clonage fin ANF sera disponible prochainement. Pour les copies de volumes de base de données à clonage fin, il partage les mêmes volumes de base de données de secours et utilise la technologie de copie en écriture pour traiter les E/S d'écriture. Ainsi, le clone est très efficace en termes de stockage et peut être utilisé dans de nombreux autres cas d'utilisation avec une allocation de stockage minimale et incrémentielle pour les nouvelles E/S d'écriture. Cela permet de réaliser d'importantes économies en réduisant considérablement l'encombrement du stockage Active Data Guard. NetApp recommande de minimiser les activités FlexClone en cas de basculement de la base de données du stockage primaire vers le stockage ANF de secours afin de maintenir les performances Oracle à un niveau élevé.
+* *Configuration logicielle requise pour Oracle.* en général, une base de données de secours physique doit avoir la même version de base de données initiale que la base de données primaire, y compris les exceptions de jeu de correctifs (PFP), les mises à jour de correctifs critiques (CPU), et des mises à jour de jeux de correctifs (PSU), sauf si un processus d'application de correctifs de secours d'Oracle Data Guard est en cours (comme décrit dans My Oracle support note 1265700.1 à l'adresse link:http://support.oracle.com.["support.oracle.com"^]
+* *Considérations relatives à la structure des répertoires de la base de données de secours.* si possible, les fichiers de données, les fichiers journaux et les fichiers de contrôle des systèmes primaire et de secours doivent avoir les mêmes noms et chemins et utiliser les conventions de dénomination OFA (optimal flexible Architecture). Les répertoires d'archivage de la base de données de secours doivent également être identiques entre les sites, y compris la taille et la structure. Cette stratégie permet à d'autres opérations telles que les sauvegardes, les commutateurs et les basculements d'exécuter le même ensemble d'étapes, réduisant ainsi la complexité de la maintenance.
+* *Forcer le mode de journalisation.* pour vous protéger contre les écritures directes non consignées dans la base de données primaire qui ne peuvent pas être propagées à la base de données de secours, activez LA JOURNALISATION FORCÉE sur la base de données primaire avant d'effectuer des sauvegardes de fichiers de données pour la création de secours.
+* *Dimensionnement de VM Azure.* Dans ces tests et ces validations, nous avons utilisé une VM Azure - Standard_B4ms avec 4 vCPU et 16 Gio de mémoire. Vous devez dimensionner la VM de base de données Azure en fonction du nombre de vCPU et de la quantité de RAM en fonction des besoins réels de la charge de travail.
+* *Configuration Azure NetApp Files.* Les Azure NetApp Files sont alloués dans le compte de stockage Azure NetApp en tant que `Capacity Pools`. Lors de ces tests et validations, nous avons déployé un pool de capacité de 3 To pour héberger un système primaire Oracle dans la région est et une base de données de secours dans la région Ouest 2. Le pool de capacité ANF propose trois niveaux de services : Standard, Premium et Ultra.  La capacité d'E/S du pool de capacité d'ANF dépend de la taille du pool de capacité et de son niveau de service. Pour un déploiement en production, NetApp vous recommande de procéder à une évaluation complète de vos besoins en débit de base de données Oracle et de dimensionner le pool de capacité de la base de données en conséquence. Lors de la création d'un pool de capacité, vous pouvez définir la QoS sur Auto ou Manuel et le chiffrement des données au repos simple ou Double.  
+* *DNFS Configuration.* Grâce à dNFS, une base de données Oracle exécutée sur un serveur virtuel Azure avec le stockage ANF peut prendre en charge un nombre d'E/S considérablement plus élevé que le client NFS natif. Le déploiement automatisé d'Oracle à l'aide du kit d'automatisation NetApp configure automatiquement dNFS sur NFSv3.
+
+
+
+
+== Déploiement de la solution
+
+Il est supposé que votre base de données Oracle primaire est déjà déployée dans un environnement cloud Azure au sein d'un vnet comme point de départ pour la configuration d'Oracle Data Guard. Dans l'idéal, la base de données primaire est déployée sur le stockage ANF avec un montage NFS. Trois points de montage NFS sont créés pour le stockage de la base de données Oracle : mount /u01 pour les fichiers binaires Oracle, mount /u02 pour les fichiers de données Oracle et un fichier de contrôle, mount /u03 pour les fichiers journaux Oracle actuels et archivés et un fichier de contrôle redondant.
+
+Votre base de données Oracle principale peut également être exécutée sur un stockage NetApp ONTAP ou tout autre système de stockage de votre choix dans l'écosystème Azure ou dans un data Center privé. La section suivante décrit les procédures de déploiement détaillées de la configuration d'Oracle Data Guard entre une base de données Oracle primaire dans Azure avec stockage ANF et une base de données Oracle de secours physique dans Azure avec stockage ANF.
+
+
+
+=== Conditions préalables au déploiement
+
+[%collapsible]
+====
+Le déploiement nécessite les conditions préalables suivantes.
+
+. Un compte cloud Azure a été configuré et les sous-réseaux vnet et réseau nécessaires ont été créés dans votre compte Azure.
+. Depuis la console du portail cloud Azure, vous devez déployer au moins trois machines virtuelles Azure Linux, l'une en tant que serveur de base de données Oracle principal, l'autre en tant que serveur de base de données Oracle de secours et un serveur de base de données cible de clone pour le reporting, le développement et les tests, etc. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au schéma d'architecture de la section précédente. Consultez également Microsoft link:https://azure.microsoft.com/en-us/products/virtual-machines["Serveurs virtuels Azure"^] pour plus d'informations.
+. La base de données Oracle primaire doit avoir été installée et configurée sur le serveur BDD Oracle principal. Par contre, dans le serveur de base de données Oracle de secours ou le serveur de base de données Oracle clone, seul le logiciel Oracle est installé et aucune base de données Oracle n'est créée. Dans l'idéal, la disposition des répertoires de fichiers Oracle doit correspondre exactement à celle de tous les serveurs BDD Oracle. Pour en savoir plus sur les recommandations de NetApp pour un déploiement Oracle automatisé dans le cloud Azure et ANF, consultez les rapports techniques suivants.
++
+** link:automation_ora_anf_nfs.html["Tr-4987 : déploiement Oracle simplifié et automatisé sur Azure NetApp Files avec NFS"^]
++
+
+NOTE: Vérifiez que vous avez alloué au moins 128 G au volume racine des machines virtuelles Azure afin de disposer d'un espace suffisant pour préparer les fichiers d'installation d'Oracle.
+
+
+
+. À partir de la console du portail cloud Azure, déployez deux pools de capacité de stockage ANF pour héberger des volumes de base de données Oracle. Les pools de capacité de stockage ANF doivent être situés dans différentes régions pour imiter une véritable configuration DataGuard. Si vous ne connaissez pas encore le déploiement d'ANF, consultez la documentation pour link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes?tabs=azure-portal["Démarrage rapide : configurez Azure NetApp Files et créez un volume NFS"^]obtenir des instructions détaillées.
++
+image:azure_ora_anf_dg_anf_01.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
+. Lorsque la base de données Oracle principale et la base de données Oracle de secours sont situées dans deux régions différentes, une passerelle VPN doit être configurée pour permettre le flux du trafic de données entre deux réseaux virtuels distincts. La configuration détaillée de la mise en réseau dans Azure dépasse le cadre de ce document. Les captures d'écran suivantes fournissent des informations sur la configuration et la connexion des passerelles VPN, ainsi que sur la confirmation du flux de trafic de données dans le laboratoire.
++
+Passerelles VPN Lab : image:azure_ora_anf_dg_vnet_01.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+La passerelle vnet principale : image:azure_ora_anf_dg_vnet_02.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+État de la connexion de la passerelle vnet : image:azure_ora_anf_dg_vnet_03.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+Vérifiez que les flux de trafic sont établis (cliquez sur trois points pour ouvrir la page) : image:azure_ora_anf_dg_vnet_04.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
+
+
+====
+
+
+=== Préparez la base de données primaire pour Data Guard
+
+[%collapsible]
+====
+Dans cette démonstration, nous avons configuré une base de données Oracle primaire appelée NTAP sur le serveur de base de données Azure principal avec trois points de montage NFS : /u01 pour le binaire Oracle, /u02 pour les fichiers de données Oracle et un fichier de contrôle Oracle /u03 pour les journaux actifs Oracle, les fichiers journaux archivés et un fichier de contrôle Oracle redondant. Vous trouverez ci-dessous les procédures détaillées de configuration de la base de données principale pour la protection d'Oracle Data Guard. Toutes les étapes doivent être exécutées en tant que propriétaire de la base de données Oracle ou utilisateur par défaut `oracle`.
+
+. Le NTAP principal de la base de données sur le serveur de base de données Azure orap.internal.cloudapp.net est initialement déployé en tant que base de données autonome, avec ANF comme stockage de base de données.
++
+....
+
+orap.internal.cloudapp.net:
+resource group: ANFAVSRG
+Location: East US
+size: Standard B4ms (4 vcpus, 16 GiB memory)
+OS: Linux (redhat 8.6)
+pub_ip: 172.190.207.231
+pri_ip: 10.0.0.4
+
+[oracle@orap ~]$ df -h
+Filesystem                 Size  Used Avail Use% Mounted on
+devtmpfs                   7.7G  4.0K  7.7G   1% /dev
+tmpfs                      7.8G     0  7.8G   0% /dev/shm
+tmpfs                      7.8G  209M  7.5G   3% /run
+tmpfs                      7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/rootvg-rootlv   22G  413M   22G   2% /
+/dev/mapper/rootvg-usrlv    10G  2.1G  8.0G  21% /usr
+/dev/sda1                  496M  181M  315M  37% /boot
+/dev/mapper/rootvg-homelv  2.0G   47M  2.0G   3% /home
+/dev/sda15                 495M  5.8M  489M   2% /boot/efi
+/dev/mapper/rootvg-varlv   8.0G  1.1G  7.0G  13% /var
+/dev/mapper/rootvg-tmplv    12G  120M   12G   1% /tmp
+/dev/sdb1                   32G   49M   30G   1% /mnt
+10.0.2.36:/orap-u02        500G  7.7G  493G   2% /u02
+10.0.2.36:/orap-u03        450G  6.1G  444G   2% /u03
+10.0.2.36:/orap-u01        100G  9.9G   91G  10% /u01
+
+[oracle@orap ~]$ cat /etc/oratab
+#
+
+
+
+# This file is used by ORACLE utilities.  It is created by root.sh
+# and updated by either Database Configuration Assistant while creating
+# a database or ASM Configuration Assistant while creating ASM instance.
+
+# A colon, ':', is used as the field terminator.  A new line terminates
+# the entry.  Lines beginning with a pound sign, '#', are comments.
+#
+# Entries are of the form:
+#   $ORACLE_SID:$ORACLE_HOME:<N|Y>:
+#
+# The first and second fields are the system identifier and home
+# directory of the database respectively.  The third field indicates
+# to the dbstart utility that the database should , "Y", or should not,
+# "N", be brought up at system boot time.
+#
+# Multiple entries with the same $ORACLE_SID are not allowed.
+#
+#
+NTAP:/u01/app/oracle/product/19.0.0/NTAP:N
+
+
+
+....
+. Connectez-vous au serveur de base de données principal en tant qu'utilisateur oracle. Connectez-vous à la base de données via sqlplus, activez la journalisation forcée sur le serveur principal.
++
+[source, cli]
+----
+alter database force logging;
+----
++
+....
+[oracle@orap admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Nov 26 20:12:02 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+SQL> alter database force logging;
+
+Database altered.
+
+....
+. A partir de sqlplus, activez flashback sur la base de données principale. Flashback permet de rétablir facilement la base de données primaire en tant que base de données en veille après un basculement.
++
+[source, cli]
+----
+alter database flashback on;
+----
++
+....
+
+SQL> alter database flashback on;
+
+Database altered.
+
+....
+. Configurer l'authentification de transport de reprise à l'aide du fichier de mots de passe Oracle - créez un fichier pwd sur le fichier principal à l'aide de l'utilitaire orapwd s'il n'est pas défini et copiez-le dans le répertoire $ORACLE_HOME/dbs de la base de données de secours.
+. Créez des journaux de reprise de secours sur la base de données principale avec la même taille que le fichier journal en ligne actuel. Les groupes de journaux sont un groupe de plus que les groupes de fichiers journaux en ligne. La base de données primaire peut alors passer rapidement au rôle de secours lorsqu'un basculement se produit et commence à recevoir des données de reprise. Répétez la commande suivante quatre fois pour créer quatre fichiers journaux de secours.
++
+[source, cli]
+----
+alter database add standby logfile thread 1 size 200M;
+----
++
+....
+SQL> alter database add standby logfile thread 1 size 200M;
+
+Database altered.
+
+SQL> /
+
+Database altered.
+
+SQL> /
+
+Database altered.
+
+SQL> /
+
+Database altered.
+
+
+SQL> set lin 200
+SQL> col member for a80
+SQL> select group#, type, member from v$logfile;
+
+    GROUP# TYPE    MEMBER
+---------- ------- --------------------------------------------------------------------------------
+         3 ONLINE  /u03/orareco/NTAP/onlinelog/redo03.log
+         2 ONLINE  /u03/orareco/NTAP/onlinelog/redo02.log
+         1 ONLINE  /u03/orareco/NTAP/onlinelog/redo01.log
+         4 STANDBY /u03/orareco/NTAP/onlinelog/o1_mf_4__2m115vkv_.log
+         5 STANDBY /u03/orareco/NTAP/onlinelog/o1_mf_5__2m3c5cyd_.log
+         6 STANDBY /u03/orareco/NTAP/onlinelog/o1_mf_6__2m4d7dhh_.log
+         7 STANDBY /u03/orareco/NTAP/onlinelog/o1_mf_7__2m5ct7g1_.log
+
+....
+. A partir de la sqlplus, créez un fichier pfile à partir de spfile pour le modifier.
++
+[source, cli]
+----
+create pfile='/home/oracle/initNTAP.ora' from spfile;
+----
+. Révisez le fichier pfile et ajoutez les paramètres suivants.
++
+[source, cli]
+----
+vi /home/oracle/initNTAP.ora
+----
++
+....
+Update the following parameters if not set:
+
+DB_NAME=NTAP
+DB_UNIQUE_NAME=NTAP_NY
+LOG_ARCHIVE_CONFIG='DG_CONFIG=(NTAP_NY,NTAP_LA)'
+LOG_ARCHIVE_DEST_1='LOCATION=USE_DB_RECOVERY_FILE_DEST VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=NTAP_NY'
+LOG_ARCHIVE_DEST_2='SERVICE=NTAP_LA ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=NTAP_LA'
+REMOTE_LOGIN_PASSWORDFILE=EXCLUSIVE
+FAL_SERVER=NTAP_LA
+STANDBY_FILE_MANAGEMENT=AUTO
+....
+. A partir de sqlplus, recréez le fichier spfile à partir du fichier pfile révisé pour écraser le fichier spfile existant dans le répertoire $ORACLE_HOME/dbs.
++
+[source, cli]
+----
+create spfile='$ORACLE_HOME/dbs/spfileNTAP.ora' from pfile='/home/oracle/initNTAP.ora';
+----
+. Modifiez Oracle tnsnames.ora dans le répertoire $ORACLE_HOME/network/admin pour ajouter db_unique_name pour la résolution des noms.
++
+[source, cli]
+----
+vi $ORACLE_HOME/network/admin/tnsnames.ora
+----
++
+....
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0/NTAP/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+NTAP_NY =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = orap.internal.cloudapp.net)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = NTAP)
+    )
+  )
+
+NTAP_LA =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = oras.internal.cloudapp.net)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = NTAP)
+    )
+  )
+
+LISTENER_NTAP =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = orap.internal.cloudapp.net)(PORT = 1521))
+....
++
+
+NOTE: Si vous choisissez de nommer votre serveur de base de données Azure différemment de celui par défaut, ajoutez les noms au fichier hôte local pour la résolution du nom d'hôte.
+
+. Ajoutez le nom du service de garde de données NTAP_NY_DGMGRL.internal.cloudapp.net de la base de données primaire au fichier Listener.ora.
++
+[source, cli]
+----
+vi $ORACLE_HOME/network/admin/listener.ora
+----
++
+....
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0/NTAP/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+LISTENER.NTAP =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = orap.internal.cloudapp.net)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1521))
+    )
+  )
+
+SID_LIST_LISTENER.NTAP =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = NTAP_NY_DGMGRL.internal.cloudapp.net)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0/NTAP)
+      (SID_NAME = NTAP)
+    )
+  )
+
+....
+. Arrêtez et redémarrez la base de données via sqlplus et vérifiez que les paramètres de protection des données sont maintenant actifs.
++
+[source, cli]
+----
+shutdown immediate;
+----
++
+[source, cli]
+----
+startup;
+----
++
+....
+SQL> show parameter name
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+cdb_cluster_name                     string
+cell_offloadgroup_name               string
+db_file_name_convert                 string
+db_name                              string      NTAP
+db_unique_name                       string      NTAP_NY
+global_names                         boolean     FALSE
+instance_name                        string      NTAP
+lock_name_space                      string
+log_file_name_convert                string
+pdb_file_name_convert                string
+processor_group_name                 string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+service_names                        string      NTAP_NY.internal.cloudapp.net
+SQL> sho parameter log_archive_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_dest                     string
+log_archive_dest_1                   string      LOCATION=USE_DB_RECOVERY_FILE_
+                                                 DEST VALID_FOR=(ALL_LOGFILES,A
+                                                 LL_ROLES) DB_UNIQUE_NAME=NTAP_
+                                                 NY
+log_archive_dest_10                  string
+log_archive_dest_11                  string
+log_archive_dest_12                  string
+log_archive_dest_13                  string
+log_archive_dest_14                  string
+log_archive_dest_15                  string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_dest_16                  string
+log_archive_dest_17                  string
+log_archive_dest_18                  string
+log_archive_dest_19                  string
+log_archive_dest_2                   string      SERVICE=NTAP_LA ASYNC VALID_FO
+                                                 R=(ONLINE_LOGFILES,PRIMARY_ROL
+                                                 E) DB_UNIQUE_NAME=NTAP_LA
+log_archive_dest_20                  string
+log_archive_dest_21                  string
+.
+.
+
+....
+
+
+La configuration de la base de données principale de Data Guard est terminée.
+
+====
+
+
+=== Préparer la base de données de secours et activer Data Guard
+
+[%collapsible]
+====
+Oracle Data Guard nécessite une configuration du noyau du système d'exploitation et des piles logicielles Oracle, y compris des ensembles de correctifs sur le serveur de base de données de secours, pour correspondre au serveur de base de données principal. Pour une gestion et une simplicité simples, la configuration du stockage de base de données du serveur de base de données de secours doit idéalement correspondre au serveur de base de données primaire, tel que la disposition du répertoire de base de données et la taille des points de montage NFS. Vous trouverez ci-dessous les procédures détaillées de configuration du serveur de base de données Oracle de secours et d'activation d'Oracle DataGuard pour la protection HA/DR. Toutes les commandes doivent être exécutées en tant qu'ID utilisateur propriétaire Oracle par défaut `oracle` .
+
+. Tout d'abord, vérifiez la configuration de la base de données primaire sur le serveur BDD Oracle principal. Dans cette démonstration, nous avons configuré une base de données Oracle primaire appelée NTAP dans le serveur de base de données primaire, avec trois montages NFS sur le stockage ANF.
+. Si vous suivez la documentation NetApp TR-4987 pour configurer le serveur de base de données de secours Oracle link:automation_ora_anf_nfs.html["Tr-4987 : déploiement Oracle simplifié et automatisé sur Azure NetApp Files avec NFS"^], utilisez une balise `-t software_only_install` à l'étape 2 de `Playbook execution` pour exécuter l'installation automatisée d'Oracle. La syntaxe révisée de la commande est indiquée ci-dessous. La balise permet à la pile logicielle Oracle installée et configurée, mais elle ne permet pas de créer une base de données.
++
+[source, cli]
+----
+ansible-playbook -i hosts 4-oracle_config.yml -u azureuser -e @vars/vars.yml -t software_only_install
+----
+. Configuration du serveur de base de données Oracle en attente sur le site en veille dans le laboratoire de démonstration.
++
+....
+oras.internal.cloudapp.net:
+resource group: ANFAVSRG
+Location: West US 2
+size: Standard B4ms (4 vcpus, 16 GiB memory)
+OS: Linux (redhat 8.6)
+pub_ip: 172.179.119.75
+pri_ip: 10.0.1.4
+
+[oracle@oras ~]$ df -h
+Filesystem                 Size  Used Avail Use% Mounted on
+devtmpfs                   7.7G     0  7.7G   0% /dev
+tmpfs                      7.8G     0  7.8G   0% /dev/shm
+tmpfs                      7.8G  265M  7.5G   4% /run
+tmpfs                      7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/rootvg-rootlv   22G  413M   22G   2% /
+/dev/mapper/rootvg-usrlv    10G  2.1G  8.0G  21% /usr
+/dev/sda1                  496M  181M  315M  37% /boot
+/dev/mapper/rootvg-varlv   8.0G  985M  7.1G  13% /var
+/dev/mapper/rootvg-homelv  2.0G   52M  2.0G   3% /home
+/dev/mapper/rootvg-tmplv    12G  120M   12G   1% /tmp
+/dev/sda15                 495M  5.8M  489M   2% /boot/efi
+/dev/sdb1                   32G   49M   30G   1% /mnt
+10.0.3.36:/oras-u01        100G  9.5G   91G  10% /u01
+10.0.3.36:/oras-u02        500G  8.1G  492G   2% /u02
+10.0.3.36:/oras-u03        450G  4.8G  446G   2% /u03
+
+....
+. Une fois le logiciel Oracle installé et configuré, définissez le répertoire d'accueil et le chemin d'accès oracle. De plus, dans le répertoire dbs $ORACLE_HOME de secours, copiez le mot de passe oracle de la base de données primaire si vous ne l'avez pas fait.
++
+[source, cli]
+----
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/NTAP
+----
++
+[source, cli]
+----
+export PATH=$PATH:$ORACLE_HOME/bin
+----
++
+[source, cli]
+----
+scp oracle@10.0.0.4:$ORACLE_HOME/dbs/orapwNTAP .
+----
+. Mettez à jour le fichier tnsnames.ora avec les entrées suivantes.
++
+[source, cli]
+----
+vi $ORACLE_HOME/network/admin/tnsnames.ora
+----
++
+....
+
+# tnsnames.ora Network Configuration File: /u01/app/oracle/product/19.0.0/NTAP/network/admin/tnsnames.ora
+# Generated by Oracle configuration tools.
+
+NTAP_NY =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = orap.internal.cloudapp.net)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = NTAP)
+    )
+  )
+
+NTAP_LA =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = oras.internal.cloudapp.net)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = NTAP)
+    )
+  )
+
+
+....
+. Ajoutez le nom du service de garde de données DB au fichier Listener.ora.
++
+[source, cli]
+----
+vi $ORACLE_HOME/network/admin/listener.ora
+----
++
+....
+
+# listener.ora Network Configuration File: /u01/app/oracle/product/19.0.0/NTAP/network/admin/listener.ora
+# Generated by Oracle configuration tools.
+
+LISTENER.NTAP =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = oras.internal.cloudapp.net)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1521))
+    )
+  )
+
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (SID_NAME = NTAP)
+    )
+  )
+
+SID_LIST_LISTENER.NTAP =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = NTAP_LA_DGMGRL.internal.cloudapp.net)
+      (ORACLE_HOME = /u01/app/oracle/product/19.0.0/NTAP)
+      (SID_NAME = NTAP)
+    )
+  )
+
+LISTENER =
+  (ADDRESS_LIST =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = oras.internal.cloudapp.net)(PORT = 1521))
+  )
+
+....
+. Lancez dbca pour instancier la base de données de secours à partir de la base de données principale NTAP.
++
+[source, cli]
+----
+dbca -silent -createDuplicateDB -gdbName NTAP -primaryDBConnectionString orap.internal.cloudapp.net:1521/NTAP_NY.internal.cloudapp.net -sid NTAP -initParams fal_server=NTAP_NY -createAsStandby -dbUniqueName NTAP_LA
+----
++
+....
+
+[oracle@oras admin]$ dbca -silent -createDuplicateDB -gdbName NTAP -primaryDBConnectionString orap.internal.cloudapp.net:1521/NTAP_NY.internal.cloudapp.net -sid NTAP -initParams fal_server=NTAP_NY -createAsStandby -dbUniqueName NTAP_LA
+Enter SYS user password:
+
+Prepare for db operation
+22% complete
+Listener config step
+44% complete
+Auxiliary instance creation
+67% complete
+RMAN duplicate
+89% complete
+Post duplicate database operations
+100% complete
+
+Look at the log file "/u01/app/oracle/cfgtoollogs/dbca/NTAP_LA/NTAP_LA.log" for further details.
+
+
+....
+. Validez la base de données de secours dupliquée. La base de données de secours récemment dupliquée s'ouvre initialement en mode LECTURE SEULE.
++
+....
+
+[oracle@oras admin]$ cat /etc/oratab
+#
+
+
+
+# This file is used by ORACLE utilities.  It is created by root.sh
+# and updated by either Database Configuration Assistant while creating
+# a database or ASM Configuration Assistant while creating ASM instance.
+
+# A colon, ':', is used as the field terminator.  A new line terminates
+# the entry.  Lines beginning with a pound sign, '#', are comments.
+#
+# Entries are of the form:
+#   $ORACLE_SID:$ORACLE_HOME:<N|Y>:
+#
+# The first and second fields are the system identifier and home
+# directory of the database respectively.  The third field indicates
+# to the dbstart utility that the database should , "Y", or should not,
+# "N", be brought up at system boot time.
+#
+# Multiple entries with the same $ORACLE_SID are not allowed.
+#
+#
+NTAP:/u01/app/oracle/product/19.0.0/NTAP:N
+[oracle@oras admin]$ export ORACLE_SID=NTAP
+[oracle@oras admin]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Nov 26 23:04:07 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+SQL> select name, open_mode from v$database;
+
+NAME      OPEN_MODE
+--------- --------------------
+NTAP      READ ONLY
+
+SQL> show parameter name
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+cdb_cluster_name                     string
+cell_offloadgroup_name               string
+db_file_name_convert                 string
+db_name                              string      NTAP
+db_unique_name                       string      NTAP_LA
+global_names                         boolean     FALSE
+instance_name                        string      NTAP
+lock_name_space                      string
+log_file_name_convert                string
+pdb_file_name_convert                string
+processor_group_name                 string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+service_names                        string      NTAP_LA.internal.cloudapp.net
+SQL> show parameter log_archive_config
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_config                   string      DG_CONFIG=(NTAP_NY,NTAP_LA)
+SQL> show parameter fal_server
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+fal_server                           string      NTAP_NY
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------------------------------------
+/u02/oradata/NTAP/system01.dbf
+/u02/oradata/NTAP/sysaux01.dbf
+/u02/oradata/NTAP/undotbs01.dbf
+/u02/oradata/NTAP/pdbseed/system01.dbf
+/u02/oradata/NTAP/pdbseed/sysaux01.dbf
+/u02/oradata/NTAP/users01.dbf
+/u02/oradata/NTAP/pdbseed/undotbs01.dbf
+/u02/oradata/NTAP/NTAP_pdb1/system01.dbf
+/u02/oradata/NTAP/NTAP_pdb1/sysaux01.dbf
+/u02/oradata/NTAP/NTAP_pdb1/undotbs01.dbf
+/u02/oradata/NTAP/NTAP_pdb1/users01.dbf
+
+NAME
+--------------------------------------------------------------------------------
+/u02/oradata/NTAP/NTAP_pdb2/system01.dbf
+/u02/oradata/NTAP/NTAP_pdb2/sysaux01.dbf
+/u02/oradata/NTAP/NTAP_pdb2/undotbs01.dbf
+/u02/oradata/NTAP/NTAP_pdb2/users01.dbf
+/u02/oradata/NTAP/NTAP_pdb3/system01.dbf
+/u02/oradata/NTAP/NTAP_pdb3/sysaux01.dbf
+/u02/oradata/NTAP/NTAP_pdb3/undotbs01.dbf
+/u02/oradata/NTAP/NTAP_pdb3/users01.dbf
+
+19 rows selected.
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
+/u02/oradata/NTAP/control01.ctl
+/u03/orareco/NTAP_LA/control02.ctl
+
+SQL> col member form a80
+SQL> select group#, type, member from v$logfile order by 2, 1;
+
+    GROUP# TYPE    MEMBER
+---------- ------- --------------------------------------------------------------------------------
+         1 ONLINE  /u03/orareco/NTAP_LA/onlinelog/o1_mf_1_mndl6mxh_.log
+         2 ONLINE  /u03/orareco/NTAP_LA/onlinelog/o1_mf_2_mndl7jdb_.log
+         3 ONLINE  /u03/orareco/NTAP_LA/onlinelog/o1_mf_3_mndl8f03_.log
+         4 STANDBY /u03/orareco/NTAP_LA/onlinelog/o1_mf_4_mndl99m7_.log
+         5 STANDBY /u03/orareco/NTAP_LA/onlinelog/o1_mf_5_mndlb67d_.log
+         6 STANDBY /u03/orareco/NTAP_LA/onlinelog/o1_mf_6_mndlc2tw_.log
+         7 STANDBY /u03/orareco/NTAP_LA/onlinelog/o1_mf_7_mndlczhb_.log
+
+7 rows selected.
+
+
+....
+. Redémarrez la base de données de secours à `mount` l'étape et exécutez la commande suivante pour activer la restauration gérée de la base de données de secours.
++
+[source, cli]
+----
+alter database recover managed standby database disconnect from session;
+----
++
+....
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 6442449688 bytes
+Fixed Size                  9177880 bytes
+Variable Size            1090519040 bytes
+Database Buffers         5335154688 bytes
+Redo Buffers                7598080 bytes
+Database mounted.
+SQL> alter database recover managed standby database disconnect from session;
+
+Database altered.
+
+....
+. Validez l'état de restauration de la base de données en attente. Notez le `recovery logmerger` dans `APPLYING_LOG` action.
++
+[source, cli]
+----
+SELECT ROLE, THREAD#, SEQUENCE#, ACTION FROM V$DATAGUARD_PROCESS;
+----
+
+
+....
+
+SQL> SELECT ROLE, THREAD#, SEQUENCE#, ACTION FROM V$DATAGUARD_PROCESS;
+
+ROLE                        THREAD#  SEQUENCE# ACTION
+------------------------ ---------- ---------- ------------
+post role transition              0          0 IDLE
+recovery apply slave              0          0 IDLE
+recovery apply slave              0          0 IDLE
+recovery apply slave              0          0 IDLE
+recovery apply slave              0          0 IDLE
+recovery logmerger                1         18 APPLYING_LOG
+managed recovery                  0          0 IDLE
+RFS async                         1         18 IDLE
+RFS ping                          1         18 IDLE
+archive redo                      0          0 IDLE
+redo transport timer              0          0 IDLE
+
+ROLE                        THREAD#  SEQUENCE# ACTION
+------------------------ ---------- ---------- ------------
+gap manager                       0          0 IDLE
+archive redo                      0          0 IDLE
+archive redo                      0          0 IDLE
+redo transport monitor            0          0 IDLE
+log writer                        0          0 IDLE
+archive local                     0          0 IDLE
+
+17 rows selected.
+
+SQL>
+
+
+....
+Ceci termine la configuration de la protection des données pour NTAP, du stockage primaire au stockage en veille, avec la restauration en veille gérée activée.
+
+====
+
+
+=== Configurez Data Guard Broker
+
+[%collapsible]
+====
+Oracle Data Guard Broker est une structure de gestion distribuée qui automatise et centralise la création, la maintenance et la surveillance des configurations Oracle Data Guard. La section suivante explique comment configurer Data Guard Broker pour gérer l'environnement Data Guard.
+
+. Démarrez Data Guard Broker sur les bases de données primaire et de secours à l’aide de la commande suivante via sqlplus.
++
+[source, cli]
+----
+alter system set dg_broker_start=true scope=both;
+----
+. À partir de la base de données primaire, connectez-vous à Data Guard Borker en tant que SYSDBA.
++
+....
+
+[oracle@orap ~]$ dgmgrl sys@NTAP_NY
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Wed Dec 11 20:53:20 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+Password:
+Connected to "NTAP_NY"
+Connected as SYSDBA.
+DGMGRL>
+
+
+....
+. Créer et activer la configuration Data Guard Broker.
++
+....
+
+DGMGRL> create configuration dg_config as primary database is NTAP_NY connect identifier is NTAP_NY;
+Configuration "dg_config" created with primary database "ntap_ny"
+DGMGRL> add database NTAP_LA as connect identifier is NTAP_LA;
+Database "ntap_la" added
+DGMGRL> enable configuration;
+Enabled.
+DGMGRL> show configuration;
+
+Configuration - dg_config
+
+  Protection Mode: MaxPerformance
+  Members:
+  ntap_ny - Primary database
+    ntap_la - Physical standby database
+
+Fast-Start Failover:  Disabled
+
+Configuration Status:
+SUCCESS   (status updated 3 seconds ago)
+
+....
+. Validez l'état de la base de données dans la structure de gestion Data Guard Broker.
++
+....
+
+DGMGRL> show database db1_ny;
+
+Database - db1_ny
+
+  Role:               PRIMARY
+  Intended State:     TRANSPORT-ON
+  Instance(s):
+    db1
+
+Database Status:
+SUCCESS
+
+DGMGRL> show database db1_la;
+
+Database - db1_la
+
+  Role:               PHYSICAL STANDBY
+  Intended State:     APPLY-ON
+  Transport Lag:      0 seconds (computed 1 second ago)
+  Apply Lag:          0 seconds (computed 1 second ago)
+  Average Apply Rate: 2.00 KByte/s
+  Real Time Query:    OFF
+  Instance(s):
+    db1
+
+Database Status:
+SUCCESS
+
+DGMGRL>
+
+....
+
+
+En cas de défaillance, Data Guard Broker peut être utilisé pour basculer la base de données primaire vers le cliché de secours. Si `Fast-Start Failover` est activé, Data Guard Broker peut basculer la base de données primaire vers la base de données de secours lorsqu'une panne est détectée sans intervention de l'utilisateur.
+
+====
+
+
+=== Cloner la base de données de secours pour d'autres utilisations
+
+[%collapsible]
+====
+L'hébergement de la base de données de secours Oracle sur ANF dans la configuration d'Oracle Data Guard offre le principal avantage de pouvoir être cloné rapidement pour prendre en charge de nombreux autres cas d'utilisation avec un investissement de stockage supplémentaire minimal si un clone dynamique est activé. NetApp recommande d'utiliser l'outil d'interface utilisateur SnapCenter pour gérer votre base de données Oracle DataGuard. Dans la section suivante, nous démontrons comment créer des snapshots et cloner les volumes de base de données montés et sous restauration en veille sur ANF à d'autres fins, telles que LE DÉVELOPPEMENT, les TESTS, les RAPPORTS, etc., à l'aide de l'outil NetApp SnapCenter.
+
+Vous trouverez ci-dessous des procédures de haut niveau pour cloner une base de données en LECTURE/ÉCRITURE à partir de la base de données de secours physique gérée dans Oracle Data Guard à l'aide de SnapCenter. Pour des instructions détaillées sur l'installation et la configuration de SnapCenter pour Oracle sur ANF, consultez le document TR-4988 link:snapctr_ora_azure_anf.html["Sauvegarde, restauration et clonage de bases de données Oracle sur ANF avec SnapCenter"^] pour plus de détails.
+
+. Nous commençons la validation de l'usecase en créant une table de test et en insérant une ligne dans la table de test de la base de données primaire. Nous validerons alors que la transaction se déplace jusqu'en veille et finalement le clone.
++
+....
+[oracle@orap ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Dec 11 16:33:17 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+SQL> alter session set container=ntap_pdb1;
+
+Session altered.
+
+SQL> create table test(id integer, dt timestamp, event varchar(100));
+
+Table created.
+
+SQL> insert into test values(1, sysdate, 'a test transaction at primary database NTAP on DB server orap.internal.cloudapp.net');
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> select * from test;
+
+        ID
+----------
+DT
+---------------------------------------------------------------------------
+EVENT
+--------------------------------------------------------------------------------
+         1
+11-DEC-24 04.38.44.000000 PM
+a test transaction at primary database NTAP on DB server orap.internal.cloudapp.
+net
+
+
+SQL> select instance_name, host_name from v$instance;
+
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+NTAP
+orap
+
+
+SQL>
+
+....
+. En configuration SnapCenter, un utilisateur unix (azureuser pour la démo) et une information d'identification Azure (Azure_anf pour la démo) ont été ajoutés à `Credential` dans `Settings`.
++
+image:azure_ora_anf_dg_snapctr_config_17.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Utilisez les informations d'identification Azure_anf pour ajouter le stockage ANF à `Storage Systems`. Si vous avez plusieurs comptes de stockage ANF dans votre sous-sélection Azure, cliquez dans la liste déroulante pour choisir le compte de stockage approprié. Nous avons créé deux comptes de stockage Oracle dédiés pour cette démonstration.
++
+image:azure_ora_anf_dg_snapctr_config_16.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Tous les serveurs BDD Oracle ont été ajoutés à SnapCenter `Hosts` .
++
+image:azure_ora_anf_dg_snapctr_config_18.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
++
+
+NOTE: Les piles logicielles Oracle doivent être installées et configurées sur le serveur de base de données de clone. Dans notre cas de test, le logiciel Oracle 19C est installé et configuré, mais aucune base de données n'est créée.
+
+. Créez une stratégie de sauvegarde personnalisée pour une sauvegarde de base de données hors ligne/montée complète.
++
+image:azure_ora_anf_dg_snapctr_bkup_08.PNG["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Appliquez la stratégie de sauvegarde pour protéger la base de données de secours dans `Resources` l'onglet. Lors de la découverte initiale, l'état de la base de données s'affiche comme `Not protected`.
++
+image:azure_ora_anf_dg_snapctr_bkup_09.PNG["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Vous avez la possibilité de déclencher une sauvegarde manuellement ou de la mettre sur un planning à une heure définie après l'application d'une règle de sauvegarde.
++
+image:azure_ora_anf_dg_snapctr_bkup_15.PNG["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Après une sauvegarde, cliquez sur le nom de la base de données pour ouvrir la page sauvegardes de la base de données. Sélectionnez une sauvegarde à utiliser pour le clonage de la base de données et cliquez sur `Clone` le bouton pour lancer le flux de travail de clonage.
++
+image:azure_ora_anf_dg_snapctr_clone_01.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Sélectionner et nommer le `Complete Database Clone` SID de l'instance de clone.
++
+image:azure_ora_anf_dg_snapctr_clone_02.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Sélectionnez le serveur de bases de données de clonage, qui héberge la base de données clonée à partir de la base de données de secours. Acceptez la valeur par défaut pour les fichiers de données et les journaux de reprise. Placez un fichier de contrôle sur le point de montage /u03.
++
+image:azure_ora_anf_dg_snapctr_clone_03.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Aucune information d'identification de base de données n'est requise pour l'authentification basée sur le système d'exploitation. Associez le paramètre d'accueil Oracle à ce qui est configuré sur le serveur de base de données clone.
++
+image:azure_ora_anf_dg_snapctr_clone_04.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Si nécessaire, modifiez les paramètres de la base de données de clonage, tels que la réduction de la taille PGA ou SGA pour un DB de clone. Spécifiez les scripts à exécuter avant le clone, le cas échéant.
++
+image:azure_ora_anf_dg_snapctr_clone_05.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Entrez SQL à exécuter après le clone. Dans la démo, nous avons exécuté des commandes pour désactiver le mode d'archivage de la base de données pour une base de données de développement/test/rapport.
++
+image:azure_ora_anf_dg_snapctr_clone_06_1.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Configurez la notification par e-mail si vous le souhaitez.
++
+image:azure_ora_anf_dg_snapctr_clone_07.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Vérifiez le résumé, cliquez sur `Finish` pour démarrer le clone.
++
+image:azure_ora_anf_dg_snapctr_clone_08.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Surveillez la tâche de clonage dans `Monitor` l'onglet. Nous avons constaté que le clonage d'une base de données prenait environ 14 minutes, soit une taille de volume d'environ 950 Go.
++
+image:azure_ora_anf_dg_snapctr_clone_09.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Validez la base de données de clonage à partir de SnapCenter, qui est immédiatement enregistrée dans `Resources` juste après l'opération de clonage.
++
+image:azure_ora_anf_dg_snapctr_clone_10.png["Capture d'écran montrant cette étape dans l'interface graphique."]
+
+. Interroger la base de données de clonage à partir du serveur de base de données de clonage. Nous avons validé que la transaction de test effectuée dans la base de données primaire s'était déroulée jusqu'à la base de données clone.
++
+....
+[oracle@orac ~]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Dec 11 20:16:09 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.18.0.0.0
+
+SQL> select name, open_mode, log_mode from v$database;
+
+NAME      OPEN_MODE            LOG_MODE
+--------- -------------------- ------------
+NTAPDEV   READ WRITE           NOARCHIVELOG
+
+SQL> select instance_name, host_name from v$instance;
+
+INSTANCE_NAME
+----------------
+HOST_NAME
+----------------------------------------------------------------
+NTAPDEV
+orac
+
+
+SQL> alter pluggable database all open;
+
+Pluggable database altered.
+
+SQL> alter pluggable database all save state;
+
+Pluggable database altered.
+
+
+SQL> alter session set container=ntap_pdb1;
+
+Session altered.
+
+SQL> select * from test;
+
+        ID
+----------
+DT
+---------------------------------------------------------------------------
+EVENT
+--------------------------------------------------------------------------------
+         1
+11-DEC-24 04.38.44.000000 PM
+a test transaction at primary database NTAP on DB server orap.internal.cloudapp.
+net
+
+
+....
+
+
+Vous avez terminé la démonstration du clone de base de données de secours Oracle dans Oracle Data Guard sur le stockage Azure ANF pour le DÉVELOPPEMENT, LES TESTS, les RAPPORTS ou tout autre cas d'utilisation. Plusieurs bases de données Oracle peuvent être clonées depuis la même base de données de secours dans Oracle Data Guard sur ANF.
+
+====
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur les informations fournies dans ce document, consultez ces documents et/ou sites web :
+
+* Azure NetApp Files
++
+link:https://azure.microsoft.com/en-us/products/netapp["https://azure.microsoft.com/en-us/products/netapp"^]
+
+* Tr-4988 : sauvegarde, restauration et clonage de bases de données Oracle sur ANF avec SnapCenter
++
+link:https://docs.netapp.com/us-en/netapp-solutions/databases/snapctr_ora_azure_anf.html["https://docs.netapp.com/us-en/netapp-solutions/databases/snapctr_ora_azure_anf.html"^]
+
+* Tr-4987 : déploiement Oracle simplifié et automatisé sur Azure NetApp Files avec NFS
++
+link:https://docs.netapp.com/us-en/netapp-solutions/databases/automation_ora_anf_nfs.html["https://docs.netapp.com/us-en/netapp-solutions/databases/automation_ora_anf_nfs.html"^]
+
+* Concepts et administration d'Oracle Data Guard
++
+link:https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/index.html#Oracle%C2%AE-Data-Guard["https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/index.html#Oracle%C2%AE-Data-Guard"^]
+
+

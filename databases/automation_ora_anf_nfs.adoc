@@ -150,7 +150,7 @@ Le déploiement nécessite les conditions préalables suivantes.
 . Depuis le portail cloud Azure, déployez les VM Azure Linux en tant que serveurs de base de données Oracle. Créez un pool de capacité Azure NetApp Files et des volumes de base de données pour la base de données Oracle. Activer l'authentification de clés privées/publiques SSH sur machine virtuelle pour l'azuretutilisateur vers les serveurs de base de données. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au schéma d'architecture de la section précédente. Également mentionné à link:azure_ora_nfile_procedures.html["Procédures détaillées de déploiement d'Oracle sur Azure VM et Azure NetApp Files"^] pour des informations détaillées.
 +
 
-NOTE: Pour les machines virtuelles Azure déployées avec redondance de disque local, assurez-vous d'avoir alloué au moins 128 G au disque racine de la machine virtuelle pour disposer de l'espace suffisant pour préparer les fichiers d'installation Oracle et ajouter le fichier d'échange du système d'exploitation. Développez la partition /tmplv et /rootlv OS en conséquence. Assurez-vous que le nom du volume de la base de données respecte les conventions VMname-u01, VMname-u02 et VMname-u03.
+NOTE: Pour les machines virtuelles Azure déployées avec redondance de disque local, assurez-vous d'avoir alloué au moins 128 G au disque racine de la machine virtuelle pour disposer de l'espace suffisant pour préparer les fichiers d'installation Oracle et ajouter le fichier d'échange du système d'exploitation. Développez la partition /tmplv et /rootlv OS en conséquence. Ajoutez 1 Go d'espace libre à rootvg-homelv s'il est inférieur à 1 Go. Assurez-vous que le nom du volume de la base de données respecte les conventions VMname-u01, VMname-u02 et VMname-u03.
 
 +
 [source, cli]
@@ -161,6 +161,11 @@ sudo lvresize -r -L +20G /dev/mapper/rootvg-rootlv
 [source, cli]
 ----
 sudo lvresize -r -L +10G /dev/mapper/rootvg-tmplv
+----
++
+[source, cli]
+----
+sudo lvresize -r -L +1G /dev/mapper/rootvg-homelv
 ----
 . Provisionnez un serveur Windows à partir du portail cloud Azure pour exécuter l'outil de l'interface utilisateur NetApp SnapCenter avec la dernière version. Pour plus de détails, cliquez sur le lien suivant : link:https://docs.netapp.com/us-en/snapcenter/install/task_install_the_snapcenter_server_using_the_install_wizard.html["Installez le serveur SnapCenter"^]
 . Provisionnez une VM Linux en tant que nœud de contrôleur Ansible avec la dernière version d'Ansible et de Git installée. Pour plus de détails, cliquez sur le lien suivant : link:../automation/getting-started.html["Commencer à utiliser l'automatisation des solutions NetApp"^] dans la section -
