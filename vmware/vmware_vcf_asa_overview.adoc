@@ -16,9 +16,9 @@ summary:
 [role="lead"]
 VMware Cloud Foundation (VCF) est une plateforme de data Center Software-defined intégrée qui fournit une pile complète d'infrastructure Software-defined pour exécuter les applications d'entreprise dans un environnement de cloud hybride. Elle réunit les fonctionnalités de calcul, de stockage, de mise en réseau et de gestion dans une plateforme unifiée, offrant ainsi une expérience opérationnelle cohérente dans les clouds privés et publics.
 
-Auteur: Josh Powell
+Auteur: Josh Powell, Suresh Thoppay
 
-Ce document fournit des informations sur les options de stockage disponibles pour VMware Cloud Foundation utilisant la baie SAN 100 % Flash NetApp. Les options de stockage prises en charge sont couvertes par des instructions spécifiques pour le déploiement de datastores iSCSI en tant que stockage supplémentaire pour les domaines de gestion et les datastores vVol (iSCSI) et NVMe/TCP en tant que datastores supplémentaires pour les domaines de charge de travail. La protection des données des machines virtuelles et des datastores avec SnapCenter pour VMware vSphere est également couverte.
+Ce document fournit des informations sur les options de stockage disponibles pour VMware Cloud Foundation utilisant la baie SAN 100 % Flash NetApp. Les options de stockage prises en charge sont couvertes par des instructions spécifiques pour le déploiement de datastores VMFS (FC/iSCSI) en tant que stockage principal et supplémentaire (FC/iSCSI/NVMe-of/vVol) pour les domaines de gestion et de workloads. La protection des données des machines virtuelles et des datastores avec SnapCenter pour VMware vSphere est également couverte.
 
 
 
@@ -71,16 +71,50 @@ Pour plus d'informations sur l'architecture et la planification VCF, reportez-vo
 
 ==== Options de stockage VCF
 
-VMware divise les options de stockage pour VCF en stockage *principal* et *supplémentaire*. Le domaine de gestion VCF doit utiliser VSAN comme stockage principal. Cependant, il existe de nombreuses options de stockage supplémentaires pour le domaine de gestion et des options de stockage principal et supplémentaire disponibles pour les domaines de charges de travail VI.
+VMware divise les options de stockage pour VCF en stockage *principal* et *supplémentaire*. Le stockage ONTAP peut être utilisé à la fois comme stockage principal et supplémentaire pour les domaines de gestion et de charge de travail à partir de VCF 5.2, qui peut convertir un environnement vSphere existant en domaine de gestion VCF ou l'importer en tant que domaine de charge de travail vers un environnement VCF existant.
 
 image:vmware-vcf-aff-image01.png["Options de stockage VCF"]
 
-*Stockage principal pour les domaines de charge de travail*
-Le terme stockage principal désigne tout type de stockage pouvant être directement connecté à un domaine de charge de travail VI pendant le processus de configuration dans SDDC Manager. Le stockage principal est déployé avec le gestionnaire SDDC dans le cadre de l'orchestration de création de cluster. Il s'agit du premier datastore configuré pour un domaine de charge de travail. Notamment VSAN, vVols (VMFS), NFS et VMFS sur Fibre Channel.
+*Stockage principal pour les domaines de gestion et de charge de travail* le stockage principal fait référence à tout type de stockage pouvant être déployé ou importé dans le cadre du processus de configuration du domaine. Pour utiliser le stockage ONTAP en tant que stockage principal dans le domaine de gestion, il doit être converti à partir d'un environnement vSphere existant. VMFS sur datastores FC ou NFS v3 est pris en charge en option.
+
+[cols="20% 20% 20% 20% 20%"]
+|===
+| Type de stockage | Domaine de gestion - Cluster par défaut | Domaine de gestion - Cluster supplémentaire | VI Workload Domain - Cluster par défaut | Domaine de charge de travail VI - Cluster supplémentaire 
+
+
+| VMFS sur FC | *Outil d'importation* | *SDDC API* | Oui. | Oui. 
+
+
+| VMFS sur iSCSI | NA | NA | NA | NA 
+
+
+| VVOL avec FC | NA | NA | Non | Oui. 
+
+
+| VVol avec iSCSI | NA | NA | Non | Oui. 
+|===
+* Na - non pris en charge par VCF.
+
 
 *Stockage supplémentaire pour les domaines de gestion et de charge de travail*
 Le stockage supplémentaire correspond au type de stockage qui peut être ajouté aux domaines de gestion ou de charge de travail à tout moment après la création du cluster. Le stockage supplémentaire représente le plus grand nombre d'options de stockage prises en charge, toutes prises en charge sur les baies NetApp ASA. Un stockage supplémentaire peut être déployé à l'aide des outils ONTAP pour VMware vSphere pour la plupart des types de protocoles de stockage.
 
+[cols="25% 25% 25% 25%"]
+|===
+| Type de stockage | Domaine de gestion - Cluster par défaut | Domaine de gestion - Cluster supplémentaire | Domaine de charge de travail VI 
+
+
+| VMFS sur FC | Oui. | Oui. | Oui. 
+
+
+| VMFS sur iSCSI | Oui. | Oui. | Oui. 
+
+
+| VVOL avec FC | Oui. | Oui. | Oui. 
+
+
+| VVol avec iSCSI | Oui. | Oui. | Oui. 
+|===
 Ressources de documentation supplémentaires pour VMware Cloud Foundation :
 * link:https://docs.vmware.com/en/VMware-Cloud-Foundation/index.html["Documentation de VMware Cloud Foundation"]
 * link:https://docs.vmware.com/en/VMware-Cloud-Foundation/5.1/vcf-design/GUID-2156EC66-BBBB-4197-91AD-660315385D2E.html["Types de stockage pris en charge pour VMware Cloud Foundation"]
@@ -194,12 +228,14 @@ Pour plus d'informations sur les stratégies de sauvegarde 3-2-1 avec BlueXP, re
 
 == Présentation de la solution
 
-Les scénarios présentés dans cette documentation expliquent comment utiliser les systèmes de stockage ONTAP en tant que stockage supplémentaire dans des domaines de gestion et de charge de travail. En outre, le plug-in SnapCenter pour VMware vSphere est utilisé pour protéger les VM et les datastores.
+Les scénarios présentés dans cette documentation expliquent comment utiliser les systèmes de stockage ONTAP en tant que stockage principal et supplémentaire dans les domaines de la gestion et des charges de travail. En outre, le plug-in SnapCenter pour VMware vSphere est utilisé pour protéger les VM et les datastores.
 
 Scénarios traités dans cette documentation :
 
 * *Utilisez les outils ONTAP pour déployer les datastores iSCSI dans un domaine de gestion VCF*. Cliquez sur link:vmware_vcf_asa_supp_mgmt_iscsi.html["*ici*"] pour les étapes de déploiement.
 * *Utilisez les outils ONTAP pour déployer les datastores vVols (iSCSI) dans un domaine de charge de travail VI*. Cliquez sur link:vmware_vcf_asa_supp_wkld_vvols.html["*ici*"] pour les étapes de déploiement.
 * *Configurer les datastores NVMe sur TCP pour une utilisation dans un domaine de charge de travail VI*. Cliquez sur link:vmware_vcf_asa_supp_wkld_nvme.html["*ici*"] pour les étapes de déploiement.
-* *Déployer et utiliser le plug-in SnapCenter pour VMware vSphere pour protéger et restaurer des machines virtuelles dans un domaine de charges de travail VI*. Cliquez sur link:vmware_vcf_asa_scv_wkld.html["*ici*"] pour les étapes de déploiement.
+* *Déployer et utiliser le plug-in SnapCenter pour VMware vSphere pour protéger et restaurer des machines virtuelles dans un domaine de charge de travail VI* cliquez link:vmware_vcf_asa_scv_wkld.html["*ici*"] pour connaître les étapes de déploiement.
+* *Utiliser le cluster étendu avec le datastore VMFS dans le domaine de gestion* cliquez link:vmware_vcf_asa_mgmt_stretchcluster.html["*ici*"] pour connaître les étapes de déploiement.
+* *Utiliser un cluster étendu avec un datastore VMFS dans un domaine de charge de travail VI* cliquez link:vmware_vcf_asa_wkld_stretchcluster.html["*ici*"] pour connaître les étapes de déploiement.
 
