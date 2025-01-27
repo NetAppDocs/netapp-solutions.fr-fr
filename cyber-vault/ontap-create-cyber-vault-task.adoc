@@ -40,7 +40,7 @@ image:ontap-cyber-vault-air-gap.png["Cyber-coffre à air comprimé avec NetApp O
 La commande suivante crée un volume SnapLock Compliance de 2 Go nommé `dstvolB` dans `SVM2` sur l'agrégat `node01_aggr`:
 
 +
-`cluster2::> volume create -vserver SVM2 -volume dstvolB -aggregate node01_aggr -snaplock-type compliance -type DP -size 2GG`
+`cluster2::> volume create -vserver SVM2 -volume dstvolB -aggregate node01_aggr -snaplock-type compliance -type DP -size 2GB`
 
 . Sur le cluster de destination, pour créer l'air Gap, définissez la période de rétention par défaut, comme décrit à la section link:https://docs.netapp.com/us-en/ontap/snaplock/set-default-retention-period-task.html["Définir la période de conservation par défaut"^]. Une période de conservation par défaut est affectée à un volume SnapLock cible du coffre-fort. La valeur de cette période est initialement définie sur un minimum de 0 ans et un maximum de 100 ans (à partir de ONTAP 9.10.1. Pour les versions précédentes de ONTAP, la valeur est comprise entre 0 et 70.) pour les volumes SnapLock Compliance. À chaque copie NetApp Snapshot, toutes les copies NetApp Snapshot sont conservées pendant cette période de conservation par défaut. La période-conservation-par-défaut doit être modifiée. La période de conservation peut être prolongée ultérieurement, si nécessaire, mais jamais raccourcie. Pour plus d'informations, voir link:https://docs.netapp.com/us-en/ontap/snaplock/set-retention-period-task.html["Aperçu de la durée de conservation"^].
 +
