@@ -1,0 +1,950 @@
+---
+sidebar: sidebar 
+permalink: databases/azure_ora_anf_vldb_dg.html 
+keywords: Oracle, Azure, ANF, Database, Oracle 19c, Data Guard 
+summary: 'Cette solution fournit un aperçu et des détails sur la configuration de bases de données Oracle très volumineuses (VLDB) haut débit sur Microsoft Azure NetApp Files (ANF) avec Oracle Data Guard dans le cloud Azure.' 
+---
+= Tr-5003 : implémentation VLDB Oracle haut débit sur ANF
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+[role="lead"]
+Elle fournit un aperçu et des détails sur la configuration d'une base de données Oracle très large Database (VLDB) haut débit sur Microsoft Azure NetApp Files (ANF) avec Oracle Data Guard dans le cloud Azure.
+
+
+
+== Objectif
+
+Le débit élevé et la VLDB Oracle, une technologie stratégique, ont fortement sollicité le stockage de base de données back-end. Pour respecter les SLA, le stockage de base de données doit fournir la capacité requise et les opérations d'entrée/sortie par seconde (IOPS) élevées, tout en maintenant une latence inférieure à quelques millisecondes. Cette tâche est particulièrement difficile à relever lors du déploiement d'une telle charge de travail de base de données dans le cloud public avec un environnement de ressources de stockage partagées. Toutes les plateformes de stockage ne se valent pas. Le stockage Azure NetApp Files Premium, associé à l'infrastructure Azure, peut répondre aux besoins d'un workload Oracle si exigeant. Dans un banc d'essai de performances validé (link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/performance-oracle-multiple-volumes["Performances des bases de données Oracle sur plusieurs volumes Azure NetApp Files"^]), ANF a fourni 2.5 millions d'IOPS en lecture avec une latence de 700 microsecondes dans une charge de travail synthétique 100 % aléatoire sélectionnée via l'outil SLOB. Avec une taille de bloc standard de 8 Ko, le débit est d'environ 20 Gio/s.
+
+Cette documentation explique comment configurer un système Oracle VLDB avec Data Guard sur un stockage ANF avec plusieurs volumes NFS et Oracle ASM pour l'équilibrage des charges de stockage. La base de données de secours peut être rapidement (en minutes) sauvegardée via des snapshots et clonée pour accéder en lecture/écriture aux cas d'usage souhaités. L'équipe d'ingénierie des solutions NetApp propose un kit d'outils d'automatisation pour créer et actualiser facilement les clones selon un calendrier défini par l'utilisateur.
+
+Cette solution répond aux cas d'utilisation suivants :
+
+* Implémentation d'Oracle VLDB dans un paramètre Data Guard sur le stockage Microsoft Azure NetApp Files dans les régions Azure.
+* Sauvegarde Snapshot et clonage de la base de données physique de secours pour des utilisations telles que le reporting, le développement, les tests, etc., via l'automatisation.
+
+
+
+
+== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* Administrateur de bases de données qui configure Oracle VLDB avec Data Guard dans le cloud Azure pour assurer la haute disponibilité, la protection des données et la reprise après incident.
+* Architecte de solutions de bases de données intéressé par Oracle VLDB avec configuration Data Guard dans le cloud Azure.
+* Administrateur du stockage qui gère le stockage Azure NetApp Files qui prend en charge la base de données Oracle.
+* Un propriétaire d'applications qui aime mettre en place Oracle VLDB avec Data Guard dans un environnement cloud Azure.
+
+
+
+
+== Environnement de test et de validation de la solution
+
+Les tests et la validation de cette solution ont été réalisés dans un laboratoire cloud Azure qui ne correspond pas toujours à l'environnement de déploiement réel de l'utilisateur. Pour plus d'informations, reportez-vous à la section <<Facteurs clés à prendre en compte lors du déploiement>>.
+
+
+
+=== Architecture
+
+image:azure_ora_anf_vldb_dg_architecture.png["Cette image fournit une vue détaillée de l'implémentation d'Oracle Data Guard dans le cloud Azure sur ANF."]
+
+
+
+=== Composants matériels et logiciels
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+| *Matériel* 
+
+
+| Azure NetApp Files | Version actuelle proposée par Microsoft | Deux pools de capacité de 4 To, niveau de services Premium, QoS automatique 
+
+
+| Machines virtuelles Azure pour serveurs de base de données | Standard B4ms (4 vcpu, 16 Gio de mémoire) | Trois VM de base de données, l'une en tant que serveur de base de données principal, l'autre en tant que serveur de base de données de secours et l'autre en tant que serveur de base de données de clone 
+
+
+3+| *Logiciel* 
+
+
+| Red Hat Linux | Red Hat Enterprise Linux 8.6 (LVM) - x64 Gen2 | Déploiement de l'abonnement Red Hat pour les tests 
+
+
+| Infrastructure Oracle Grid | Version 19.18 | Patch RU appliqué p34762026_190000_Linux-x86-64.zip 
+
+
+| Base de données Oracle | Version 19.18 | Patch RU appliqué p34765931_190000_Linux-x86-64.zip 
+
+
+| Correctif logiciel dNFS oneoff | p32931941_190000_Linux-x86-64.zip | Appliqué à la grille et à la base de données 
+
+
+| OPICH Oracle | Version 12.2.0.1.36 | Dernier correctif p6880880_190000_Linux-x86-64.zip 
+
+
+| Ansible | Version Core 2.16.2 | version python - 3.10.13 
+
+
+| NFS | Version 3.0 | DNFS activé pour Oracle 
+|===
+
+
+=== Configuration Oracle VLDB Data Guard avec une configuration simulée de LA reprise sur incident NY à LA
+
+[cols="33%, 33%, 33%"]
+|===
+
+
+3+|  
+
+
+| *Base de données* | *DB_UNIQUE_NAME* | *Nom du service Oracle Net* 
+
+
+| Primaire | NTAP_NY | NTAP_NY.internal.cloudapp.net 
+
+
+| Veille | NTAP_LA | NTAP_LA.internal.cloudapp.net 
+|===
+
+
+=== Facteurs clés à prendre en compte lors du déploiement
+
+* *Configuration Azure NetApp Files.* Les Azure NetApp Files sont alloués dans le compte de stockage Azure NetApp en tant que `Capacity Pools`. Dans le cadre de ces tests et validations, nous avons déployé un pool de capacité de 2 Tio pour héberger un système primaire Oracle dans la région est et un pool de capacité de 4 Tio pour héberger la base de données de secours et le clone de base de données dans la région Ouest 2. Le pool de capacité ANF propose trois niveaux de services : Standard, Premium et Ultra. La capacité d'E/S du pool de capacité d'ANF dépend de la taille du pool de capacité et de son niveau de service. Lors de la création d'un pool de capacité, vous pouvez définir la QoS sur Auto ou Manuel et le chiffrement des données au repos simple ou Double.
+* *Dimensionnement des volumes de base de données.* Pour un déploiement en production, NetApp vous recommande d'évaluer intégralement vos besoins en débit de base de données Oracle à partir du rapport Oracle AWR. Lors du dimensionnement des volumes ANF pour une base de données, tenez compte à la fois de la taille de la base de données et des besoins en débit. Avec la configuration de QoS automatique pour ANF, la bande passante est garantie à une capacité de volume de 128 Mio/s par Tio allouée à Ultra Service Level. Un débit plus élevé peut nécessiter un dimensionnement de volume plus important pour répondre à ce besoin.
+* *Volume unique ou volumes multiples.* Un seul grand volume peut fournir un niveau de performances similaire à celui de plusieurs volumes de même taille d'agrégat. En effet, la QoS est appliquée de manière stricte en fonction du dimensionnement du volume et du niveau de service du pool de capacité. Afin d'optimiser l'utilisation du pool de ressources de stockage ANF back-end partagé, il est recommandé d'implémenter plusieurs volumes (plusieurs points de montage NFS) pour Oracle VLDB. Mise en œuvre d'Oracle ASM pour l'équilibrage de la charge d'E/S sur plusieurs volumes NFS
+* *Prise en compte d'Azure VM.* Dans ces tests et ces validations, nous avons utilisé une VM Azure - Standard_B4ms avec 4 vCPU et 16 Gio de mémoire. Vous devez choisir la VM de base de données Azure appropriée pour la VLDB Oracle nécessitant un débit élevé. Outre le nombre de CPU virtuels et la quantité de RAM, la bande passante réseau des ordinateurs virtuels (limite d'entrée et de sortie ou de débit NIC) peut devenir un goulot d'étranglement avant que la capacité de stockage de la base de données ne soit atteinte.
+* *DNFS Configuration.* Grâce à dNFS, une base de données Oracle exécutée sur un serveur virtuel Azure avec le stockage ANF peut prendre en charge un nombre d'E/S considérablement plus élevé que le client NFS natif. Assurez-vous que le correctif Oracle dNFS p32931941 est appliqué pour résoudre les bugs potentiels.
+
+
+
+
+== Déploiement de la solution
+
+Il est supposé que votre base de données Oracle primaire est déjà déployée dans un environnement cloud Azure au sein d'un vnet comme point de départ pour la configuration d'Oracle Data Guard. Dans l'idéal, la base de données primaire est déployée sur le stockage ANF avec un montage NFS. Votre base de données Oracle principale peut également être exécutée sur un stockage NetApp ONTAP ou tout autre système de stockage de votre choix dans l'écosystème Azure ou dans un data Center privé. La section suivante décrit la configuration d'Oracle VLDB sur ANF dans un paramètre Oracle Data Guard entre une base de données Oracle primaire dans Azure avec stockage ANF et une base de données Oracle de secours physique dans Azure avec stockage ANF.
+
+
+
+=== Conditions préalables au déploiement
+
+[%collapsible]
+====
+Le déploiement nécessite les conditions préalables suivantes.
+
+. Un compte cloud Azure a été configuré et les sous-réseaux vnet et réseau nécessaires ont été créés dans votre compte Azure.
+. Depuis la console du portail cloud Azure, vous devez déployer au moins trois machines virtuelles Azure Linux, l'une en tant que serveur de base de données Oracle principal, l'autre en tant que serveur de base de données Oracle de secours et un serveur de base de données cible de clone pour le reporting, le développement et les tests, etc. Pour plus d'informations sur la configuration de l'environnement, reportez-vous au schéma d'architecture de la section précédente. Consultez également Microsoft link:https://azure.microsoft.com/en-us/products/virtual-machines["Serveurs virtuels Azure"^] pour plus d'informations.
+. La base de données Oracle primaire doit avoir été installée et configurée sur le serveur BDD Oracle principal. Par contre, dans le serveur de base de données Oracle de secours ou le serveur de base de données Oracle clone, seul le logiciel Oracle est installé et aucune base de données Oracle n'est créée. Dans l'idéal, la disposition des répertoires de fichiers Oracle doit correspondre exactement à celle de tous les serveurs BDD Oracle. Pour en savoir plus sur les recommandations de NetApp pour un déploiement Oracle automatisé dans le cloud Azure et ANF, consultez les rapports techniques suivants.
++
+** link:automation_ora_anf_nfs.html["Tr-4987 : déploiement Oracle simplifié et automatisé sur Azure NetApp Files avec NFS"^]
++
+
+NOTE: Vérifiez que vous avez alloué au moins 128 G au volume racine des machines virtuelles Azure afin de disposer d'un espace suffisant pour préparer les fichiers d'installation d'Oracle.
+
+
+
+. À partir de la console du portail cloud Azure, déployez deux pools de capacité de stockage ANF pour héberger des volumes de base de données Oracle. Les pools de capacité de stockage ANF doivent être situés dans différentes régions pour imiter une véritable configuration DataGuard. Si vous ne connaissez pas encore le déploiement d'ANF, consultez la documentation pour link:https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-quickstart-set-up-account-create-volumes?tabs=azure-portal["Démarrage rapide : configurez Azure NetApp Files et créez un volume NFS"^]obtenir des instructions détaillées.
++
+image:azure_ora_anf_dg_anf_01.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
+. Lorsque la base de données Oracle principale et la base de données Oracle de secours sont situées dans deux régions différentes, une passerelle VPN doit être configurée pour permettre le flux du trafic de données entre deux réseaux virtuels distincts. La configuration détaillée de la mise en réseau dans Azure dépasse le cadre de ce document. Les captures d'écran suivantes fournissent des informations sur la configuration et la connexion des passerelles VPN, ainsi que sur la confirmation du flux de trafic de données dans le laboratoire.
++
+Passerelles VPN Lab : image:azure_ora_anf_dg_vnet_01.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+La passerelle vnet principale : image:azure_ora_anf_dg_vnet_02.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+État de la connexion de la passerelle vnet : image:azure_ora_anf_dg_vnet_03.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
++
+Vérifiez que les flux de trafic sont établis (cliquez sur trois points pour ouvrir la page) : image:azure_ora_anf_dg_vnet_04.png["Capture d'écran montrant la configuration de l'environnement Azure."]
+
+
+
+====
+
+
+=== Configuration principale Oracle VLDB pour Data Guard
+
+[%collapsible]
+====
+Dans cette démonstration, nous avons configuré une base de données Oracle primaire appelée NTAP sur le serveur de base de données Azure principal avec six points de montage NFS : /u01 pour le binaire Oracle, /u02, /u04, /u05, /u06 pour les fichiers de données Oracle, et un fichier de contrôle Oracle /u03 pour les journaux actifs Oracle, les fichiers journaux archivés et un fichier de contrôle Oracle redondant. Cette configuration sert de configuration de référence. Votre déploiement réel doit prendre en compte vos besoins et exigences spécifiques en termes de dimensionnement du pool de capacité, de niveau de service, de nombre de volumes de base de données et de dimensionnement de chaque volume.
+
+Pour connaître les procédures détaillées étape par étape de configuration d'Oracle Data Guard sur NFS avec ASM, reportez-vous aux sections TR-5002 - link:https://docs.netapp.com/us-en/netapp-solutions/databases/azure_ora_anf_data_guard.html["Réduction des coûts d'Oracle Active Data Guard avec Azure NetApp Files"^] et TR-4974 - link:https://docs.netapp.com/us-en/netapp-solutions/databases/aws_ora_fsx_ec2_nfs_asm.html#purpose["Oracle 19c en mode de redémarrage autonome sur AWS FSX/EC2 avec NFS/ASM"^] correspondantes. Bien que les procédures décrites dans le rapport technique TR-4974 aient été validées sur Amazon FSX ONTAP, elles s'appliquent également à ANF. Vous trouverez ci-dessous les détails d'un VLDB Oracle principal dans une configuration Data Guard.
+
+. Le NTAP principal de la base de données sur le serveur de base de données Azure orap.internal.cloudapp.net est initialement déployé en tant que base de données autonome avec ANF sur NFS et ASM comme stockage de base de données.
++
+....
+
+orap.internal.cloudapp.net:
+resource group: ANFAVSRG
+Location: East US
+size: Standard B4ms (4 vcpus, 16 GiB memory)
+OS: Linux (redhat 8.6)
+pub_ip: 172.190.207.231
+pri_ip: 10.0.0.4
+
+[oracle@orap ~]$ df -h
+Filesystem                 Size  Used Avail Use% Mounted on
+devtmpfs                   7.7G     0  7.7G   0% /dev
+tmpfs                      7.8G  1.1G  6.7G  15% /dev/shm
+tmpfs                      7.8G   17M  7.7G   1% /run
+tmpfs                      7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/rootvg-rootlv   22G   20G  2.1G  91% /
+/dev/mapper/rootvg-usrlv    10G  2.3G  7.8G  23% /usr
+/dev/sda1                  496M  181M  315M  37% /boot
+/dev/mapper/rootvg-varlv   8.0G  1.1G  7.0G  13% /var
+/dev/sda15                 495M  5.8M  489M   2% /boot/efi
+/dev/mapper/rootvg-homelv  2.0G   47M  2.0G   3% /home
+/dev/mapper/rootvg-tmplv    12G   11G  1.9G  85% /tmp
+/dev/sdb1                   32G   49M   30G   1% /mnt
+10.0.2.38:/orap-u06        300G  282G   19G  94% /u06
+10.0.2.38:/orap-u04        300G  282G   19G  94% /u04
+10.0.2.36:/orap-u01        400G   21G  380G   6% /u01
+10.0.2.37:/orap-u02        300G  282G   19G  94% /u02
+10.0.2.36:/orap-u03        400G  282G  119G  71% /u03
+10.0.2.39:/orap-u05        300G  282G   19G  94% /u05
+
+
+[oracle@orap ~]$ cat /etc/oratab
+#
+
+
+
+# This file is used by ORACLE utilities.  It is created by root.sh
+# and updated by either Database Configuration Assistant while creating
+# a database or ASM Configuration Assistant while creating ASM instance.
+
+# A colon, ':', is used as the field terminator.  A new line terminates
+# the entry.  Lines beginning with a pound sign, '#', are comments.
+#
+# Entries are of the form:
+#   $ORACLE_SID:$ORACLE_HOME:<N|Y>:
+#
+# The first and second fields are the system identifier and home
+# directory of the database respectively.  The third field indicates
+# to the dbstart utility that the database should , "Y", or should not,
+# "N", be brought up at system boot time.
+#
+# Multiple entries with the same $ORACLE_SID are not allowed.
+#
+#
++ASM:/u01/app/oracle/product/19.0.0/grid:N
+NTAP:/u01/app/oracle/product/19.0.0/NTAP:N
+
+
+
+....
+. Connectez-vous au serveur de base de données principal en tant qu'utilisateur oracle. Validez la configuration de la grille.
++
+[source, cli]
+----
+$GRID_HOME/bin/crsctl stat res -t
+----
++
+....
+[oracle@orap ~]$ $GRID_HOME/bin/crsctl stat res -t
+--------------------------------------------------------------------------------
+Name           Target  State        Server                   State details
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+ora.DATA.dg
+               ONLINE  ONLINE       orap                     STABLE
+ora.LISTENER.lsnr
+               ONLINE  ONLINE       orap                     STABLE
+ora.LOGS.dg
+               ONLINE  ONLINE       orap                     STABLE
+ora.asm
+               ONLINE  ONLINE       orap                     Started,STABLE
+ora.ons
+               OFFLINE OFFLINE      orap                     STABLE
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.cssd
+      1        ONLINE  ONLINE       orap                     STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.evmd
+      1        ONLINE  ONLINE       orap                     STABLE
+ora.ntap.db
+      1        OFFLINE OFFLINE                               Instance Shutdown,ST
+                                                             ABLE
+--------------------------------------------------------------------------------
+[oracle@orap ~]$
+
+....
+. Configuration de groupes de disques ASM.
++
+[source, cli]
+----
+asmcmd
+----
++
+....
+
+[oracle@orap ~]$ asmcmd
+ASMCMD> lsdg
+State    Type    Rebal  Sector  Logical_Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512             512   4096  4194304   1146880  1136944                0         1136944              0             N  DATA/
+MOUNTED  EXTERN  N         512             512   4096  4194304    286720   283312                0          283312              0             N  LOGS/
+ASMCMD> lsdsk
+Path
+/u02/oradata/asm/orap_data_disk_01
+/u02/oradata/asm/orap_data_disk_02
+/u02/oradata/asm/orap_data_disk_03
+/u02/oradata/asm/orap_data_disk_04
+/u03/oralogs/asm/orap_logs_disk_01
+/u03/oralogs/asm/orap_logs_disk_02
+/u03/oralogs/asm/orap_logs_disk_03
+/u03/oralogs/asm/orap_logs_disk_04
+/u04/oradata/asm/orap_data_disk_05
+/u04/oradata/asm/orap_data_disk_06
+/u04/oradata/asm/orap_data_disk_07
+/u04/oradata/asm/orap_data_disk_08
+/u05/oradata/asm/orap_data_disk_09
+/u05/oradata/asm/orap_data_disk_10
+/u05/oradata/asm/orap_data_disk_11
+/u05/oradata/asm/orap_data_disk_12
+/u06/oradata/asm/orap_data_disk_13
+/u06/oradata/asm/orap_data_disk_14
+/u06/oradata/asm/orap_data_disk_15
+/u06/oradata/asm/orap_data_disk_16
+ASMCMD>
+
+....
+. Paramètres de Data Guard sur la base de données primaire.
++
+....
+SQL> show parameter name
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+cdb_cluster_name                     string
+cell_offloadgroup_name               string
+db_file_name_convert                 string
+db_name                              string      NTAP
+db_unique_name                       string      NTAP_NY
+global_names                         boolean     FALSE
+instance_name                        string      NTAP
+lock_name_space                      string
+log_file_name_convert                string
+pdb_file_name_convert                string
+processor_group_name                 string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+service_names                        string      NTAP_NY.internal.cloudapp.net
+
+SQL> sho parameter log_archive_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_dest                     string
+log_archive_dest_1                   string      LOCATION=USE_DB_RECOVERY_FILE_
+                                                 DEST VALID_FOR=(ALL_LOGFILES,A
+                                                 LL_ROLES) DB_UNIQUE_NAME=NTAP_
+                                                 NY
+log_archive_dest_10                  string
+log_archive_dest_11                  string
+log_archive_dest_12                  string
+log_archive_dest_13                  string
+log_archive_dest_14                  string
+log_archive_dest_15                  string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_dest_16                  string
+log_archive_dest_17                  string
+log_archive_dest_18                  string
+log_archive_dest_19                  string
+log_archive_dest_2                   string      SERVICE=NTAP_LA ASYNC VALID_FO
+                                                 R=(ONLINE_LOGFILES,PRIMARY_ROL
+                                                 E) DB_UNIQUE_NAME=NTAP_LA
+log_archive_dest_20                  string
+log_archive_dest_21                  string
+log_archive_dest_22                  string
+
+....
+. Configuration de la base de données primaire.
++
+....
+
+SQL> select name, open_mode, log_mode from v$database;
+
+NAME      OPEN_MODE            LOG_MODE
+--------- -------------------- ------------
+NTAP      READ WRITE           ARCHIVELOG
+
+
+SQL> show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 NTAP_PDB1                      READ WRITE NO
+         4 NTAP_PDB2                      READ WRITE NO
+         5 NTAP_PDB3                      READ WRITE NO
+
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP/DATAFILE/system.257.1189724205
++DATA/NTAP/DATAFILE/sysaux.258.1189724249
++DATA/NTAP/DATAFILE/undotbs1.259.1189724275
++DATA/NTAP/86B637B62FE07A65E053F706E80A27CA/DATAFILE/system.266.1189725235
++DATA/NTAP/86B637B62FE07A65E053F706E80A27CA/DATAFILE/sysaux.267.1189725235
++DATA/NTAP/DATAFILE/users.260.1189724275
++DATA/NTAP/86B637B62FE07A65E053F706E80A27CA/DATAFILE/undotbs1.268.1189725235
++DATA/NTAP/2B1302C26E089A59E0630400000A4D5C/DATAFILE/system.272.1189726217
++DATA/NTAP/2B1302C26E089A59E0630400000A4D5C/DATAFILE/sysaux.273.1189726217
++DATA/NTAP/2B1302C26E089A59E0630400000A4D5C/DATAFILE/undotbs1.271.1189726217
++DATA/NTAP/2B1302C26E089A59E0630400000A4D5C/DATAFILE/users.275.1189726243
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/system.277.1189726245
++DATA/NTAP/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/sysaux.278.1189726245
++DATA/NTAP/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/undotbs1.276.1189726245
++DATA/NTAP/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/users.280.1189726269
++DATA/NTAP/2B13061057039B10E0630400000AA001/DATAFILE/system.282.1189726271
++DATA/NTAP/2B13061057039B10E0630400000AA001/DATAFILE/sysaux.283.1189726271
++DATA/NTAP/2B13061057039B10E0630400000AA001/DATAFILE/undotbs1.281.1189726271
++DATA/NTAP/2B13061057039B10E0630400000AA001/DATAFILE/users.285.1189726293
+
+19 rows selected.
+
+SQL> select member from v$logfile;
+
+MEMBER
+--------------------------------------------------------------------------------
++DATA/NTAP/ONLINELOG/group_3.264.1189724351
++LOGS/NTAP/ONLINELOG/group_3.259.1189724361
++DATA/NTAP/ONLINELOG/group_2.263.1189724351
++LOGS/NTAP/ONLINELOG/group_2.257.1189724359
++DATA/NTAP/ONLINELOG/group_1.262.1189724351
++LOGS/NTAP/ONLINELOG/group_1.258.1189724359
++DATA/NTAP/ONLINELOG/group_4.286.1190297279
++LOGS/NTAP/ONLINELOG/group_4.262.1190297283
++DATA/NTAP/ONLINELOG/group_5.287.1190297293
++LOGS/NTAP/ONLINELOG/group_5.263.1190297295
++DATA/NTAP/ONLINELOG/group_6.288.1190297307
+
+MEMBER
+--------------------------------------------------------------------------------
++LOGS/NTAP/ONLINELOG/group_6.264.1190297309
++DATA/NTAP/ONLINELOG/group_7.289.1190297325
++LOGS/NTAP/ONLINELOG/group_7.265.1190297327
+
+14 rows selected.
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP/CONTROLFILE/current.261.1189724347
++LOGS/NTAP/CONTROLFILE/current.256.1189724347
+
+....
+. Configuration dNFS sur la base de données primaire.
++
+....
+SQL> select svrname, dirname from v$dnfs_servers;
+
+SVRNAME
+--------------------------------------------------------------------------------
+DIRNAME
+--------------------------------------------------------------------------------
+10.0.2.39
+/orap-u05
+
+10.0.2.38
+/orap-u04
+
+10.0.2.38
+/orap-u06
+
+
+SVRNAME
+--------------------------------------------------------------------------------
+DIRNAME
+--------------------------------------------------------------------------------
+10.0.2.37
+/orap-u02
+
+10.0.2.36
+/orap-u03
+
+10.0.2.36
+/orap-u01
+
+
+6 rows selected.
+
+....
+
+
+La démonstration de la configuration de Data Guard pour le NTAP VLDB NTAP sur le site principal d'ANF avec NFS/ASM est terminée.
+
+====
+
+
+=== Configuration Oracle VLDB de secours pour Data Guard
+
+[%collapsible]
+====
+Oracle Data Guard nécessite une configuration du noyau du système d'exploitation et des piles logicielles Oracle, y compris des ensembles de correctifs sur le serveur de base de données de secours, pour correspondre au serveur de base de données principal. Pour une gestion et une simplicité simples, la configuration du stockage de base de données du serveur de base de données de secours doit idéalement correspondre au serveur de base de données primaire, tel que la disposition du répertoire de base de données et la taille des points de montage NFS.
+
+Encore une fois, pour obtenir des procédures détaillées étape par étape de configuration d'Oracle Data Guard Standby sur NFS avec ASM, reportez-vous aux sections TR-5002 - link:https://docs.netapp.com/us-en/netapp-solutions/databases/azure_ora_anf_data_guard.html["Réduction des coûts d'Oracle Active Data Guard avec Azure NetApp Files"^] et TR-4974 - link:https://docs.netapp.com/us-en/netapp-solutions/databases/aws_ora_fsx_ec2_nfs_asm.html#purpose["Oracle 19c en mode de redémarrage autonome sur AWS FSX/EC2 avec NFS/ASM"^] correspondantes. Vous trouverez ci-dessous une description détaillée de la configuration de secours d'Oracle VLDB sur le serveur de base de données de secours dans un paramètre Data Guard.
+
+. Configuration du serveur de base de données Oracle en attente sur le site en veille dans le laboratoire de démonstration.
++
+....
+oras.internal.cloudapp.net:
+resource group: ANFAVSRG
+Location: West US 2
+size: Standard B4ms (4 vcpus, 16 GiB memory)
+OS: Linux (redhat 8.6)
+pub_ip: 172.179.119.75
+pri_ip: 10.0.1.4
+
+[oracle@oras ~]$ df -h
+Filesystem                 Size  Used Avail Use% Mounted on
+devtmpfs                   7.7G     0  7.7G   0% /dev
+tmpfs                      7.8G  1.1G  6.7G  15% /dev/shm
+tmpfs                      7.8G   25M  7.7G   1% /run
+tmpfs                      7.8G     0  7.8G   0% /sys/fs/cgroup
+/dev/mapper/rootvg-rootlv   22G   17G  5.6G  75% /
+/dev/mapper/rootvg-usrlv    10G  2.3G  7.8G  23% /usr
+/dev/mapper/rootvg-varlv   8.0G  1.1G  7.0G  13% /var
+/dev/mapper/rootvg-homelv  2.0G   52M  2.0G   3% /home
+/dev/sda1                  496M  181M  315M  37% /boot
+/dev/sda15                 495M  5.8M  489M   2% /boot/efi
+/dev/mapper/rootvg-tmplv    12G   11G  1.8G  86% /tmp
+/dev/sdb1                   32G   49M   30G   1% /mnt
+10.0.3.36:/oras-u03        400G  282G  119G  71% /u03
+10.0.3.36:/oras-u04        300G  282G   19G  94% /u04
+10.0.3.36:/oras-u05        300G  282G   19G  94% /u05
+10.0.3.36:/oras-u02        300G  282G   19G  94% /u02
+10.0.3.36:/oras-u01        100G   21G   80G  21% /u01
+10.0.3.36:/oras-u06        300G  282G   19G  94% /u06
+
+[oracle@oras ~]$ cat /etc/oratab
+#Backup file is  /u01/app/oracle/crsdata/oras/output/oratab.bak.oras.oracle line added by Agent
+#
+
+
+
+# This file is used by ORACLE utilities.  It is created by root.sh
+# and updated by either Database Configuration Assistant while creating
+# a database or ASM Configuration Assistant while creating ASM instance.
+
+# A colon, ':', is used as the field terminator.  A new line terminates
+# the entry.  Lines beginning with a pound sign, '#', are comments.
+#
+# Entries are of the form:
+#   $ORACLE_SID:$ORACLE_HOME:<N|Y>:
+#
+# The first and second fields are the system identifier and home
+# directory of the database respectively.  The third field indicates
+# to the dbstart utility that the database should , "Y", or should not,
+# "N", be brought up at system boot time.
+#
+# Multiple entries with the same $ORACLE_SID are not allowed.
+#
+#
++ASM:/u01/app/oracle/product/19.0.0/grid:N
+NTAP:/u01/app/oracle/product/19.0.0/NTAP:N              # line added by Agent
+
+....
+. Configuration de l'infrastructure du grid sur le serveur de base de données de secours.
++
+....
+[oracle@oras ~]$ $GRID_HOME/bin/crsctl stat res -t
+--------------------------------------------------------------------------------
+Name           Target  State        Server                   State details
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+ora.DATA.dg
+               ONLINE  ONLINE       oras                     STABLE
+ora.LISTENER.lsnr
+               ONLINE  ONLINE       oras                     STABLE
+ora.LOGS.dg
+               ONLINE  ONLINE       oras                     STABLE
+ora.asm
+               ONLINE  ONLINE       oras                     Started,STABLE
+ora.ons
+               OFFLINE OFFLINE      oras                     STABLE
+--------------------------------------------------------------------------------
+Cluster Resources
+--------------------------------------------------------------------------------
+ora.cssd
+      1        ONLINE  ONLINE       oras                     STABLE
+ora.diskmon
+      1        OFFLINE OFFLINE                               STABLE
+ora.evmd
+      1        ONLINE  ONLINE       oras                     STABLE
+ora.ntap_la.db
+      1        ONLINE  INTERMEDIATE oras                     Dismounted,Mount Ini
+                                                             tiated,HOME=/u01/app
+                                                             /oracle/product/19.0
+                                                             .0/NTAP,STABLE
+--------------------------------------------------------------------------------
+
+....
+. Configuration des groupes de disques ASM sur le serveur de base de données de secours.
++
+....
+
+[oracle@oras ~]$ asmcmd
+ASMCMD> lsdg
+State    Type    Rebal  Sector  Logical_Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512             512   4096  4194304   1146880  1136912                0         1136912              0             N  DATA/
+MOUNTED  EXTERN  N         512             512   4096  4194304    286720   284228                0          284228              0             N  LOGS/
+ASMCMD> lsdsk
+Path
+/u02/oradata/asm/oras_data_disk_01
+/u02/oradata/asm/oras_data_disk_02
+/u02/oradata/asm/oras_data_disk_03
+/u02/oradata/asm/oras_data_disk_04
+/u03/oralogs/asm/oras_logs_disk_01
+/u03/oralogs/asm/oras_logs_disk_02
+/u03/oralogs/asm/oras_logs_disk_03
+/u03/oralogs/asm/oras_logs_disk_04
+/u04/oradata/asm/oras_data_disk_05
+/u04/oradata/asm/oras_data_disk_06
+/u04/oradata/asm/oras_data_disk_07
+/u04/oradata/asm/oras_data_disk_08
+/u05/oradata/asm/oras_data_disk_09
+/u05/oradata/asm/oras_data_disk_10
+/u05/oradata/asm/oras_data_disk_11
+/u05/oradata/asm/oras_data_disk_12
+/u06/oradata/asm/oras_data_disk_13
+/u06/oradata/asm/oras_data_disk_14
+/u06/oradata/asm/oras_data_disk_15
+/u06/oradata/asm/oras_data_disk_16
+
+
+....
+. Paramètres de Data Guard sur la base de données de secours.
++
+....
+
+SQL> show parameter name
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+cdb_cluster_name                     string
+cell_offloadgroup_name               string
+db_file_name_convert                 string
+db_name                              string      NTAP
+db_unique_name                       string      NTAP_LA
+global_names                         boolean     FALSE
+instance_name                        string      NTAP
+lock_name_space                      string
+log_file_name_convert                string
+pdb_file_name_convert                string
+processor_group_name                 string
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+service_names                        string      NTAP_LA.internal.cloudapp.net
+SQL> show parameter log_archive_config
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+log_archive_config                   string      DG_CONFIG=(NTAP_NY,NTAP_LA)
+SQL> show parameter fal_server
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+fal_server                           string      NTAP_NY
+
+
+....
+. Configuration de la base de données de secours.
++
+....
+
+SQL> select name, open_mode, log_mode from v$database;
+
+NAME      OPEN_MODE            LOG_MODE
+--------- -------------------- ------------
+NTAP      MOUNTED              ARCHIVELOG
+
+SQL> show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       MOUNTED
+         3 NTAP_PDB1                      MOUNTED
+         4 NTAP_PDB2                      MOUNTED
+         5 NTAP_PDB3                      MOUNTED
+
+SQL> select name from v$datafile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP_LA/DATAFILE/system.261.1190301867
++DATA/NTAP_LA/DATAFILE/sysaux.262.1190301923
++DATA/NTAP_LA/DATAFILE/undotbs1.263.1190301969
++DATA/NTAP_LA/2B12C97618069248E0630400000AC50B/DATAFILE/system.264.1190301987
++DATA/NTAP_LA/2B12C97618069248E0630400000AC50B/DATAFILE/sysaux.265.1190302013
++DATA/NTAP_LA/DATAFILE/users.266.1190302039
++DATA/NTAP_LA/2B12C97618069248E0630400000AC50B/DATAFILE/undotbs1.267.1190302045
++DATA/NTAP_LA/2B1302C26E089A59E0630400000A4D5C/DATAFILE/system.268.1190302071
++DATA/NTAP_LA/2B1302C26E089A59E0630400000A4D5C/DATAFILE/sysaux.269.1190302099
++DATA/NTAP_LA/2B1302C26E089A59E0630400000A4D5C/DATAFILE/undotbs1.270.1190302125
++DATA/NTAP_LA/2B1302C26E089A59E0630400000A4D5C/DATAFILE/users.271.1190302133
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP_LA/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/system.272.1190302137
++DATA/NTAP_LA/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/sysaux.273.1190302163
++DATA/NTAP_LA/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/undotbs1.274.1190302189
++DATA/NTAP_LA/2B13047FB98B9AAFE0630400000AFA5F/DATAFILE/users.275.1190302197
++DATA/NTAP_LA/2B13061057039B10E0630400000AA001/DATAFILE/system.276.1190302201
++DATA/NTAP_LA/2B13061057039B10E0630400000AA001/DATAFILE/sysaux.277.1190302229
++DATA/NTAP_LA/2B13061057039B10E0630400000AA001/DATAFILE/undotbs1.278.1190302255
++DATA/NTAP_LA/2B13061057039B10E0630400000AA001/DATAFILE/users.279.1190302263
+
+19 rows selected.
+
+SQL> select name from v$controlfile;
+
+NAME
+--------------------------------------------------------------------------------
++DATA/NTAP_LA/CONTROLFILE/current.260.1190301831
++LOGS/NTAP_LA/CONTROLFILE/current.257.1190301833
+
+SQL> select group#, type, member from v$logfile order by 2, 1;
+    GROUP# TYPE    MEMBER
+---------- ------- --------------------------------------------------------------------------------
+         1 ONLINE  +DATA/NTAP_LA/ONLINELOG/group_1.280.1190302305
+         1 ONLINE  +LOGS/NTAP_LA/ONLINELOG/group_1.259.1190302309
+         2 ONLINE  +DATA/NTAP_LA/ONLINELOG/group_2.281.1190302315
+         2 ONLINE  +LOGS/NTAP_LA/ONLINELOG/group_2.258.1190302319
+         3 ONLINE  +DATA/NTAP_LA/ONLINELOG/group_3.282.1190302325
+         3 ONLINE  +LOGS/NTAP_LA/ONLINELOG/group_3.260.1190302329
+         4 STANDBY +DATA/NTAP_LA/ONLINELOG/group_4.283.1190302337
+         4 STANDBY +LOGS/NTAP_LA/ONLINELOG/group_4.261.1190302339
+         5 STANDBY +DATA/NTAP_LA/ONLINELOG/group_5.284.1190302347
+         5 STANDBY +LOGS/NTAP_LA/ONLINELOG/group_5.262.1190302349
+         6 STANDBY +DATA/NTAP_LA/ONLINELOG/group_6.285.1190302357
+
+    GROUP# TYPE    MEMBER
+---------- ------- --------------------------------------------------------------------------------
+         6 STANDBY +LOGS/NTAP_LA/ONLINELOG/group_6.263.1190302359
+         7 STANDBY +DATA/NTAP_LA/ONLINELOG/group_7.286.1190302367
+         7 STANDBY +LOGS/NTAP_LA/ONLINELOG/group_7.264.1190302369
+
+14 rows selected.
+
+
+....
+. Validez l'état de restauration de la base de données en attente. Notez le `recovery logmerger` dans `APPLYING_LOG` action.
++
+....
+
+SQL> SELECT ROLE, THREAD#, SEQUENCE#, ACTION FROM V$DATAGUARD_PROCESS;
+
+ROLE                        THREAD#  SEQUENCE# ACTION
+------------------------ ---------- ---------- ------------
+recovery logmerger                1         32 APPLYING_LOG
+recovery apply slave              0          0 IDLE
+RFS async                         1         32 IDLE
+recovery apply slave              0          0 IDLE
+recovery apply slave              0          0 IDLE
+RFS ping                          1         32 IDLE
+archive redo                      0          0 IDLE
+managed recovery                  0          0 IDLE
+archive redo                      0          0 IDLE
+archive redo                      0          0 IDLE
+recovery apply slave              0          0 IDLE
+
+ROLE                        THREAD#  SEQUENCE# ACTION
+------------------------ ---------- ---------- ------------
+redo transport monitor            0          0 IDLE
+log writer                        0          0 IDLE
+archive local                     0          0 IDLE
+redo transport timer              0          0 IDLE
+gap manager                       0          0 IDLE
+RFS archive                       0          0 IDLE
+
+17 rows selected.
+
+....
+. Configuration dNFS sur la base de données de secours.
+
+
+....
+
+SQL> select svrname, dirname from v$dnfs_servers;
+
+SVRNAME
+--------------------------------------------------------------------------------
+DIRNAME
+--------------------------------------------------------------------------------
+10.0.3.36
+/oras-u05
+
+10.0.3.36
+/oras-u04
+
+10.0.3.36
+/oras-u02
+
+10.0.3.36
+/oras-u06
+
+10.0.3.36
+/oras-u03
+
+
+
+....
+Ceci termine la démonstration d'une configuration Data Guard pour le NTAP VLDB avec la récupération de secours gérée activée sur le site de secours.
+
+====
+
+
+=== Configurez Data Guard Broker
+
+[%collapsible]
+====
+Oracle Data Guard Broker est une structure de gestion distribuée qui automatise et centralise la création, la maintenance et la surveillance des configurations Oracle Data Guard. La section suivante explique comment configurer Data Guard Broker pour gérer l'environnement Data Guard.
+
+. Démarrez Data Guard Broker sur les bases de données primaire et de secours à l’aide de la commande suivante via sqlplus.
++
+[source, cli]
+----
+alter system set dg_broker_start=true scope=both;
+----
+. À partir de la base de données primaire, connectez-vous à Data Guard Borker en tant que SYSDBA.
++
+....
+
+[oracle@orap ~]$ dgmgrl sys@NTAP_NY
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Wed Dec 11 20:53:20 2024
+Version 19.18.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+Password:
+Connected to "NTAP_NY"
+Connected as SYSDBA.
+DGMGRL>
+
+
+....
+. Créer et activer la configuration Data Guard Broker.
++
+....
+
+DGMGRL> create configuration dg_config as primary database is NTAP_NY connect identifier is NTAP_NY;
+Configuration "dg_config" created with primary database "ntap_ny"
+DGMGRL> add database NTAP_LA as connect identifier is NTAP_LA;
+Database "ntap_la" added
+DGMGRL> enable configuration;
+Enabled.
+DGMGRL> show configuration;
+
+Configuration - dg_config
+
+  Protection Mode: MaxPerformance
+  Members:
+  ntap_ny - Primary database
+    ntap_la - Physical standby database
+
+Fast-Start Failover:  Disabled
+
+Configuration Status:
+SUCCESS   (status updated 3 seconds ago)
+
+....
+. Validez l'état de la base de données dans la structure de gestion Data Guard Broker.
++
+....
+
+DGMGRL> show database db1_ny;
+
+Database - db1_ny
+
+  Role:               PRIMARY
+  Intended State:     TRANSPORT-ON
+  Instance(s):
+    db1
+
+Database Status:
+SUCCESS
+
+DGMGRL> show database db1_la;
+
+Database - db1_la
+
+  Role:               PHYSICAL STANDBY
+  Intended State:     APPLY-ON
+  Transport Lag:      0 seconds (computed 1 second ago)
+  Apply Lag:          0 seconds (computed 1 second ago)
+  Average Apply Rate: 2.00 KByte/s
+  Real Time Query:    OFF
+  Instance(s):
+    db1
+
+Database Status:
+SUCCESS
+
+DGMGRL>
+
+....
+
+
+En cas de défaillance, Data Guard Broker peut être utilisé pour basculer la base de données primaire vers le cliché de secours. Si `Fast-Start Failover` est activé, Data Guard Broker peut basculer la base de données primaire vers la base de données de secours lorsqu'une panne est détectée sans intervention de l'utilisateur.
+
+====
+
+
+=== Base de données de secours clone pour d'autres utilisations via l'automatisation
+
+[%collapsible]
+====
+Contactez l'équipe d'ingénierie des solutions NetApp pour obtenir le kit d'automatisation permettant de créer et d'actualiser les clones afin de gérer intégralement le cycle de vie des clones.
+
+====
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur les informations fournies dans ce document, consultez ces documents et/ou sites web :
+
+* Tr-5002 : réduction des coûts du service Oracle Active Data Guard avec Azure NetApp Files
++
+link:https://docs.netapp.com/us-en/netapp-solutions/databases/azure_ora_anf_data_guard.html#purpose["https://docs.netapp.com/us-en/netapp-solutions/databases/azure_ora_anf_data_guard.html#purpose"^]
+
+* Tr-4974 : Oracle 19c en redémarrage autonome sur AWS FSX/EC2 avec NFS/ASM
++
+link:https://docs.netapp.com/us-en/netapp-solutions/databases/aws_ora_fsx_ec2_nfs_asm.html#purpose["https://docs.netapp.com/us-en/netapp-solutions/databases/aws_ora_fsx_ec2_nfs_asm.html#purpose"^]
+
+* Azure NetApp Files
++
+link:https://azure.microsoft.com/en-us/products/netapp["https://azure.microsoft.com/en-us/products/netapp"^]
+
+* Concepts et administration d'Oracle Data Guard
++
+link:https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/index.html#Oracle%C2%AE-Data-Guard["https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/index.html#Oracle%C2%AE-Data-Guard"^]
+
+
