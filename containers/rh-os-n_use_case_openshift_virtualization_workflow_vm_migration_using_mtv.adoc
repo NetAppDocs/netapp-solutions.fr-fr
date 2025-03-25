@@ -86,69 +86,27 @@ Les installations suivantes ont été effectuées avant l'installation de MTV :
 
 * OpenShift Cluster 4.13.34
 * link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["Trident 23.10"]
-* Chemins d'accès multiples sur les nœuds de cluster activés pour iSCSI (pour la classe de stockage ontap-san). Consultez le yaml fourni pour créer un jeu de démons qui active iSCSI sur chaque nœud du cluster.
+* Chemins d'accès multiples sur les nœuds de cluster activés pour iSCSI (pour la classe de stockage ontap-san). Les chemins d'accès multiples peuvent être activés facilement si vous installez Trident 25.02 à l'aide de l'indicateur de préparation du nœud. Pour installer Trident 25.02 et préparer les nœuds worker pour iSCSI, vous pouvez utiliser la commande suivante
+
+
+[source, yaml]
+----
+#/tridentctl install trident n trident —node-prep=iscsi
+
+----
+
+NOTE: Pour vérifier que les outils iSCSI ont été activés sur les nœuds worker d'OpenShift Cluster, connectez-vous aux nœuds worker et vérifiez que l'iscsid, le multipathd est actif et que les entrées du fichier multipath.conf s'affichent, comme illustré.
+
+image:rh-os-n_use_case_iscsi_node_prep1.png["iscsid actif"]
+
+image:rh-os-n_use_case_iscsi_node_prep2.png["multipathd actif"]
+
+image:rh-os-n_use_case_iscsi_node_prep3.png["fichier multipath.conf"]
+
 * Système back-end Trident et classe de stockage pour SAN ONTAP utilisant iSCSI. Consultez les fichiers yaml fournis pour le back-end trident et la classe de stockage.
 * link:https://docs.openshift.com/container-platform/4.13/virt/install/installing-virt-web.html["Virtualisation OpenShift"]
 
 
-Pour installer iscsi et le multipath sur les nœuds OpenShift Cluster, utilisez le fichier yaml indiqué ci-dessous
-**Préparation des nœuds de cluster pour iSCSI**
-
-[source, yaml]
-----
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  namespace: trident
-  name: trident-iscsi-init
-  labels:
-    name: trident-iscsi-init
-spec:
-  selector:
-    matchLabels:
-      name: trident-iscsi-init
-  template:
-    metadata:
-      labels:
-        name: trident-iscsi-init
-    spec:
-      hostNetwork: true
-      serviceAccount: trident-node-linux
-      initContainers:
-      - name: init-node
-        command:
-          - nsenter
-          - --mount=/proc/1/ns/mnt
-          - --
-          - sh
-          - -c
-        args: ["$(STARTUP_SCRIPT)"]
-        image: alpine:3.7
-        env:
-        - name: STARTUP_SCRIPT
-          value: |
-            #! /bin/bash
-            sudo yum install -y lsscsi iscsi-initiator-utils sg3_utils device-mapper-multipath
-            rpm -q iscsi-initiator-utils
-            sudo sed -i 's/^\(node.session.scan\).*/\1 = manual/' /etc/iscsi/iscsid.conf
-            cat /etc/iscsi/initiatorname.iscsi
-            sudo mpathconf --enable --with_multipathd y --find_multipaths n
-            sudo systemctl enable --now iscsid multipathd
-            sudo systemctl enable --now iscsi
-        securityContext:
-          privileged: true
-      hostPID: true
-      containers:
-      - name: wait
-        image: k8s.gcr.io/pause:3.1
-      hostPID: true
-      hostNetwork: true
-      tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
-  updateStrategy:
-    type: RollingUpdate
-----
 Utilisez le fichier yaml suivant pour créer la configuration back-end trident pour l'utilisation du stockage san ONTAP
 **Back-end Trident pour iSCSI**
 
