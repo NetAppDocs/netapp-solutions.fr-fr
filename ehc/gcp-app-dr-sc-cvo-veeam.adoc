@@ -16,8 +16,6 @@ summary: 'La reprise d"activité dans le cloud est une solution résiliente et �
 [role="lead"]
 La reprise d'activité dans le cloud est une solution résiliente et économique qui protège les charges de travail contre les pannes sur site et la corruption des données, comme les attaques par ransomware. NetApp SnapMirror permet de répliquer les charges de travail VMware sur site utilisant un stockage connecté à l'invité vers NetApp Cloud Volumes ONTAP exécuté dans Google Cloud.
 
-Auteurs : Suresh Thoppay, NetApp
-
 
 
 == Présentation
@@ -72,7 +70,7 @@ NOTE: Plusieurs options de connexion des data centers sur site à Google Cloud s
 === Détails du déploiement
 
 .Configurez CVO pour Google Cloud et répliquez les volumes dans CVO
-[%collapsible]
+[%collapsible%open]
 ====
 La première étape consiste à configurer Cloud Volumes ONTAP sur Google Cloud (link:gcp-guest.html#gcp-cvo["cvo"^]) Et répliquez les volumes souhaités dans Cloud Volumes ONTAP avec les fréquences et les instantanés souhaités.
 
@@ -84,7 +82,7 @@ Pour obtenir des exemples d'instructions détaillées sur la configuration de Sn
 video::395e33db-0d63-4e48-8898-b01200f006ca[panopto]
 ====
 .Configurez l'accès aux données des hôtes GCVE et CVO
-[%collapsible]
+[%collapsible%open]
 ====
 Deux facteurs importants à prendre en compte lors du déploiement du SDDC sont la taille du cluster SDDC dans la solution GCVE et le temps de maintenance du SDDC. Ces deux considérations clés à prendre en compte dans une solution de reprise sur incident permettent de réduire les coûts d'exploitation globaux. Le SDDC peut héberger jusqu'à trois hôtes, tout comme un cluster multi-hôtes dans un déploiement à grande échelle.
 
@@ -96,13 +94,13 @@ Une fois que Cloud Volumes ONTAP et GCVE ont été correctement configurés, com
 
 ====
 .Installer les composants Veeam
-[%collapsible]
+[%collapsible%open]
 ====
 Selon le scénario de déploiement, le serveur de sauvegarde Veeam, le référentiel de sauvegarde et le proxy de sauvegarde à déployer. Pour ce cas d'utilisation, nul besoin de déployer un magasin d'objets pour Veeam et le référentiel scale-out non plus requis.https://helpcenter.veeam.com/docs/backup/qsg_vsphere/deployment_scenarios.html["Se référer à la documentation Veeam pour la procédure d'installation"]
 
 ====
 .Configuration de la réplication de machine virtuelle avec Veeam
-[%collapsible]
+[%collapsible%open]
 ====
 VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. https://helpcenter.veeam.com/docs/backup/qsg_vsphere/replication_job.html["Configuration de la tâche de réplication de VM vSphere"] À l'étape traitement invité de l'assistant, sélectionnez Désactiver le traitement de l'application, car nous utilisons SnapCenter pour la sauvegarde et la restauration intégrant la cohérence applicative.
 
@@ -110,7 +108,7 @@ VCenter sur site et GCVE vCenter doit être enregistré auprès de Veeam. https:
 video::8b7e4a9b-7de1-4d48-a8e2-b01200f00692[panopto]
 ====
 .Le basculement de la machine virtuelle Microsoft SQL Server
-[%collapsible]
+[%collapsible%open]
 ====
 .Le basculement de la machine virtuelle Microsoft SQL Server
 video::9762dc99-081b-41a2-ac68-b01200f00ac0[panopto]

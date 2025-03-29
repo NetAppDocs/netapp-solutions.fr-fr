@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-principal-fc.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, fc 
+summary:  
+---
+= VMFS sur FC en tant que stockage principal pour les domaines de gestion
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Dans ce scénario, nous examinerons le cas d'utilisation d'un datastore VMFS FC existant, sur ONTAP, pour une utilisation en tant que stockage principal pour des domaines de gestion VMware Cloud Foundation (VCF).
+
+
+
+== Introduction
+
+Le cas échéant, nous nous référons à la documentation externe pour connaître les étapes à suivre dans le gestionnaire SDDC de VCF, et nous vous référons aux étapes spécifiques à la partie relative à la configuration du stockage.
+
+Pour plus d'informations sur la conversion d'un environnement vSphere FC existant avec ONTAP, reportez-vous à link:vmw-vcf-mgmt-fc.html["Conversion de l'environnement vSphere (datastore FC) en domaine de gestion VCF"]la section .
+
+
+NOTE: VCF version 5.2 a introduit la possibilité de convertir un environnement vSphere 8 existant en domaine de gestion VCF ou de l'importer en tant que domaines de charge de travail VCF VI. Avant cette version, VMware VSAN était la seule option pour le stockage principal pour le domaine de gestion VCF.
+
+
+NOTE: Cette solution s'applique aux plateformes ONTAP qui prennent en charge le stockage FC, notamment NetApp ASA, AFF et FAS.
+
+
+
+== Prérequis
+
+Les composants et configurations suivants sont utilisés dans ce scénario :
+
+* Système de stockage NetApp avec une machine virtuelle de stockage (SVM) configurée pour autoriser le trafic FC.
+* Des interfaces logiques (LIF) ont été créées sur la structure FC pour le trafic FC et sont associées à la SVM.
+* Le zoning a été configuré pour utiliser la segmentation single initiator-target sur les commutateurs FC pour les HBA hôtes et les cibles de stockage.
+
+
+Pour plus d'informations sur la configuration des systèmes de stockage ONTAP, reportez-vous au link:https://docs.netapp.com/us-en/ontap["Documentation ONTAP 9"] centre.
+
+Pour plus d'informations sur la configuration de VCF, reportez-vous à la section link:https://docs.vmware.com/en/VMware-Cloud-Foundation/index.html["Documentation de VMware Cloud Foundation"].
+
+
+
+== Étapes de déploiement
+
+
+
+=== Domaine de gestion - Cluster par défaut
+
+Le stockage principal FC sur le cluster initial n'est pris en charge qu'avec l'outil d'importation brownfield VCF. Si VCF est déployé avec l'outil Cloud Builder (version.x antérieure à la version 5.2.x), seul VSAN est pris en charge.
+
+Pour plus d'informations sur l'utilisation d'un environnement vSphere existant, reportez-vous au https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["Conversion de l'environnement vSphere existant en domaine de gestion"] pour plus d'informations.
+
+
+
+=== Domaine de gestion - Cluster supplémentaire
+
+Le cluster vSphere supplémentaire sur le domaine de gestion peut être déployé avec les options suivantes :
+
+* Disposer d'un cluster supplémentaire dans l'environnement vSphere et utiliser l'outil d'importation brownfield VCF pour convertir l'environnement vSphere en domaine de gestion. https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["Les outils ONTAP pour VMware vSphere"] https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["System Manager ou API ONTAP"] Peut être utilisé pour déployer le datastore VMFS sur un cluster vSphere.
+* Déployez un cluster supplémentaire à l'aide de l'API SDDC. Le datastore VMFS doit être configuré pour les hôtes vSphere. Utilisez https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["System Manager ou API ONTAP"] pour déployer LUN sur des hôtes vSphere.
+* Utilisez l'interface utilisateur de SDDC Manager pour déployer un cluster supplémentaire. Mais cette option ne crée que le datastore VSAN jusqu'à la version 5.2.x.
+
+
+
+
+== Informations supplémentaires
+
+Pour plus d'informations sur la configuration des systèmes de stockage ONTAP, reportez-vous au link:https://docs.netapp.com/us-en/ontap["Documentation ONTAP 9"] centre.
+
+Pour plus d'informations sur la configuration de VCF, reportez-vous link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["Documentation de VMware Cloud Foundation"]à la section .

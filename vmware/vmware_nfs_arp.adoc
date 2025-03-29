@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: vmware/vmware_nfs_arp.html 
-keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, ransomeware 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, ransomware 
 summary:  
 ---
 = Protection anti-ransomware autonome pour le stockage NFS
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-Il est essentiel de détecter les ransomware dès que possible pour prévenir la propagation de ces attaques et éviter les temps d'indisponibilité coûteux. Une stratégie de détection des ransomwares efficace doit intégrer plusieurs couches de protection au niveau des machines virtuelles hôtes et hôtes ESXi. Même si plusieurs mesures de sécurité sont implémentées pour créer une défense complète contre les attaques par ransomware, ONTAP permet d'ajouter des couches de protection supplémentaires à l'approche de la défense globale. Pour n'en citer que quelques-unes, l'opération commence par les snapshots, la protection anti-ransomware autonome, les snapshots inviolables, etc.
+Il est essentiel de détecter les ransomware dès que possible pour prévenir la propagation de ces attaques et éviter les temps d'indisponibilité coûteux. Une stratégie de détection des ransomwares efficace doit intégrer plusieurs couches de protection au niveau des machines virtuelles hôtes et hôtes ESXi. Même si plusieurs mesures de sécurité sont implémentées pour créer une défense complète contre les attaques par ransomware, ONTAP permet d'ajouter des couches de protection supplémentaires à l'approche de la défense globale. Pour n'en citer que quelques-unes, notre solution commence par les copies Snapshot, la protection anti-ransomware autonome, les snapshots inviolables, etc.
 
 Voyons comment les fonctionnalités mentionnées ci-dessus fonctionnent avec VMware pour protéger et restaurer les données contre les ransomwares. Pour protéger vSphere et les ordinateurs virtuels invités contre les attaques, il est essentiel de prendre plusieurs mesures, notamment la segmentation, l'utilisation d'EDR/XDR/SIEM pour les terminaux, l'installation de mises à jour de sécurité et le respect des directives de renforcement appropriées. Chaque machine virtuelle résidant sur un datastore héberge également un système d'exploitation standard. Assurez-vous que des suites de produits contre les programmes malveillants sont installées sur vos serveurs d'entreprise et régulièrement mises à jour, ce qui constitue un composant essentiel de la stratégie de protection multicouche contre les ransomwares. Par ailleurs, activez la protection anti-ransomware autonome (ARP) sur le volume NFS qui alimente le datastore. ARP exploite le ML intégré DE LA MACHINE à ML qui analyse l'activité des workloads de volume et l'entropie des données pour détecter automatiquement les ransomware. Le protocole ARP est configurable via l'interface de gestion intégrée ONTAP ou le gestionnaire système. Il est activé par volume.
 
@@ -34,7 +34,7 @@ Si une attaque par ransomware cible la machine virtuelle et altère les fichiers
 
 Pour plus d’informations, reportez-vous à la section “ARP et machines virtuelles” dans link:https://docs.netapp.com/us-en/ontap/anti-ransomware/use-cases-restrictions-concept.html#supported-configurations["ARP usecas et considérations"].
 
-En passant des fichiers aux données de sauvegarde, les attaques par ransomware ciblent de plus en plus les sauvegardes et les points de restauration Snapshot en essayant de les supprimer avant de commencer à chiffrer des fichiers. Cependant, avec ONTAP, cela peut être empêché en créant des snapshots inviolables sur les systèmes primaires ou secondaires avec link:https://docs.netapp.com/us-en/ontap/snaplock/snapshot-lock-concept.html["Verrouillage des copies NetApp Snapshot™"].
+En passant des fichiers aux données de sauvegarde, les attaques par ransomware ciblent de plus en plus les sauvegardes et les points de restauration Snapshot en essayant de les supprimer avant de commencer à chiffrer des fichiers. Cependant, avec ONTAP, cela peut être évité en créant des snapshots inviolables sur les systèmes primaires ou secondaires avec link:https://docs.netapp.com/us-en/ontap/snaplock/snapshot-lock-concept.html["Verrouillage des copies NetApp Snapshot™"].
 
 image:nfs-arp-image3.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
 
@@ -46,7 +46,7 @@ La démonstration ci-dessus montre comment le stockage ONTAP ajoute une couche s
 
 Pour plus d'informations, consultez le guide pour link:https://www.netapp.com/media/7334-tr4572.pdf["Solutions NetApp pour ransomware"].
 
-Si toutes ces questions doivent être orchestrées et intégrées avec des outils SIEM, il est possible d'utiliser le service OFFTAP tel que la protection contre les ransomware BlueXP . Il s'agit d'un service conçu pour protéger les données contre les ransomwares. Ce service protège les charges de travail basées sur les applications, comme Oracle, MySQL, les datastores de machines virtuelles et les partages de fichiers sur un stockage NFS sur site.
+Si toutes ces questions doivent être orchestrées et intégrées avec des outils SIEM, il est possible d'utiliser un service OFFTAP tel que la protection contre les ransomwares BlueXP . Il s'agit d'un service conçu pour protéger les données contre les ransomwares. Ce service protège les charges de travail basées sur les applications, comme Oracle, MySQL, les datastores de machines virtuelles et les partages de fichiers sur un stockage NFS sur site.
 
 Dans cet exemple, le datastore NFS « SRC_NFS_DS04 » est protégé grâce à la protection contre les ransomwares de BlueXP .
 

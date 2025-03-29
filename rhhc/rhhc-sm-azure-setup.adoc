@@ -13,7 +13,7 @@ summary:
 == Déploiement et configuration de la plateforme de conteneurs Red Hat OpenShift sur Azure
 
 [role="lead"]
-Cette section décrit un workflow général expliquant comment configurer et gérer des clusters OpenShift dans Azure et comment déployer des applications avec état sur ces clusters. Il présente l'utilisation du stockage NetApp Cloud Volumes ONTAP à l'aide de Trident pour fournir des volumes persistants. Vous y trouverez des informations détaillées sur l'utilisation d'Astra Control Center pour effectuer les activités de protection des données et de migration des applications avec état.
+Cette section décrit un workflow général expliquant comment configurer et gérer des clusters OpenShift dans Azure et comment déployer des applications avec état sur ces clusters. Il présente l'utilisation du stockage NetApp Cloud Volumes ONTAP à l'aide de Trident pour fournir des volumes persistants. Vous y trouverez des informations détaillées sur l'utilisation de Trident Protect pour les activités de protection des données et de migration des applications avec état.
 
 Voici un diagramme illustrant les clusters déployés sur Azure et connectés au data Center à l'aide d'un VPN.
 
@@ -25,7 +25,7 @@ NOTE: Il existe plusieurs façons de déployer les clusters de plateforme de con
 Le processus de configuration peut être divisé en plusieurs étapes :
 
 .Installez un cluster OCP sur Azure à partir de l'interface de ligne de commande.
-[%collapsible]
+[%collapsible%open]
 ====
 * Assurez-vous que vous avez rempli toutes les conditions préalables indiquées link:https://docs.openshift.com/container-platform/4.13/installing/installing_azure/installing-azure-vnet.html["ici"].
 * Créez un VPN, des sous-réseaux et des groupes de sécurité réseau, ainsi qu'une zone DNS privée. Créez une passerelle VPN et une connexion VPN de site à site.
@@ -102,7 +102,7 @@ pullSecret:
 ....
 ====
 .Déployez Cloud Volumes ONTAP dans Azure à l'aide de BlueXP.
-[%collapsible]
+[%collapsible%open]
 ====
 * Installez un connecteur dans Azure. Reportez-vous aux instructions https://docs.netapp.com/us-en/bluexp-setup-admin/task-install-connector-azure-bluexp.html["ici"].
 * Déployez une instance CVO dans Azure à l'aide de Connector. Reportez-vous au lien d'instructions :https://docs.netapp.com/us-en/bluexp-cloud-volumes-ontap/task-getting-started-azure.html [ici].

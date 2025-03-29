@@ -137,7 +137,7 @@ Votre base de données Oracle principale peut s'exécuter soit sur une solution 
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -160,7 +160,7 @@ NOTE: Assurez-vous d'avoir alloué au moins 50G dans le volume racine de l'insta
 
 === Préparez la base de données primaire pour Data Guard
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette démonstration, nous avons configuré une base de données Oracle primaire appelée db1 sur l'instance principale de base de données EC2 avec deux groupes de disques ASM dans la configuration de redémarrage autonome avec des fichiers de données dans le groupe de disques ASM +DATA et la zone de récupération flash dans le groupe de disques ASM +LOGS. Vous trouverez ci-dessous les procédures détaillées de configuration de la base de données primaire pour Data Guard. Toutes les étapes doivent être exécutées en tant que propriétaire de base de données - utilisateur oracle.
 
@@ -404,7 +404,7 @@ La configuration de la base de données principale de Data Guard est terminée.
 
 === Préparer la base de données de secours et activer Data Guard
 
-[%collapsible]
+[%collapsible%open]
 ====
 Oracle Data Guard nécessite une configuration du noyau du système d'exploitation et des piles logicielles Oracle, y compris des ensembles de correctifs sur l'instance de base de données EC2 de secours, pour correspondre à l'instance de base de données EC2 principale. Pour une gestion et une simplicité simplifiées, la configuration de stockage de base de données de l'instance de base de données EC2 en veille doit idéalement correspondre à l'instance de base de données EC2 principale, par exemple le nom, le nombre et la taille des groupes de disques ASM. Vous trouverez ci-dessous les procédures détaillées de configuration de l'instance de base de données EC2 de secours pour Data Guard. Toutes les commandes doivent être exécutées en tant qu'ID utilisateur propriétaire oracle
 
@@ -704,7 +704,7 @@ Ceci termine la configuration de protection Data Guard pour db1, de l'état prim
 
 === Configurez Data Guard Broker
 
-[%collapsible]
+[%collapsible%open]
 ====
 Oracle Data Guard Broker est une structure de gestion distribuée qui automatise et centralise la création, la maintenance et la surveillance des configurations Oracle Data Guard. La section suivante explique comment configurer Data Guard Broker pour gérer l'environnement Data Guard.
 
@@ -799,7 +799,7 @@ En cas de défaillance, Data Guard Broker peut être utilisé pour basculer inst
 
 === Cloner la base de données de secours pour d'autres utilisations
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le principal avantage de l'activation de la base de données de secours sur AWS FSX ONTAP dans Data Guard est qu'il peut être FlexCloned pour prendre en charge de nombreux autres cas d'utilisation avec un investissement de stockage supplémentaire minimal. Dans la section suivante, nous démontrons comment créer des snapshots et cloner les volumes de base de données montés et sous reprise en veille sur FSX ONTAP à d'autres fins, telles que LE DÉVELOPPEMENT, les TESTS, le REPORTING, etc. utilisation de l'outil NetApp SnapCenter.
 

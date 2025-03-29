@@ -13,8 +13,6 @@ summary: 'La solution offre un aperçu et des détails sur la configuration d"Or
 :imagesdir: ../media/
 
 
-Allen Cao, Niyaz Mohamed, NetApp
-
 [role="lead"]
 La solution offre un aperçu et des détails sur la configuration d'Oracle Data Guard à l'aide de Microsoft Azure NetApp Files (ANF) en tant que stockage de base de données primaire et de secours afin de réduire les coûts de licence et d'exploitation de la solution haute disponibilité/reprise après incident Oracle Data Guard dans le cloud Azure.
 
@@ -115,7 +113,7 @@ image:azure_ora_anf_data_guard_architecture.png["Cette image fournit une vue dé
 === Facteurs clés à prendre en compte lors du déploiement
 
 * *Clonage de la base de données de secours.* Lors de la réception et de l'application des journaux de transactions à partir de la base de données primaire, la base de données physique de secours peut être clonée et montée sur une machine virtuelle de base de données pour prendre en charge d'autres charges de travail, telles que le DÉVELOPPEMENT, les TESTS ou le rapport. Le clone peut être un clone fin ou non fin. À l'heure actuelle, ANF prend uniquement en charge le clone lourd, qui est une copie complète de la base de données de secours. L'option de clonage fin ANF sera disponible prochainement. Pour les copies de volumes de base de données à clonage fin, il partage les mêmes volumes de base de données de secours et utilise la technologie de copie en écriture pour traiter les E/S d'écriture. Ainsi, le clone est très efficace en termes de stockage et peut être utilisé dans de nombreux autres cas d'utilisation avec une allocation de stockage minimale et incrémentielle pour les nouvelles E/S d'écriture. Cela permet de réaliser d'importantes économies en réduisant considérablement l'encombrement du stockage Active Data Guard. NetApp recommande de minimiser les activités FlexClone en cas de basculement de la base de données du stockage primaire vers le stockage ANF de secours afin de maintenir les performances Oracle à un niveau élevé.
-* *Configuration logicielle requise pour Oracle.* en général, une base de données de secours physique doit avoir la même version de base de données initiale que la base de données primaire, y compris les exceptions de jeu de correctifs (PFP), les mises à jour de correctifs critiques (CPU), et des mises à jour de jeux de correctifs (PSU), sauf si un processus d'application de correctifs de secours d'Oracle Data Guard est en cours (comme décrit dans My Oracle support note 1265700.1 à l'adresse link:http://support.oracle.com.["support.oracle.com"^]
+* *Configuration logicielle requise pour Oracle.* En général, une base de données de secours physique doit avoir la même version de base de données initiale que la base de données principale, y compris les exceptions de jeu de correctifs (PFP), les mises à jour de correctifs critiques (CPU) et les mises à jour de jeux de correctifs (PSU), sauf si un processus d'application de correctifs de secours link:https://support.oracle.com["support.oracle.com"^]d'Oracle Data Guard est en cours (comme décrit dans My Oracle support note 1265700.1 à l').
 * *Considérations relatives à la structure des répertoires de la base de données de secours.* si possible, les fichiers de données, les fichiers journaux et les fichiers de contrôle des systèmes primaire et de secours doivent avoir les mêmes noms et chemins et utiliser les conventions de dénomination OFA (optimal flexible Architecture). Les répertoires d'archivage de la base de données de secours doivent également être identiques entre les sites, y compris la taille et la structure. Cette stratégie permet à d'autres opérations telles que les sauvegardes, les commutateurs et les basculements d'exécuter le même ensemble d'étapes, réduisant ainsi la complexité de la maintenance.
 * *Forcer le mode de journalisation.* pour vous protéger contre les écritures directes non consignées dans la base de données primaire qui ne peuvent pas être propagées à la base de données de secours, activez LA JOURNALISATION FORCÉE sur la base de données primaire avant d'effectuer des sauvegardes de fichiers de données pour la création de secours.
 * *Dimensionnement de VM Azure.* Dans ces tests et ces validations, nous avons utilisé une VM Azure - Standard_B4ms avec 4 vCPU et 16 Gio de mémoire. Vous devez dimensionner la VM de base de données Azure en fonction du nombre de vCPU et de la quantité de RAM en fonction des besoins réels de la charge de travail.
@@ -135,7 +133,7 @@ Votre base de données Oracle principale peut également être exécutée sur un
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -174,7 +172,7 @@ Vérifiez que les flux de trafic sont établis (cliquez sur trois points pour ou
 
 === Préparez la base de données primaire pour Data Guard
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette démonstration, nous avons configuré une base de données Oracle primaire appelée NTAP sur le serveur de base de données Azure principal avec trois points de montage NFS : /u01 pour le binaire Oracle, /u02 pour les fichiers de données Oracle et un fichier de contrôle Oracle /u03 pour les journaux actifs Oracle, les fichiers journaux archivés et un fichier de contrôle Oracle redondant. Vous trouverez ci-dessous les procédures détaillées de configuration de la base de données principale pour la protection d'Oracle Data Guard. Toutes les étapes doivent être exécutées en tant que propriétaire de la base de données Oracle ou utilisateur par défaut `oracle`.
 
@@ -484,7 +482,7 @@ La configuration de la base de données principale de Data Guard est terminée.
 
 === Préparer la base de données de secours et activer Data Guard
 
-[%collapsible]
+[%collapsible%open]
 ====
 Oracle Data Guard nécessite une configuration du noyau du système d'exploitation et des piles logicielles Oracle, y compris des ensembles de correctifs sur le serveur de base de données de secours, pour correspondre au serveur de base de données principal. Pour une gestion et une simplicité simples, la configuration du stockage de base de données du serveur de base de données de secours doit idéalement correspondre au serveur de base de données primaire, tel que la disposition du répertoire de base de données et la taille des points de montage NFS. Vous trouverez ci-dessous les procédures détaillées de configuration du serveur de base de données Oracle de secours et d'activation d'Oracle DataGuard pour la protection HA/DR. Toutes les commandes doivent être exécutées en tant qu'ID utilisateur propriétaire Oracle par défaut `oracle` .
 
@@ -846,7 +844,7 @@ Ceci termine la configuration de la protection des données pour NTAP, du stocka
 
 === Configurez Data Guard Broker
 
-[%collapsible]
+[%collapsible%open]
 ====
 Oracle Data Guard Broker est une structure de gestion distribuée qui automatise et centralise la création, la maintenance et la surveillance des configurations Oracle Data Guard. La section suivante explique comment configurer Data Guard Broker pour gérer l'environnement Data Guard.
 
@@ -943,7 +941,7 @@ En cas de défaillance, Data Guard Broker peut être utilisé pour basculer la b
 
 === Cloner la base de données de secours pour d'autres utilisations
 
-[%collapsible]
+[%collapsible%open]
 ====
 L'hébergement de la base de données de secours Oracle sur ANF dans la configuration d'Oracle Data Guard offre le principal avantage de pouvoir être cloné rapidement pour prendre en charge de nombreux autres cas d'utilisation avec un investissement de stockage supplémentaire minimal si un clone dynamique est activé. NetApp recommande d'utiliser l'outil d'interface utilisateur SnapCenter pour gérer votre base de données Oracle DataGuard. Dans la section suivante, nous démontrons comment créer des snapshots et cloner les volumes de base de données montés et sous restauration en veille sur ANF à d'autres fins, telles que LE DÉVELOPPEMENT, les TESTS, les RAPPORTS, etc., à l'aide de l'outil NetApp SnapCenter.
 

@@ -114,7 +114,7 @@ La section suivante décrit les procédures de déploiement étape par étape.
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -136,7 +136,7 @@ NOTE: Assurez-vous d'avoir alloué au moins 50G dans le volume racine de l'insta
 
 === Configuration du noyau de l'instance EC2
 
-[%collapsible]
+[%collapsible%open]
 ====
 Une fois les prérequis provisionnés, connectez-vous à l'instance EC2 en tant qu'utilisateur ec2 et faites-le à l'utilisateur root pour configurer le noyau Linux pour l'installation d'Oracle.
 
@@ -245,7 +245,7 @@ usermod -a -G asm oracle
 
 === Provisionnez et exportez les volumes NFS à monter sur l'hôte d'instance EC2
 
-[%collapsible]
+[%collapsible%open]
 ====
 Provisionnez trois volumes à partir de la ligne de commande en vous connectant au cluster FSX via ssh en tant qu'utilisateur fsxadmin avec l'IP de gestion de cluster FSX pour héberger les fichiers binaires, de données et de journaux de la base de données Oracle.
 
@@ -297,7 +297,7 @@ svm_ora   svm_ora_root aggr1        online     RW          1GB    972.1MB    0%
 
 === Configuration du stockage de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Importez et configurez maintenant le stockage FSX pour l'infrastructure réseau Oracle et l'installation de la base de données sur l'hôte d'instance EC2.
 
@@ -406,7 +406,7 @@ chmod 640 /oralogs/asm/*
 
 === Installation de l'infrastructure réseau Oracle
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Connectez-vous à l'instance EC2 en tant qu'utilisateur ec2 via SSH et activez l'authentification par mot de passe en sans commentaires `PasswordAuthentication yes` puis commenter `PasswordAuthentication no`.
 +
@@ -542,7 +542,7 @@ ora.evmd            ONLINE  ONLINE       ip-172-30-15-58          STABLE
 
 === Installation de la base de données Oracle
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Connectez-vous en tant qu'utilisateur Oracle et annulez la configuration `$ORACLE_HOME` et `$ORACLE_SID` s'il est défini.
 +

@@ -1,0 +1,74 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-vmsc-mgmt-smas.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, iscsi 
+summary:  
+---
+= Cluster étendu pour le domaine de gestion à l'aide de la synchronisation active SnapMirror
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Dans ce scénario, nous allons montrer comment utiliser les outils ONTAP pour VMware vSphere (OTV) pour configurer un cluster étendu pour un domaine de gestion VCF. Ceci est considéré comme une instance unique - plusieurs zones de disponibilité.
+
+image:vmware_vcf_asa_mgmt_stretchcluster_image01.jpg["Instance unique - plusieurs zones de disponibilité"]
+
+
+
+== Présentation du scénario
+
+La solution de cluster étendu peut être implémentée sur un cluster par défaut ou sur un cluster supplémentaire dans des domaines de gestion VCF ou de charge de travail. VMFS sur FC est pris en charge à la fois sur le datastore principal et sur les datastores supplémentaires. VMFS sur iSCSI n'est pris en charge qu'avec des datastores supplémentaires. Consultez IMT pour la prise en charge de VMFS sur NVMe-of avec synchronisation active SnapMirror.
+
+image:vmware_vcf_asa_mgmt_stretchcluster_image02.jpg["Cluster étendu avec ONTAP pour domaine de gestion VCF"]
+
+.Stockage principal sur le domaine de gestion
+[%collapsible%open]
+====
+Avec VCF 5.2 et versions ultérieures, le domaine de gestion peut être déployé sans VSAN à l'aide de l'outil d'importation VCF. L'option de conversion de l'outil d'importation VCF permet link:vmw-vcf-mgmt-fc.html["Déploiement vCenter existant dans un domaine de gestion"]. Tous les clusters dans vCenter feront partie du domaine de gestion.
+
+. Déployez des hôtes vSphere
+. Déployer le serveur vCenter sur le datastore local (vCenter doit coexister sur les hôtes vSphere qui seront convertis en domaine de gestion)
+. Déployez les outils ONTAP pour VMware vSphere
+. Déployez le plug-in SnapCenter pour VMware vSphere (facultatif)
+. Créer un datastore (la configuration de zone FC doit être en place)
+. Protéger le cluster vSphere
+. Migrez les machines virtuelles vers le nouveau datastore créé
+
+
+
+NOTE: Chaque fois que le cluster est étendu ou shrank, vous devez mettre à jour la relation de cluster hôte sur les outils ONTAP du cluster pour indiquer les modifications apportées à la source ou à la cible.
+
+====
+.Stockage supplémentaire sur le domaine de gestion
+[%collapsible%open]
+====
+Une fois le domaine de gestion opérationnel, vous pouvez créer des datastores supplémentaires à l'aide des outils ONTAP qui déclenchent l'extension du groupe de cohérence.
+
+
+TIP: Si un cluster vSphere est protégé, tous les datastores du cluster sont protégés.
+
+Si l'environnement VCF est déployé avec l'outil Cloud Builder, pour créer le stockage supplémentaire avec iSCSI, déployez les outils ONTAP pour créer le datastore iSCSI et protéger le cluster vSphere.
+
+
+NOTE: Chaque fois que le cluster est étendu ou shrank, vous devez mettre à jour la relation de cluster hôte sur les outils ONTAP du cluster pour indiquer les modifications apportées à la source ou à la cible.
+
+====
+
+
+== Informations supplémentaires
+
+Pour plus d'informations sur la configuration des systèmes de stockage ONTAP, reportez-vous au link:https://docs.netapp.com/us-en/ontap["Documentation ONTAP 9"] centre.
+
+Pour plus d'informations sur la configuration de VCF, reportez-vous link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["Documentation de VMware Cloud Foundation 5.2"]à la section .
+
+
+
+== Vidéo de démonstration de cette solution
+
+.Etirer le cluster pour VCF avec les outils ONTAP
+video::569a91a9-2679-4414-b6dc-b25d00ff0c5a[panopto,width=360]

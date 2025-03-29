@@ -23,7 +23,7 @@ Cette section décrit comment restaurer une ou plusieurs machines virtuelles à 
 Pour effectuer une restauration à partir d'une sauvegarde, supposons que l'espace de noms dans lequel existait la machine virtuelle a été accidentellement supprimé.
 
 .Restaurer dans le même espace de noms
-[%collapsible]
+[%collapsible%open]
 ====
 Pour restaurer à partir de la sauvegarde que nous venons de créer, nous devons créer une ressource personnalisée de restauration (CR). Nous devons lui fournir un nom, fournir le nom de la sauvegarde à partir de laquelle nous voulons restaurer et définir les PV de restauration sur true. Des paramètres supplémentaires peuvent être définis comme indiqué dans le link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/restoring-applications.html["documentation"]. Cliquez sur le bouton Créer.
 
@@ -45,7 +45,7 @@ image:redhat_openshift_OADP_restore_image2.jpg["Restauration terminée"]
 
 ====
 .Restauration dans un autre espace de noms
-[%collapsible]
+[%collapsible%open]
 ====
 Pour restaurer la machine virtuelle dans un espace de noms différent, vous pouvez fournir un espace de noms dans la définition yaml de la CR de restauration.
 
@@ -71,7 +71,7 @@ image:redhat_openshift_OADP_restore_image3.jpg["Restauration terminée dans un n
 
 ====
 .Restauration vers une autre classe de stockage
-[%collapsible]
+[%collapsible%open]
 ====
 Velero fournit une capacité générique de modifier les ressources pendant la restauration en spécifiant des correctifs json. Les correctifs json sont appliqués aux ressources avant leur restauration. Les patches json sont spécifiés dans un configmap et le configmap est référencé dans la commande restore. Cette fonctionnalité vous permet de restaurer à l'aide d'une classe de stockage différente.
 

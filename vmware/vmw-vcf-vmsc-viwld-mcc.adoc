@@ -16,7 +16,11 @@ summary:
 [role="lead"]
 Les charges de travail sur VCF sont protégées par vSphere Metro Storage Cluster (vMSC). ONTAP MetroCluster avec déploiement FC ou IP est généralement utilisé pour assurer la tolérance aux pannes des datastores VMFS et NFS.
 
-image:vmw-vcf-vmsc-viwld-mcc-image01.png["Domaine de charge de travail VCF VI avec vMSC"]
+image:vmw-vcf-vmsc-viwld-mcc-image01.png["Domaine de charge de travail VCF VI avec vMSC, width=500"]
+
+
+
+== Introduction
 
 Dans cette solution, nous allons montrer comment implémenter le domaine de charge de travail Sgravé VCF VI avec NFS comme datastore principal à l'aide de ONTAP MetroCluster. Le domaine de charge de travail VI peut être déployé à l'aide de SDDC Manager ou importer un environnement vSphere existant en tant que domaine de charge de travail VI.
 
@@ -97,7 +101,7 @@ Pour une vue d'ensemble du processus de conversion, reportez-vous https://techdo
 Déployez vSphere sur des hôtes à l'aide du téléchargement ISO depuis le portail de support Broadcom ou utilisez l'option de déploiement existante pour l'hôte vSphere.
 
 .Montez un datastore NFS pour héberger des machines virtuelles
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette étape, nous créons le volume NFS et le monte en tant que datastore pour héberger les machines virtuelles.
 
@@ -137,7 +141,7 @@ L'outil d'importation VCF de VMware de Broadcom est un utilitaire utilisé sur l
 Pour plus d'informations, reportez-vous https://docs.vmware.com/en/VMware-Cloud-Foundation/5.2/vcf-admin/GUID-44CBCB85-C001-41B2-BBB4-E71928B8D955.html["Options et paramètres de l'outil d'importation VCF"]à .
 
 .Copier et extraire l'outil d'importation VCF
-[%collapsible]
+[%collapsible%open]
 ====
 L'outil d'importation VCF est utilisé sur l'appliance vCenter pour vérifier que le cluster vSphere est en bon état pour le processus de conversion ou d'importation VCF.
 
@@ -153,7 +157,7 @@ tar -xvf vcf-brownfield-import-<buildnumber>.tar.gz
 
 ====
 .Validation de l'appliance vCenter
-[%collapsible]
+[%collapsible%open]
 ====
 Utilisez l'outil d'importation VCF pour valider l'appliance vCenter avant l'importation en tant que domaine de charge de travail VI.
 
@@ -162,7 +166,7 @@ Utilisez l'outil d'importation VCF pour valider l'appliance vCenter avant l'impo
 
 ====
 .Créez un fichier JSON pour le déploiement de NSX
-[%collapsible]
+[%collapsible%open]
 ====
 Pour déployer NSX Manager lors de l'importation ou de la conversion d'un environnement vSphere dans VMware Cloud Foundation, créez une spécification de déploiement NSX. Le déploiement de NSX nécessite un minimum de 3 hôtes.
 
@@ -206,7 +210,7 @@ Copiez le fichier JSON dans le dossier racine de l'utilisateur vcf du gestionnai
 
 ====
 .Télécharger le logiciel vers SDDC Manager
-[%collapsible]
+[%collapsible%open]
 ====
 Copiez l'outil d'importation VCF dans le dossier d'accueil de l'utilisateur vcf et le bundle de déploiement NSX dans le dossier /nfs/vmware/vcf/nfs-mount/bundle/ du gestionnaire SDDC.
 
@@ -214,7 +218,7 @@ Voir https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/
 
 ====
 .Vérification détaillée de vCenter avant la conversion
-[%collapsible]
+[%collapsible%open]
 ====
 Avant d'effectuer une opération de conversion de domaine de gestion ou une opération d'importation de domaine de charge de travail VI, vous devez effectuer une vérification détaillée pour vous assurer que la configuration de l'environnement vSphere existant est prise en charge pour la conversion ou l'importation. . SSH vers l'appliance SDDC Manager en tant qu'utilisateur vcf. . Accédez au répertoire dans lequel vous avez copié l'outil d'importation VCF. . Exécutez la commande suivante pour vérifier que l'environnement vSphere peut être converti
 
@@ -225,7 +229,7 @@ image:vmw-vcf-vmsc-viwld-mcc-image08.png["VCF check VC"]
 
 ====
 .Convertir le cluster vSphere en domaine de charge de travail VCF VI
-[%collapsible]
+[%collapsible%open]
 ====
 L'outil d'importation VCF est utilisé pour effectuer le processus de conversion.
 
@@ -246,7 +250,7 @@ Lors de l'inspection du cluster, il fournit les informations des datastores NFS.
 
 ====
 .Ajouter une licence à VCF
-[%collapsible]
+[%collapsible%open]
 ====
 Une fois la conversion terminée, les licences doivent être ajoutées à l'environnement.
 

@@ -58,7 +58,7 @@ NOTE: Il existe certaines restrictions concernant la production et/ou le partage
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -91,7 +91,7 @@ NOTE: Pour plus de simplicité, le serveur Oracle cible du clone doit être conf
 
 === Téléchargez la boîte à outils
 
-[%collapsible]
+[%collapsible%open]
 ====
 [source, cli]
 ----
@@ -105,7 +105,7 @@ NOTE: La boîte à outils est uniquement accessible à l'utilisateur interne de 
 
 === Configuration des fichiers des hôtes cibles Ansible
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le kit d'outils inclut un fichier hosts qui définit les cibles sur lesquelles un PlayBook Ansible s'exécute. Il s'agit généralement des hôtes clones Oracle cibles. Voici un exemple de fichier. Une entrée d'hôte comprend l'adresse IP de l'hôte cible ainsi que la clé ssh permettant à un utilisateur admin d'accéder à l'hôte pour exécuter la commande clone ou refresh.
 
@@ -122,7 +122,7 @@ ora_04.cie.netapp.com ansible_host=10.61.180.29 ansible_ssh_private_key_file=ora
 
 === Configuration des variables globales
 
-[%collapsible]
+[%collapsible%open]
 ====
 Les playbooks Ansible prennent des entrées variables à partir de plusieurs fichiers variables. Vous trouverez ci-dessous un exemple de fichier de variable globale vars.yml.
 
@@ -140,7 +140,7 @@ snapctr_pwd: 'xxxxxxxx'
 
 === Configuration des variables hôte
 
-[%collapsible]
+[%collapsible%open]
 ====
 Les variables hôtes sont définies dans le répertoire host_vars nommé {{ host_name }}.yml. Vous trouverez ci-dessous un exemple de fichier de variable hôte Oracle cible ora_04.cie.netapp.com.yml qui montre une configuration typique.
 
@@ -160,7 +160,7 @@ clone_db_sid: NTAP1DEV
 
 === Configuration du serveur Oracle cible de clone supplémentaire
 
-[%collapsible]
+[%collapsible%open]
 ====
 La pile logicielle Oracle du serveur Oracle cible de clone doit être identique à celle du serveur Oracle source installé et corrigé. $ORACLE_BASE et $ORACLE_HOME sont configurés pour l'utilisateur ORACLE .bash_profile. De plus, la variable $ORACLE_HOME doit correspondre au paramètre du serveur Oracle source. Voici un exemple.
 
@@ -181,7 +181,7 @@ export ORACLE_HOME=/u01/app/oracle/product/19.0.0/NTAP1
 
 === Exécution de PlayBook
 
-[%collapsible]
+[%collapsible%open]
 ====
 Au total, trois playbooks permettent d'exécuter le cycle de vie des clones d'une base de données Oracle avec les utilitaires de l'interface de ligne de commande SnapCenter.
 

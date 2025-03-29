@@ -58,7 +58,7 @@ NOTE: Il existe certaines restrictions concernant la production et/ou le partage
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -85,7 +85,7 @@ NOTE: Pour plus de simplicité, le serveur Oracle cible du clone doit être conf
 
 === Téléchargez la boîte à outils
 
-[%collapsible]
+[%collapsible%open]
 ====
 [source, cli]
 ----
@@ -99,7 +99,7 @@ NOTE: La boîte à outils est uniquement accessible à l'utilisateur interne de 
 
 === Configuration des fichiers des hôtes source et cible Ansible
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le kit d'outils inclut un fichier hosts qui définit la source et les hôtes Oracle cibles sur lesquels s'exécute le PlayBook Ansible. Généralement, il inclut l'hôte de base de données de secours dans la configuration de Data Guard et l'hôte de clonage Oracle cible. Voici un exemple de fichier. Une entrée d'hôte inclut l'adresse IP de l'hôte cible ainsi que la clé ssh permettant aux utilisateurs d'accéder à l'hôte pour exécuter la commande clone ou refresh. Le stockage Azure NetApp Files est configuré via une API. Par conséquent, la connexion ANF se fait via un hôte local via le protocole HTTP.
 
@@ -120,7 +120,7 @@ localhost ansible_connection=local
 
 === Configuration des variables globales
 
-[%collapsible]
+[%collapsible%open]
 ====
 Vous trouverez ci-dessous un exemple de fichier de variables globales type vars.yml qui inclut des variables applicables au niveau global.
 
@@ -196,7 +196,7 @@ sys_pwd: "xxxxxxxx"
 
 === Configuration des variables hôte
 
-[%collapsible]
+[%collapsible%open]
 ====
 Les variables hôte sont définies dans le répertoire host_vars nommé {{ host_name }}.yml qui s'applique uniquement à l'hôte en question. Pour cette solution, seul le fichier de paramètres hôte de la base de données de clone cible est configuré. Les paramètres de la base de données de secours Oracle sont configurés dans le fichier de rva global. Vous trouverez ci-dessous un exemple de fichier cible orac.yml de variable hôte de base de données de clonage Oracle qui présente une configuration typique.
 
@@ -219,7 +219,7 @@ asm_sid: +ASM
 
 === Configuration du serveur Oracle cible de clone supplémentaire
 
-[%collapsible]
+[%collapsible%open]
 ====
 La même pile logicielle Oracle doit être installée et corrigée pour le serveur Oracle cible de clone. $ORACLE_BASE et $ORACLE_HOME sont configurés pour l'utilisateur ORACLE .bash_profile. De plus, la variable $ORACLE_HOME doit correspondre au paramètre du serveur Oracle source. Si le paramètre ORACLE_HOME cible est différent de la configuration du serveur Oracle de secours, créez un lien symbolique pour contourner les différences. Voici un exemple.
 
@@ -242,7 +242,7 @@ alias asm='export ORACLE_HOME=$GRID_HOME;export PATH=$PATH:$GRID_HOME/bin;export
 
 === Exécution de PlayBook
 
-[%collapsible]
+[%collapsible%open]
 ====
 Au total, deux playbooks permettent d'exécuter le cycle de vie des clones d'une base de données Oracle. Le clone ou l'actualisation de LA BASE DE DONNÉES peut être exécuté à la demande ou planifié en tant que tâche crontab.
 

@@ -26,16 +26,16 @@ image:rhhc-on-premises.png["Figure montrant la boîte de dialogue entrée/sortie
 Le processus de configuration peut être divisé en plusieurs étapes :
 
 .Déployez et configurez une machine virtuelle CentOS
-[%collapsible]
+[%collapsible%open]
 ====
 * Elle est déployée dans l'environnement VMware vSphere.
-* Cette VM permet de déployer certains composants, tels que NetApp Trident et NetApp Astra Control Center pour la solution.
+* Cette machine virtuelle est utilisée pour le déploiement de certains composants, tels que NetApp Trident et NetApp Trident Protect pour la solution.
 * Un utilisateur root est configuré sur cette VM lors de l'installation.
 
 
 ====
 .Déploiement et configuration d'un cluster OpenShift Container Platform sur VMware vSphere (Hub Cluster)
-[%collapsible]
+[%collapsible%open]
 ====
 Reportez-vous aux instructions pour connaître la link:https://docs.openshift.com/container-platform/4.17/installing/installing_vsphere/installing-vsphere-assisted-installer.html["Déploiement assisté"]méthode de déploiement d'un cluster OCP.
 
@@ -44,13 +44,13 @@ TIP: Souvenez-vous des éléments suivants : - Créez une clé publique et priv�
 
 ====
 .Installez Advanced Cluster Management sur le cluster Hub
-[%collapsible]
+[%collapsible%open]
 ====
 Ceci est installé à l'aide de l'opérateur de gestion avancée des clusters sur le cluster Hub. Reportez-vous aux instructions link:https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.7/html/install/installing#doc-wrapper["ici"].
 
 ====
 .Installer deux clusters OCP supplémentaires (source et destination)
-[%collapsible]
+[%collapsible%open]
 ====
 * Les clusters supplémentaires peuvent être déployés à l'aide de l'ACM sur le cluster Hub.
 * Reportez-vous aux instructions link:https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.7/html/clusters/cluster_mce_overview#vsphere_prerequisites["ici"].
@@ -58,7 +58,7 @@ Ceci est installé à l'aide de l'opérateur de gestion avancée des clusters su
 
 ====
 .Configuration du stockage NetApp ONTAP
-[%collapsible]
+[%collapsible%open]
 ====
 * Installez un cluster ONTAP connecté aux VM OCP dans un environnement VMware.
 * Créer un SVM.
@@ -67,7 +67,7 @@ Ceci est installé à l'aide de l'opérateur de gestion avancée des clusters su
 
 ====
 .Installez NetApp Trident sur les clusters OCP
-[%collapsible]
+[%collapsible%open]
 ====
 * Installez NetApp Trident sur les trois clusters : concentrateur, source et destination
 * Reportez-vous aux instructions link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-operator.html["ici"].
@@ -78,9 +78,9 @@ Ceci est installé à l'aide de l'opérateur de gestion avancée des clusters su
 
 ====
 .Déployer une application sur un cluster source
-[%collapsible]
+[%collapsible%open]
 ====
 Déployez une application à l'aide d'OpenShift GitOps. (par ex. Postgres, fantôme)
 
 ====
-L'étape suivante consiste à utiliser Trident Protect for Data protection et la migration des données du cluster source vers le cluster destination. Reportez-vous link:rhhc/rhhc-dp-tp-solution.html["ici"] aux instructions.
+L'étape suivante consiste à utiliser Trident Protect for Data protection et la migration des données du cluster source vers le cluster destination. Reportez-vous link:rhhc-dp-tp-solution.html["ici"] aux instructions.

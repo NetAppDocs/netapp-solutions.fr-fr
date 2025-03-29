@@ -101,7 +101,7 @@ Pour plus d' https://cloud.google.com/vmware-engine/docs/vmware-ecosystem/howto-
 Procédez comme suit pour créer et utiliser un datastore NFS pour GCVE à l'aide de NetApp volumes :
 
 .Créez un volume NetApp volumes NFS
-[%collapsible]
+[%collapsible%open]
 ====
 Google Cloud NetApp volumes est accessible depuis la console Google Cloud Platform (GCP).
 
@@ -152,7 +152,7 @@ image::dr-veeam-gcnv-image05.png[propriétés du volume]
 
 ====
 .Montez le datastore NFS dans GCVE
-[%collapsible]
+[%collapsible%open]
 ====
 Au moment d'écrire le processus de montage d'un datastore dans GCVE, vous devez ouvrir un ticket de support GCP pour que le volume soit monté en tant que datastore NFS.
 
@@ -164,7 +164,7 @@ Pour plus d'informations, reportez-vous à la section https://cloud.google.com/v
 === Répliquer les machines virtuelles vers GCVE et exécuter le plan de basculement et le retour arrière
 
 .Réplication de VM vers un datastore NFS dans GCVE
-[%collapsible]
+[%collapsible%open]
 ====
 Veeam Backup & Replication exploite les fonctionnalités Snapshot de VMware vSphere pendant la réplication. Veeam Backup & Replication demande à VMware vSphere de créer un Snapshot de machine virtuelle. Le snapshot de machine virtuelle est la copie instantanée d'une machine virtuelle, qui comprend des disques virtuels, l'état du système, la configuration et les métadonnées. Veeam Backup & Replication utilise le snapshot comme source de données pour la réplication.
 
@@ -257,7 +257,7 @@ Pour plus d'informations sur la réplication Veeam, reportez-vous à la section 
 
 ====
 .Créer un plan de basculement
-[%collapsible]
+[%collapsible%open]
 ====
 Lorsque la réplication ou l'amorçage initial est terminé, créez le plan de basculement. Le plan de basculement permet d'effectuer automatiquement le basculement des machines virtuelles dépendantes une par une ou en tant que groupe. La planification de basculement est la référence pour l'ordre dans lequel les machines virtuelles sont traitées, y compris les retards de démarrage. Le plan de basculement permet également de s'assurer que les machines virtuelles dépendantes stratégiques sont déjà en cours d'exécution.
 
@@ -313,7 +313,7 @@ Pour plus d'informations sur la création de tâches de réplication, reportez-v
 
 ====
 .Exécutez le plan de basculement
-[%collapsible]
+[%collapsible%open]
 ====
 Lors du basculement, la machine virtuelle source du site de production bascule sur sa réplique sur le site de reprise après incident. Dans le cadre de ce processus, Veeam Backup & Replication restaure le réplica de la machine virtuelle vers le point de restauration requis et transfère toutes les activités d'E/S depuis la machine virtuelle source vers son réplica. Les réplicas servent non seulement pour les incidents réels, mais aussi pour la simulation des exercices de reprise après incident. Lors de la simulation de basculement, la machine virtuelle source continue de s'exécuter. Une fois les tests nécessaires terminés, le basculement peut être annulé et les opérations reprennent normalement.
 
@@ -345,7 +345,7 @@ Pour plus d'informations sur les plans de basculement, reportez-vous à la secti
 
 ====
 .Restauration vers le site de production
-[%collapsible]
+[%collapsible%open]
 ====
 La réalisation d'un basculement est considérée comme une étape intermédiaire et doit être finalisée en fonction de l'exigence. Les options sont les suivantes :
 

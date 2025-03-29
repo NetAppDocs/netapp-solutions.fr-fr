@@ -145,7 +145,7 @@ NOTE: Le mot de passe sera enregistré dans un fichier texte clair et accessible
 .Pool de stockage partagé SMB avec ONTAP
 video::5b4ae54a-08d2-4f7d-95ec-b22d015f6035[panopto,width=360]
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 S'il s'agit d'une première utilisation de ONTAP, utilisez l'interface du gestionnaire système pour effectuer ces tâches et améliorer ainsi l'expérience.
 
@@ -171,7 +171,7 @@ image:proxmox-ontap-image03.png["Infos de partage SMB"]
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Collectez le serveur SMB, le nom du partage et les informations d'identification à utiliser pour l'authentification du partage.
 . Assurez-vous qu'au moins deux interfaces sont configurées dans différents VLAN (pour la tolérance aux pannes) et que la carte réseau prend en charge RSS.
@@ -205,7 +205,7 @@ S'il s'agit d'une première utilisation de ONTAP, utilisez l'interface du gestio
 .Option NFS nconnect avec ONTAP
 video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Assurez-vous que SVM est activé pour NFS. Reportez-vous à link:https://docs.netapp.com/us-en/ontap/nfs-config/verify-protocol-enabled-svm-task.html["Documentation sur ONTAP 9"]
 . Disposer d'au moins deux lif par contrôleur Suivez les étapes du lien ci-dessus. Pour référence, voici la capture d'écran des lif que nous utilisons dans notre laboratoire.
@@ -226,7 +226,7 @@ image:proxmox-ontap-image08.png["Infos volume NFS"]
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Assurez-vous qu'au moins deux interfaces sont configurées dans différents VLAN (pour la tolérance aux pannes). Utiliser la liaison NIC.
 . Si vous utilisez l'interface utilisateur de gestion `https:<proxmox-node>:8006` , cliquez sur datacenter, sélectionnez Storage, cliquez sur Add et sélectionnez NFS.
@@ -257,7 +257,7 @@ video::d66ef67f-bcc2-4ced-848e-b22e01588e8c[panopto,width=360]
 Pour configurer le gestionnaire de volumes logiques pour le stockage partagé sur des hôtes Proxmox, effectuez les tâches suivantes :
 
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Assurez-vous que deux interfaces vlan linux sont disponibles.
 . Assurez-vous que les outils multivoies sont installés sur tous les hôtes Proxmox VE. Assurez-vous qu'il démarre au démarrage.
@@ -279,7 +279,7 @@ cat /etc/iscsi/initiator.name
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 Si vous découvrez ONTAP, utilisez System Manager pour améliorer l'expérience.
 
@@ -298,7 +298,7 @@ image:proxmox-ontap-image14.png["détails lun iscsi"]
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Accédez à interface utilisateur de gestion `https:<proxmox node>:8006` , cliquez sur datacenter, sélectionnez Storage, cliquez sur Add et sélectionnez iSCSI.
 +
@@ -332,7 +332,7 @@ video::80164fe4-06db-4c21-a25d-b22e0179c3d2[panopto,width=360]
 Pour configurer le gestionnaire de volumes logiques pour le stockage partagé sur des hôtes Proxmox, effectuez les tâches suivantes :
 
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Assurez-vous que deux interfaces vlan linux sont disponibles.
 . Sur chaque hôte Proxmox du cluster, exécutez la commande suivante pour collecter les informations sur l'initiateur hôte.
@@ -346,7 +346,7 @@ nvme show-hostnqn
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 Si vous ne possédez pas ONTAP, utilisez System Manager pour améliorer l'expérience.
 
@@ -361,7 +361,7 @@ image:proxmox-ontap-image20.png["création de l'espace de noms nvme"]
 
 ====
 .<strong> – tâche d'administration du disque </strong>
-[%collapsible]
+[%collapsible%open]
 ====
 . Accédez au shell sur chaque hôte Proxmox VE du cluster et créez le fichier /etc/nvme/Discovery.conf et mettez à jour le contenu spécifique à votre environnement.
 +

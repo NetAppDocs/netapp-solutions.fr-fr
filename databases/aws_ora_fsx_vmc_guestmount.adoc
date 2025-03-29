@@ -151,7 +151,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -178,7 +178,7 @@ NOTE: Assurez-vous d'avoir alloué au moins 50G dans le volume racine d'Oracle V
 
 === Configuration du noyau DB VM
 
-[%collapsible]
+[%collapsible%open]
 ====
 Une fois les conditions requises provisionnées, connectez-vous à la machine virtuelle Oracle en tant qu'utilisateur admin via SSH et effectuez cette opération avec l'utilisateur root pour configurer le noyau Linux pour l'installation d'Oracle. Les fichiers d'installation Oracle peuvent être stockés dans un compartiment AWS S3 et transférés vers la machine virtuelle.
 
@@ -398,7 +398,7 @@ chmod 440 /etc/sudoers
 
 === Provisionnez et mappez les LUN FSX ONTAP vers la VM de base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Provisionnez trois volumes à partir de la ligne de commande en vous connectant au cluster FSX en tant qu'utilisateur fsxadmin via ssh et l'IP de gestion du cluster FSX. Créez des LUN au sein des volumes pour héberger les fichiers binaires, de données et de journaux de la base de données Oracle.
 
@@ -530,7 +530,7 @@ nim        /vol/ora_02_logs/ora_02_u03_02            ora_02        6  iscsi
 
 === Configuration du stockage de la BD VM
 
-[%collapsible]
+[%collapsible%open]
 ====
 Importez et configurez maintenant le stockage FSX ONTAP pour l'infrastructure de réseau Oracle et l'installation de base de données sur la machine virtuelle de base de données VMC.
 
@@ -823,7 +823,7 @@ systemctl restart multipathd
 
 === Installation de l'infrastructure réseau Oracle
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Connectez-vous à la VM de base de données en tant qu'utilisateur admin via SSH et activez l'authentification par mot de passe en effectuant les opérations sans commentaire `PasswordAuthentication yes` puis commenter `PasswordAuthentication no`.
 +
@@ -1084,7 +1084,7 @@ CRS-4638: Oracle High Availability Services is online
 
 === Installation de la base de données Oracle
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Connectez-vous en tant qu'utilisateur Oracle et annulez la configuration `$ORACLE_HOME` et `$ORACLE_SID` s'il est défini.
 +
@@ -1475,7 +1475,7 @@ Le déploiement de redémarrage d'Oracle 19c version 19.18 est terminé sur un s
 
 ==== Configuration SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 SnapCenter s'appuie sur un plug-in côté hôte sur la machine virtuelle de base de données pour effectuer des activités de gestion de la protection des données intégrant la cohérence applicative. Pour plus d'informations sur le plug-in NetApp SnapCenter pour Oracle, reportez-vous à cette documentation link:https://docs.netapp.com/us-en/snapcenter/protect-sco/concept_what_you_can_do_with_the_snapcenter_plug_in_for_oracle_database.html["Quelles sont les possibilités possibles grâce au plug-in pour Oracle Database"^]. Vous trouverez ci-dessous des étapes générales de configuration de SnapCenter pour la sauvegarde, la restauration et le clonage de bases de données Oracle.
 
@@ -1516,7 +1516,7 @@ NOTE: Assurez-vous que le nom du serveur SnapCenter peut être résolu sur l'adr
 
 ==== Sauvegarde de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 SnapCenter exploite la copie Snapshot de volume FSX ONTAP pour une sauvegarde, une restauration ou un clonage de base de données beaucoup plus rapide qu'avec la méthodologie RMAN classique. Les snapshots sont cohérents au niveau des applications, car la base de données est placée en mode de sauvegarde Oracle avant un snapshot.
 
@@ -1551,7 +1551,7 @@ image:aws_ora_fsx_vmc_snapctr_11.png["Capture d'écran montrant la configuration
 
 ==== Restauration de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 SnapCenter propose un certain nombre d'options de restauration et de récupération pour les bases de données Oracle à partir de la sauvegarde de snapshots. Dans cet exemple, nous démontrons une restauration à un point dans le temps pour récupérer une table supprimée par erreur. Sur la machine virtuelle ora_02, deux bases de données cdb3, cdb4 partagent les mêmes groupes de disques +DATA et +LOGS. La restauration d'une base de données n'a aucun impact sur la disponibilité de l'autre base de données.
 
@@ -1748,7 +1748,7 @@ SQL>
 
 ==== Clone de base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cet exemple, les mêmes jeux de sauvegarde sont utilisés pour cloner une base de données sur la même machine virtuelle dans un RÉPERTOIRE ORACLE_HOME différent. Les procédures s'appliquent également au clonage d'une base de données de la sauvegarde sur une machine virtuelle séparée dans VMC, si nécessaire.
 

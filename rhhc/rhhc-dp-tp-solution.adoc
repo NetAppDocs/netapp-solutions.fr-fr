@@ -13,8 +13,6 @@ summary: 'Protection des données d"application de conteneur Red Hat OpenShift �
 :imagesdir: ../media/
 
 
-Auteur: Banu Sundhar, NetApp
-
 [role="lead"]
 Cette section du document de référence fournit des détails sur la création d'instantanés et de sauvegardes d'applications de conteneurs à l'aide de Trident Protect. NetApp Trident Protect propose des fonctionnalités avancées de gestion des données applicatives qui améliorent la fonctionnalité et la disponibilité des applications Kubernetes avec état reposant sur les systèmes de stockage NetApp ONTAP et le mécanisme de provisionnement du stockage NetApp Trident CSI. Trident Protect crée des copies Snapshot et des sauvegardes d'applications. En d'autres termes, non seulement des copies Snapshot et des sauvegardes des données d'application dans des volumes persistants sont créées, mais aussi des copies Snapshot et des sauvegardes des métadonnées d'application sont également créées. Les snapshots et les sauvegardes créés par Trident Protect peuvent être stockés dans l'un des systèmes de stockage objet suivants et restaurés ultérieurement.
 
@@ -36,7 +34,7 @@ NOTE: L'administrateur du cluster a accès aux ressources de l'espace de noms Tr
 Trident Protect peut être installé à l'aide des instructions fournies dans la documentationlink:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["ici"]. Cette section présente le flux de travail pour la protection des données des applications de conteneur et la restauration des applications à l'aide de Trident Protect. 1. Création de copies Snapshot (à la demande, selon les horaires) 2. Restauration à partir du Snapshot (restauration dans le même espace de noms et dans des espaces de noms différents) 3. Création de la sauvegarde 4. Restaurer à partir de la sauvegarde
 
 .Condition préalable
-[%collapsible]
+[%collapsible%open]
 ====
 Avant de créer les snapshots et les sauvegardes d'une application, un stockage objet doit être configuré dans Trident Protect pour stocker les snapshots et les sauvegardes. Pour ce faire, utilisez le godet CR. Seuls les administrateurs peuvent créer une CR de compartiment et la configurer. Le compartiment CR est appelé AppVault dans Trident Protect. Les objets AppVault sont la représentation déclarative du workflow Kubernetes d'un compartiment de stockage. Une CR AppVault contient les configurations nécessaires à l'utilisation d'un compartiment dans les opérations de protection, telles que les sauvegardes, les snapshots, les opérations de restauration et la réplication SnapMirror.
 
@@ -178,7 +176,7 @@ image:rhhc_dp_tp_solution_container_image2.png["Application créée"]
 
 ====
 .Créer des instantanés
-[%collapsible]
+[%collapsible%open]
 ====
 **Création d'un instantané à la demande**
 
@@ -243,7 +241,7 @@ image:rhhc_dp_tp_solution_container_image8.png["Snap PVC créé dans les délais
 
 ====
 .Supprimez l'application pour simuler une perte d'application
-[%collapsible]
+[%collapsible%open]
 ====
 [source, yaml]
 ----
@@ -253,7 +251,7 @@ No resources found in postgres namespace.
 ----
 ====
 .Restauration à partir d'une copie Snapshot vers le même espace de nom
-[%collapsible]
+[%collapsible%open]
 ====
 [source, yaml]
 ----
@@ -268,7 +266,7 @@ image:rhhc_dp_tp_solution_container_image10.png["Application restaurée, SIR"]
 
 ====
 .Restaurer à partir d'une copie Snapshot vers un autre espace de noms
-[%collapsible]
+[%collapsible%open]
 ====
 [source, yaml]
 ----
@@ -283,7 +281,7 @@ image:rhhc_dp_tp_solution_container_image12.png["Application restaurée, SnapRes
 
 ====
 .Création de sauvegardes
-[%collapsible]
+[%collapsible%open]
 ====
 **Création d'une sauvegarde à la demande**
 
@@ -307,7 +305,7 @@ image:rhhc_dp_tp_solution_container_image13a.png["Programme créé précédemmen
 
 ====
 .Restaurer à partir de la sauvegarde
-[%collapsible]
+[%collapsible%open]
 ====
 **Supprimer l'application et les ESV pour simuler une perte de données.**
 
@@ -327,7 +325,7 @@ image:rhhc_dp_tp_solution_container_image17.png["restauration dans un autre espa
 
 ====
 .Migration des applications
-[%collapsible]
+[%collapsible%open]
 ====
 Pour cloner ou migrer une application vers un autre cluster (effectuez un clone entre clusters), créez une sauvegarde sur le cluster source, puis restaurez la sauvegarde sur un autre cluster. Assurez-vous que Trident Protect est installé sur le cluster de destination.
 

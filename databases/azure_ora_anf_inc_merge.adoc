@@ -116,7 +116,7 @@ Votre VLDB Oracle peut être exécuté sur un stockage ANF ou sur tout autre sto
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -133,7 +133,7 @@ NOTE: Vérifiez que vous avez alloué au moins 128 G au volume racine de la mach
 
 === Provisionnez et exportez le volume NFS à monter sur le serveur Oracle VLDB principal
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette section, nous présentons le provisionnement d'un volume NFS à partir d'un pool de capacité ANF via la console du portail Azure. Si plusieurs pools de capacité ANF sont configurés pour prendre en charge la taille de la base de données, répétez les procédures sur les autres pools de capacité ANF.
 
@@ -185,7 +185,7 @@ sudo chown oracle:oinstall /nfsanf
 
 === Configurez la fusion incrémentielle Oracle RMAN vers la copie d'image sur ANF
 
-[%collapsible]
+[%collapsible%open]
 ====
 La fusion incrémentielle RMAN met à jour en continu les fichiers de données de base de données de transfert copie d'image à chaque intervalle de sauvegarde/fusion incrémentiel. La copie d'image de la sauvegarde de la base de données sera aussi à jour que la fréquence d'exécution de la sauvegarde/fusion incrémentielle. Prenez donc en compte les performances de la base de données ainsi que vos objectifs RTO et RPO lors du choix de la fréquence de fusion et de sauvegarde incrémentielle RMAN.
 
@@ -812,7 +812,7 @@ Ceci termine la configuration d'une sauvegarde et d'une fusion de copie d'image 
 
 === Basculez Oracle VLDB vers la copie d'image pour une restauration rapide
 
-[%collapsible]
+[%collapsible%open]
 ====
 En cas de défaillance due à un problème de stockage primaire, tel que la perte ou la corruption des données, la base de données peut rapidement basculer vers une copie d'image sur le montage NFS d'ANF et revenir à l'état actuel sans restaurer la base de données. L'élimination de la restauration des supports accélère considérablement la restauration des bases de données pour un VLDB. Ce cas d'utilisation suppose que le serveur BDD Oracle VLDB est intact et que le fichier de contrôle de base de données, les journaux archivés et actuels sont tous disponibles pour la restauration.
 
@@ -1094,7 +1094,7 @@ SQL>
 
 === Restauration d'Oracle VLDB depuis la copie d'image vers un serveur de base de données de secours
 
-[%collapsible]
+[%collapsible%open]
 ====
 En cas de panne du stockage principal et de l'hôte du serveur de base de données principal, la restauration ne peut pas être effectuée à partir du serveur d'origine. Cependant, la copie de l'image de sauvegarde de votre base de données Oracle est très pratique sur le système de fichiers NFS ANF. Vous pouvez rapidement restaurer la base de données principale sur un serveur de base de données de secours, si un serveur est disponible, à l'aide de la copie de l'image de sauvegarde. Dans cette section, nous allons présenter les procédures étape par étape pour une telle récupération.
 

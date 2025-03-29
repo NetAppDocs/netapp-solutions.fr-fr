@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-getting-started-metro-storage-cluster.html 
+keywords: vmware, getting, started, overview, netapp, storage, metro, cluster 
+summary:  
+---
+= Cluster de stockage vSphere Metro
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+La continuité de l'activité avancée est essentielle pour les entreprises qui cherchent à protéger leurs environnements VMware contre les pannes dans un ou plusieurs domaines à défaillance.
+
+
+
+== Introduction
+
+En plus des disponibilités intégrées aux produits, VMware et NetApp proposent des configurations avancées qui protègent davantage les charges de travail réparties sur plusieurs domaines à défaillance, comme les racks, les bâtiments, les campus ou même les villes.
+
+
+
+== NetApp MetroCluster
+
+NetApp MetroCluster utilise la fonctionnalité de haute disponibilité de NetApp pour se protéger contre les défaillances de contrôleur. MetroCluster inclut également la technologie SyncMirror, le basculement de cluster à la demande (CFOD), la redondance matérielle et la séparation géographique pour une haute disponibilité. SyncMirror met en miroir les données de manière synchrone sur deux plexes : le plex local assure activement le service des données et le plex distant en veille. Tous les composants MetroCluster, tels que les contrôleurs, le stockage, les câbles, les commutateurs et les adaptateurs, disposent d'une redondance matérielle.
+
+
+
+== Synchronisation active NetApp SnapMirror
+
+La synchronisation active NetApp SnapMirror offre une protection granulaire des datastores avec les protocoles SAN FCP et iSCSI, ce qui protège de manière sélective la topologie des workloads prioritaires. Il offre un accès actif/actif à la fois aux sites locaux et distants, contrairement au MetroCluster actif/veille. Depuis la version ONTAP 9.15.1, la synchronisation active SnapMirror prend en charge une fonctionnalité actif-actif symétrique. Elle permet ainsi d'effectuer des opérations de lecture et d'écriture d'E/S à partir des deux copies d'un LUN protégé grâce à une réplication synchrone bidirectionnelle.
+
+
+
+== Cluster de stockage VMware vSphere Metro
+
+VMware vSphere Metro Storage Cluster (vMSC) améliore la haute disponibilité VMware avec un stockage actif-actif étendu. Cette configuration certifiée protège les machines virtuelles et les conteneurs contre les défaillances. Pour ce faire, les concepts de stockage étendu et les clusters d'hôtes vSphere sont utilisés. Ces hôtes sont répartis sur différents domaines de défaillance. Les technologies de stockage Active Sync NetApp MetroCluster et SnapMirror sont utilisées pour fournir des offres de protection et de stockage prises en charge. En exploitant vMSC, avec une solution certifiée NetApp, vous profitez d'opérations IT robustes et résilientes dans tous les domaines de défaillance.
+
+Pour plus d'informations, reportez-vous au https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware_vmsc_overview.html#continuous-availability-solutions-for-vsphere-environments["Cluster de stockage vSphere Metro avec ONTAP"] . {nbsp}

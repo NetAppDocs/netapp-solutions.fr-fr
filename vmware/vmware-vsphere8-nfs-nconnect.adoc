@@ -17,7 +17,7 @@ summary:
 À partir de VMware vSphere 8.0 U1 (sous forme de Tech-preview), la fonctionnalité nconnect permet d'effectuer plusieurs connexions TCP pour les volumes de datastore NFS v3 afin d'atteindre un débit supérieur. Les clients qui utilisent le datastore NFS peuvent désormais augmenter le nombre de connexions au serveur NFS, optimisant ainsi l'utilisation de cartes d'interface réseau haut débit.
 
 
-NOTE: Cette fonctionnalité est généralement disponible pour NFS v3 avec 8.0 U2. Reportez-vous à la section stockage sur link:https://docs.vmware.com/en/VMware-vSphere/8.0/rn/vsphere-esxi-802-release-notes/index.html["Notes de version de VMware vSphere 8.0 Update 2"]. NFS v4.1 est pris en charge avec vSphere 8.0 U3. Pour plus d'informations, vérifier link:https://docs.vmware.com/en/VMware-vSphere/8.0/rn/vsphere-vcenter-server-803-release-notes/index.html["Notes de version de vSphere 8.0 mise à jour 3"]
+NOTE: Cette fonctionnalité est généralement disponible pour NFS v3 avec 8.0 U2. Reportez-vous à la section stockage sur link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/release-notes/esxi-update-and-patch-release-notes/vsphere-esxi-802-release-notes.html["Notes de version de VMware vSphere 8.0 Update 2"]. NFS v4.1 est pris en charge avec vSphere 8.0 U3. Pour plus d'informations, vérifier link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/release-notes/esxi-update-and-patch-release-notes/vsphere-esxi-803-release-notes.html["Notes de version de vSphere 8.0 mise à jour 3"]
 
 
 
@@ -137,7 +137,7 @@ Reportez-vous à link:https://kb.vmware.com/s/article/91497["Article 91497 de la
 
 Le nombre maximal de connexions pris en charge par ONTAP dépend du modèle de plateforme de stockage. Recherchez exec_ctx activé link:https://www.netapp.com/media/10720-tr-4067.pdf["Guide d'implémentation et des meilleures pratiques NFS"] pour en savoir plus.
 
-Plus le nombre de connexions par datastore NFSv3 augmente, plus le nombre de datastores NFS pouvant être montés sur cet hôte vSphere diminue. Le nombre total de connexions prises en charge par hôte vSphere est de 256. Fait link:https://kb.vmware.com/s/article/91481["Article 91481 de la base de connaissances VMware"] Pour les limites de datastores par hôte vSphere.
+Plus le nombre de connexions par datastore NFSv3 augmente, plus le nombre de datastores NFS pouvant être montés sur cet hôte vSphere diminue. Le nombre total de connexions prises en charge par hôte vSphere est de 256. Vérifier link:https://knowledge.broadcom.com/external/article?legacyId=91481["Article 91481 de la base de connaissances VMware"] la présence de limites de datastore par hôte vSphere.
 
 
 NOTE: Le datastore vVol ne prend pas en charge la fonctionnalité nConnect. Toutefois, les terminaux de protocole comptent pour atteindre la limite de connexion. Un terminal de protocole est créé pour chaque lif de données du SVM lors de la création du datastore vVol.

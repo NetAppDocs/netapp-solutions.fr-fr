@@ -142,7 +142,7 @@ Les sections suivantes présentent des procédures détaillées pour le SnapCent
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite l'exécution de bases de données Oracle sur ANF dans Azure. Si ce n'est pas le cas, suivez les étapes ci-dessous pour créer deux bases de données Oracle pour la validation de la solution. Pour en savoir plus sur le déploiement d'une base de données Oracle sur ANF dans le cloud Azure avec automatisation, consultez le document TR-4987 : link:automation_ora_anf_nfs.html["Déploiement Oracle simplifié et automatisé sur Azure NetApp Files avec NFS"^]
 
@@ -196,7 +196,7 @@ video::960fb370-c6e0-4406-b6d5-b110014130e8[panopto,width=360]
 
 === Installation et configuration de SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 Nous vous recommandons de consulter en ligne link:https://docs.netapp.com/us-en/snapcenter/index.html["Documentation du logiciel SnapCenter"^] Avant de passer à l'installation et à la configuration de SnapCenter : . Voici un résumé détaillé des étapes d'installation et de configuration du logiciel SnapCenter pour Oracle sur Azure ANF.
 
@@ -249,7 +249,7 @@ image:snapctr_ora_azure_anf_setup_05.png["Cette image fournit Paramètres-strat�
 
 === Sauvegarde de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Une sauvegarde Snapshot NetApp crée une image instantanée des volumes de base de données que vous pouvez utiliser pour restaurer en cas de panne système ou de perte de données. Les sauvegardes Snapshot prennent très peu de temps, généralement moins d'une minute. L'image de sauvegarde consomme un espace de stockage minimal et présente un impact négligeable sur les performances, car elle n'enregistre que les modifications apportées aux fichiers depuis la dernière copie Snapshot. La section suivante décrit la mise en œuvre de snapshots pour la sauvegarde de bases de données Oracle dans SnapCenter.
 
@@ -308,7 +308,7 @@ image:snapctr_ora_azure_anf_bkup_13.png["Cette image fournit une sauvegarde de b
 
 === Restauration de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 La restauration de la base de données via SnapCenter restaure une copie Snapshot de l'image du volume de la base de données à un point dans le temps. La base de données est ensuite reprise vers l'avant jusqu'au point souhaité par SCN/TIMESTAMP ou par un point autorisé par les journaux d'archive disponibles dans le jeu de sauvegarde. La section suivante décrit le workflow de restauration de base de données avec l'interface utilisateur de SnapCenter.
 
@@ -351,7 +351,7 @@ image:snapctr_ora_azure_anf_restore_08.png["Cette image fournit une restauration
 
 === Clone de base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 La création d'un nouveau volume à partir de la copie Snapshot d'un volume permet de cloner la base de données via SnapCenter. Le système utilise les informations de snapshot pour cloner un nouveau volume à l'aide des données du volume au moment de la prise de l'instantané. Plus important encore, il est rapide (quelques minutes) et efficace par rapport à d'autres méthodes d'effectuer une copie clonée de la base de données de production pour prendre en charge le développement ou le test. Vous pouvez ainsi améliorer considérablement la gestion du cycle de vie des applications de votre base de données. La section suivante décrit le workflow du clone de base de données avec l'interface utilisateur SnapCenter.
 

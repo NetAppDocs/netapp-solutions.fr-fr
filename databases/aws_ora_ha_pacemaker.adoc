@@ -139,7 +139,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -157,7 +157,7 @@ Activez l'authentification de clés publiques/privées ssh entre le contrôleur 
 
 === Provisionnez les instances EC2 et le cluster de stockage Amazon FSX ONTAP
 
-[%collapsible]
+[%collapsible%open]
 ====
 Bien que l'instance EC2 et Amazon FSX ONTAP puissent être provisionnées manuellement depuis la console AWS, il est recommandé d'utiliser le kit d'automatisation basé sur NetApp Terraform pour automatiser le provisionnement des instances EC2 et du cluster de stockage FSX ONTAP. Voici les procédures détaillées.
 
@@ -253,7 +253,7 @@ Le provisionnement des instances EC2 et FSX ONTAP pour Oracle est terminé.
 
 === Configuration du cluster Pacemaker
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le module complémentaire High Availability pour RHEL est un système en cluster qui offre fiabilité, évolutivité et disponibilité aux services de production critiques tels que les services de base de données Oracle. Dans cette démonstration de cas d'utilisation, un cluster Pacemaker à deux nœuds est configuré pour prendre en charge la haute disponibilité d'une base de données Oracle dans un scénario de clustering actif/passif.  
 
@@ -486,7 +486,7 @@ La configuration initiale et la configuration du cluster Pacemaker sont ainsi te
 
 === Configuration de l'escrime du cluster de stimulateur cardiaque
 
-[%collapsible]
+[%collapsible%open]
 ====
 La configuration de l'escrime de stimulateur cardiaque est obligatoire pour un cluster de production. Il assure l'isolement automatique d'un nœud défaillant de votre cluster AWS EC2, empêchant ainsi le nœud de consommer les ressources du cluster, de compromettre ses fonctionnalités ou de corrompre les données partagées. Cette section décrit la configuration de l'escrime de cluster à l'aide de l'agent d'escrime Fence_aws.
 
@@ -599,7 +599,7 @@ NOTE: Exécutez `pcs stonith refresh` la commande pour actualiser l'agent de cl�
 
 === Déployez la base de données Oracle dans le cluster PCS
 
-[%collapsible]
+[%collapsible%open]
 ====
 Nous vous recommandons d'utiliser le PlayBook Ansible fourni par NetApp pour exécuter les tâches d'installation et de configuration de la base de données avec des paramètres prédéfinis sur le cluster PCS. Pour ce déploiement Oracle automatisé, trois fichiers de paramètres définis par l'utilisateur doivent être entrés par l'utilisateur avant l'exécution d'un PlayBook.
 
@@ -1026,7 +1026,7 @@ The command completed successfully
 
 === Configurer les ressources Oracle pour la gestion PCS
 
-[%collapsible]
+[%collapsible%open]
 ====
 L'objectif de la configuration de la mise en cluster Pacemaker est de mettre en place une solution haute disponibilité active/passive pour exécuter Oracle dans les environnements AWS EC2 et FSX ONTAP, avec une intervention minimale de l'utilisateur en cas de défaillance. Voici une démonstration de la configuration des ressources Oracle pour la gestion PCS.
 
@@ -1382,7 +1382,7 @@ Daemon Status:
 
 === Validation haute disponibilité post-déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Après le déploiement, il est essentiel d'exécuter des tests et une validation pour s'assurer que le cluster de basculement de la base de données PCS Oracle est correctement configuré et fonctionne comme prévu. Le test de validation inclut le basculement géré et la simulation d'une défaillance inattendue des ressources et d'une restauration par le mécanisme de protection du cluster.
 
@@ -1816,7 +1816,7 @@ La validation et la démonstration de la solution Oracle HA sont terminées dans
 
 === Sauvegarde, restauration et clonage Oracle avec SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 NetApp recommande l'outil d'interface utilisateur SnapCenter pour gérer la base de données Oracle déployée dans AWS EC2 et Amazon FSX ONTAP. Reportez-vous à link:aws_ora_fsx_vmc_guestmount.html#oracle-backup-restore-and-clone-with-snapcenter["Oracle simplifié et autogéré dans VMware Cloud sur AWS avec FSX ONTAP monté sur l'invité"^]la section TR-4979  `Oracle backup, restore, and clone with SnapCenter`pour plus de détails sur la configuration de SnapCenter et l'exécution des flux de travail de sauvegarde, de restauration et de clonage de la base de données.
 

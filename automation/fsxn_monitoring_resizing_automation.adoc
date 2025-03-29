@@ -25,7 +25,7 @@ FSX ONTAP est un service de stockage cloud haute performance disponible sur AWS 
 FSX ONTAP offre une expérience de déploiement et de gestion fluide. Aucune expertise en stockage n'est requise pour commencer. Pour simplifier la surveillance, il est possible d'utiliser une fonction Lambda d'AWS (qui automatise le redimensionnement de la capacité de stockage totale, de la taille du volume ou de la taille de LUN en fonction du seuil).  Ce document fournit un guide pas à pas pour créer une configuration automatisée qui surveille FSX ONTAP à intervalles réguliers, notifie et redimensionne lorsqu'un seuil spécifié par l'utilisateur est dépassé et informe l'administrateur de l'activité de redimensionnement.
 
 .Caractéristiques
-[%collapsible]
+[%collapsible%open]
 ====
 La solution offre les fonctionnalités suivantes :
 
@@ -48,7 +48,7 @@ La solution offre les fonctionnalités suivantes :
 
 ====
 .Conditions préalables
-[%collapsible]
+[%collapsible%open]
 ====
 Avant de commencer, assurez-vous que les conditions préalables suivantes sont remplies :
 
@@ -59,7 +59,7 @@ Avant de commencer, assurez-vous que les conditions préalables suivantes sont r
 
 ====
 .Architecture générale
-[%collapsible]
+[%collapsible%open]
 ====
 * La fonction Lambda d'AWS effectue des appels d'API vers FSX ONTAP pour récupérer et mettre à jour la taille de la capacité de stockage, des volumes et des LUN.
 * Mot de passe « fsxadmin » stocké sous forme de chaîne sécurisée dans AWS SSM Parameter Store pour une couche de sécurité supplémentaire.
@@ -84,7 +84,7 @@ NOTE: Couvre le système de fichiers FSX ONTAP unique.
 Suivez cette série d'étapes pour terminer le déploiement automatisé de cette solution :
 
 .Étape 1 : cloner le référentiel GitHub
-[%collapsible]
+[%collapsible%open]
 ====
 Cloner le référentiel GitHub sur votre système local :
 
@@ -94,7 +94,7 @@ git clone https://github.com/NetApp/fsxn-monitoring-auto-resizing.git
 ----
 ====
 .Étape 2 : configuration d'un compartiment AWS S3
-[%collapsible]
+[%collapsible%open]
 ====
 . Accédez à la console AWS > *S3* et cliquez sur *Create bucket*. Créez le compartiment avec les paramètres par défaut.
 . Une fois dans le compartiment, cliquez sur *Upload* > *Add Files* et sélectionnez *Utilities.zip* dans le référentiel GitHub cloné de votre système.
@@ -105,7 +105,7 @@ image:fsxn-monitoring-resizing-s3-upload-zip-files.png["Cette image représente 
 
 ====
 .Étape 3 : configuration SMTP des ses d'AWS (requise si aucun accès Internet n'est disponible)
-[%collapsible]
+[%collapsible%open]
 ====
 Suivez cette étape si vous souhaitez déployer la solution sans accès à Internet (remarque : des coûts supplémentaires seront associés à la configuration des terminaux VPC).
 
@@ -122,7 +122,7 @@ image:fsxn-monitoring-resizing-ses-smtp-creds-addition.png["Cette image illustre
 
 ====
 .Étape 4 : déploiement d'AWS CloudFormation
-[%collapsible]
+[%collapsible%open]
 ====
 . Accédez à la console AWS > *CloudFormation* > Créer une pile > avec de nouvelles ressources (Standard).
 +
@@ -176,7 +176,7 @@ NOTE: Prend en charge la surveillance de plusieurs systèmes de fichiers FSX ONT
 Suivez la série d'étapes pour terminer le déploiement manuel de cette solution :
 
 .Étape 1 : cloner le référentiel GitHub
-[%collapsible]
+[%collapsible%open]
 ====
 Cloner le référentiel GitHub sur votre système local :
 
@@ -186,7 +186,7 @@ git clone https://github.com/NetApp/fsxn-monitoring-auto-resizing.git
 ----
 ====
 .Étape 2 : configuration SMTP des ses d'AWS (requise si aucun accès Internet n'est disponible)
-[%collapsible]
+[%collapsible%open]
 ====
 Suivez cette étape si vous souhaitez déployer la solution sans accès à Internet (remarque : des coûts supplémentaires seront associés à la configuration des terminaux VPC).
 
@@ -199,7 +199,7 @@ image:fsxn-monitoring-resizing-ses-smtp-creds-addition.png["Cette image illustre
 
 ====
 .Etape 3 : création d'un paramètre SSM pour le mot de passe fsxadmin
-[%collapsible]
+[%collapsible%open]
 ====
 Accédez à la console AWS > *Parameter Store* et cliquez sur *Create Parameter*.
 
@@ -220,7 +220,7 @@ Effectuez les mêmes étapes pour stocker le nom d'utilisateur smtp et le mot de
 
 ====
 .Étape 4 : Configuration du service de messagerie
-[%collapsible]
+[%collapsible%open]
 ====
 Accédez à la console AWS > *simple Email Service (ses)* et cliquez sur *Créer une identité*.
 
@@ -237,7 +237,7 @@ image:fsxn-monitoring-resizing-ses.png["Cette image illustre la fenêtre de cré
 
 ====
 .Étape 5 : configuration des terminaux VPC (requis si aucun accès Internet n'est disponible)
-[%collapsible]
+[%collapsible%open]
 ====
 
 NOTE: Nécessaire uniquement si déployé sans accès à Internet. Des coûts supplémentaires seront associés aux terminaux VPC.
@@ -268,7 +268,7 @@ image:fsxn-monitoring-resizing-vpc-endpoint-create-2.png["Cette image illustre l
 
 ====
 .Étape 6 : création et configuration de la fonction Lambda d'AWS
-[%collapsible]
+[%collapsible%open]
 ====
 . Accédez à la console AWS > *AWS Lambda* > *Functions* et cliquez sur *Create Function* dans la même région que FSX ONTAP
 . Utilisez le *auteur à partir de zéro* par défaut et mettez à jour les champs suivants :

@@ -89,7 +89,7 @@ NOTE: Pour des performances optimales, déployez la baie Azure NetApp Files dans
 Pour joindre un volume Azure NetApp File en tant que datastore VMware d'un cloud privé Azure VMware solution, assurez-vous que les conditions préalables suivantes sont remplies.
 
 .Prérequis
-[%collapsible]
+[%collapsible%open]
 ====
 . Utilisez la connexion az et validez que l'abonnement est enregistré dans la fonctionnalité CloudSanExperience de l'espace de noms Microsoft.AVS.
 
@@ -146,7 +146,7 @@ az extension add --name vmware
 ....
 ====
 .Création et montage de volumes Azure NetApp Files
-[%collapsible]
+[%collapsible%open]
 ====
 . Connectez-vous au portail Azure et accédez à Azure NetApp Files. Vérifiez l'accès au service Azure NetApp Files et enregistrez le fournisseur de ressources Azure NetApp Files à l'aide du `az provider register` `--namespace Microsoft.NetApp –wait` commande. Une fois enregistré, créez un compte NetApp. Se reporter à ceci https://docs.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-create-netapp-account["lien"^] pour des étapes détaillées.
 
@@ -178,7 +178,7 @@ Pour en savoir plus sur les performances de volume Azure NetApp Files par taille
 
 ====
 .Ajoutez le datastore Azure NetApp Files dans le cloud privé
-[%collapsible]
+[%collapsible%open]
 ====
 
 NOTE: Un volume Azure NetApp Files peut être connecté à votre cloud privé à l'aide du portail Azure. Suivez ceci link:https://learn.microsoft.com/en-us/azure/azure-vmware/attach-azure-netapp-files-to-azure-vmware-solution-hosts?tabs=azure-portal["Lien Microsoft"] Pour monter un datastore Azure NetApp Files étape par étape via l'utilisation du portail Azure.
@@ -287,13 +287,13 @@ La réorganisation des volumes et les modifications dynamiques des niveaux de se
 == Charges de travail
 
 .Migration
-[%collapsible]
+[%collapsible%open]
 ====
 L'un des cas d'utilisation les plus courants est la migration. Utilisez VMware HCX ou vMotion pour déplacer des machines virtuelles sur site. Vous pouvez également utiliser Rivermeadow pour migrer des machines virtuelles vers des datastores Azure NetApp Files.
 
 ====
 .La protection des données
-[%collapsible]
+[%collapsible%open]
 ====
 La sauvegarde des machines virtuelles et leur restauration rapide sont parmi les grands avantages des datastores ANF. Utilisez les copies Snapshot pour réaliser des copies rapides de votre machine virtuelle ou de votre datastore sans affecter les performances, puis envoyez-les au stockage Azure pour une protection des données à plus long terme ou vers une région secondaire à l'aide d'une réplication inter-région pour la reprise après incident. Cette approche réduit l'espace de stockage et la bande passante réseau en stockant uniquement les informations modifiées.
 
@@ -303,7 +303,7 @@ Vous pouvez utiliser les copies Snapshot de Azure NetApp Files pour une protecti
 NOTE: Avec les datastores ANF, l'option Restaurer vers un nouveau volume peut être utilisée pour cloner un volume de datastore entier, et le volume restauré peut être monté comme un autre datastore vers des hôtes au sein d'AVS SDDC. Une fois le datastore monté, les ordinateurs virtuels qui l'utilisent peuvent être enregistrés, reconfigurés et personnalisés comme s'ils étaient individuellement clonés.
 
 .Sauvegarde et restauration BlueXP pour les machines virtuelles
-[%collapsible]
+[%collapsible%open]
 =====
 La sauvegarde et la restauration BlueXP pour les machines virtuelles fournissent une interface utilisateur graphique du client web vSphere sur vCenter pour protéger les machines virtuelles de la solution Azure VMware et les datastores Azure NetApp Files via des règles de sauvegarde. Ces règles peuvent définir une planification, une conservation et d'autres fonctionnalités.  La fonctionnalité de sauvegarde et de restauration BlueXP pour les machines virtuelles peut être déployée à l'aide de la commande Exécuter.
 
@@ -323,7 +323,7 @@ image:vmware-dr-image7.png["Figure montrant la boîte de dialogue entrée/sortie
 
 =====
 .Reprise après incident avec Azure NetApp Files, JetStream DR et Azure VMware solution
-[%collapsible]
+[%collapsible%open]
 =====
 La reprise d'activité dans le cloud est une solution résiliente et économique de protection des workloads contre les pannes sur site et la corruption des données, par exemple, par ransomware. Grâce à la structure VMware VAIO, les charges de travail VMware sur site peuvent être répliquées vers le stockage Azure Blob et récupérées. Vous bénéficiez ainsi d'une perte de données minimale, voire quasi nulle. Jetstream DR peut être utilisé pour restaurer de manière transparente les workloads répliqués depuis les sites vers AVS, et plus particulièrement vers Azure NetApp Files. Il permet une reprise d'activité économique en utilisant peu de ressources sur le site de reprise d'activité et un stockage cloud économique. Jetstream DR automatise la restauration vers les datastores ANF via Azure Blob Storage. Jetstream DR restaure les ordinateurs virtuels ou groupes de serveurs virtuels indépendants dans l'infrastructure de site de restauration en fonction du mappage du réseau et assure une restauration instantanée pour la protection par ransomware.
 

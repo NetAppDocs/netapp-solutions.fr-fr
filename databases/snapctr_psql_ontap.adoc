@@ -136,7 +136,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Le déploiement nécessite l'exécution de deux bases de données PostgreSQL existantes sur le stockage ONTAP, l'une en tant que serveur de base de données principal et l'autre en tant que serveur de base de données clone. Pour obtenir des informations de référence sur le déploiement de bases de données PostgreSQL sur ONTAP, reportez-vous link:aws_postgres_fsx_ec2_hadr.html["Déploiement PostgreSQL automatisé haute disponibilité et reprise après incident dans AWS FSX/EC2"^]au document TR-4956: , À la recherche du manuel de déploiement automatisé PostgreSQL sur l'instance principale.
 . Provisionnez un serveur Windows pour exécuter l'outil d'interface utilisateur NetApp SnapCenter avec la dernière version. Pour plus de détails, reportez-vous au lien suivant : link:https://docs.netapp.com/us-en/snapcenter/install/task_install_the_snapcenter_server_using_the_install_wizard.html["Installez le serveur SnapCenter"^].
@@ -147,7 +147,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Installation et configuration de SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 Nous vous recommandons de passer en ligne link:https://docs.netapp.com/us-en/snapcenter/index.html["Documentation du logiciel SnapCenter"^] avant de procéder à l'installation et à la configuration de SnapCenter : . Vous trouverez ci-dessous un résumé général des étapes d'installation et de configuration du logiciel SnapCenter pour PostgreSQL sur ONTAP.
 
@@ -207,7 +207,7 @@ image:snapctr_psql_bkup_01.png["Cette image fournit Paramètres-stratégies pour
 
 === Sauvegarde de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le cluster PostgreSQL initial découvert automatiquement affiche un verrou rouge en regard de son nom de cluster. Il doit être déverrouillé à l'aide des informations d'identification de base de données PostgreSQL créées lors de la configuration de SnapCenter dans la section précédente. Ensuite, vous devez créer et appliquer une stratégie de sauvegarde pour protéger la base de données. Enfin, exécutez la sauvegarde manuellement ou par un planificateur pour créer une sauvegarde d'instantané. La section suivante présente les procédures étape par étape.
 
@@ -298,7 +298,7 @@ image:snapctr_psql_bkup_19.png["Cette image fournit une sauvegarde de base de do
 
 === Restauration de la base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette démonstration de restauration de base de données, nous présentons une restauration instantanée du cluster de base de données PostgreSQL. Tout d'abord, créez une sauvegarde Snapshot du volume de la base de données sur un système de stockage ONTAP à l'aide de SnapCenter. Ensuite, connectez-vous à la base de données, créez une table de test, notez l'horodatage et supprimez la table de test. Lancez maintenant une restauration à partir de la sauvegarde jusqu'à l'horodatage lorsque la table de test est créée pour restaurer la table supprimée. Voici des informations détaillées sur le workflow et la validation de la restauration instantanée de la base de données PostgreSQL avec l'interface utilisateur SnapCenter.
 
@@ -406,7 +406,7 @@ postgres=# select now();
 
 === Clone de base de données
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le clone de cluster de base de données PostgreSQL via SnapCenter crée un nouveau volume cloné fin à partir d'une sauvegarde Snapshot d'un volume de données de base de données source. Plus important encore, il est rapide (quelques minutes) et efficace par rapport à d'autres méthodes d'effectuer une copie clonée de la base de données de production pour prendre en charge le développement ou le test. Il réduit ainsi considérablement les coûts de stockage et améliore la gestion du cycle de vie des applications de votre base de données. La section suivante présente le workflow du clone de base de données PostgreSQL avec l'interface utilisateur SnapCenter.
 

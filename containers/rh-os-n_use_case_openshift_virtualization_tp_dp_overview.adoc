@@ -13,8 +13,6 @@ summary: Protection des données de virtualisation Red Hat OpenShift avec NetApp
 :imagesdir: ../media/
 
 
-Auteur: Banu Sundhar, NetApp
-
 [role="lead"]
 Cette section du document de référence fournit des détails sur la création de snapshots et de sauvegardes de machines virtuelles à l'aide de Trident Protect.
 
@@ -36,7 +34,7 @@ Trident Protect permet les copies Snapshot, les sauvegardes, les restaurations e
 
 
 .Créer AppVault
-[%collapsible]
+[%collapsible%open]
 ====
 Avant de créer les snapshots et les sauvegardes d'une application ou d'une machine virtuelle, un stockage objet doit être configuré dans Trident Protect pour stocker les snapshots et les sauvegardes. Pour ce faire, utilisez le godet CR. Seuls les administrateurs peuvent créer une CR de compartiment et la configurer. Le compartiment CR est appelé AppVault dans Trident Protect. Les objets AppVault sont la représentation déclarative du workflow Kubernetes d'un compartiment de stockage. Une CR AppVault contient les configurations nécessaires à l'utilisation d'un compartiment dans les opérations de protection, telles que les sauvegardes, les snapshots, les opérations de restauration et la réplication SnapMirror.
 
@@ -102,7 +100,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_8.png["Coffre-fort d'applications ONTAP S3 cr�
 
 ====
 .Créer une machine virtuelle dans OpenShift Virtualization
-[%collapsible]
+[%collapsible%open]
 ====
 Les captures d'écran suivantes montrent la création de la machine virtuelle (démo-fedora dans la démo d'espace de noms) à partir de la console à l'aide du modèle. Le disque racine choisit automatiquement la classe de stockage par défaut. Vérifiez donc que la classe de stockage par défaut est définie correctement. Dans cette configuration, la classe de stockage par défaut est **sc-zonea-san**. Lors de la création du disque supplémentaire, choisissez la classe de stockage sc-zonea-san et cochez la case "**appliquer les paramètres de stockage optimisés**". Les modes d'accès sont alors définis sur RWX et le mode de volume sur Bloc.
 
@@ -125,7 +123,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_7.png["création de vm, de pods et de pvc"]
 
 ====
 .Créer une application
-[%collapsible]
+[%collapsible%open]
 ====
 **Créer une application Trident Protect pour la machine virtuelle**
 
@@ -152,7 +150,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_9.png["Application créée"]
 
 ====
 .Création de sauvegardes
-[%collapsible]
+[%collapsible%open]
 ====
 **Créer une sauvegarde à la demande**
 
@@ -202,7 +200,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_17.png["Sauvegardes créées à la demande et 
 
 ====
 .Restaurer à partir de sauvegardes
-[%collapsible]
+[%collapsible%open]
 ====
 **Restaurer la machine virtuelle dans le même espace de noms**
 
@@ -282,7 +280,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_23.png["VM dans le nouveau namespace"]
 
 ====
 .Créer des instantanés
-[%collapsible]
+[%collapsible%open]
 ====
 **Créer un instantané à la demande** Créez un instantané pour l'application et spécifiez le coffre-fort où il doit être stocké.
 
@@ -350,7 +348,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_26.png["snapshot planifié"]
 
 ====
 .Restaurer à partir d'un Snapshot
-[%collapsible]
+[%collapsible%open]
 ====
 **Restaurer la machine virtuelle à partir de l'instantané vers le même espace de noms** Supprimer la machine virtuelle demo-fedora de l'espace de noms demo2.
 
@@ -428,7 +426,7 @@ image:rh-os-n_use_case_ocpv_tp_dp_32.png["Machine virtuelle restaurée dans le n
 
 ====
 .Sélection de VM spécifiques dans un namespace pour créer des snapshots/sauvegardes et restaurer
-[%collapsible]
+[%collapsible%open]
 ====
 Dans l'exemple précédent, nous avions une seule machine virtuelle au sein d'un espace de noms. En incluant l'intégralité de l'espace de noms dans la sauvegarde, toutes les ressources associées à cette machine virtuelle ont été capturées. Dans l'exemple suivant, nous ajoutons une autre machine virtuelle au même namespace et créons une application uniquement pour cette nouvelle machine virtuelle à l'aide d'un sélecteur d'étiquettes.
 
@@ -489,9 +487,9 @@ image:rh-os-n_use_case_ocpv_tp_dp_18.png["Sauvegarde de machine virtuelle spéci
 
 **Restaurer une machine virtuelle spécifique dans le même espace de noms** la sauvegarde d'une machine virtuelle spécifique (centos) a été créée à l'aide de l'application correspondante. Si une sauvegarde/restauration sur place ou une sauvegarde/restauration est créée à partir de cette base, seule cette machine virtuelle spécifique est restaurée. Supprimez la VM CentOS.
 
-image:rh-os-n_use_case_ocpv_tp_dp_33["VM CentOS présent"]
+image:rh-os-n_use_case_ocpv_tp_dp_33.png["VM CentOS présent"]
 
-image:rh-os-n_use_case_ocpv_tp_dp_34["VM CentOS supprimé"]
+image:rh-os-n_use_case_ocpv_tp_dp_34.png["VM CentOS supprimé"]
 
 Créez une restauration sur place de sauvegarde à partir de Demo-centos-sauvegarde-à la demande et vérifiez que la machine virtuelle centos a été recréée.
 
@@ -500,9 +498,9 @@ Créez une restauration sur place de sauvegarde à partir de Demo-centos-sauvega
 #tp create bir demo-centos-restore --backup demo/demo-centos-backup-on-demand -n demo
 BackupInplaceRestore "demo-centos-restore" created.
 ----
-image:rh-os-n_use_case_ocpv_tp_dp_35["créez un bir centos vm"]
+image:rh-os-n_use_case_ocpv_tp_dp_35.png["créez un bir centos vm"]
 
-image:rh-os-n_use_case_ocpv_tp_dp_36["vm centos créé"]
+image:rh-os-n_use_case_ocpv_tp_dp_36.png["vm centos créé"]
 
 **Restauration d'un serveur virtuel sur un autre espace de noms** Créez une restauration de sauvegarde sur un autre espace de noms (demo-centos-backup-on-demand-demo-demo-demo-backup, et vérifiez que le serveur virtuel centos a été recréé.
 
@@ -511,8 +509,8 @@ image:rh-os-n_use_case_ocpv_tp_dp_36["vm centos créé"]
 # tp create br demo2-centos-restore --backup demo/demo-centos-backup-on-demand --namespace-mapping demo:demo3 -n demo3
 BackupRestore "demo2-centos-restore" created.
 ----
-image:rh-os-n_use_case_ocpv_tp_dp_37["créez un bir centos vm"]
+image:rh-os-n_use_case_ocpv_tp_dp_37.png["créez un bir centos vm"]
 
-image:rh-os-n_use_case_ocpv_tp_dp_38["vm centos créé"]
+image:rh-os-n_use_case_ocpv_tp_dp_38.png["vm centos créé"]
 
 ====

@@ -137,7 +137,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -185,7 +185,7 @@ video::81e389a0-d9b8-495c-883b-b0d701710847[panopto,width=360]
 
 === Fichiers de paramètres d'automatisation
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le PlayBook Ansible exécute les tâches d'installation et de configuration de la base de données avec des paramètres prédéfinis. Pour cette solution d'automatisation Oracle, trois fichiers de paramètres définis par l'utilisateur doivent être saisis avant l'exécution du PlayBook.
 
@@ -201,7 +201,7 @@ Outre ces fichiers de variables définis par l'utilisateur, il existe plusieurs 
 
 === Configuration des fichiers de paramètres
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Cible Ansible `hosts` configuration du fichier :
 +
@@ -277,7 +277,7 @@ memory_limit: 8192
 
 === Exécution de PlayBook
 
-[%collapsible]
+[%collapsible%open]
 ====
 Il y a un total de six playbooks dans le kit d'automatisation. Chacun exécute des blocs de tâches différents et répond à des besoins différents.
 
@@ -352,7 +352,7 @@ ansible-playbook -i hosts 5-destroy.yml -u ec2-user -e @vars/vars.yml
 
 === Validation post-exécution
 
-[%collapsible]
+[%collapsible%open]
 ====
 Une fois le PlayBook exécuté, connectez-vous au serveur de base de données Oracle en tant qu'utilisateur Oracle pour vérifier que l'infrastructure de grid et la base de données Oracle sont correctement créées. Voici un exemple de validation de base de données Oracle sur l'hôte ora_01.
 
@@ -574,7 +574,7 @@ image:automation_ora_aws-fsx_iscsi_em_01.png["Cette image fournit un écran de c
 
 === Sauvegarde, restauration et clonage Oracle avec SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 Reportez-vous au document TR-4979 link:aws_ora_fsx_vmc_guestmount.html#oracle-backup-restore-and-clone-with-snapcenter["Oracle simplifié et autogéré dans VMware Cloud sur AWS avec FSX ONTAP monté sur l'invité"^] section `Oracle backup, restore, and clone with SnapCenter` Pour plus d'informations sur la configuration de SnapCenter et l'exécution des flux de travail de sauvegarde, de restauration et de clonage de la base de données.
 

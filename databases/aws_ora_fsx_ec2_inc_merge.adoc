@@ -121,7 +121,7 @@ Votre VLDB Oracle peut s'exécuter sur une solution FSX ONTAP ou sur tout autre 
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -143,7 +143,7 @@ NOTE: Assurez-vous d'avoir alloué au moins 50G dans le volume racine de l'insta
 
 === Provisionnez et exportez le volume NFS à monter sur l'hôte d'instance de base de données EC2
 
-[%collapsible]
+[%collapsible%open]
 ====
 Dans cette démonstration, nous allons apprendre à provisionner un volume NFS à partir de la ligne de commande en nous connectant à un cluster FSX via ssh en tant qu'utilisateur fsxadmin via l'IP de gestion de cluster FSX. Le volume peut également être alloué via la console AWS FSX. Répétez les procédures sur d'autres systèmes de fichiers FSX si plusieurs systèmes de fichiers FSX sont configurés pour prendre en charge la taille de la base de données.
 
@@ -202,7 +202,7 @@ sudo chown oracle:oinstall /nfsfsxn
 
 === Configurez la fusion incrémentielle Oracle RMAN vers la copie d'image sur FSX
 
-[%collapsible]
+[%collapsible%open]
 ====
 La fusion incrémentielle RMAN met à jour en continu les fichiers de données de base de données de transfert copie d'image à chaque intervalle de sauvegarde/fusion incrémentiel. La copie d'image de la sauvegarde de la base de données sera aussi à jour que la fréquence d'exécution de la sauvegarde/fusion incrémentielle. Prenez donc en compte les performances de la base de données ainsi que vos objectifs RTO et RPO lors du choix de la fréquence de fusion et de sauvegarde incrémentielle RMAN.
 
@@ -639,7 +639,7 @@ La configuration de la sauvegarde et de la fusion de copie d'image de secours de
 
 === Basculez la base de données Oracle sur la copie d'image pour une restauration rapide
 
-[%collapsible]
+[%collapsible%open]
 ====
 En cas de défaillance due à un problème de stockage principal, tel que la perte ou la corruption de données, la base de données peut rapidement basculer vers une copie d'image sur le montage NFS de FSX ONTAP et revenir à l'état actuel sans restaurer la base de données. L'élimination de la restauration des supports accélère considérablement la restauration des bases de données pour un VLDB. Ce cas d'utilisation suppose que l'instance hôte de la base de données est intacte et que le fichier de contrôle de la base de données, les journaux archivés et actuels sont tous disponibles pour la restauration.
 
@@ -922,7 +922,7 @@ SQL>
 
 === Restauration de la base de données Oracle depuis la copie d'image vers un hôte d'instance de base de données EC2 différent
 
-[%collapsible]
+[%collapsible%open]
 ====
 En cas de panne, lorsque le stockage primaire et l'hôte de l'instance de base de données EC2 sont perdus, la restauration ne peut pas être effectuée à partir du serveur d'origine. Heureusement, vous disposez toujours d'une copie d'image de sauvegarde de la base de données Oracle sur le système de fichiers NFS FSX ONTAP redondant. Vous pourriez provisionner rapidement une autre instance de base de données EC2 identique et monter facilement la copie d'image de votre VLDB sur le nouvel hôte de base de données EC2 via NFS pour exécuter la restauration. Dans cette section, nous allons présenter les procédures étape par étape pour ce faire.
 
@@ -1664,7 +1664,7 @@ Cette opération termine la restauration de la base de données Oracle VLDB à p
 
 === Cloner une copie d'image de secours Oracle pour d'autres utilisations
 
-[%collapsible]
+[%collapsible%open]
 ====
 Un autre avantage de l'utilisation d'AWS FSX ONTAP pour la copie d'image Oracle VLDB est qu'il peut être FlexCloné pour répondre à de nombreuses autres utilisations avec un investissement de stockage supplémentaire minimal. Dans le cas d'utilisation suivant, nous démontrons comment créer un snapshot et cloner le volume NFS intermédiaire sur FSX ONTAP pour d'autres cas d'utilisation Oracle tels QUE DEV, UAT, etc
 

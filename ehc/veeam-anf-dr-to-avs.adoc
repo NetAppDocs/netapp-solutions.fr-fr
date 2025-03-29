@@ -16,8 +16,6 @@ summary:
 [role="lead"]
 Les datastores Azure NetApp Files (ANF) dissocient le stockage du calcul et libèrent la flexibilité requise pour que les entreprises puissent migrer leurs workloads vers le cloud. Elle fournit aux clients une infrastructure de stockage haute performance flexible capable d'évoluer indépendamment des ressources de calcul. Le datastore Azure NetApp Files simplifie et optimise le déploiement en parallèle d'Azure VMware solution (AVS) en tant que site de reprise d'activité pour les environnements VMware sur site.
 
-Auteur: Niyaz Mohamed - NetApp Solutions Engineering
-
 
 
 == Présentation
@@ -74,7 +72,7 @@ Pour plus d'informations, reportez-vous à la section « considérations et limi
 === Détails du déploiement
 
 .Étape 1 : réplication des machines virtuelles
-[%collapsible]
+[%collapsible%open]
 ====
 Veeam Backup & Replication exploite les fonctionnalités Snapshot de VMware vSphere/pendant la réplication, Veeam Backup & Replication demande à VMware vSphere de créer un Snapshot de machine virtuelle. Le snapshot de machine virtuelle est la copie instantanée d'une machine virtuelle, qui comprend des disques virtuels, l'état du système, la configuration et les métadonnées. Veeam Backup & Replication utilise le snapshot comme source de données pour la réplication.
 
@@ -128,7 +126,7 @@ Pour plus d'informations sur la réplication Veeam, reportez-vous à la section 
 
 ====
 .Étape 2 : création d'un plan de basculement
-[%collapsible]
+[%collapsible%open]
 ====
 Lorsque la réplication ou l'amorçage initial est terminé, créez le plan de basculement. Le plan de basculement permet d'effectuer automatiquement le basculement des machines virtuelles dépendantes une par une ou en tant que groupe. La planification de basculement est la référence pour l'ordre dans lequel les machines virtuelles sont traitées, y compris les retards de démarrage. Le plan de basculement permet également de s'assurer que les machines virtuelles dépendantes critiques sont déjà en cours d'exécution.
 
@@ -163,7 +161,7 @@ Pour plus d'informations sur la création de tâches de réplication, reportez-v
 
 ====
 .Étape 3 : exécutez le plan de basculement
-[%collapsible]
+[%collapsible%open]
 ====
 Lors du basculement, la machine virtuelle source du site de production est basculée vers sa réplique sur le site de reprise après incident. Dans le cadre du processus de basculement, Veeam Backup & Replication restaure le réplica de la machine virtuelle vers le point de restauration requis et déplace toutes les activités d'E/S de la machine virtuelle source vers son réplica. Les répliques peuvent être utilisées non seulement en cas d'incident, mais aussi pour simuler des exercices de DR. Pendant la simulation de basculement, la machine virtuelle source reste en cours d'exécution. Une fois tous les tests nécessaires effectués, vous pouvez annuler le basculement et revenir aux opérations normales.
 
@@ -191,7 +189,7 @@ Pour plus d'informations sur les plans de basculement, reportez-vous à la secti
 
 ====
 .Étape 4 : retour arrière vers le site de production
-[%collapsible]
+[%collapsible%open]
 ====
 Lorsque le plan de basculement est en cours d'exécution, il est considéré comme une étape intermédiaire et doit être finalisé en fonction de l'exigence. Les options sont les suivantes :
 

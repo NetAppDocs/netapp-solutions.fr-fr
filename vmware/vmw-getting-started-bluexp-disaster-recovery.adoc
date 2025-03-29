@@ -1,0 +1,46 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-getting-started-bluexp-disaster-recovery.html 
+keywords: vmware, getting, started, overview, netapp, bluexp, disaster, recovery, draas 
+summary:  
+---
+= Reprise après incident BlueXP  (DRaaS)
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+La planification de la reprise d'activité est essentielle pour les administrateurs VMware afin de minimiser les temps d'indisponibilité en cas de défaillance matérielle, de cyberattaques ou de catastrophes naturelles.
+
+
+
+== Introduction
+
+Un plan et une combinaison de technologies efficaces garantissent la protection des données stratégiques, des applications et des machines virtuelles. Le défi lié à la reprise après incident est de déterminer le niveau de protection approprié et les coûts associés.
+
+Les baies ONTAP proposent une réplication intégrée pour le transfert des données de volume, et donc des serveurs virtuels résidant sur les LUN de datastore désignées, d'un site à un autre. La DRaaS de BlueXP  s'intègre à vSphere et automatise l'ensemble du workflow pour un basculement et un retour arrière transparents en cas d'incident.
+
+Pour plus d'informations sur la DRaaS de BlueXP , voir link:https://docs.netapp.com/us-en/netapp-solutions/ehc/dr-draas-overview.html["Présentation de la DRaaS BlueXP "].
+
+
+
+== Considérations
+
+Le basculement de reprise après incident dans un environnement VMware vSphere prend le plus de temps en exécutant les étapes nécessaires pour inventorier, enregistrer, reconfigurer et mettre sous tension les machines virtuelles sur le site de reprise après incident. La solution idéale présente à la fois un RPO faible (mesuré en minutes) et un RTO faible (mesuré en minutes, voire en heures). Il est souvent négligé dans une solution de reprise sur incident car elle permet de tester efficacement la solution de reprise sur incident à intervalles réguliers.
+
+Facteurs à prendre en compte pour concevoir une solution de reprise d'activité :
+
+* L'objectif de délai de restauration (RTO). L'objectif de délai de restauration est la rapidité avec laquelle une entreprise peut se remettre d'un incident, ou plus particulièrement le temps nécessaire à l'exécution du processus de restauration pour assurer la disponibilité des services de l'entreprise.
+* L'objectif de point de récupération (RPO). L'objectif de point de récupération est l'âge à partir duquel les données restaurées ont été mises à disposition, par rapport à l'heure à laquelle l'incident s'est produit.
+* Évolutivité et adaptabilité. Ce facteur permet d'accroître les ressources de stockage progressivement en fonction de la demande.
+
+
+Pour plus d'informations techniques sur les solutions disponibles, consultez :
+
+* link:https://docs.netapp.com/us-en/netapp-solutions/ehc/dr-draas-nfs.html["Reprise après incident à l'aide de la DRaaS BlueXP  pour les datastores NFS"]
+* link:https://docs.netapp.com/us-en/netapp-solutions/ehc/dr-draas-vmfs.html["Reprise après incident à l'aide de la DRaaS BlueXP  pour les datastores VMFS"]
+

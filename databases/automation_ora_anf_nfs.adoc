@@ -142,7 +142,7 @@ Les sections suivantes présentent des procédures détaillées pour le déploie
 
 === Conditions préalables au déploiement
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le déploiement nécessite les conditions préalables suivantes.
 
@@ -200,7 +200,7 @@ video::d1c859b6-e45a-44c7-8361-b10f012fc89b[panopto,width=360]
 
 === Fichiers de paramètres d'automatisation
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le PlayBook Ansible exécute les tâches d'installation et de configuration de la base de données avec des paramètres prédéfinis. Pour cette solution d'automatisation Oracle, trois fichiers de paramètres définis par l'utilisateur doivent être saisis avant l'exécution du PlayBook.
 
@@ -216,7 +216,7 @@ Outre ces fichiers de variables définis par l'utilisateur, il existe plusieurs 
 
 === Configuration des fichiers de paramètres
 
-[%collapsible]
+[%collapsible%open]
 ====
 . Cible Ansible `hosts` configuration du fichier :
 +
@@ -290,7 +290,7 @@ nfs_lif: 172.30.136.68
 
 === Exécution de PlayBook
 
-[%collapsible]
+[%collapsible%open]
 ====
 Le kit d'outils d'automatisation comprend cinq playbooks. Chacun exécute des blocs de tâches différents et répond à des besoins différents.
 
@@ -354,7 +354,7 @@ ansible-playbook -i hosts 5-destroy.yml -u azureuser -e @vars/vars.yml
 
 === Validation post-exécution
 
-[%collapsible]
+[%collapsible%open]
 ====
 Une fois le PlayBook exécuté, connectez-vous à la machine virtuelle du serveur de base de données Oracle pour vérifier qu'Oracle est installé et configuré et qu'une base de données de conteneurs est correctement créée. Voici un exemple de validation de base de données Oracle sur l'hôte ora-01.
 
@@ -591,7 +591,7 @@ image:automation_ora_anf_nfs_em_01.png["Cette image fournit un écran de connexi
 
 === Migrez votre base de données Oracle vers Azure
 
-[%collapsible]
+[%collapsible%open]
 ====
 La migration des bases de données Oracle d'un environnement sur site vers le cloud est une opération lourde. L'utilisation de la stratégie appropriée et de l'automatisation peut faciliter le processus et réduire les interruptions de service et les temps d'indisponibilité. Suivez ces instructions détaillées link:azure_ora_nfile_migration.html#converting-a-single-instance-non-cdb-to-a-pdb-in-a-multitenant-cdb["Migration de la base de données sur site vers le cloud Azure"^] pour guider la migration de vos bases de données.
 
@@ -600,7 +600,7 @@ La migration des bases de données Oracle d'un environnement sur site vers le cl
 
 === Sauvegarde, restauration et clonage Oracle avec SnapCenter
 
-[%collapsible]
+[%collapsible%open]
 ====
 NetApp recommande l'outil de l'interface utilisateur SnapCenter pour gérer la base de données Oracle déployée dans le cloud Azure. Reportez-vous au document TR-4988 : link:snapctr_ora_azure_anf.html["Sauvegarde, restauration et clonage de bases de données Oracle sur ANF avec SnapCenter"^] pour plus d'informations.
 
