@@ -21,8 +21,6 @@ Cette section fournit des détails sur la configuration de FSX pour NetApp ONTAP
 
 Nous allons également nous intéresser à la connexion à l'ordinateur virtuel à l'aide des informations d'identification de l'invité et au redémarrage de l'ordinateur virtuel. Enfin, nous effectuerons une migration dynamique de la machine virtuelle du nœud actuel vers un nouveau nœud. Nous examinerons le contenu du stockage sur disque après le redémarrage d'une machine virtuelle et la migration dynamique.
 
-Consultez le blog comme ressource supplémentaire : link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Unlock-Seamless-iSCSI-Storage-Integration-A-Guide-to-FSxN-on-ROSA-Clusters-for/ba-p/459124["Déverrouillage de l'intégration transparente du stockage iSCSI : guide de FSxN sur les clusters ROSA pour iSCSI"]
-
 
 
 == Prérequis
@@ -37,13 +35,44 @@ Consultez le blog comme ressource supplémentaire : link:https://community.netap
 * link:https://docs.openshift.com/rosa/rosa_hcp/rosa-hcp-sts-creating-a-cluster-quickly.html["UN CLUSTER HCP ROSA"] (avec au moins 3 nœuds worker bare metal)
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/virtualization/installing#virt-aws-bm_preparing-cluster-for-virt["OpenShift Virtualization installé sur ROSA Cluster"]
 * link:https://console.redhat.com/openshift/overview["Accès à la console Web Red Hat OpenShift"]
-* Trident 25.02 ou version ultérieure vous pouvez exploiter Trident 25.02 ou version ultérieure pour configurer facilement les nœuds workers du cluster ROSA afin d'effectuer des opérations iSCSI sur le stockage FSxN. Installez Trident 25.02 ou une version ultérieure sur le cluster ROSA à l'aide de l'indicateur node-prep
+* Trident 25.02 ou version ultérieure à partir de Trident 25.02, vous pouvez facilement préparer les nœuds workers du cluster ROSA (ou de tout cluster OpenShift) pour effectuer des opérations iSCSI sur le stockage FSxN. Il existe deux méthodes simples d'installation de Trident 25.02 (ou version ultérieure) qui automatisent la préparation des nœuds de travail pour iSCSI.
++
+.. utilisation de node-prep-flag à partir de la ligne de commande à l'aide de l'outil tridentctl.
+.. Utilisation de l'opérateur Trident certifié Red Hat à partir du hub opérateur et personnalisation.
+.. Utilisation de Helm
 
 
-....
+
+
+**Méthode 1 : utiliser l'outil tridentctl**
+
+Utilisez l'indicateur node-prep et installez Trident comme indiqué. Avant d'exécuter la commande install, vous devez avoir téléchargé le package d'installation. Reportez-vous à la link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-tridentctl.html#step-1-download-the-trident-installer-package["la documentation ici"].
+
+[source, yaml]
+----
 #./tridentctl install trident -n trident --node-prep=iscsi
-....
-Cela préparera les nœuds de travail de cluster ROSA pour iSCSI en démarrant les services iscsid et multipathd et en définissant les paramètres suivants dans le fichier /etc/multipath.conf
+----
+**Méthode 2 : utilisez l'opérateur Trident certifié Red Hat et personnalisez** à partir de l'OperatorHub, localisez l'opérateur Trident certifié Red Hat et installez-le.
+
+image:rh-os-n_use_case_operator_img1.png["Opérateur dans le concentrateur opérateur"]
+
+image:rh-os-n_use_case_operator_img2.png["Monter l'opérateur 1"]
+
+image:rh-os-n_use_case_operator_img3.png["Monter l'opérateur 2"]
+
+image:rh-os-n_use_case_operator_img4.png["installé par l'opérateur"]
+
+Créez ensuite l'instance de l'orchestrateur Trident. Utilisez la vue YAML pour définir des valeurs personnalisées ou activer la préparation du nœud iscsi pendant l'installation.
+
+image:rh-os-n_use_case_operator_img5.png["création de l'orchestrateur"]
+
+image:rh-os-n_use_case_operator_img6.png["Activer NodePrep"]
+
+image:rh-os-n_use_case_operator_img7.png["orchestrateur installé"]
+
+image:rh-os-n_use_case_operator_img8.png["Trident installé"]
+
+L'installation de Trident à l'aide de l'une des méthodes ci-dessus préparera les nœuds de travail de cluster ROSA pour iSCSI en démarrant les services iscsid et multipathd et en définissant les paramètres suivants dans le fichier /etc/multipath.conf
 
 image:rh-os-n_use_case_iscsi_node_prep1.png["iscsid actif"]
 
@@ -55,13 +84,61 @@ image:rh-os-n_use_case_iscsi_node_prep3.png["fichier multipath.conf"]
 
 == Configuration initiale
 
-Cette section explique comment configurer la classe de stockage par défaut pour Trident-csi et la classe VolumeSnapshotClass par défaut pour qu'elle soit la classe d'instantané de volume FSX. Vous apprendrez ensuite à créer une machine virtuelle à partir d'un modèle, puis à vous y connecter à l'aide des informations d'identification de l'invité.
+Cette section explique comment configurer la classe de stockage par défaut et la classe de stockage principale de Trident, ainsi que la classe VolumeSnapshotClass par défaut. Vous apprendrez ensuite à créer une machine virtuelle à partir d'un modèle, puis à vous y connecter à l'aide des informations d'identification de l'invité.
 
-Assurez-vous que la classe de stockage par défaut est définie sur Trident-csi image:redhat_openshift_ocpv_rosa_image1.png["Classe de stockage par défaut OCP-v"]
+Utilisez ce qui suit pour créer un objet backend Trident
 
-Assurez-vous que VolumeSnapShotClasses par défaut est défini comme indiqué image:redhat_openshift_ocpv_rosa_image2.png["Classe VolumeSnapshot par défaut OCP-v"]
+[source, yaml]
+----
+cat tbc.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-ontap-san-secret
+type: Opaque
+stringData:
+  username: fsxadmin
+  password: <password for the fsxN filesystem>
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-ontap-san
+spec:
+  version: 1
+  storageDriverName: ontap-san
+  managementLIF: <management lif of fsxN filesystem>
+  backendName: backend-tbc-ontap-san
+  svm: svm_FSxNForROSAiSCSI
+  credentials:
+    name: backend-tbc-ontap-san-secret
 
-Si les valeurs par défaut ne sont pas définies, vous pouvez les configurer à partir de la console ou de la ligne de commande
+cat sc.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: trident-csi
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "ontap-san"
+  media: "ssd"
+  provisioningType: "thin"
+  snapshots: "true"
+allowVolumeExpansion: true
+
+cat snapshot-class.yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: fsx-snapclass
+driver: csi.trident.netapp.io
+deletionPolicy: Retain
+
+#oc create -f tbc,yaml -n trident
+#oc create -f sc.yaml
+#oc create -f snapshot-class.yaml
+----
+Vous pouvez configurer la classe de stockage et la classe VolumeSnapshot créées ci-dessus comme valeurs par défaut, soit à partir de la console, soit à partir de la ligne de commande
 
 [source]
 ----
@@ -71,6 +148,10 @@ $ oc patch storageclass trident-csi -p '{"metadata": {"annotations": {"storagecl
 ----
 $ oc patch VolumeSnapshotClasses fsx-snapclass -p '{"metadata": {"annotations": {"snapshot.storage.kubernetes.io/is-default-class": "true"}}}'
 ----
+Assurez-vous que la classe de stockage par défaut est définie sur Trident-csi image:redhat_openshift_ocpv_rosa_image1.png["Classe de stockage par défaut OCP-v"]
+
+Assurez-vous que VolumeSnapShotClasses par défaut est défini comme indiqué image:redhat_openshift_ocpv_rosa_image2.png["Classe VolumeSnapshot par défaut OCP-v"]
+
 
 
 === **Créer un VM à partir du modèle**
@@ -129,4 +210,8 @@ Le disque est rempli de 11 Go de données. image:redhat_openshift_ocpv_rosa_imag
 
 Utilisez vi pour créer un exemple de fichier texte que nous utiliserons pour tester. image:redhat_openshift_ocpv_rosa_image19.png["OCP-v crée un fichier"]
 
-Consultez le blog comme ressource supplémentaire : link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Unlock-Seamless-iSCSI-Storage-Integration-A-Guide-to-FSxN-on-ROSA-Clusters-for/ba-p/459124["Déverrouillage de l'intégration transparente du stockage iSCSI : guide de FSxN sur les clusters ROSA pour iSCSI"]
+**Blogs connexes**
+
+link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Unlock-Seamless-iSCSI-Storage-Integration-A-Guide-to-FSxN-on-ROSA-Clusters-for/ba-p/459124["Déverrouillage de l'intégration transparente du stockage iSCSI : guide de FSxN sur les clusters ROSA pour iSCSI"]
+
+link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Simplifying-Trident-Installation-on-Red-Hat-OpenShift-with-the-New-Certified/ba-p/459710["Simplification de l'installation de Trident sur Red Hat OpenShift avec le nouvel opérateur certifié Trident"]

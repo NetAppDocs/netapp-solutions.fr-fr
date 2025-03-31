@@ -84,20 +84,50 @@ image:redhat_openshift_container_rosa_image2.png["FSxN créé"]
 
 **2.installer et configurer le pilote Trident CSI pour le cluster ROSA**
 
-**A.Ajouter le référentiel Trident Helm**
+**B.installer Trident**
 
-[source]
-----
-$ helm repo add netapp-trident https://netapp.github.io/trident-helm-chart
-----
-**B.installer Trident à l'aide de Helm**
+Les nœuds workers ROSA sont préconfigurés avec des outils nfs qui vous permettent d'utiliser les protocoles NAS pour le provisionnement et l'accès au stockage.
 
-[source]
-----
-$ helm install trident netapp-trident/trident-operator --version 100.2406.0 --create-namespace --namespace trident
-----
+Si vous souhaitez utiliser iSCSI à la place, vous devez préparer les nœuds worker pour iSCSI. À partir de Trident 25.02, vous pouvez facilement préparer les nœuds workers du cluster ROSA (ou de tout cluster OpenShift) à effectuer des opérations iSCSI sur le stockage FSxN. Il existe deux méthodes simples d'installation de Trident 25.02 (ou version ultérieure) qui automatisent la préparation des nœuds de travail pour iSCSI. 1. utilisation de node-prep-flag à partir de la ligne de commande à l'aide de l'outil tridentctl. 2. Utilisation de l'opérateur Trident certifié Red Hat à partir du hub opérateur et personnalisation. 3.utilisation de Helm.
 
-NOTE: Selon la version que vous installez, le paramètre de version doit être modifié dans la commande affichée. Reportez-vous au pour connaître le link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-helm.html["documentation"]numéro de version correct. Pour des méthodes supplémentaires d'installation de Trident, reportez-vous au Trident link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["documentation"].
+
+NOTE: L'utilisation de l'une des méthodes ci-dessus sans activer la préparation du nœud vous permettra d'utiliser uniquement les protocoles NAS pour provisionner le stockage sur FSxN.
+
+**Méthode 1 : utiliser l'outil tridentctl**
+
+Utilisez l'indicateur node-prep et installez Trident comme indiqué. Avant d'exécuter la commande install, vous devez avoir téléchargé le package d'installation. Reportez-vous à la link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy-tridentctl.html#step-1-download-the-trident-installer-package["la documentation ici"].
+
+[source, yaml]
+----
+#./tridentctl install trident -n trident --node-prep=iscsi
+----
+**Méthode 2 : utilisez l'opérateur Trident certifié Red Hat et personnalisez** à partir de l'OperatorHub, localisez l'opérateur Trident certifié Red Hat et installez-le.
+
+image:rh-os-n_use_case_operator_img1.png["Opérateur dans le concentrateur opérateur"]
+
+image:rh-os-n_use_case_operator_img2.png["Monter l'opérateur 1"]
+
+image:rh-os-n_use_case_operator_img3.png["Monter l'opérateur 2"]
+
+image:rh-os-n_use_case_operator_img4.png["installé par l'opérateur"]
+
+Créez ensuite l'instance de l'orchestrateur Trident. Utilisez la vue YAML pour définir des valeurs personnalisées ou activer la préparation du nœud iscsi pendant l'installation.
+
+image:rh-os-n_use_case_operator_img5.png["création de l'orchestrateur"]
+
+image:rh-os-n_use_case_operator_img6.png["Activer NodePrep"]
+
+image:rh-os-n_use_case_operator_img7.png["orchestrateur installé"]
+
+image:rh-os-n_use_case_operator_img8.png["Trident installé"]
+
+L'installation de Trident à l'aide de l'une des méthodes ci-dessus préparera les nœuds de travail de cluster ROSA pour iSCSI en démarrant les services iscsid et multipathd et en définissant les paramètres suivants dans le fichier /etc/multipath.conf
+
+image:rh-os-n_use_case_iscsi_node_prep1.png["iscsid actif"]
+
+image:rh-os-n_use_case_iscsi_node_prep2.png["multipathd actif"]
+
+image:rh-os-n_use_case_iscsi_node_prep3.png["fichier multipath.conf"]
 
 **C.Vérifiez que tous les modules Trident sont à l'état d'exécution**
 
@@ -208,6 +238,47 @@ spec:
  You can issue the following commands to create a pvc and verify that it has been created.
 image:redhat_openshift_container_rosa_image11.png["Créer un PVC test à l'aide de Trident"]
 
+
+NOTE: Pour utiliser iSCSI, vous devez avoir activé iSCSI sur les nœuds worker comme indiqué précédemment et vous devez créer un back-end iSCSI et une classe de stockage. Voici quelques exemples de fichiers yaml.
+
+[source, yaml]
+----
+cat tbc.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-ontap-san-secret
+type: Opaque
+stringData:
+  username: fsxadmin
+  password: <password for the fsxN filesystem>
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-ontap-san
+spec:
+  version: 1
+  storageDriverName: ontap-san
+  managementLIF: <management lif of fsxN filesystem>
+  backendName: backend-tbc-ontap-san
+  svm: svm_FSxNForROSAiSCSI
+  credentials:
+    name: backend-tbc-ontap-san-secret
+
+cat sc.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: trident-csi
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "ontap-san"
+  media: "ssd"
+  provisioningType: "thin"
+  snapshots: "true"
+allowVolumeExpansion: true
+----
 **5. Déployer un exemple d'application avec état PostgreSQL**
 
 **a. Utilisez Helm pour installer postgresql**
