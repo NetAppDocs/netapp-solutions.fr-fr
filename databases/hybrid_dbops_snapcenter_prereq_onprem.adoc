@@ -96,6 +96,76 @@ Pour simplifier la gestion d'un environnement de base de données de cloud hybri
 
 La fonctionnalité d'automatisation d'un contrôleur Ansible peut également être utilisée pour étendre SnapCenter à certaines tâches, comme l'interruption de l'instance SnapMirror pour activer la copie de données de reprise après incident en production.
 
-Suivez ces instructions pour configurer votre nœud de contrôle Ansible pour les machines RedHat ou CentOS : include:_include/automation_rhel_centos_setup.adoc[]
+Suivez ces instructions pour configurer votre nœud de contrôle Ansible pour les machines RedHat ou CentOS :
 
-Suivez ces instructions pour configurer votre nœud de contrôle Ansible pour les machines Ubuntu ou Debian : include::_include/automation_ubuntu_Debian_setup.adoc[]
+. Exigences pour le nœud de contrôle Ansible, :
++
+.. Un ordinateur RHEL/CentOS avec les packages suivants installés :
++
+... Python3
+... IPF3
+... Ansible (version supérieure à 2.10.0)
+... GIT
+
+
+
+
+
+
+Si vous disposez d'un appareil RHEL/CentOS neuf sans les exigences ci-dessus, suivez les étapes ci-dessous pour configurer cette machine en tant que nœud de contrôle Ansible :
+
+. Activez le référentiel Ansible pour RHEL-8/RHEL-7
++
+.. Pour RHEL-8 (exécutez la commande ci-dessous en tant que root)
++
+[source, cli]
+----
+subscription-manager repos --enable ansible-2.9-for-rhel-8-x86_64-rpms
+----
+.. Pour RHEL-7 (exécutez la commande ci-dessous en tant que root)
++
+[source, cli]
+----
+subscription-manager repos --enable rhel-7-server-ansible-2.9-rpms
+----
+
+
+. Collez le contenu ci-dessous dans le terminal
++
+[source, cli]
+----
+sudo yum -y install python3 >> install.log
+sudo yum -y install python3-pip >> install.log
+python3 -W ignore -m pip --disable-pip-version-check install ansible >> install.log
+sudo yum -y install git >> install.log
+----
+
+
+Suivez ces instructions pour configurer votre nœud de contrôle Ansible pour les machines Ubuntu ou Debian :
+
+. Exigences pour le nœud de contrôle Ansible, :
++
+.. Une machine Ubuntu/Debian avec les paquets suivants installés :
++
+... Python3
+... IPF3
+... Ansible (version supérieure à 2.10.0)
+... GIT
+
+
+
+
+
+
+Si vous avez une machine Ubuntu/Debian neuve sans les exigences ci-dessus, suivez les étapes ci-dessous pour configurer cette machine en tant que nœud de contrôle Ansible :
+
+. Collez le contenu ci-dessous dans le terminal
++
+[source, cli]
+----
+sudo apt-get -y install python3 >> outputlog.txt
+sudo apt-get -y install python3-pip >> outputlog.txt
+python3 -W ignore -m pip --disable-pip-version-check install ansible >> outputlog.txt
+sudo apt-get -y install git >> outputlog.txt
+----
+
