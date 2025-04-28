@@ -84,118 +84,12 @@ NOTE: Assurez-vous que vous démarrez le serveur postgresql et que le service d�
 
 Les installations suivantes ont été effectuées avant l'installation de MTV :
 
-* OpenShift Cluster 4.13.34
-* link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["Trident 23.10"]
-* Chemins d'accès multiples sur les nœuds de cluster activés pour iSCSI (pour la classe de stockage ontap-san). Les chemins d'accès multiples peuvent être activés facilement si vous installez Trident 25.02 à l'aide de l'indicateur de préparation du nœud. Pour installer Trident 25.02 et préparer les nœuds worker pour iSCSI, vous pouvez utiliser la commande suivante
-
-
-[source, yaml]
-----
-#./tridentctl install trident n trident —node-prep=iscsi
-
-----
-
-NOTE: Pour vérifier que les outils iSCSI ont été activés sur les nœuds worker d'OpenShift Cluster, connectez-vous aux nœuds worker et vérifiez que l'iscsid, le multipathd est actif et que les entrées du fichier multipath.conf s'affichent, comme illustré.
-
-image:rh-os-n_use_case_iscsi_node_prep1.png["iscsid actif"]
-
-image:rh-os-n_use_case_iscsi_node_prep2.png["multipathd actif"]
-
-image:rh-os-n_use_case_iscsi_node_prep3.png["fichier multipath.conf"]
-
-* Système back-end Trident et classe de stockage pour SAN ONTAP utilisant iSCSI. Consultez les fichiers yaml fournis pour le back-end trident et la classe de stockage.
+* OpenShift Cluster 4.17 ou version ultérieure
+* Chemins d'accès multiples sur les nœuds de cluster activés pour iSCSI (pour la classe de stockage ontap-san). Les chemins d'accès multiples peuvent être activés facilement si vous installez Trident 25.02 à l'aide de l'indicateur de préparation du nœud. Pour plus de détails, reportez-vous aulink:rh-os-n_use_case_openshift_virtualization_trident_install.html["Section installation de Trident"].
+* Installez les classes back-end et de stockage requises, ainsi que la classe Snapshot. Reportez-vous au link:rh-os-n_use_case_openshift_virtualization_trident_install.html["Section installation de Trident"] pour plus de détails.
 * link:https://docs.openshift.com/container-platform/4.13/virt/install/installing-virt-web.html["Virtualisation OpenShift"]
 
 
-**Trident backend pour iSCSI** exemple de fichier yaml pour créer la configuration Trident backend pour le stockage ONTAP san avec protocole iSCSI
-
-[source, yaml]
-----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: backend-tbc-ontap-san-secret
-type: Opaque
-stringData:
-  username: <username>
-  password: <password>
----
-apiVersion: trident.netapp.io/v1
-kind: TridentBackendConfig
-metadata:
-  name: ontap-san
-spec:
-  version: 1
-  storageDriverName: ontap-san
-  managementLIF: <management LIF>
-  backendName: ontap-san
-  svm: <SVM name>
-  credentials:
-    name: backend-tbc-ontap-san-secret
-----
-**Classe de stockage Trident pour iSCSI** exemple de fichier yaml pour créer une configuration de classe de stockage Trident pour le stockage ONTAP san avec protocole iSCSI
-
-[source, yaml]
-----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: ontap-san
-provisioner: csi.trident.netapp.io
-parameters:
-  backendType: "ontap-san"
-  media: "ssd"
-  provisioningType: "thin"
-  snapshots: "true"
-allowVolumeExpansion: true
-----
-**Installation du back-end FC et de la classe de stockage** exemple de fichier yaml pour créer la configuration du back-end Trident pour le stockage san ONTAP avec protocole FC
-
-[source, yaml]
-----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: tbc-fc-secret
-type: Opaque
-stringData:
-  username: admin
-  password: <cluster password>
----
-apiVersion: trident.netapp.io/v1
-kind: TridentBackendConfig
-metadata:
-  name: tbc-fc
-spec:
-  version: 1
-  storageDriverName: ontap-san
-  managementLIF: <cluster management lif>
-  backendName: tbc-fc
-  svm: openshift-fc
-  sanType: fcp
-  storagePrefix: demofc
-  defaults:
-    nameTemplate: "{{ .config.StoragePrefix }}_{{ .volume.Namespace }}_{{ .volume.RequestName }}"
-  credentials:
-    name: tbc-fc-secret
-----
-Exemple de fichier yaml pour créer une configuration de classe de stockage Trident pour le stockage san ONTAP avec protocole FC **classe de stockage Trident pour FC**
-
-[source, yaml]
-----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: sc-fc
-provisioner: csi.trident.netapp.io
-parameters:
-  backendType: "ontap-san"
-  media: "ssd"
-  provisioningType: "thin"
-  fsType: ext4
-  snapshots: "true"
-allowVolumeExpansion: true
-----
 
 
 === Installez MTV

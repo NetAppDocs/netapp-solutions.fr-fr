@@ -14,7 +14,7 @@ summary: Red Hat OpenShift Virtualization avec NetApp ONTAP
 
 
 [role="lead"]
-Cette section explique comment créer une machine virtuelle avec Red Hat OpenShift Virtualization.
+Cette section explique comment créer une machine virtuelle avec Red Hat OpenShift Virtualization. Au préalable, vous devez avoir déjà créé le back-end Trident, la classe de stockage et les objets de classe de snapshot de volume. Pour plus de détails, reportez-vous aulink:rh-os-n_use_case_openshift_virtualization_trident_install.html["Section installation de Trident"].
 
 
 
@@ -38,7 +38,7 @@ La machine virtuelle est créée et démarrée et passe à l'état *running*. Il
 Pour configurer la classe de stockage ONTAP-san sur le cluster, reportez-vous au link:rh-os-n_use_case_openshift_virtualization_workflow_vm_migration_using_mtv.html["Section migration d'une machine virtuelle de VMware vers OpenShift Virtualization"].
 
 
-NOTE: Vous pouvez configurer ONTAP NAS ou iSCSI comme classe de stockage par défaut pour le cluster. Cliquez sur création rapide Virtualmachine pour utiliser la classe de stockage par défaut afin de créer le PVC et le PV pour le disque racine amorçable de la machine virtuelle. Si votre classe de stockage par défaut n'est pas ontap-nas ou ontap-san, vous pouvez sélectionner la classe de stockage du disque en sélectionnant Personnaliser Virtualmachine > Personnaliser les paramètres Virtualmachine > disques, puis en modifiant le disque pour utiliser la classe de stockage requise.
+NOTE: Cliquez sur création rapide Virtualmachine pour utiliser la classe de stockage par défaut afin de créer le PVC et le PV pour le disque racine amorçable de la machine virtuelle. Vous pouvez sélectionner une classe de stockage différente pour le disque, en sélectionnant Personnaliser Virtualmachine > Personnaliser les paramètres Virtualmachine > disques, puis en modifiant le disque pour utiliser la classe de stockage requise.
 
 En général, le mode d'accès en mode bloc est préférable à celui des systèmes de fichiers lors du provisionnement des disques de la machine virtuelle.
 
