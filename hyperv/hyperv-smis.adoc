@@ -1,7 +1,7 @@
 ---
 sidebar: sidebar 
 permalink: hyperv/hyperv-smis.html 
-keywords: hyperv, hyper-v, SMI-S, SCVMM, netapp, virtualization, iscsi, SMB,microsoft 
+keywords: hyperv, hyper-v, SMI-S, SCVMM, netapp, virtualization 
 summary: Ce document explique comment installer et gérer le fournisseur SMI-S de NetApp et comment provisionner le stockage avec Microsoft SCVMM. 
 ---
 = Fournisseur NetApp SMI-S pour Microsoft Hyper-V.
@@ -146,3 +146,101 @@ image:hyperv-smis-image12.png["Réglage du tracé"]
 == Conclusion
 
 Le fournisseur NetApp SMI-S est un outil essentiel pour les administrateurs de stockage. Il fournit une solution standardisée, efficace et complète pour la gestion et le contrôle des systèmes de stockage. L'utilisation de protocoles et de schémas standard assure la compatibilité et simplifie les complexités associées à la gestion du réseau de stockage.
+
+[]
+====
+'''
+Encadré : lien latéral : hyperv/hyperv-smis.html mots-clés : hyperv, hyper-v, SMI-S, SCVMM, NetApp, virtualisation, iscsi, SMB, Récapitulatif microsoft : « ce document explique comment installer et gérer NetApp SMI-S Provider, et comment provisionner le stockage avec Microsoft SCVMM. " ---
+
+= NetApp SMI-S Provider for Microsoft Hyper-V :hardbreaks: :Nofoooooter: :Icons: Font :linkattrs: :Imagesdir: ../media/
+
+[role="lead"]
+Ce document explique comment installer et gérer le fournisseur SMI-S de NetApp et comment provisionner le stockage avec Microsoft SCVMM.
+
+== Introduction
+
+La spécification SMI-S (Storage Management Initiative Specification) de NetApp est un puissant outil de gestion et de surveillance des systèmes de stockage. NetApp SMI-S exploite les protocoles Web de gestion d'entreprise (WBEM) pour fournir une interface unifiée pour diverses tâches de gestion, notamment la gestion des LUN, des volumes, des paramètres de configuration CIMOM et des utilisateurs de serveur CIM. Plus de détails, vérifiez link:https://docs.netapp.com/us-en/smis-provider["Document produit du fournisseur SMI-S NetApp."]
+
+==== principaux avantages et fonctionnalités : • détection et gestion des systèmes de stockage : détecte les systèmes de stockage exécutant le logiciel ONTAP et fournit des outils pour les gérer efficacement. • Administration simplifiée : simplifie la gestion des systèmes de stockage grâce à une interface unique basée sur des commandes. • Surveillance et rapports : offre de solides fonctionnalités de surveillance et de rapports pour assurer le suivi des éléments de stockage et de leur rendement.
+
+image:hyperv-smis-image1.png["NetApp SMI-S avec architecture Hyper-V."]
+
+== Préparez-vous pour le déploiement de SMI-S Provider
+
+Une intégration transparente avec les systèmes de stockage existants nécessite une installation et une configuration appropriées du SMI-S Provider.
+
+* SMI-S Provider 5.2.7 prend en charge Windows Server SCVMM 2025, 2022, 2019 et 2016 et Windows Server 2025,2022,2019 et 2016. Cette version n'est pas compatible avec Windows Server 2012 ou System Center Virtual machine Manager (SCVMM) 2012.
+* Le fournisseur NetApp SMI-S prend en charge ONTAP 9.7 et les systèmes FAS et AFF ultérieurs.
+* La licence NetApp ONTAP ONE couvre toutes les exigences de licence du fournisseur SMI-S.
++
+** FCP, iSCSI ou des licences FCP et iSCSI sont nécessaires pour la création de LUN sur les systèmes de stockage.
+** Une licence CIFS est requise pour la création de partages de fichiers sur les systèmes de stockage ONTAP pris en charge.
+** Une licence FlexClone est requise pour créer des clones LUN sur des systèmes de stockage en cluster exécutant les versions ONTAP prises en charge.
+
+
+
+
+=== configuration matérielle requise pour la machine virtuelle SMI-S le tableau ci-dessous présente la configuration matérielle requise pour la machine virtuelle du fournisseur SMI-S.
+
+image:hyperv-smis-image2.png["Configuration matérielle requise pour SMI-S Provider"]
+
+==== installer SMI-S Provider
+
+Avant de démarrer le déploiement du fournisseur SMI-S, vous devez le déployer
+
+* Microsoft Hyper-V avec SCVMM
+* Système de stockage NetApp FAS ou AFF
+* Les ports de pare-feu 5988 et 5989 doivent être ouverts pour les connexions SMI-S http et https afin de permettre la communication entre SMI-S Provider et SCVMM
+
+
+Il est important de comprendre l'interface basée sur les commandes pour effectuer diverses tâches de gestion, vérifiez link:https://docs.netapp.com/us-en/smis-provider/concept-smi-s-provider-commands-overview.html["Commandes du fournisseur SMI-S NetApp."]
+
+. Obtenez SMI-S à partir du site de téléchargement de NetApp et installez-le sur une version prise en charge de Windows Server.
+. Vérifiez que le serveur SMI-S est en cours d'exécution. image:hyperv-smis-image3.png["Vérifiez que le serveur SMI-S est en cours d'exécution"]
+. Pour ajouter un système de stockage NetApp, vérifiez que vous disposez du nom d'hôte de l'adresse IP de gestion de la machine virtuelle de stockage (SVM) et des informations d'identification de l'utilisateur vsadmin. image:hyperv-smis-image4.png["Enregistrer SVM"]
+
+
+==== connecter SMI-S Provider à SCVMM
+
+. Développez tissu > stockage dans le navigateur. Cliquez avec le bouton droit de la souris sur *fournisseurs* et cliquez sur *Ajouter des périphériques de stockage*. Sélectionnez *périphériques SAN et NAS détectés et gérés par un fournisseur SMI-S*. image:hyperv-smis-image5.png["Ajouter des périphériques de stockage"]
+. Choisissez SMI-S CIMXML comme protocole. Entrez l'adresse IP ou le nom de domaine complet du serveur sur lequel vous avez installé l'agent SMI-S et entrez le compte SMI-S que vous avez créé. image:hyperv-smis-image6.png["Installez SMI-S Agent"]
+. Cliquez sur *Suivant* et obtenez une liste des volumes de votre système de stockage NetApp
+. Sélectionnez des périphériques de stockage, une classification et des groupes d'hôtes, consultez le résumé et cliquez sur *Terminer*. image:hyperv-smis-image7.png["Choisissez une classification"]
+. Pour vérifier la connexion SMI-S, cliquez sur *Fabric* > *Overview*, vérifiez le résumé du stockage, l'utilisation des classifications, les unités logiques par baie et le stockage du groupe hôte. image:hyperv-smis-image11.png["Vérifier la capacité de la SVM"]
+
+
+=== provisionnement avec SCVMM avec SMI-S Provider
+
+SCVMM utilise SMI-S Provider pour interagir avec les systèmes de stockage, ce qui vous permet de créer et de gérer des ressources de stockage directement depuis SCVMM.
+
+==== stockage iSCSI . Dans la console SCVMM, sélectionnez Fabric > Storage , cliquez avec le bouton droit de la souris sur *Classifications and pools* et sélectionnez *Create Logical Unit*. Choisissez le pool de stockage et la classification et entrez le nom, la description, la taille et le groupe d'hôtes de l'unité logique. image:hyperv-smis-image9.png["Créer un stockage d'unité logique"]
+
+==== stockage SMB . Sélectionnez *Fabric* > *Storage* > cliquez avec le bouton droit de la souris sur *File Servers* et choisissez *Create File Share*, sélectionnez *File Server*, entrez le nom, le type de stockage, le pool de stockage et la classification. image:hyperv-smis-image10.png["Créer des partages de fichiers"]
+
+== journaux et traces vous pouvez configurer la façon dont SMI-S Provider gère les journaux et les fichiers de trace, comme la spécification des niveaux de messages à consigner et le répertoire dans lequel les journaux sont enregistrés. Vous spécifiez également les composants à suivre, la cible à laquelle les messages de suivi sont écrits, le niveau de traçage et l'emplacement du fichier de trace.
+
+==== paramètre journaux par défaut, tous les messages système sont consignés et les journaux de messages système se trouvent dans le répertoire journaux du répertoire dans lequel le fournisseur SMI-S NetApp est installé. Vous pouvez modifier l'emplacement et le niveau des messages système qui sont écrits dans le journal du serveur CIM.
+
+* Vous pouvez choisir le niveau de journalisation parmi les options Trace, information, Avertissement, grave, fatale. Pour modifier le niveau de journalisation des messages système, utilisez la commande ci-dessous :
+
+
+[]
+=====
+cimconfig -s loglevel=new_log_level -p
+
+=====
+* Modifier le répertoire du journal des messages système
+
+
+[]
+=====
+cimconfig -s logdir=new_log_directory -p
+
+=====
+==== paramètre Trace image:hyperv-smis-image12.png["Réglage du tracé"]
+
+== conclusion
+
+Le fournisseur NetApp SMI-S est un outil essentiel pour les administrateurs de stockage. Il fournit une solution standardisée, efficace et complète pour la gestion et le contrôle des systèmes de stockage. L'utilisation de protocoles et de schémas standard assure la compatibilité et simplifie les complexités associées à la gestion du réseau de stockage.
+
+====
