@@ -1,0 +1,287 @@
+---
+sidebar: sidebar 
+permalink: databases/automation_ora_clone_gcnv_asm.html 
+keywords: Oracle, GCP, GCNV, Database, clone 
+summary: 'La solution fournit un kit d"automatisation basé sur Ansible pour la configuration, le clonage et l"actualisation des bases de données de clone Oracle à partir de la base de données de secours physique d"Oracle Data Guard hébergée dans Google Cloud sur le stockage Google Cloud NetApp volumes avec configuration ASM.' 
+---
+= Cycle de vie automatisé des clones Oracle sur GCNV avec ASM
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+Allen Cao, Niyaz Mohamed, NetApp
+
+[role="lead"]
+La solution fournit un kit d'automatisation basé sur Ansible pour la configuration, le clonage et l'actualisation des bases de données de clone Oracle à partir de la base de données de secours physique d'Oracle Data Guard hébergée dans Google Cloud sur le stockage Google Cloud NetApp volumes avec configuration ASM.
+
+
+
+== Objectif
+
+L'exploitation, dans d'autres cas d'utilisation, des clones rapides de la base de données Oracle de secours physique dans une configuration Oracle Data Guard est à plusieurs fins. Il fournit une base de données de rapports en temps réel proche ainsi qu'une copie inscriptible de la base de données de production à des fins de développement ou UAT. Ainsi, il est possible d'éliminer les coûts de licence onéreux d'Active Data Guard si un délai de reporting court (10-15 minutes) est acceptable. Elle réduit les coûts de stockage, en particulier lorsque le clone dynamique de volumes de données primaires est une option. Ce kit d'outils d'automatisation basé sur Ansible permet aux utilisateurs de configurer, de cloner et d'actualiser des bases de données Oracle clonées en fonction de la planification utilisateur, afin de rationaliser la gestion du cycle de vie. Le kit s'applique aux bases de données Oracle déployées dans le cloud public Google à l'aide du stockage Google Cloud NetApp volumes (GCNV) et de la configuration de la base de données Oracle dans une configuration Data Guard.
+
+Cette solution répond aux cas d'utilisation suivants :
+
+* Configurez les fichiers de configuration des clones de base de données Oracle de secours pour l'automatisation Ansible.
+* Créez ou actualisez la base de données Oracle clone à partir de Data Guard en veille à l'aide d'un PlayBook Ansible selon un calendrier défini par l'utilisateur.
+
+
+
+
+== Public
+
+Cette solution est destinée aux personnes suivantes :
+
+* Administrateur de bases de données qui gère les bases de données Oracle dans Google Cloud.
+* Un administrateur du stockage qui gère le stockage Google NetApp volumes.
+* Propriétaire d'applications qui aime cloner des bases de données Oracle depuis la veille Data Guard pour le reste.
+
+
+
+
+== Licence
+
+En accédant au contenu de ce référentiel GitHub, en le téléchargeant, en l'installant ou en l'utilisant, vous acceptez les conditions de la licence énoncées dans link:https://github.com/NetApp/na_ora_hadr_failover_resync/blob/master/LICENSE.TXT["Fichier de licence"^].
+
+
+NOTE: Il existe certaines restrictions concernant la production et/ou le partage de travaux dérivés avec le contenu de ce référentiel GitHub. Assurez-vous de lire les termes de la Licence avant d'utiliser le contenu. Si vous n'acceptez pas toutes les conditions, n'accédez pas au contenu de ce référentiel, ne le téléchargez pas et ne l'utilisez pas.
+
+
+
+== Déploiement de la solution
+
+
+
+=== Conditions préalables au déploiement
+
+[%collapsible%open]
+====
+Le déploiement nécessite les conditions préalables suivantes.
+
+....
+Ansible controller:
+  Ansible v.2.10 and higher
+  ONTAP collection 21.19.1
+  Python 3
+  Python libraries:
+    netapp-lib
+    xmltodict
+    jmespath
+....
+....
+Oracle servers:
+  Physical standby Oracle servers in Data Guard configuration
+  Clone target Oracle servers with ASM configuration
+....
+
+NOTE: Pour plus de simplicité, le serveur Oracle cible du clone doit être configuré de manière identique au serveur Oracle de secours, tel que la pile logicielle Oracle, ainsi qu'à la disposition des répertoires pour Oracle Home, etc
+
+====
+
+
+=== Téléchargez la boîte à outils
+
+[%collapsible%open]
+====
+[source, cli]
+----
+https://bitbucket.ngage.netapp.com/projects/NS-BB/repos/na_oracle_clone_gcnv/browse
+----
+
+NOTE: La boîte à outils est uniquement accessible à l'utilisateur interne de NetApp avec un accès au bitbucket pour le moment. Pour les utilisateurs externes intéressés, veuillez demander l'accès à l'équipe de gestion de compte ou contacter l'équipe d'ingénierie des solutions NetApp.
+
+====
+
+
+=== Configuration des fichiers des hôtes source et cible Ansible
+
+[%collapsible%open]
+====
+Le kit d'outils inclut un fichier hosts qui définit la source et les hôtes Oracle cibles sur lesquels s'exécute le PlayBook Ansible. Généralement, il inclut l'hôte de base de données de secours dans la configuration de Data Guard et l'hôte de clonage Oracle cible. Voici un exemple de fichier. Une entrée d'hôte inclut l'adresse IP de l'hôte cible ainsi que la clé ssh permettant aux utilisateurs d'accéder à l'hôte pour exécuter la commande clone ou refresh. L'accès et la gestion du stockage Google Cloud NetApp volumes s'effectuent via l'interface de ligne de commande gcloud.
+
+....
+[ora_stdby]
+oras ansible_host=172.179.119.75 ansible_ssh_private_key_file=oras.pem
+....
+....
+[ora_clone]
+orac ansible_host=52.148.142.212 ansible_ssh_private_key_file=orac.pem
+....
+....
+[gcp]
+localhost ansible_connection=local
+....
+====
+
+
+=== Configuration des variables globales
+
+[%collapsible%open]
+====
+Vous trouverez ci-dessous un exemple de fichier de variables globales type vars.yml qui inclut des variables applicables au niveau global.
+
+....
+######################################################################
+###### Oracle DB clone on GCNV user configuration variables     ######
+###### Consolidate all variables from GCNV, linux and oracle    ######
+######################################################################
+....
+....
+############################################
+### ONTAP/GCNV specific config variables ###
+############################################
+....
+....
+# GCNV credential
+key_file: /home/admin/google-cloud-sdk/service_key.json
+....
+....
+# Cloned DB volumes from standby DB
+project_id: cvs-pm-host-1p
+location: us-west4
+protocol: nfsv3
+data_vols:
+  - "{{ groups.ora_stdby[0] }}-u02"
+  - "{{ groups.ora_stdby[0] }}-u03"
+  - "{{ groups.ora_stdby[0] }}-u04"
+  - "{{ groups.ora_stdby[0] }}-u05"
+  - "{{ groups.ora_stdby[0] }}-u06"
+  - "{{ groups.ora_stdby[0] }}-u07"
+  - "{{ groups.ora_stdby[0] }}-u08"
+....
+....
+nfs_lifs:
+  - 10.165.128.197
+  - 10.165.128.196
+  - 10.165.128.197
+  - 10.165.128.197
+  - 10.165.128.197
+  - 10.165.128.197
+  - 10.165.128.197
+....
+ nfs_client: 0.0.0.0/0
+....
+###########################################
+### Linux env specific config variables ###
+###########################################
+....
+....
+####################################################
+### DB env specific install and config variables ###
+####################################################
+....
+....
+# Standby DB configuration
+oracle_user: oracle
+oracle_base: /u01/app/oracle
+oracle_sid: NTAP
+db_unique_name: NTAP_LA
+oracle_home: '{{ oracle_base }}/product/19.0.0/{{ oracle_sid }}'
+spfile: '+DATA/{{ db_unique_name }}/PARAMETERFILE/spfile.289.1198520783'
+adump: '{{ oracle_base }}/admin/{{ db_unique_name }}/adump'
+grid_home: /u01/app/oracle/product/19.0.0/grid
+asm_disk_groups:
+  - DATA
+  - LOGS
+....
+....
+# Clond DB configuration
+clone_sid: NTAPDEV
+sys_pwd: "XXXXXXXX"
+....
+....
+# Data Guard mode - MaxAvailability or MaxPerformance
+dg_mode: MaxAvailability
+....
+====
+
+
+=== Configuration des variables hôte
+
+[%collapsible%open]
+====
+Les variables hôte sont définies dans le répertoire host_vars nommé {{ host_name }}.yml qui s'applique uniquement à l'hôte en question. Pour cette solution, seul le fichier de paramètres hôte de la base de données de clone cible est configuré. Les paramètres de la base de données de secours Oracle sont configurés dans le fichier de rva global. Vous trouverez ci-dessous un exemple de fichier cible orac.yml de variable hôte de base de données de clonage Oracle qui présente une configuration typique.
+
+ # User configurable Oracle clone host specific parameters
+....
+# Database SID - clone DB SID
+oracle_base: /u01/app/oracle
+oracle_user: oracle
+clone_sid: NTAPDEV
+oracle_home: '{{ oracle_base }}/product/19.0.0/{{ oracle_sid }}'
+clone_adump: '{{ oracle_base }}/admin/{{ clone_sid }}/adump'
+....
+....
+grid_user: oracle
+grid_home: '{{ oracle_base }}/product/19.0.0/grid'
+asm_sid: +ASM
+....
+====
+
+
+=== Configuration du serveur Oracle cible de clone supplémentaire
+
+[%collapsible%open]
+====
+La même pile logicielle Oracle doit être installée et corrigée pour le serveur Oracle cible de clone. $ORACLE_BASE et $ORACLE_HOME sont configurés pour l'utilisateur ORACLE .bash_profile. De plus, la variable $ORACLE_HOME doit correspondre au paramètre du serveur Oracle source. Si le paramètre ORACLE_HOME cible est différent de la configuration du serveur Oracle de secours, créez un lien symbolique pour contourner les différences. Voici un exemple.
+
+ # .bash_profile
+....
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+       . ~/.bashrc
+fi
+....
+ # User specific environment and startup programs
+....
+export ORACLE_BASE=/u01/app/oracle
+export GRID_HOME=/u01/app/oracle/product/19.0.0/grid
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/NTAP
+alias asm='export ORACLE_HOME=$GRID_HOME;export PATH=$PATH:$GRID_HOME/bin;export ORACLE_SID=+ASM'
+....
+
+NOTE: Assurez-vous que le paramètre de configuration asm_diskstring sur l'hôte de clonage de base de données inclut tous les volumes clonés points de montage NFS et chemins de répertoire vers les unités de disque.
+
+====
+
+
+=== Exécution de PlayBook
+
+[%collapsible%open]
+====
+Au total, deux playbooks permettent d'exécuter le cycle de vie des clones d'une base de données Oracle. Le clone ou l'actualisation de LA BASE DE DONNÉES peut être exécuté à la demande ou planifié en tant que tâche crontab.
+
+. Installez les prérequis du contrôleur Ansible, une seule fois.
++
+[source, cli]
+----
+ansible-playbook -i hosts ansible_requirements.yml
+----
+. Créez et actualisez la base de données de clonage à la demande ou régulièrement à partir de crontab avec un script shell qui appelle le PlayBook de clonage ou d'actualisation.
++
+[source, cli]
+----
+ansible-playbook -i oracle_clone_asm_gcnv.yml -u admin -e @vars/vars.yml
+----
++
+[source, cli]
+----
+0 */2 * * * /home/admin/na_oracle_clone_gcnv/oracle_clone_asm_gcnv.sh
+----
+
+
+Pour cloner des bases de données supplémentaires, créez un fichier oracle_clone_n_asm_gcnv.yml et oracle_clone_n_asm_gcnv.sh. Configurez les hôtes cibles Ansible, le fichier global var.yml et le fichier hostname.yml dans le répertoire host_vars en conséquence.
+
+
+NOTE: L'exécution de la boîte à outils à différentes étapes s'interrompt pour permettre l'exécution d'une tâche particulière. Par exemple, une pause de deux minutes est nécessaire pour permettre le clonage des volumes de base de données. En général, le défaut devrait être suffisant, mais le délai peut nécessiter un ajustement pour une situation ou une mise en œuvre unique.
+
+====
+
+
+== Où trouver des informations complémentaires
+
+Pour en savoir plus sur l'automatisation de la solution NetApp, consultez ce site Web link:../automation/automation_introduction.html["Automatisation des solutions NetApp"^]
