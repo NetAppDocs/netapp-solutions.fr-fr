@@ -1,0 +1,628 @@
+---
+sidebar: sidebar 
+permalink: vm-migrate/shift-toolkit-ui.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox 
+summary:  
+---
+= Configuration et utilisation de l'interface graphique de Shift Toolkit
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Cette section explique comment configurer et exécuter Shift Toolkit via l'interface utilisateur.
+
+
+
+== Exécuter la boîte à outils Shift
+
+* À l'aide du navigateur, accédez à l'interface utilisateur de la boîte à outils Shift en saisissant l'"http://<IP[]adresse spécifiée lors de l'installation>:3001 »
++
+
+NOTE: Utilisez Google Chrome ou Internet explorer pour une expérience optimale.
+
+* Accédez à l'interface utilisateur à l'aide des informations d'identification par défaut comme suit :
++
+Nom d'utilisateur : admin
+
++
+Mot de passe : admin
+
+
+
+
+NOTE: Les informations d'identification de l'administrateur peuvent être modifiées à l'aide de l'option « Modifier le mot de passe ».
+
+image:shift-toolkit-image18.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Acceptez le CLUF légal en cliquant sur « accepter et continuer ».
+
+image:shift-toolkit-image19.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+== Configuration de la boîte à outils Shift
+
+Une fois le stockage et la connectivité aux hyperviseurs source et de destination configurés correctement, commencez à configurer Shift Toolkit pour automatiser la migration ou la conversion du VMDK de la machine virtuelle au format approprié, en exploitant la fonctionnalité FlexClone.
+
+
+
+=== Ajouter des sites
+
+La première étape consiste à découvrir et à ajouter le vCenter source, puis les informations Hyper-V cibles (hyperviseurs et stockage) dans le kit Shift. Ouvrez la boîte à outils Shift dans un navigateur pris en charge et utilisez le nom d'utilisateur et le mot de passe par défaut (admin/admin), puis cliquez sur Add sites (Ajouter des sites).
+
+image:shift-toolkit-image20.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: Vous pouvez également ajouter des sites à l'aide de l'option découvrir.
+
+Ajoutez les plates-formes suivantes :
+
+*Source*
+
+* Détails du site source
++
+** Nom du site : indiquez un nom pour le site
+** Hyperviseur : sélectionnez VMware comme source (option uniquement disponible dans la version GA)
+** Emplacement du site : sélectionnez l'option par défaut
+** Connecteur – sélectionnez la sélection par défaut
+
+
+
+
+Une fois rempli, cliquez sur Continuer.
+
+image:shift-toolkit-image21.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* VCenter source
++
+** Point final : saisissez l'adresse IP ou le nom de domaine complet du serveur vCenter
+** Username - username pour accéder au vCenter (au format UPN : `username@domain.com`)
+** Mot de passe vCenter : mot de passe permettant d'accéder à vCenter pour effectuer l'inventaire des ressources.
+** Empreinte SSL vCenter (en option)
+
+
+
+
+Sélectionnez « accepter le certificat auto-signé » et cliquez sur Continuer.
+
+image:shift-toolkit-image22.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Informations d'identification du système de stockage ONTAP
+
+
+image:shift-toolkit-image23.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Une fois ajouté, le kit d'outils Shift effectue une découverte automatique et affiche les machines virtuelles avec les informations de métadonnées pertinentes. La boîte à outils Shift détecte automatiquement les réseaux et les groupes de ports utilisés par les machines virtuelles et les remplit.
+
+
+NOTE: Si des modifications sont apportées au site source, veillez à exécuter la découverte pour récupérer les informations les plus récentes. Pour ce faire, cliquez sur 3 points contre le nom du site et cliquez sur « découvrir le site ».
+
+
+NOTE: L'inventaire des machines virtuelles est actualisé automatiquement toutes les 24 heures.
+
+image:shift-toolkit-image24.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Pour afficher les données d'un vCenter spécifique, accédez au tableau de bord, cliquez sur « Afficher la liste des VM » en regard du nom de site approprié. La page affiche l'inventaire des machines virtuelles ainsi que les attributs des machines virtuelles.
+
+L'étape suivante consiste à ajouter l'hyperviseur de destination. Pour ajouter, cliquez sur “Ajouter un nouveau site” et sélectionnez “destination”.
+
+*Destination*
+
+image:shift-toolkit-image25.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Détails du site de destination
++
+** Nom du site : indiquez un nom pour le site
+** Hyperviseur : sélectionnez Hyper-V ou KVM comme cible
+** Emplacement du site : sélectionnez l'option par défaut
+** Connecteur – sélectionnez la sélection par défaut
+
+
+
+
+Une fois rempli, cliquez sur Continuer.
+
+image:shift-toolkit-image26.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+En fonction de la sélection de l'hyperviseur, renseignez les informations nécessaires.
+
+* Détails Hyper-V de destination
++
+** Adresse IP ou FQDN du gestionnaire de cluster de basculement ou autonome Hyper-V
+** Nom d'utilisateur : nom d'utilisateur auquel accéder (au format UPN : `username@domain.com` ou domaine\administrateur)
++
+Mot de passe : mot de passe permettant d'accéder à l'hôte Hyper-V ou à l'instance FCI pour effectuer l'inventaire des ressources.
+
++
+Sélectionnez « accepter le certificat auto-signé » et cliquez sur Continuer.
+
+
+
+
+
+image:shift-toolkit-image27.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Lorsque vous avez terminé, cliquez sur Continuer
+
+
+NOTE: La boîte à outils Shift ne communique pas directement avec System Center dans la version actuelle.
+
+
+NOTE: La détection d'hôte et de FCI Hyper-V s'appuie sur la résolution DNS. Assurez-vous que les noms d'hôte peuvent être résolus à partir de la VM de la boîte à outils Shift. Si la résolution échoue, mettez à jour le fichier hôte (C:\Windows\System32\drivers\etc\hosts) et relancez l'opération de détection.
+
+*Système de stockage ONTAP*
+
+image:shift-toolkit-image28.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+NOTE: Le système de stockage source et le système de destination doivent être identiques à ceux du format de disque au niveau du volume et au sein du même volume.
+
+image:shift-toolkit-image29.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+L'étape suivante consiste à regrouper les machines virtuelles requises dans leurs groupes de migration en tant que groupes de ressources.
+
+
+
+== Regroupements de ressources
+
+Une fois les plates-formes ajoutées, regroupez les VM que vous souhaitez migrer ou convertir en groupes de ressources. Les groupes de ressources de la boîte à outils Shift vous permettent de regrouper un ensemble de machines virtuelles dépendantes en groupes logiques contenant leurs ordres de démarrage et leurs délais de démarrage.
+
+
+NOTE: Assurez-vous que les qtrees sont provisionnés (comme indiqué dans la section des prérequis) avant de créer les groupes de ressources.
+
+Pour commencer à créer des groupes de ressources, cliquez sur l’élément de menu “Créer un nouveau groupe de ressources”.
+
+. Accédez aux groupes de ressources, cliquez sur "Créer un nouveau groupe de ressources".
++
+image:shift-toolkit-image30.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Dans le « Nouveau groupe de ressources », sélectionnez le site source dans la liste déroulante et cliquez sur « Créer ».
+. Fournissez les détails du groupe de ressources et sélectionnez le flux de travail. Le flux de travail offre deux options
++
+.. Migration basée sur les clones : effectue la migration de bout en bout de la machine virtuelle, depuis l'hyperviseur source vers l'hyperviseur de destination.
+.. Conversion basée sur les clones : effectue la conversion du format de disque au type d'hyperviseur sélectionné.
++
+image:shift-toolkit-image31.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+. Cliquez sur « Continuer ».
+. Sélectionnez les machines virtuelles appropriées à l'aide de l'option de recherche. L'option de filtre par défaut est « datastore ».
++
+
+NOTE: Déplacer les machines virtuelles à convertir ou migrer vers un datastore désigné sur un nouveau SVM ONTAP avant la conversion. Cela permet d'isoler le datastore NFS de production et le datastore désigné peut être utilisé pour l'entreposage temporaire des machines virtuelles.
+
++
+image:shift-toolkit-image32.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: La liste déroulante datastore dans ce contexte affiche uniquement les datastores NFSv3. Les datastores NFSv4 ne seront pas affichés.
+
++
+image:shift-toolkit-image33.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Mettez à jour les détails de la migration en sélectionnant « site de destination », entrée Hyper-V de destination » et mappage du datastore vers qtree.
++
+image:shift-toolkit-image34.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: Assurez-vous que le chemin de destination (où sont stockés les VM convertis) est défini sur un qtree lors de la conversion de VM d'ESX vers Hyper-V. définissez le chemin de destination sur le qtree approprié.
+
++
+
+NOTE: Plusieurs qtrees peuvent être créés et utilisés pour stocker les disques de VM convertis en conséquence.
+
+. Sélectionnez l'ordre de démarrage et le délai de démarrage (s) pour toutes les machines virtuelles sélectionnées. Définissez l'ordre de mise sous tension en sélectionnant chaque machine virtuelle et en définissant la priorité. 3 est la valeur par défaut pour toutes les machines virtuelles.
++
+Les options sont les suivantes :
+
++
+1 – première machine virtuelle à mettre sous tension 3 – valeur par défaut 5 – dernière machine virtuelle à mettre sous tension
+
++
+image:shift-toolkit-image35.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Cliquez sur “Créer un groupe de ressources”.
++
+image:shift-toolkit-image36.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: En cas de besoin de modifier le groupe de ressources pour ajouter ou supprimer des machines virtuelles, utilisez les 3 points par rapport au nom du groupe de ressources et sélectionnez « Modifier le groupe de ressources ».
+
+
+
+
+
+=== Plans
+
+Pour migrer ou convertir des machines virtuelles, un plan est nécessaire. Sélectionnez les plateformes d'hyperviseur source et de destination dans la liste déroulante et choisissez les groupes de ressources à inclure dans ce modèle, ainsi que le regroupement de la mise sous tension des applications (par exemple, les contrôleurs de domaine, puis les groupes de ressources 1, puis 2, etc.). Ils sont aussi souvent appelés plans de migration. Pour définir le photocalque, accédez à l'onglet « Blueprints » et cliquez sur « Create New Blueprint ».
+
+Pour commencer à créer un plan de référence, cliquez sur Create New Blueprint (Créer un nouveau plan de référence).
+
+. Accédez aux Blueprints, cliquez sur Create New Blueprint (Créer un nouveau modèle).
++
+image:shift-toolkit-image37.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Dans le nouveau modèle, indiquez un nom pour le plan et ajoutez les mappages d'hôte nécessaires en sélectionnant site source > vCenter associé, site de destination et l'hyperviseur Hyper-V associé.
+. Une fois les mappages effectués, sélectionnez le mappage entre le cluster et l'hôte.
++
+image:shift-toolkit-image38.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Sélectionnez Resource Group Details et cliquez sur continue.
++
+image:shift-toolkit-image39.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. Définir l'ordre d'exécution pour le groupe de ressources. Cette option permet de sélectionner la séquence d'opérations lorsque plusieurs groupes de ressources existent.
+. Une fois l'opération terminée, sélectionnez mappage réseau vers le commutateur virtuel approprié. Les commutateurs virtuels doivent déjà être provisionnés dans Hyper-V.
++
+image:shift-toolkit-image40.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: Côté Hyper-V, le type de commutateur virtuel “externe” est la seule option prise en charge pour la sélection du réseau.
+
++
+
+NOTE: Pour la migration de test, la sélection par défaut est « ne pas configurer le réseau » et la boîte à outils Shift n'effectue pas d'affectation d'adresse IP. Une fois le disque converti et la machine virtuelle achetée du côté Hyper-V, affectez manuellement les commutateurs réseau à bulle pour éviter toute collision avec le réseau de production.
+
++
+image:shift-toolkit-image41.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+. En fonction de la sélection de machines virtuelles, les mappages de stockage sont sélectionnés automatiquement.
++
+
+NOTE: Assurez-vous que le qtree est provisionné au préalable et que les autorisations nécessaires sont attribuées pour que le serveur virtuel puisse être créé et mis sous tension à partir du partage SMB.
+
+. Sous VM Details, fournissez le compte de service et les informations d'identification utilisateur valides pour chaque type de système d'exploitation. Il permet de se connecter à la machine virtuelle pour créer et exécuter certains scripts nécessaires à la suppression des outils VMware et à la sauvegarde des détails de configuration IP.
++
+.. Pour les systèmes d'exploitation Windows, il est recommandé d'utiliser un utilisateur avec Privileges, administrateur local. Les informations d'identification de domaine peuvent également être utilisées, mais assurez-vous qu'il existe un profil utilisateur sur la machine virtuelle avant la conversion. Dans le cas contraire, les informations d'identification de domaine ne fonctionneront pas, car elles seraient à l'état de rechercher l'authentification de domaine lorsqu'aucun réseau n'est connecté.
+.. Dans le cas de machines virtuelles invitées basées sur Linux, fournissez à un utilisateur qui peut exécuter des commandes sudo sans mot de passe, ce qui signifie que l'utilisateur doit faire partie de la liste des sudoers ou être ajouté en tant que nouveau fichier de configuration au dossier /etc/sudoers.d/.
++
+image:shift-toolkit-image42.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+. Sous VM details, sélectionnez l'option IP config appropriée. Par défaut, "ne pas configurer" est sélectionné.
++
+.. Pour migrer des machines virtuelles avec les mêmes adresses IP à partir du système source, sélectionnez « conserver l'IP ».
+.. Pour migrer des machines virtuelles à l'aide d'adresses IP statiques dans le système source et attribuer DHCP aux machines virtuelles cibles, puis sélectionnez « DHCP ».
++
+Assurez-vous que les conditions suivantes sont remplies pour que cette fonctionnalité fonctionne :
+
++
+*** Assurez-vous que les machines virtuelles sont sous tension pendant la phase prepareVM et jusqu'à l'heure de migration planifiée.
+*** Pour les machines virtuelles VMware, assurez-vous que VMware Tools est installé.
+*** Assurez-vous que le script de préparation est exécuté sur la machine virtuelle source par un compte avec Privileges administrateur sur le système d'exploitation Windows et avec sudo Privileges sans option de mot de passe sur le système d'exploitation distro Linux pour créer des travaux cron.
+
+
+
+
+. L'étape suivante est la configuration des machines virtuelles.
++
+.. Vous pouvez également redimensionner les paramètres CPU/RAM des machines virtuelles, ce qui peut s'avérer très utile pour le redimensionnement.
+.. Remplacement de l'ordre de démarrage : permet également de modifier l'ordre de démarrage et le délai de démarrage (s) pour toutes les machines virtuelles sélectionnées dans les groupes de ressources. Il s'agit d'une option supplémentaire permettant de modifier l'ordre de démarrage si des modifications sont requises par rapport à ce qui a été sélectionné lors de la sélection de l'ordre de démarrage du groupe de ressources. Par défaut, l'ordre de démarrage sélectionné lors de la sélection du groupe de ressources est utilisé, mais toutes les modifications peuvent être effectuées à ce stade.
+.. Mise sous TENSION : décochez cette option si le flux de travail ne doit pas mettre la machine virtuelle sous tension. L'option par défaut est ON, ce qui signifie que la machine virtuelle sera sous tension.
+.. Supprimer les outils VMware : le kit d'outils Shift supprime les outils VMware après la conversion. Cette option est sélectionnée par défaut. Cette option peut être désélectionnée si le plan consiste à exécuter les propres scripts personnalisés du client.
+.. Génération : la boîte à outils SHIFT utilise la règle de pouce suivante et utilise par défaut la règle appropriée - Gen1 > BIOS et Gen2 > EFI. Aucune sélection n'est possible pour cette option.
+.. Conserver MAC : l'adresse MAC des machines virtuelles respectives peut être conservée pour surmonter les problèmes de licence pour ces applications qui reposent sur MAC.
+.. Remplacement du compte de service : cette option permet de spécifier un compte de service distinct si le compte global ne peut pas être utilisé.
++
+image:shift-toolkit-image43.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+. Cliquez sur Continuer.
+. À l'étape suivante, planifiez la migration en cochant la case pour définir la date et l'heure. Assurez-vous que toutes les machines virtuelles sont préparées et désactivées avant la date prévue. Lorsque vous avez terminé, cliquez sur Create Blueprint.
++
+image:shift-toolkit-image44.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: Lors de la planification, choisissez une date qui est au moins 30 minutes en avance sur l'heure actuelle de la machine virtuelle du service. Cela permet de s'assurer que le flux de travail dispose de suffisamment de temps pour préparer les machines virtuelles au sein du groupe de ressources.
+
+. Une fois le photocalque créé, une tâche prepareVM est lancée et exécute automatiquement des scripts sur les machines virtuelles sources pour les préparer à la migration
++
+image:shift-toolkit-image45.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+Cette tâche exécute un script à l'aide de la méthode Invoke-VMScript pour copier les scripts nécessaires à la suppression des outils VMware et à la sauvegarde des détails de configuration du réseau, y compris l'adresse IP, les routes et les informations DNS, qui seront utilisées pour conserver les mêmes paramètres sur la machine virtuelle cible.
+
++
+** Pour les systèmes d'exploitation Windows, l'emplacement par défaut où sont stockés les scripts de préparation est le dossier « C:\NetApp ».
++
+image:shift-toolkit-image46.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+** Pour les machines virtuelles Linux, l'emplacement par défaut où sont stockés les scripts de préparation est /NetApp et le répertoire /opt.
++
+image:shift-toolkit-image47.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+
+NOTE: Pour une machine virtuelle source Linux exécutant CentOS ou Red Hat, Shift Toolkit est intelligent pour installer automatiquement les pilotes Hyper-V. Ces pilotes doivent être présents dans la machine virtuelle source avant la conversion du disque pour garantir que la machine virtuelle peut démarrer correctement après la conversion.
+
++
+
+NOTE: Pour plus d'informations, reportez-vous link:https://access.redhat.com/solutions/3465011["Le système est bloqué en position d'arrêt après la migration d'une machine virtuelle RHEL vers une solution hyper-V."]à la .
+
++
+Une fois la tâche prepareVM terminée avec succès (comme indiqué dans la capture d'écran ci-dessous), les machines virtuelles sont prêtes pour la migration et l'état du modèle se met à jour sur « actif ».
+
++
+image:shift-toolkit-image48.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image49.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+La migration va maintenant avoir lieu à l'heure définie ou peut être démarrée manuellement en cliquant sur l'option migrer.
+
+
+
+
+
+
+
+== Surveillance et tableau de bord
+
+Surveillez l'état des travaux à l'aide de Job Monitoring.
+
+image:shift-toolkit-image76.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Grâce à une interface utilisateur intuitive, évaluez en toute confiance l'état de la migration, de la conversion et des modèles. Les administrateurs peuvent ainsi identifier rapidement les plans qui ont réussi, échoué ou partiellement défaillants, ainsi que le nombre de machines virtuelles migrées ou converties.
+
+image:shift-toolkit-image77.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+== Paramètres avancés
+
+La boîte à outils Shift fournit des paramètres avancés auxquels vous pouvez accéder en cliquant sur l'icône Paramètres dans la barre d'outils supérieure.
+
+image:shift-toolkit-image78.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+=== Informations d'identification SSP
+
+Shift utilise les informations d'identification du fournisseur de services de sécurité (Credential Security Service Provider, Credential Security Service Provider) pour gérer le transfert des informations d'identification Pendant le processus de conversion, le serveur Shift exécute un certain nombre de scripts sur le système d'exploitation invité de la machine virtuelle en cours de conversion. Les informations d'identification pour exécuter ces scripts sont transmises via un « double-hop » du serveur Shift au système d'exploitation invité via le serveur Hyper-V.
+
+image:shift-toolkit-image79.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+*Configuration du serveur Shift en tant que client CredSSP :*
+
+L'assistant « Paramètres avancés » configure automatiquement le serveur Shift en tant que client CredSSP. Ainsi, le serveur Shift peut déléguer des informations d'identification aux serveurs Hyper-V.
+
+*Ce qui se passe en coulisses:*
+
+La boîte à outils Shift exécute une série de commandes pour se configurer en tant que client, ce qui lui permet de gérer les hôtes Hyper-V. Ce processus implique de configurer les configurations nécessaires.
+
+* Exécute les commandes suivantes :
++
+** Set-Item WSMAN:\localhost\client\TrustedHosts -value « fqdn-of-hyper-v-host »
+** Enable-WSManCredSSP -role client -DelegateComputer « fqdn-of-hyper-v-host »
+
+
+* Configure la stratégie de groupe suivante :
++
+** Configuration de l'ordinateur > modèles d'administration > système > délégation des informations d'identification > Autoriser la délégation de nouvelles informations d'identification avec authentification de serveur NTLM uniquement
+
+
+
+
+Sélectionnez Activer et ajoutez wsman/fqdn-of-hyper-v-host.
+
+*Configuration du serveur Hyper-V en tant que serveur CredSSP*
+
+Utilisez l'applet de commande Enable-WSManCredSSP sur le serveur Hyper-V pour configurer le serveur Hyper-V en tant que serveur CredSSP, ce qui permet au serveur Hyper-V de recevoir des informations d'identification du serveur Shift.
+
+Sur l'hôte Hyper-V sur lequel les machines virtuelles seront provisionnées par le serveur Shift Toolkit, ouvrez une session Windows PowerShell en tant qu'administrateur et exécutez les commandes suivantes :
+
+. Activer-PSRemoting
+. Enable-WSManCredSSP -serveur de rôles
+
+
+
+
+=== Andaineur
+
+La page swagger du paramètre Avancé permet l'interaction avec les API disponibles. Les ressources disponibles via l'API REST de la boîte à outils Shift sont organisées en catégories, comme indiqué sur la page de documentation de l'API swagger. Une brève description de chacune des ressources avec les chemins de ressources de base est présentée ci-dessous, ainsi que des considérations d'utilisation supplémentaires, le cas échéant.
+
+image:shift-toolkit-image80.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+*Session*
+
+Vous pouvez utiliser cette API pour vous connecter au serveur de boîte à outils Shift. Cette API renvoie un jeton d'autorisation d'utilisateur utilisé pour authentifier les requêtes suivantes.
+
+* Démarrez une session
+* Valider une session
+* Obtenez toutes les Session ID
+* Mettre fin à une session
+
+
+*Connecteur*
+
+* Ajouter un connecteur
+* Obtenir des détails sur tous les connecteurs
+* Mettre à jour les détails du connecteur par ID
+* Obtenir les détails du connecteur par ID
+
+
+*Locataire*
+
+Utilisez des API pour effectuer des opérations d'ajout et d'obtention
+
+* Ajouter un locataire
+* Obtenez tous les locataires
+
+
+*Utilisateur*
+
+Utilisez des API pour effectuer des opérations d'ajout, d'obtention, de modification et d'acceptation
+
+* Ajouter un utilisateur
+* Obtenir tous les utilisateurs
+* Modifier le mot de passe de l'utilisateur
+* Acceptez le CLUF
+
+
+*CredSSP*
+
+Utilisez des API pour activer et exécuter des opérations
+
+* Activer crédssp
+* Obtenez l'état de votre crédssp
+
+
+*Site*
+
+Utilisez des API pour effectuer des opérations d'obtention, d'ajout, de suppression et de mise à jour
+
+* Obtenir le nombre de sites
+* Consultez tous les détails du site
+* Ajouter un site
+* Obtenir les détails du site par ID
+* Supprimer un site par ID
+* Ajouter un environnement virtuel à un site
+* Ajouter un environnement de stockage à un site
+* Obtenez des informations détaillées sur l'environnement virtuel d'un site
+* Mettre à jour les détails de l'environnement virtuel d'un site
+* Supprimer les détails de l'environnement virtuel d'un site
+* Obtenir des informations détaillées sur l'environnement de stockage d'un site
+* Mettre à jour les détails de l'environnement de stockage d'un site
+* Supprimer les détails de l'environnement de stockage d'un site
+
+
+*Découverte*
+
+Utilisez les API pour effectuer des opérations de détection et d'obtention
+
+* Découvrir le site source
+* Obtenir toutes les demandes de découverte pour le site source
+* Découvrir le site cible
+* Obtenir toutes les demandes de découverte pour le site cible
+* Obtenir les étapes de découverte pour le site source par ID
+* Obtenir les étapes de découverte pour le site cible par ID
+
+
+*VM*
+
+Utilisez des API pour effectuer des opérations GET
+
+* Obtenir les VM pour un site et l'environnement virtuel en source
+* Obtenir des machines virtuelles non protégées pour un site et un environnement virtuel
+* Obtenez le nombre de VM
+* Protégez le nombre de VM
+
+
+*Ressource*
+
+Utilisez des API pour effectuer des opérations GET
+
+* Consultez les détails des ressources pour un site et un environnement virtuel
+* Obtenez le nombre de ressources du site source
+
+
+*Groupe de ressources*
+
+Utilisez des API pour effectuer des opérations d'ajout, de mise à jour et d'obtention
+
+* Obtenez le nombre de groupes de protection
+* Obtenez tous les détails sur les groupes de protection
+* Ajoutez un groupe de protection
+* Obtenez les détails d'un groupe de protection par ID
+* Supprimer un groupe de protection par ID
+* Mettre à jour les détails du groupe de protection par ID
+* Obtenir les VM d'un groupe de protection par ID
+* Obtenez des Blueprints contenant le groupe de protection
+
+
+*Modèle*
+
+Utilisez des API pour effectuer des opérations d'ajout, de mise à jour et d'obtention
+
+* Obtenir le nombre de modèles
+* Consultez tous les détails de la référence
+* Ajouter un plan de référence
+* Obtenir les détails du photocalque par ID
+* Supprimer le photocalque par ID
+* Mettre à jour les détails du photocalque pour l'ID
+* Obtenir les VM d'un modèle
+* Obtenez l'état de l'alimentation des machines virtuelles présentes dans le modèle
+* Obtenir le nombre de modèles
+* Consultez tous les détails du plan
+
+
+* Conformité*
+
+Utilisez des API pour effectuer des opérations d'ajout et d'obtention
+
+* Obtenez le résultat de la vérification de conformité d'un modèle
+* Obtenir le statut final du contrôle de conformité pour un modèle
+* Ajoutez à la demande une nouvelle vérification de conformité pour un modèle
+
+
+*Exécution*
+
+Utilisez des API pour effectuer des opérations GET
+
+* Obtenez tous les détails de l'exécution
+* Obtenir les détails de l'exécution en cours
+* Obtenir le nombre d'exécutions
+* Obtenir le nombre d'exécutions en cours
+* Obtenir les étapes pour l'ID d'exécution
+
+
+*Récupération*
+
+Utilisez des API pour effectuer des opérations d'ajout et d'obtention
+
+* Ajouter une nouvelle demande d'exécution pour un modèle
+* Ajouter une nouvelle tentative d'exécution pour un schéma de référence
+* Obtenir les États d'exécution de tous les modèles
+* Obtenir le statut d'exécution pour l'ID de modèle
+
+
+*Bloc de script*
+
+Utilisez des API pour effectuer des opérations GET et de mise à jour
+
+* Obtenir toutes les métadonnées de scripts
+* Obtenir les métadonnées de script par ID
+* Obtenir toutes les métadonnées d'actualisation
+* Exécuter le script
+
+
+
+
+=== Bloc de script
+
+Le bloc de script de la boîte à outils Shift fournit un exemple de code qui aide à automatiser, intégrer et développer des fonctions via des API internes et externes disponibles. Dans la section exemples de code du bloc de script, parcourez et téléchargez des exemples écrits par l'équipe d'automatisation de la boîte à outils Shift et par les membres de la communauté. Utilisez les échantillons pour commencer à utiliser des tâches d'automatisation, de gestion ou d'intégration.
+
+image:shift-toolkit-image81.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+Voici un exemple de script powershell qui peut être utilisé pour supprimer un travail spécifique dans l'interface utilisateur Shift. La fonctionnalité n'est pas exposée via le flux de travail, mais elle peut être effectuée de la même manière via le bloc de script. Le même script est également disponible en tant que script bat qui peut être exécuté facilement en téléchargeant et en appelant le même.
+
+image:shift-toolkit-image82.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+L'objectif ici est de fournir des exemples de scripts permettant d'effectuer les opérations dès le premier jour et le premier jour pour des hyperviseurs spécifiques à l'aide des API du kit Shift et des API publiées de l'hyperviseur concerné.
+
+
+
+== Environnements SAN
+
+Comme l'une des principales exigences de la boîte à outils Shift, les machines virtuelles à convertir doivent résider dans un environnement NAS (NFS pour ESX). Si les machines virtuelles résident dans un environnement SAN (iSCSI, FC, FCoE, NVMeFC), elles doivent être migrées vers un environnement NAS avant la conversion.
+
+image:shift-toolkit-image83.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+La méthode ci-dessus décrit un environnement SAN classique dans lequel les machines virtuelles sont stockées dans un datastore SAN. Les machines virtuelles à convertir d'ESX vers Hyper-V avec leurs disques sont d'abord migrées vers un magasin de données NFS avec VMware vSphere Storage vMotion. Le kit d'outils Shift utilise FlexClone pour convertir les machines virtuelles d'ESX en Hyper-V. les machines virtuelles converties (ainsi que leurs disques) résident sur un partage CIFS. Les machines virtuelles converties (ainsi que leurs disques) sont remigrées vers le fichier CSV compatible SAN avec Hyper-V Storage Live migration.
+
+
+NOTE: La migration dynamique de la machine virtuelle peut échouer si les nœuds ont des ensembles de fonctionnalités de processus différents. Ceci peut être géré en définissant “migrer vers un ordinateur physique avec un processeur différent”. Ce script est disponible sous le bloc de script.

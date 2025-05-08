@@ -1,0 +1,133 @@
+---
+sidebar: sidebar 
+permalink: vm-migrate/shift-toolkit-conversion.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox 
+summary:  
+---
+= Utilisation de la boîte à outils Shift pour effectuer la conversion VM
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Cette section explique comment effectuer une conversion VM à l'aide de Shift Toolkit.
+
+
+
+== Conversion
+
+L'option de conversion basée sur les clones permet de convertir simplement le disque virtuel entre des hyperviseurs pour les formats de disque suivants :
+
+* VMware ESX vers Microsoft Hyper-V (VMDK à VHDX)
+* VMware ESX vers Red Hat KVM (VMDK à QCOW2)
+
+
+Les fichiers qcow2 convertis sont compatibles avec tous les hyperviseurs KVM. Par exemple, un fichier qcow2 peut être utilisé avec KVM basé sur RHEL en utilisant virt-Manager pour créer une machine virtuelle, ainsi qu'avec KVM ubuntu, KVM basé sur Rocky Linux et autres. Il en va de même pour Oracle Linux Virtualization Manager avec un réglage et pour la virtualisation OpenShift après l'importation à l'aide de NetApp Trident. L'objectif est de fournir le disque (converti en secondes en minutes) qui peut ensuite être intégré aux scripts d'automatisation existants utilisés par les organisations pour provisionner la machine virtuelle et affecter le réseau. Cette approche contribue à réduire les délais de migration globaux, avec la conversion des disques gérée par les API du kit de ressources Shift et le script restant qui présente les machines virtuelles.
+
+Dans les prochaines versions, le kit d'outils Shift prendra en charge la migration de bout en bout de VMware vers d'autres hyperviseurs KVM compatibles. Toutefois, avec la version actuelle, la conversion peut s'effectuer via l'interface utilisateur ou les API.
+
+
+
+=== Convertir au format QCOW2
+
+Pour convertir les disques virtuels au format QCOW2 à l'aide de la boîte à outils NetApp Shift, procédez comme suit :
+
+* Créez un type de site de destination en spécifiant KVM comme hyperviseur.
++
+
+NOTE: Les détails de l'hyperviseur ne sont pas requis pour KVM.
+
++
+image:shift-toolkit-image57.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez un groupe de ressources avec les machines virtuelles pour lesquelles la conversion de disque est requise
++
+image:shift-toolkit-image58.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image59.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image60.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez le photocalque pour convertir le disque virtuel au format QCOW2.
++
+image:shift-toolkit-image61.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image62.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image63.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Désigner un créneau à l'aide de l'option de planification. Si la conversion doit être effectuée sur une base ad hoc, ne cochez pas l'option de planification.
++
+image:shift-toolkit-image64.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Une fois le photocalque créé, un travail prepareVM est lancé et il exécute automatiquement des scripts sur les machines virtuelles sources pour les préparer à la conversion.
++
+image:shift-toolkit-image65.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Une fois la tâche prepareVM terminée avec succès (comme indiqué dans la capture d'écran ci-dessous), les disques de machine virtuelle associés aux machines virtuelles sont prêts pour la conversion et l'état du photocalque est mis à jour à « actif ».
+* Cliquez sur Convert après avoir planifié le temps d'indisponibilité requis pour les machines virtuelles.
++
+image:shift-toolkit-image66.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* L'opération de conversion utilise un snapshot à un point dans le temps. Mettre la machine virtuelle hors tension si nécessaire, puis lancer une nouvelle tentative d'opération.
++
+image:shift-toolkit-image67.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+** L'opération de conversion exécute chaque opération sur la machine virtuelle et le disque correspondant pour générer le format approprié.
++
+image:shift-toolkit-image68.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+* Utilisez le disque converti en créant manuellement la machine virtuelle et en y attachant le disque.
++
+image:shift-toolkit-image69.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+NOTE: La boîte à outils Shift prend en charge les conversions de disques uniquement pour le format qcow2. Elle ne prend pas en charge la création ou l'enregistrement de machines virtuelles. Pour utiliser le disque converti, créez manuellement la machine virtuelle et connectez le disque.
+
+
+
+=== Convertir au format VHDX
+
+Pour convertir les disques virtuels au format VHDX en utilisant le kit NetApp Shift, suivez ces étapes générales :
+
+* Créez un type de site de destination en spécifiant Hyper-V comme hyperviseur.
+* Créez un groupe de ressources avec les machines virtuelles pour lesquelles la conversion de disque est requise
++
+image:shift-toolkit-image70.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
++
+image:shift-toolkit-image71.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Créez le modèle pour convertir le disque virtuel au format VHDX. Une fois le photocalque créé, les travaux de préparation sont automatiquement lancés.
++
+image:shift-toolkit-image72.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Choisissez convertir une fois que le temps d'indisponibilité requis pour les machines virtuelles a été planifié.
++
+image:shift-toolkit-image73.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* L'opération de conversion exécute chaque opération sur le serveur virtuel et le disque correspondant afin de générer le format VHDX approprié.
++
+image:shift-toolkit-image74.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+* Utilisez le disque converti en créant manuellement la machine virtuelle et en y attachant le disque.
++
+image:shift-toolkit-image75.png["Figure montrant la boîte de dialogue entrée/sortie ou représentant le contenu écrit"]
+
+
+
+
+NOTE: Pour utiliser le disque VHDX converti dans un serveur virtuel, celui-ci doit être créé manuellement via le gestionnaire Hyper-V ou les commandes PowerShell et le disque doit être attaché à celui-ci. En outre, le réseau doit également être mappé manuellement.
