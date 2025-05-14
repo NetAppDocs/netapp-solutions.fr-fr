@@ -22,7 +22,7 @@ Cette section traite de la surveillance à l'aide de Cloud Insights pour les mac
 
 Voici un exemple dans lequel l'espace de noms qui contient une machine virtuelle dans OpenShift Virtualization est contrôlé en fonction des événements. Dans cet exemple, un moniteur est créé sur la base de **logs.kubernetes**.event pour l'espace de noms spécifié dans le cluster.
 
-image:redhat_openshift_ci_samples_image1.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image1.png["Échantillons Cloud Insights"]
 
 Cette requête fournit tous les événements de la machine virtuelle dans l'espace de nom. (Il n'y a qu'une seule machine virtuelle dans l'espace de noms). Une requête avancée peut également être construite pour filtrer sur la base de l'événement où la raison est « échec » ou « montage en panne ». Ces événements sont généralement créés en cas de problème lors de la création d'un volume persistant ou du montage du volume persistant sur un pod dynamique pour indiquer des problèmes dans le mécanisme de provisionnement dynamique afin de créer un volume persistant volumes pour la machine virtuelle.
 Lors de la création du moniteur d'alertes comme indiqué ci-dessus, vous pouvez également configurer la notification aux destinataires. Vous pouvez également fournir des actions correctives ou des informations supplémentaires qui peuvent être utiles pour résoudre l'erreur. Dans l'exemple ci-dessus, des informations supplémentaires peuvent être utiles pour examiner la configuration back-end Trident et les définitions des classes de stockage afin de résoudre le problème.
@@ -33,13 +33,13 @@ Lors de la création du moniteur d'alertes comme indiqué ci-dessus, vous pouvez
 
 Avec change Analytics, vous pouvez afficher les modifications apportées à l'état de votre cluster, y compris les personnes qui ont apporté ces modifications qui peuvent vous aider à résoudre les problèmes.
 
-image:redhat_openshift_ci_samples_image2.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image2.png["Échantillons Cloud Insights"]
 
 Dans l'exemple ci-dessus, change Analysis est configuré sur le cluster OpenShift pour l'espace de noms contenant une VM OpenShift Virtualization. Le tableau de bord affiche les modifications par rapport à la chronologie. Vous pouvez explorer pour voir ce qui a changé et cliquer sur All Changes Diff pour voir la différence des manifestes. Dans le manifeste, vous pouvez voir qu'une nouvelle sauvegarde des disques persistants a été créée.
 
-image:redhat_openshift_ci_samples_image3.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image3.png["Échantillons Cloud Insights"]
 
-image:redhat_openshift_ci_samples_image4.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image4.png["Échantillons Cloud Insights"]
 
 
 
@@ -47,18 +47,18 @@ image:redhat_openshift_ci_samples_image4.jpg["Échantillons Cloud Insights"]
 
 Avec Cloud Insights, vous pouvez facilement consulter le stockage back-end des disques de VM et plusieurs statistiques sur les demandes de volume virtuel.
 
-image:redhat_openshift_ci_samples_image5.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image5.png["Échantillons Cloud Insights"]
 
 Vous pouvez cliquer sur les liens sous la colonne backend, qui extront les données directement depuis le système de stockage ONTAP back-end.
 
-image:redhat_openshift_ci_samples_image6.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image6.png["Échantillons Cloud Insights"]
 
 Une autre façon d'examiner le mappage du pod au stockage est de créer une requête All Metrics à partir du menu d'observabilité sous Explore.
 
-image:redhat_openshift_ci_samples_image7.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image7.png["Échantillons Cloud Insights"]
 
 Cliquez sur l'un des liens pour obtenir les détails correspondants sur le stockage ONTAP. Par exemple, en cliquant sur le nom d'un SVM dans la colonne storageVirtualmachine, on extrait les détails sur le SVM de ONTAP. Si vous cliquez sur le nom d'un volume interne, les détails relatifs au volume dans ONTAP seront détaillés.
 
-image:redhat_openshift_ci_samples_image8.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image8.png["Échantillons Cloud Insights"]
 
-image:redhat_openshift_ci_samples_image9.jpg["Échantillons Cloud Insights"]
+image:redhat_openshift_ci_samples_image9.png["Échantillons Cloud Insights"]
