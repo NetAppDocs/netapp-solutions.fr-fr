@@ -20,7 +20,7 @@ Pour préparer l'environnement de workload de base de données de cloud hybride 
 
 == Installation et configuration de SnapCenter
 
-L'outil NetApp SnapCenter est une application Windows qui s'exécute généralement dans un environnement de domaine Windows, mais aussi dans un déploiement de groupe de travail. Elle est basée sur une architecture multiniveaux, incluant un serveur de gestion centralisée (le serveur SnapCenter) et un plug-in SnapCenter sur les hôtes du serveur de base de données pour les charges de travail de la base de données. Voici quelques éléments à prendre en compte pour le déploiement du cloud hybride.
+L'outil NetApp SnapCenter est une application Windows qui s'exécute généralement dans un environnement de domaine Windows, mais aussi dans un déploiement de groupe de travail. Il est basé sur une architecture à plusieurs niveaux qui comprend un serveur de gestion centralisé (le serveur SnapCenter) et un plug-in SnapCenter sur les hôtes du serveur de base de données pour les charges de travail de base de données. Voici quelques éléments à prendre en compte pour le déploiement du cloud hybride.
 
 * *Déploiement d'instance unique ou de haute disponibilité.* le déploiement de haute disponibilité fournit une redondance en cas de défaillance d'un serveur d'instance SnapCenter unique.
 * *Résolution du nom.* le DNS doit être configuré sur le serveur SnapCenter pour résoudre tous les hôtes de base de données ainsi que sur le SVM de stockage pour la recherche avant et arrière. Le serveur DNS doit également être configuré sur des serveurs de base de données pour résoudre le serveur SnapCenter et la SVM de stockage pour la recherche avant et arrière.
@@ -30,7 +30,7 @@ L'outil NetApp SnapCenter est une application Windows qui s'exécute généralem
 * *Les ports doivent être ouverts pour permettre le trafic SnapMirror entre le cloud sur site et le cloud public.* le serveur SnapCenter utilise ONTAP SnapMirror pour répliquer les sauvegardes Snapshot sur site vers les SVM de stockage Cloud volumes ONTAP.
 
 
-Après avoir soigneusement étudié et planifié la pré-installation, cliquez sur ce bouton link:https://docs.netapp.com/us-en/snapcenter/install/install_workflow.html["Workflow d'installation de SnapCenter"^] Pour plus d'informations sur l'installation et la configuration de SnapCenter.
+Après une planification et une réflexion minutieuses avant l'installation, cliquez ici link:https://docs.netapp.com/us-en/snapcenter/install/requirements-to-install-snapcenter-server.html["Prérequis d'installation de SnapCenter"^] pour plus de détails sur l'installation et la configuration de SnapCenter.
 
 
 
@@ -69,7 +69,7 @@ Pour faciliter la relocalisation des bases de données Oracle, le binaire Oracle
 
 SnapCenter est un logiciel sous licence de NetApp. Elle est généralement incluse dans une licence ONTAP sur site. Cependant, pour le déploiement d'un cloud hybride, une licence cloud pour SnapCenter doit également ajouter CVO à SnapCenter comme destination de réplication des données cible. Veuillez consulter les liens ci-dessous pour en savoir plus sur la licence standard basée sur la capacité SnapCenter :
 
-link:https://docs.netapp.com/us-en/snapcenter/install/concept_snapcenter_licenses.html["Licences standard basées sur la capacité SnapCenter"^]
+link:https://docs.netapp.com/us-en/snapcenter/install/concept_snapcenter_standard_controller_based_licenses.html["Licences standard basées sur la capacité SnapCenter"^]
 
 
 
