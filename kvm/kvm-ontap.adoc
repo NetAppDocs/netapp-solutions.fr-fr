@@ -1,0 +1,353 @@
+---
+sidebar: sidebar 
+permalink: kvm/kvm-ontap.html 
+keywords: netapp, kvm, libvirt, all-flash, nfs, iscsi, ontap, storage, aff 
+summary: 'Le stockage partagé sur les hôtes KVM réduit le temps de migration à chaud des machines virtuelles et constitue une meilleure cible pour les sauvegardes et la cohérence des modèles dans l"ensemble de l"environnement. Le stockage ONTAP répond aux besoins des environnements hôtes KVM ainsi qu"aux exigences de stockage invité de fichiers, de blocs et d"objets.' 
+---
+= Virtualisation KVM avec ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Le stockage partagé sur les hôtes KVM réduit le temps de migration à chaud des machines virtuelles et constitue une meilleure cible pour les sauvegardes et la cohérence des modèles dans l'ensemble de l'environnement. Le stockage ONTAP répond aux besoins des environnements hôtes KVM ainsi qu'aux exigences de stockage invité de fichiers, de blocs et d'objets.
+
+Les hôtes KVM doivent disposer d'interfaces FC, Ethernet ou autres prises en charge câblées aux commutateurs et disposer d'une communication avec les interfaces logiques ONTAP.
+
+Vérifiez toujours les https://mysupport.netapp.com/matrix/#welcome["Matrice d'interopérabilité"] configurations prises en charge.
+
+
+
+== Fonctionnalités ONTAP de haut niveau
+
+*Caractéristiques communes*
+
+* Évolutivité horizontale du cluster
+* Prise en charge de l'authentification sécurisée et du RBAC
+* Prise en charge de plusieurs administrateurs « zéro confiance »
+* Colocation sécurisée
+* Répliquez les données avec SnapMirror.
+* Copies instantanées avec snapshots
+* Clones compacts.
+* Des fonctionnalités d'efficacité du stockage telles que la déduplication, la compression, etc
+* Prise en charge de Trident CSI pour Kubernetes
+* SnapLock
+* Verrouillage inviolable des copies Snapshot
+* Prise en charge du chiffrement
+* FabricPool pour basculer les données inactives vers un magasin d'objets.
+* Intégration de BlueXP et Data Infrastructure Insights.
+* Microsoft Offloaded Data Transfer (ODX)
+
+
+*NAS*
+
+* Les volumes FlexGroup sont un conteneur NAS scale-out qui offre de hautes performances ainsi que la distribution des charges et l'évolutivité.
+* FlexCache permet de distribuer les données partout dans le monde tout en offrant un accès local en lecture et en écriture aux données.
+* La prise en charge multiprotocole permet d'accéder aux mêmes données via SMB et NFS.
+* NFS nConnect autorise plusieurs sessions TCP par connexion TCP, ce qui augmente le débit du réseau. Cela augmente l'utilisation des cartes réseau haut débit disponibles sur les serveurs modernes.
+* La mise en circuit des sessions NFS offre des vitesses de transfert de données plus élevées, une haute disponibilité et une tolérance aux pannes supérieures.
+* pNFS pour une connexion optimisée du chemin de données.
+* Le multicanal SMB améliore la vitesse de transfert de données, la haute disponibilité et la tolérance aux pannes.
+* Intégration avec Active Directory/LDAP pour les autorisations de fichier.
+* Connexion sécurisée avec NFS sur TLS.
+* Prise en charge de NFS Kerberos.
+* NFS sur RDMA.
+* Mappage de noms entre les identités Windows et Unix.
+* Protection anti-ransomware autonome.
+* Analyse du système de fichiers.
+
+
+*SAN*
+
+* Étendre le cluster sur les domaines de défaillance avec la synchronisation active SnapMirror.
+* Les modèles ASA offrent des chemins d'accès multiples actifs/actifs et un basculement de chemin rapide.
+* Prise en charge des protocoles FC, iSCSI et NVMe-of.
+* Prise en charge de l'authentification mutuelle iSCSI CHAP.
+* Mappage de LUN sélectif et génération.
+
+
+
+
+== Libvirt avec stockage ONTAP
+
+Libvirt permet de gérer des machines virtuelles utilisant le stockage NetApp ONTAP pour leurs images disque et leurs données. Cette intégration vous permet de bénéficier des fonctionnalités de stockage avancées d'ONTAP, telles que la protection des données, l'efficacité du stockage et l'optimisation des performances, au sein de votre environnement de virtualisation basé sur Libvirt. Voici comment Libvirt interagit avec ONTAP et ce que vous pouvez faire :
+
+. Gestion du pool de stockage :
++
+** Définir le stockage ONTAP comme un pool de stockage Libvirt : vous pouvez configurer les pools de stockage Libvirt pour qu'ils pointent vers des volumes ONTAP ou des LUN via des protocoles tels que NFS, iSCSI ou Fibre Channel.
+** Libvirt gère les volumes au sein du pool : une fois le pool de stockage défini, Libvirt peut gérer la création, la suppression, le clonage et la capture instantanée des volumes au sein de ce pool, qui correspondent aux LUN ou aux fichiers ONTAP.
++
+*** Exemple : pool de stockage NFS : si vos hôtes Libvirt montent un partage NFS à partir d'ONTAP, vous pouvez définir un pool de stockage basé sur NFS dans Libvirt, et il répertoriera les fichiers du partage en tant que volumes pouvant être utilisés pour les disques de machine virtuelle.
+
+
+
+
+. Stockage sur disque de machine virtuelle :
++
+** Stockez les images de disque de machine virtuelle sur ONTAP : vous pouvez créer des images de disque de machine virtuelle (par exemple, qcow2, raw) dans les pools de stockage Libvirt qui sont sauvegardés par le stockage ONTAP.
+** Bénéficiez des fonctionnalités de stockage d'ONTAP : lorsque les disques VM sont stockés sur des volumes ONTAP, ils bénéficient automatiquement des fonctionnalités de protection des données (Snapshots, SnapMirror, SnapVault), d'efficacité du stockage (déduplication, compression) et de performances d'ONTAP.
+
+
+. Protection des données :
++
+** Protection automatisée des données : ONTAP offre une protection automatisée des données avec des fonctionnalités telles que Snapshots et SnapMirror, qui peuvent protéger vos précieuses données en les répliquant vers un autre stockage ONTAP, que ce soit sur site, sur un site distant ou dans le cloud.
+** RPO et RTO : vous pouvez atteindre des objectifs de point de récupération (RPO) faibles et des objectifs de temps de récupération (RTO) rapides à l'aide des fonctionnalités de protection des données d'ONTAP.
+** Synchronisation active MetroCluster/SnapMirror : pour un RPO zéro automatisé (objectif de point de récupération) et une disponibilité site à site, vous pouvez utiliser ONTAP MetroCluster ou SMas, qui permet d'avoir un cluster extensible entre les sites.
+
+
+. Performance et efficacité :
++
+** Pilotes Virtio : utilisez les pilotes de périphériques réseau et de disque Virtio dans vos machines virtuelles invitées pour améliorer les performances. Ces pilotes sont conçus pour coopérer avec l'hyperviseur et offrent des avantages de paravirtualisation.
+** Virtio-SCSI : pour l'évolutivité et les fonctionnalités de stockage avancées, utilisez Virtio-SCSI, qui offre la possibilité de se connecter directement aux LUN SCSI et de gérer un grand nombre de périphériques.
+** Efficacité du stockage : les fonctionnalités d'efficacité du stockage d'ONTAP, telles que la déduplication, la compression et le compactage, peuvent aider à réduire l'empreinte de stockage de vos disques de machine virtuelle, ce qui entraîne des économies de coûts.
+
+
+. Intégration ONTAP Select :
++
+** ONTAP Select sur KVM : ONTAP Select, la solution de stockage définie par logiciel de NetApp, peut être déployée sur des hôtes KVM, offrant une plate-forme de stockage flexible et évolutive pour vos machines virtuelles basées sur Libvirt.
+** ONTAP Select Deploy : ONTAP Select Deploy est un outil permettant de créer et de gérer des clusters ONTAP Select. Il peut être exécuté comme machine virtuelle sur KVM ou VMware ESXi.
+
+
+
+
+En substance, l’utilisation de Libvirt avec ONTAP vous permet de combiner la flexibilité et l’évolutivité de la virtualisation basée sur Libvirt avec les fonctionnalités de gestion de données de classe entreprise d’ONTAP, offrant ainsi une solution robuste et efficace pour votre environnement virtualisé.
+
+
+
+== Pool de stockage basé sur des fichiers (avec SMB ou NFS)
+
+Les pools de stockage de type dir et netfs sont applicables au stockage basé sur des fichiers.
+
+[cols="20% 10% 10% 10% 10% 10% 10% 10%"]
+|===
+| Protocole de stockage | dir | fs | netfs | logique | disque | iscsi | iscsi-direct | chemin mpath 
+
+
+| SMB/CIFS | Oui. | Non | Oui. | Non | Non | Non | Non | Non 
+
+
+| NFS | Oui. | Non | Oui. | Non | Non | Non | Non | Non 
+|===
+Avec netfs, libvirt monte le système de fichiers et les options de montage prises en charge sont limitées. Avec le pool de stockage dir, le montage du système de fichiers doit être géré en externe sur l'hôte. fstab ou automounter peuvent être utilisés à cette fin. Pour utiliser automounter, le paquet autofs doit être installé. Autofs est particulièrement utile pour monter des partages réseau à la demande, ce qui peut améliorer les performances système et l'utilisation des ressources par rapport aux montages statiques dans fstab. Il démonte automatiquement les partages après une période d'inactivité.
+
+En fonction du protocole de stockage utilisé, validez que les packages requis sont installés sur l'hôte.
+
+[cols="40% 20% 20% 20%"]
+|===
+| Protocole de stockage | Feutre | Debian | Pac-Man 
+
+
+| SMB/CIFS | samba-client/cifs-utils | smbclient/cifs-utils | smbclient/cifs-utils 
+
+
+| NFS | utilitaires nfs | nfs-commun | utilitaires nfs 
+|===
+NFS est un choix populaire en raison de sa prise en charge native et de ses performances sous Linux, tandis que SMB est une option viable pour l'intégration aux environnements Microsoft. Consultez toujours la matrice de prise en charge avant de l'utiliser en production.
+
+En fonction du protocole choisi, suivez les étapes appropriées pour créer le partage SMB ou l’exportation NFS. https://docs.netapp.com/us-en/ontap-system-manager-classic/smb-config/index.html["Création de partages PME"]https://docs.netapp.com/us-en/ontap-system-manager-classic/nfs-config/index.html["Création d'exportation NFS"]
+
+Inclure les options de montage dans le fichier de configuration fstab ou automounter. Par exemple, avec autofs, nous avons inclus la ligne suivante dans /etc/auto.master pour utiliser le mappage direct avec les fichiers auto.kvmfs01 et auto.kvmsmb01.
+
+/- /etc/auto.kvmnfs01 --timeout=60 /- /etc/auto.kvmsmb01 --timeout=60 --ghost
+
+et dans le fichier /etc/auto.kvmnfs01, nous avions /mnt/kvmnfs01 -trunkdiscovery,nconnect=4 172.21.35.11,172.21.36.11(100):/kvmnfs01
+
+pour smb, dans /etc/auto.kvmsmb01, nous avions /mnt/kvmsmb01 -fstype=cifs,credentials=/root/smbpass,multichannel,max_channels=8 ://kvmfs01.sddc.netapp.com/kvmsmb01
+
+Définissez le pool de stockage à l'aide de virsh de type de pool dir.
+
+[source, shell]
+----
+virsh pool-define-as --name kvmnfs01 --type dir --target /mnt/kvmnfs01
+virsh pool-autostart kvmnfs01
+virsh pool-start kvmnfs01
+----
+Tous les disques VM existants peuvent être répertoriés à l'aide de l'
+
+[source, shell]
+----
+virsh vol-list kvmnfs01
+----
+Pour optimiser les performances d'un pool de stockage Libvirt basé sur un montage NFS, les trois options de montage (Session Trunking, pNFS et nconnect) peuvent être utiles, mais leur efficacité dépend de vos besoins et de votre environnement. Voici une analyse détaillée pour vous aider à choisir la meilleure approche :
+
+. nconnect:
++
+** Idéal pour : optimisation simple et directe du montage NFS lui-même en utilisant plusieurs connexions TCP.
+** Fonctionnement : L'option de montage nconnect permet de spécifier le nombre de connexions TCP que le client NFS établira avec le point de terminaison NFS (serveur). Cela peut améliorer considérablement le débit des charges de travail nécessitant plusieurs connexions simultanées.
+** Avantages:
++
+*** Facile à configurer : ajoutez simplement nconnect=<number_of_connections> à vos options de montage NFS.
+*** Améliore le débit : augmente la « largeur du tuyau » pour le trafic NFS.
+*** Efficace pour diverses charges de travail : utile pour les charges de travail de machines virtuelles à usage général.
+
+
+** Limites :
++
+*** Prise en charge client/serveur : nécessite la prise en charge de nconnect sur le client (noyau Linux) et sur le serveur NFS (par exemple, ONTAP).
+*** Saturation : la définition d’une valeur nconnect très élevée peut saturer votre ligne réseau.
+*** Paramètre par montage : la valeur nconnect est définie pour le montage initial et tous les montages ultérieurs sur le même serveur et la même version héritent de cette valeur.
+
+
+
+
+. Jonction de session :
++
+** Idéal pour : améliorer le débit et fournir un certain degré de résilience en exploitant plusieurs interfaces réseau (LIF) vers le serveur NFS.
+** Comment cela fonctionne : la jonction de session permet aux clients NFS d'ouvrir plusieurs connexions à différents LIF sur un serveur NFS, agrégeant ainsi efficacement la bande passante de plusieurs chemins réseau.
+** Avantages:
++
+*** Augmentation de la vitesse de transfert de données : en utilisant plusieurs chemins réseau.
+*** Résilience : si un chemin réseau échoue, d'autres peuvent toujours être utilisés, bien que les opérations en cours sur le chemin défaillant puissent être suspendues jusqu'à ce que la connexion soit rétablie.
+
+
+** Limitations : Il s'agit toujours d'une seule session NFS : bien qu'elle utilise plusieurs chemins réseau, elle ne change pas la nature fondamentale de session unique du NFS traditionnel.
+** Complexité de la configuration : nécessite la configuration de groupes de jonction et de LIF sur le serveur ONTAP. Configuration du réseau : nécessite une infrastructure réseau adaptée pour prendre en charge le multivoie.
+** Avec l'option nConnect : seule la première interface sera dotée de l'option nConnect. Les autres interfaces auront une connexion unique.
+
+
+. pNFS :
++
+** Idéal pour : les charges de travail hautes performances et évolutives qui peuvent bénéficier d'un accès aux données parallèles et d'E/S directes vers les périphériques de stockage.
+** Comment cela fonctionne : pNFS sépare les métadonnées et les chemins de données, permettant aux clients d'accéder aux données directement depuis le stockage, en contournant potentiellement le serveur NFS pour l'accès aux données.
+** Avantages:
++
+*** Évolutivité et performances améliorées : pour des charges de travail spécifiques telles que le HPC et l'IA/ML qui bénéficient d'E/S parallèles.
+*** Accès direct aux données : réduit la latence et améliore les performances en permettant aux clients de lire/écrire des données directement à partir du stockage.
+*** avec l'option nConnect : toutes les connexions auront nConnect appliqué pour maximiser la bande passante du réseau.
+
+
+** Limites :
++
+*** Complexité : pNFS est plus complexe à configurer et à gérer que NFS ou nconnect traditionnel.
+*** Spécifique à la charge de travail : toutes les charges de travail ne bénéficient pas de manière significative de pNFS.
+*** Prise en charge client : nécessite la prise en charge de pNFS côté client.
+
+
+
+
+
+
+Recommandation : * Pour les pools de stockage Libvirt à usage général sur NFS : commencez par l'option de montage nconnect. Relativement simple à mettre en œuvre, elle peut améliorer considérablement les performances en augmentant le nombre de connexions. * Si vous avez besoin d'un débit et d'une résilience supérieurs : envisagez l'utilisation de Session Trunking en complément ou à la place de nconnect. Cela peut être avantageux dans les environnements où plusieurs interfaces réseau sont présentes entre vos hôtes Libvirt et votre système ONTAP. * Pour les charges de travail exigeantes bénéficiant d'E/S parallèles : si vous exécutez des charges de travail comme HPC ou IA/ML qui peuvent bénéficier d'un accès parallèle aux données, pNFS pourrait être la meilleure option. Cependant, préparez-vous à une complexité accrue de configuration. Testez et surveillez systématiquement les performances de votre NFS avec différentes options et paramètres de montage afin de déterminer la configuration optimale pour votre pool de stockage Libvirt et votre charge de travail.
+
+
+
+== Pool de stockage basé sur des blocs (avec iSCSI, FC ou NVMe-oF)
+
+Un type de pool de répertoires est souvent utilisé sur un système de fichiers de cluster comme OCFS2 ou GFS2 sur un LUN ou un espace de noms partagé.
+
+Validez que l'hôte dispose des packages nécessaires installés en fonction du protocole de stockage utilisé.
+
+[cols="40% 20% 20% 20%"]
+|===
+| Protocole de stockage | Feutre | Debian | Pac-Man 
+
+
+| ISCSI | utilitaires d'initiateur iscsi, mappeur de périphériques multi-chemins, outils ocfs2/utilitaires gfs2 | open-iscsi, outils multipath, outils ocfs2/utilitaires gfs2 | open-iscsi, outils multipath, outils ocfs2/utilitaires gfs2 
+
+
+| FC | mappeur de périphériques multi-chemins, ocfs2-tools/gfs2-utils | outils multipath, outils ocfs2/utilitaires gfs2 | outils multipath, outils ocfs2/utilitaires gfs2 
+
+
+| NVMe-of | nvme-cli, ocfs2-tools/gfs2-utils | nvme-cli, ocfs2-tools/gfs2-utils | nvme-cli, ocfs2-tools/gfs2-utils 
+|===
+Collectez l'hôte iqn/wwpn/nqn.
+
+[source, shell]
+----
+# To view host iqn
+cat /etc/iscsi/initiatorname.iscsi
+# To view wwpn
+systool -c fc_host -v
+# or if you have ONTAP Linux Host Utility installed
+sanlun fcp show adapter -v
+# To view nqn
+sudo nvme show-hostnqn
+----
+Reportez-vous à la section appropriée pour créer le LUN ou l'espace de noms.
+
+https://docs.netapp.com/us-en/ontap-system-manager-classic/iscsi-config-rhel/index.html["Création de LUN pour les hôtes iSCSI"] https://docs.netapp.com/us-en/ontap-system-manager-classic/fc-config-rhel/index.html["Création de LUN pour les hôtes FC"] https://docs.netapp.com/us-en/ontap/san-admin/create-nvme-namespace-subsystem-task.html["Espace de noms créé pour les hôtes NVMe-oF"]
+
+Assurez-vous que les périphériques de zonage FC ou Ethernet sont configurés pour communiquer avec les interfaces logiques ONTAP.
+
+Pour iSCSI,
+
+[source, shell]
+----
+# Register the target portal
+iscsiadm -m discovery -t st -p 172.21.37.14
+# Login to all interfaces
+iscsiadm -m node -L all
+# Ensure iSCSI service is enabled
+sudo systemctl enable iscsi.service
+# Verify the multipath device info
+multipath -ll
+# OCFS2 configuration we used.
+o2cb add-cluster kvmcl01
+o2cb add-node kvm02.sddc.netapp.com
+o2cb cluster-status
+mkfs.ocfs2 -L vmdata -N 4  --cluster-name=kvmcl01 --cluster-stack=o2cb -F /dev/mapper/3600a098038314c57312b58387638574f
+mount -t ocfs2 /dev/mapper/3600a098038314c57312b58387638574f1 /mnt/kvmiscsi01/
+mounted.ocfs2 -d
+# For libvirt storage pool
+virsh pool-define-as --name kvmiscsi01 --type dir --target /mnt/kvmiscsi01
+virsh pool-autostart kvmiscsi01
+virsh pool-start kvmiscsi01
+----
+Pour NVMe/TCP, nous avons utilisé
+
+[source, shell]
+----
+# Listing the NVMe discovery
+cat /etc/nvme/discovery.conf
+# Used for extracting default parameters for discovery
+#
+# Example:
+# --transport=<trtype> --traddr=<traddr> --trsvcid=<trsvcid> --host-traddr=<host-traddr> --host-iface=<host-iface>
+-t tcp -l 1800 -a 172.21.37.16
+-t tcp -l 1800 -a 172.21.37.17
+-t tcp -l 1800 -a 172.21.38.19
+-t tcp -l 1800 -a 172.21.38.20
+# Login to all interfaces
+nvme connect-all
+nvme list
+# Verify the multipath device info
+nvme show-topology
+# OCFS2 configuration we used.
+o2cb add-cluster kvmcl01
+o2cb add-node kvm02.sddc.netapp.com
+o2cb cluster-status
+mkfs.ocfs2 -L vmdata1 -N 4  --cluster-name=kvmcl01 --cluster-stack=o2cb -F /dev/nvme2n1
+mount -t ocfs2 /dev/nvme2n1 /mnt/kvmns01/
+mounted.ocfs2 -d
+# To change label
+tunefs.ocfs2 -L tme /dev/nvme2n1
+# For libvirt storage pool
+virsh pool-define-as --name kvmns01 --type dir --target /mnt/kvmns01
+virsh pool-autostart kvmns01
+virsh pool-start kvmns01
+----
+Pour FC,
+
+[source, shell]
+----
+# Verify the multipath device info
+multipath -ll
+# OCFS2 configuration we used.
+o2cb add-cluster kvmcl01
+o2cb add-node kvm02.sddc.netapp.com
+o2cb cluster-status
+mkfs.ocfs2 -L vmdata2 -N 4  --cluster-name=kvmcl01 --cluster-stack=o2cb -F /dev/mapper/3600a098038314c57312b583876385751
+mount -t ocfs2 /dev/mapper/3600a098038314c57312b583876385751 /mnt/kvmfc01/
+mounted.ocfs2 -d
+# For libvirt storage pool
+virsh pool-define-as --name kvmfc01 --type dir --target /mnt/kvmfc01
+virsh pool-autostart kvmfc01
+virsh pool-start kvmfc01
+----
+REMARQUE : le montage du périphérique doit être inclus dans /etc/fstab ou utiliser des fichiers de mappage de montage automatique.
+
+Libvirt gère les disques virtuels (fichiers) au-dessus du système de fichiers en cluster. Il s'appuie sur ce système (OCFS2 ou GFS2) pour gérer l'accès aux blocs partagés sous-jacents et l'intégrité des données. OCFS2 ou GFS2 agissent comme une couche d'abstraction entre les hôtes Libvirt et le stockage en blocs partagé, fournissant le verrouillage et la coordination nécessaires pour permettre un accès simultané sécurisé aux images de disques virtuels stockées sur ce stockage partagé.
